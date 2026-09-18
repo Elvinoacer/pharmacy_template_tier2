@@ -56,7 +56,7 @@ function availabilityRank(value: AssistMedicineMatch["availability"]): number {
 /**
  * Live, public-safe network lookup used by the page-assist UI.
  * It deliberately uses the unscoped client because this feature answers
- * network questions such as “who has X?” across listed Aether pharmacies.
+ * network questions such as “who has X?” across listed Afyvia pharmacies.
  */
 export async function searchAssistLive(rawQuery: string): Promise<AssistLiveMatches> {
   const query = rawQuery.trim().replace(/\s+/g, " ").slice(0, 100);

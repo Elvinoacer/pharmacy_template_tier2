@@ -140,7 +140,7 @@ export default function SelfCareTriageClient() {
 
   const copySummary = () => {
     if (!activeCondition) return;
-    const text = `Aether Pharmacy Self-Care Guidance for ${activeCondition.conditionName}:\n\n` +
+    const text = `Afyvia Pharmacy Self-Care Guidance for ${activeCondition.conditionName}:\n\n` +
       `🟢 Self-Care Appropriate: ${activeCondition.selfCareSigns.join(", ")}\n` +
       `💊 Recommended OTC: ${activeCondition.recommendedOtcTypes.join(", ")}\n` +
       `🟡 Consult Pharmacist if: ${activeCondition.pharmacistConsultTriggers.join(", ")}\n` +

@@ -78,7 +78,7 @@ export async function registerAction(
     const verification = await sendDelivery({
       channel: "email",
       recipient: { email },
-      subject: "Verify your Aether Pharmacy email",
+      subject: "Verify your Afyvia Pharmacy email",
       body: emailVerificationBody(verifyToken),
     });
     if (verification.status === "failed") {
@@ -192,7 +192,7 @@ export async function forgotPasswordAction(
     const result = await sendDelivery({
       channel: "email",
       recipient: { email },
-      subject: "Reset your Aether Pharmacy password",
+      subject: "Reset your Afyvia Pharmacy password",
       body: passwordResetBody(token),
     });
     if (result.status === "failed") console.error("[password reset delivery]", result.error);

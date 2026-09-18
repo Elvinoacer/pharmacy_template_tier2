@@ -601,7 +601,7 @@ export default function DigitalCounsellingCard({
                   Clinical Patient Leaflet: {counselling.brandNames[0]} ({counselling.genericName})
                 </h3>
                 <p className="text-xs text-[var(--muted)] mt-0.5">
-                  Standard 12-Pillar Medication Administration Protocol · Aether Pharmacy
+                  Standard 12-Pillar Medication Administration Protocol · Afyvia Pharmacy
                 </p>
               </div>
 

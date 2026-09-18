@@ -74,7 +74,7 @@ const STATUS_STYLE: Record<string, string> = {
 const POLL_MS = 4_000;
 
 function refreshAttention() {
-  window.dispatchEvent(new Event("aether:attention-refresh"));
+  window.dispatchEvent(new Event("afyvia:attention-refresh"));
 }
 
 async function acknowledgeSession(sessionId: string) {

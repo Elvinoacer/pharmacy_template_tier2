@@ -14,7 +14,7 @@ type Decision = {
   decidedAt: string;
 };
 
-const STORAGE_PREFIX = "aether_verify_seen_";
+const STORAGE_PREFIX = "afyvia_verify_seen_";
 
 function seenKey(d: Decision) {
   return `${STORAGE_PREFIX}${d.id}_${d.status}_${d.decidedAt}`;
@@ -134,7 +134,7 @@ export default function VerificationStatusModal() {
         <strong className="text-[#0c1a14]">{decision.name}</strong>
         {isApproved && (
           <>
-            {" "}has been approved to join the Aether Pharmacy Network. Finish the setup checklist
+            {" "}has been approved to join the Afyvia Pharmacy Network. Finish the setup checklist
             to list your storefront when you are ready.
           </>
         )}

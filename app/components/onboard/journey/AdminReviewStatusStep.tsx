@@ -58,7 +58,7 @@ export function AdminReviewStatusStep({
         <header className={`${styles.formHead} ${polish.heading}`}>
           <h2>Verification Review Decision</h2>
           <p>
-            Your application for <strong>{pharmacy.name}</strong> was reviewed by the Aether verification team and could not be approved at this time.
+            Your application for <strong>{pharmacy.name}</strong> was reviewed by the Afyvia verification team and could not be approved at this time.
           </p>
         </header>
 
@@ -80,8 +80,8 @@ export function AdminReviewStatusStep({
           <p className="font-semibold text-[var(--foreground)] mb-1">Have questions or additional evidence?</p>
           <p>
             You can appeal this decision or submit supporting documentation by replying to your review email or reaching out to{" "}
-            <a href="mailto:support@aether.co.ke" className="text-[var(--brand)] underline">
-              support@aether.co.ke
+            <a href="mailto:support@afyvia.co.ke" className="text-[var(--brand)] underline">
+              support@afyvia.co.ke
             </a>.
           </p>
         </div>
@@ -103,7 +103,7 @@ export function AdminReviewStatusStep({
         <header className={`${styles.formHead} ${polish.heading}`}>
           <h2>A correction is needed</h2>
           <p>
-            The Aether verification team reviewed your application and requested additional information or evidence.
+            The Afyvia verification team reviewed your application and requested additional information or evidence.
           </p>
         </header>
 
@@ -175,7 +175,7 @@ export function AdminReviewStatusStep({
     );
   }
 
-  // Standard waiting on Aether review screen:
+  // Standard waiting on Afyvia review screen:
   return (
     <div className={`${styles.form} ${styles.status} ${polish.wizardShell}`}>
       <div className={polish.topline}>

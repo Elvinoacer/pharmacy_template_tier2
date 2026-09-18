@@ -5,7 +5,7 @@ import { cookies, headers } from "next/headers";
 import AppChrome from "./components/AppChrome";
 import { Toaster } from "./components/Toaster";
 import JsonLd from "./components/JsonLd";
-import AetherCursor from "./components/AetherCursor";
+import AfyviaCursor from "./components/AfyviaCursor";
 import { platform } from "./lib/data";
 import { ensureEnvConfigured } from "./lib/ensure-env";
 import { getResolvedPharmacyOrNull } from "./lib/services/pharmacy-settings";
@@ -14,7 +14,7 @@ import { SESSION_CLAIM_COOKIE, verifySessionClaim } from "./lib/session-claim";
 import "./globals.css";
 import "./accessibility-overrides.css";
 import "./performance-overrides.css";
-import "./aether-backgrounds.css";
+import "./afyvia-backgrounds.css";
 import { themeBootstrap } from "./lib/theme-bootstrap";
 import ThemeToggle, { ThemeProvider } from "./components/ThemeProvider";
 
@@ -56,7 +56,7 @@ export const metadata: Metadata = {
   description: platform.description,
   keywords: [
     "pharmacy Kenya",
-    "Aether pharmacy network",
+    "Afyvia pharmacy network",
     "prescription refill",
     "vaccinations",
     "neighbourhood pharmacy",
@@ -165,7 +165,7 @@ export default async function RootLayout({ children }: Readonly<{ children: Reac
   let initialTheme: "light" | "dark" | undefined = undefined;
   try {
     const jar = await cookies();
-    const cookieTheme = jar.get("aether-theme")?.value;
+    const cookieTheme = jar.get("afyvia-theme")?.value;
     if (cookieTheme === "dark" || cookieTheme === "light") {
       initialTheme = cookieTheme;
     }
@@ -190,22 +190,22 @@ export default async function RootLayout({ children }: Readonly<{ children: Reac
         data-tenant-theme={tenantStyle ? "true" : undefined}
         style={tenantStyle}
       >
-        <div className="aether-global-backdrop" aria-hidden="true">
-          <picture className="aether-global-picture">
-            <source media="(min-width: 768px)" srcSet="/images/aether_bg_pc.webp" />
+        <div className="afyvia-global-backdrop" aria-hidden="true">
+          <picture className="afyvia-global-picture">
+            <source media="(min-width: 768px)" srcSet="/images/afyvia_bg_pc.webp" />
             <img
-              src="/images/aether_bg_mobile.jpg"
+              src="/images/afyvia_bg_mobile.jpg"
               alt=""
-              className="aether-global-image"
+              className="afyvia-global-image"
               decoding="async"
               fetchPriority="high"
             />
           </picture>
-          <div className="aether-global-veil" />
+          <div className="afyvia-global-veil" />
         </div>
-        <div className="aether-app-layer">
+        <div className="afyvia-app-layer">
           <ThemeProvider>
-            <AetherCursor />
+            <AfyviaCursor />
             <JsonLd pharmacy={onStorefrontRewrite ? resolved : null} />
             <AppChrome
               sessionUser={sessionHint}

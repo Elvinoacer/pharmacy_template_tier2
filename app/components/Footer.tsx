@@ -87,7 +87,7 @@ export default function Footer({
   const explore = storefront ? STOREFRONT_EXPLORE : PLATFORM_EXPLORE;
   const actions = storefront ? STOREFRONT_ACTIONS : PLATFORM_ACTIONS;
 
-  const displayName = storefront && brand ? brand.name : "Aether";
+  const displayName = storefront && brand ? brand.name : "Afyvia";
   const displaySubtitle = storefront ? slug || "Pharmacy" : "NETWORK";
   const tagline =
     storefront && brand
@@ -208,7 +208,7 @@ export default function Footer({
 
                 {/* WhatsApp */}
                 <a
-                  href="https://wa.me/254790670542?text=Hello%20Aether%20Healthcare,%20I%20have%20an%20inquiry."
+                  href="https://wa.me/254790670542?text=Hello%20Afyvia%20Healthcare,%20I%20have%20an%20inquiry."
                   target="_blank"
                   rel="noopener noreferrer"
                   aria-label="WhatsApp"
@@ -343,7 +343,7 @@ export default function Footer({
                   Stay in the loop
                 </p>
                 <p className="mt-2.5 text-xs leading-relaxed text-slate-300">
-                  Get health tips, updates, and important news from the Aether network.
+                  Get health tips, updates, and important news from the Afyvia network.
                 </p>
 
                 {newsState?.success ? (
@@ -448,7 +448,7 @@ export default function Footer({
 
           {/* Bottom Sub-Footer Bar */}
           <div className="mt-8 flex flex-col items-center justify-between gap-4 border-t border-white/10 pt-6 text-center text-xs text-slate-400 sm:flex-row sm:text-left">
-            <p>© {new Date().getFullYear()} Aether Pharmacy Network. All rights reserved.</p>
+            <p>© {new Date().getFullYear()} Afyvia Pharmacy Network. All rights reserved.</p>
 
             <div className="flex flex-wrap items-center justify-center gap-1.5 text-xs text-slate-300 sm:justify-start">
               <Heart className="h-3.5 w-3.5 text-emerald-400 fill-emerald-400/30" />

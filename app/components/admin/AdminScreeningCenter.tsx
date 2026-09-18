@@ -280,7 +280,7 @@ export function AdminScreeningCenter({
     const url = URL.createObjectURL(blob);
     const link = document.createElement("a");
     link.setAttribute("href", url);
-    link.setAttribute("download", `aether_screenings_${new Date().toISOString().slice(0, 10)}.csv`);
+    link.setAttribute("download", `afyvia_screenings_${new Date().toISOString().slice(0, 10)}.csv`);
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
@@ -1539,7 +1539,7 @@ export function AdminScreeningCenter({
                 <div>
                   <p className="font-semibold text-gray-700">Referring Pharmacist:</p>
                   <p className="text-gray-500">Licensed Pharmacist on Duty</p>
-                  <p className="text-xs text-gray-400">Aether Pharmacy Clinical Practice</p>
+                  <p className="text-xs text-gray-400">Afyvia Pharmacy Clinical Practice</p>
                 </div>
                 <div className="text-right">
                   <div className="w-36 border-b border-gray-400 mb-1"></div>

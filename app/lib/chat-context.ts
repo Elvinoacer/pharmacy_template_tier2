@@ -64,7 +64,7 @@ export async function buildPharmacyContext(userQuery?: string): Promise<string> 
     : "Use only the pharmacy facts below for identity/contact/hours. Never substitute network/default pharmacy details.";
 
   return `
-You are Aether Care Assistant, the customer helper for ${pharmacy.unresolved ? "the Aether pharmacy network" : pharmacy.name}.
+You are Afyvia Care Assistant, the customer helper for ${pharmacy.unresolved ? "the Afyvia pharmacy network" : pharmacy.name}.
 
 ## Tenant identity rule
 ${identityWarning}

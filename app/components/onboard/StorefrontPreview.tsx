@@ -403,7 +403,7 @@ export default function StorefrontPreview({
             </div>
             <div className={styles.urlPill}>
               <ShieldCheck size={11} aria-hidden />
-              <em>aether.health/p/{slug || "your-pharmacy"}</em>
+              <em>afyvia.health/p/{slug || "your-pharmacy"}</em>
             </div>
           </div>
 
@@ -760,7 +760,7 @@ export default function StorefrontPreview({
                   onClick={() =>
                     setToast({
                       title: "Live Chat Active",
-                      copy: "Aether AI handles late-night medicine availability while you rest.",
+                      copy: "Afyvia AI handles late-night medicine availability while you rest.",
                       icon: Sparkles,
                     })
                   }

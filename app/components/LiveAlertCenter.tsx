@@ -12,9 +12,9 @@
 import { useEffect, useRef } from "react";
 import { toast } from "@/app/components/Toaster";
 
-const SEEN_KEY = "aether-feel-alert-seen";
-const SINCE_KEY = "aether-feel-alert-since";
-const GUEST_KEY_STORAGE = "aether-feel-guest-key";
+const SEEN_KEY = "afyvia-feel-alert-seen";
+const SINCE_KEY = "afyvia-feel-alert-since";
+const GUEST_KEY_STORAGE = "afyvia-feel-guest-key";
 
 type FeelAlert = {
   id: string;
@@ -121,7 +121,7 @@ export function LiveAlertCenter({ audience }: { audience: Audience }) {
           if (seedUrl) {
             await fetch(seedUrl, { cache: "no-store" }).catch(() => undefined);
           }
-          window.dispatchEvent(new Event("aether:attention-refresh"));
+          window.dispatchEvent(new Event("afyvia:attention-refresh"));
           return;
         }
         bootstrapped.current = true;
@@ -176,7 +176,7 @@ export function LiveAlertCenter({ audience }: { audience: Audience }) {
 
         if (toasted || alerts.length > 0) {
           saveSeen(seen);
-          window.dispatchEvent(new Event("aether:attention-refresh"));
+          window.dispatchEvent(new Event("afyvia:attention-refresh"));
         }
         if (newest > 0) {
           setSince(new Date(newest).toISOString());

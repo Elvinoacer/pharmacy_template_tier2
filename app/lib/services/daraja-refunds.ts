@@ -65,7 +65,7 @@ export async function initiateDarajaRefund(refundId: string) {
   const result = await requestReversal({
     transactionId,
     amountKes: Number(refund.amount),
-    remarks: refund.reason || `Aether refund ${refund.id.slice(0, 8)}`,
+    remarks: refund.reason || `Afyvia refund ${refund.id.slice(0, 8)}`,
   });
   if (!result.ok) {
     return { ok: false as const, error: result.error || "Safaricom did not accept the reversal request." };

@@ -14,6 +14,7 @@ import PageHero from "@/app/components/PageHero";
 import { formatPrice } from "@/app/lib/format";
 import { getBrowseLocation } from "@/app/lib/browse-location";
 import { listNetworkListingsForSlug } from "@/app/lib/services/network-catalog";
+import NetworkMedicineComparison from "./NetworkMedicineComparison";
 
 export default async function NetworkMedicineView({ slug }: { slug: string }) {
   const origin = await getBrowseLocation();
@@ -33,7 +34,7 @@ export default async function NetworkMedicineView({ slug }: { slug: string }) {
         title={master.name}
         description={
           master.description ||
-          `Compare live availability of ${master.name} across verified Aether pharmacies.`
+          `Compare live availability of ${master.name} across verified Afyvia pharmacies.`
         }
         crumbs={[
           { label: "Medicines", href: "/medicines" },
@@ -79,59 +80,13 @@ export default async function NetworkMedicineView({ slug }: { slug: string }) {
       <section className="px-4 pb-14 sm:px-6">
         <div className="mx-auto max-w-6xl">
           <h2 className="text-xl font-semibold text-[var(--foreground)]" style={{ fontFamily: "var(--font-display), serif" }}>
-            Where it’s listed
+            Compare stock & pricing across pharmacies
           </h2>
-          {listings.length === 0 ? (
-            <div className="mt-4 rounded-3xl border border-[var(--line-2)] bg-[var(--card)] p-6 text-center">
-              <PackageSearch className="mx-auto h-6 w-6 text-[var(--brand)]" />
-              <p className="mt-2 text-sm text-[var(--muted)]">No public listings for this medicine yet.</p>
-            </div>
-          ) : (
-            <ul className="mt-4 space-y-3">
-              {listings.map((item) => {
-                const location = [item.pharmacy.city, item.pharmacy.county].filter(Boolean).join(", ");
-                const available = item.availableStock > 0;
-                return (
-                  <li key={item.id} className="rounded-3xl border border-[var(--line-2)] bg-[var(--card)]/90 p-4 sm:p-5">
-                    <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-                      <div className="min-w-0">
-                        <p className="font-semibold text-[var(--foreground)]">{item.pharmacy.name}</p>
-                        <p className="mt-0.5 flex items-center gap-1 text-xs text-[var(--muted)]">
-                          <MapPin className="h-3.5 w-3.5" />
-                          {location || "Kenya"}
-                          {item.distanceKm != null ? ` · ${item.distanceKm.toFixed(1)} km` : ""}
-                        </p>
-                        <p className="mt-2 text-sm font-bold text-[var(--foreground)]">KES {formatPrice(item.price)}</p>
-                        <p className={`mt-1 text-xs font-semibold ${available ? "text-emerald-700 dark:text-emerald-300" : "text-rose-700 dark:text-rose-300"}`}>
-                          {available ? `${item.availableStock} available to reserve` : "Currently unavailable"}
-                        </p>
-                      </div>
-                      <div className="flex flex-wrap gap-2">
-                        <Link
-                          href={item.href}
-                          className="inline-flex min-h-11 items-center gap-1.5 rounded-2xl bg-[var(--brand)] px-4 text-sm font-bold text-white"
-                        >
-                          {item.prescriptionRequired ? "View at pharmacy" : "Reserve at this pharmacy"}
-                          {item.overTheCounter ? <Sparkles className="h-4 w-4" /> : <ArrowRight className="h-4 w-4" />}
-                        </Link>
-                        <Link
-                          href={`/pharmacies/${item.pharmacy.slug}`}
-                          className="inline-flex min-h-11 items-center gap-1.5 rounded-2xl border border-[var(--line-2)] px-4 text-sm font-semibold text-[var(--foreground)]"
-                        >
-                          About pharmacy
-                        </Link>
-                      </div>
-                    </div>
-                    {item.overTheCounter && (
-                      <p className="mt-3 inline-flex items-center gap-1 text-[11px] font-semibold text-emerald-800 dark:text-emerald-300">
-                        <CheckCircle2 className="h-3.5 w-3.5" /> OTC
-                      </p>
-                    )}
-                  </li>
-                );
-              })}
-            </ul>
-          )}
+          <NetworkMedicineComparison
+            listings={listings}
+            masterName={master.name}
+            userLocation={origin}
+          />
         </div>
       </section>
 

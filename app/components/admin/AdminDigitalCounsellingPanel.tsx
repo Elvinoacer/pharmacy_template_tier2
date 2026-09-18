@@ -55,7 +55,7 @@ export function AdminDigitalCounsellingPanel({
   const completedCount = Object.values(checkedPillars).filter(Boolean).length;
   const percentage = Math.round((completedCount / 12) * 100);
 
-  const shareSummary = `📋 *Aether Pharmacy — Digital Medication Counselling Leaflet*\n\nPatient: ${customerName || "Customer"}\nMedication: *${counselling.brandNames[0]} (${counselling.genericName})*\n\n1. *How to take:* ${counselling.howToTake.technique}\n2. *When:* ${counselling.whenToTake.bestTimeOfDay}\n3. *Food:* ${counselling.foodAndDrink.summary}\n4. *Storage:* ${counselling.storage.temperatureRange}\n5. *Missed Dose:* ${counselling.missedDose.ruleOfThumb}\n6. *Course Completion:* ${counselling.courseCompletion.rationale}\n\n🔗 *Full 12-Pillar Interactive Leaflet:* https://aetherpharmacy.com/health/counselling/${counselling.medicineKey}\n\nCall/WhatsApp us if you experience unexpected side effects.`;
+  const shareSummary = `📋 *Afyvia Pharmacy — Digital Medication Counselling Leaflet*\n\nPatient: ${customerName || "Customer"}\nMedication: *${counselling.brandNames[0]} (${counselling.genericName})*\n\n1. *How to take:* ${counselling.howToTake.technique}\n2. *When:* ${counselling.whenToTake.bestTimeOfDay}\n3. *Food:* ${counselling.foodAndDrink.summary}\n4. *Storage:* ${counselling.storage.temperatureRange}\n5. *Missed Dose:* ${counselling.missedDose.ruleOfThumb}\n6. *Course Completion:* ${counselling.courseCompletion.rationale}\n\n🔗 *Full 12-Pillar Interactive Leaflet:* https://afyviapharmacy.com/health/counselling/${counselling.medicineKey}\n\nCall/WhatsApp us if you experience unexpected side effects.`;
 
   const copyToClipboard = () => {
     navigator.clipboard?.writeText(shareSummary);

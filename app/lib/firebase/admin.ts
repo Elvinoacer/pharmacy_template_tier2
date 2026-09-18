@@ -105,7 +105,7 @@ export async function sendPush(payload: PushPayload): Promise<PushResult> {
 
   const icon = payload.icon || payload.data?.icon || "/icon-192.png";
   const image = payload.image || payload.data?.image || undefined;
-  const tag = payload.data?.tag || "aether-pharmacy";
+  const tag = payload.data?.tag || "afyvia-pharmacy";
   const dose = isDoseActions(payload.data);
 
   const data: Record<string, string> = {

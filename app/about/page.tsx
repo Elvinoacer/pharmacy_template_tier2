@@ -18,7 +18,7 @@ export const metadata: Metadata = {
 };
 
 const pageShell =
-  "aether-route-surface min-h-screen overflow-x-hidden text-[var(--foreground)] transition-colors duration-300";
+  "afyvia-route-surface min-h-screen overflow-x-hidden text-[var(--foreground)] transition-colors duration-300";
 
 const adaptiveCard =
   "liquid-glass care-glass rounded-[1.35rem] transition-colors duration-300 sm:rounded-3xl";
@@ -32,7 +32,7 @@ function NetworkAbout() {
       <PageHero
         eyebrow="About the network"
         title="A country of pharmacies. One promise of care."
-        description={platform.promise + " Aether is the rails independent pharmacies share — never a takeover of the counter."}
+        description={platform.promise + " Afyvia is the rails independent pharmacies share — never a takeover of the counter."}
         crumbs={[{ label: "About" }]}
       />
 
@@ -61,7 +61,7 @@ function NetworkAbout() {
               </h2>
               <div className="mt-4 space-y-3 text-[13.5px] leading-6 text-[var(--muted)] sm:space-y-4 sm:text-base sm:leading-relaxed">
                 <p>
-                  Aether started from a simple observation: families already have a neighbourhood pharmacy they
+                  Afyvia started from a simple observation: families already have a neighbourhood pharmacy they
                   trust, but the internet still pretends there is only one shop in the country.
                 </p>
                 <p>
@@ -149,7 +149,7 @@ export default async function AboutPage() {
   const values = content.about.values;
   const aboutCopy =
     pharmacy.about ||
-    `${pharmacy.name} is an independent pharmacy on the Aether network — careful dispensing, personal attention, and a counter that still looks up when you walk in.`;
+    `${pharmacy.name} is an independent pharmacy on the Afyvia network — careful dispensing, personal attention, and a counter that still looks up when you walk in.`;
 
   return (
     <div className={pageShell}>

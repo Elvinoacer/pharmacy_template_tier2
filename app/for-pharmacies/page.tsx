@@ -15,14 +15,14 @@ import PharmacyRoiCalculator from "@/app/components/onboard/PharmacyRoiCalculato
 import styles from "@/app/components/onboard/OnboardSurface.module.css";
 
 export const metadata = {
-  title: "For pharmacies | Aether Health",
+  title: "For pharmacies | Afyvia Health",
   description:
     "Your online storefront, refill requests and patient follow-up. KES 100 verification, then KES 500/month when you start service.",
 };
 
 export default function ForPharmaciesPage() {
   return (
-    <div className={`${styles.page} ${styles.landing} aether-route-surface aether-artwork-surface bg-transparent`}>
+    <div className={`${styles.page} ${styles.landing} afyvia-route-surface afyvia-artwork-surface bg-transparent`}>
       <div className={styles.frame}>
         {/* Top Trust Notification Bar */}
         <div className="liquid-glass care-glass mb-2.5 sm:mb-3.5 flex flex-wrap items-center justify-between gap-2 rounded-xl border border-[var(--care-border)] bg-[var(--care-glass)] backdrop-blur-xl px-3 py-1.5 text-[11px] text-[var(--muted)] shadow-sm">
@@ -43,7 +43,7 @@ export default function ForPharmaciesPage() {
         <section className={styles.hero}>
           <div>
             <p className={styles.kicker}>
-              <Store size={15} aria-hidden /> Aether for community pharmacies
+              <Store size={15} aria-hidden /> Afyvia for community pharmacies
             </p>
             <h1 className={styles.heroTitle}>
               Your pharmacy.<br />
@@ -80,7 +80,7 @@ export default function ForPharmaciesPage() {
             {/* Quick Outcomes */}
             <div className={styles.outcomes}>
               {[
-                ["01", "Get found nearby", "Your own web link at aether.health/p/your-slug"],
+                ["01", "Get found nearby", "Your own web link at afyvia.health/p/your-slug"],
                 ["02", "One clean queue", "Refills, prescriptions & walk-ins in one place"],
                 ["03", "Keep chronic regulars", "Automated WhatsApp reminders before medicine runs out"],
               ].map(([number, title, detail]) => (
@@ -214,20 +214,20 @@ export default function ForPharmaciesPage() {
               </ul>
             </div>
             <div className="mt-4 rounded-xl bg-[var(--brand-soft)] p-3 text-xs font-semibold text-[var(--brand-deep)]">
-              💡 1 saved refill (avg KES 2,500) covers 5 full months of Aether. KES 0 until you go live.
+              💡 1 saved refill (avg KES 2,500) covers 5 full months of Afyvia. KES 0 until you go live.
             </div>
           </div>
         </section>
 
-        {/* COMPARISON: CUSTOM AGENCY BUILD VS AETHER */}
+        {/* COMPARISON: CUSTOM AGENCY BUILD VS AFYVIA */}
         <section className="liquid-glass care-glass mt-8 sm:mt-10 rounded-2xl border border-[var(--care-border)] bg-[var(--care-glass)] backdrop-blur-xl p-4 sm:p-6 shadow-sm" aria-label="Comparison with custom build">
           <div className="text-center max-w-xl mx-auto">
             <span className="text-xs font-bold uppercase tracking-wider text-[var(--brand)]">The Smart Choice</span>
             <h3 className="mt-1 font-serif text-xl sm:text-2xl font-semibold text-[var(--foreground)]">
-              Custom Agency Website vs Aether Platform
+              Custom Agency Website vs Afyvia Platform
             </h3>
             <p className="mt-0.5 text-xs sm:text-sm text-[var(--muted)]">
-              Why Kenyan community pharmacists choose Aether over hiring freelance web developers.
+              Why Kenyan community pharmacists choose Afyvia over hiring freelance web developers.
             </p>
           </div>
 
@@ -237,7 +237,7 @@ export default function ForPharmaciesPage() {
                 <tr className="border-b border-[var(--line-2)] text-[var(--muted)]">
                   <th className="py-2.5 px-3 font-bold">Requirement</th>
                   <th className="py-2.5 px-3 font-bold text-rose-600">Hiring an Agency</th>
-                  <th className="py-2.5 px-3 font-bold text-[var(--brand)]">Aether Pharmacy Platform</th>
+                  <th className="py-2.5 px-3 font-bold text-[var(--brand)]">Afyvia Pharmacy Platform</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-[var(--line-2)] text-[var(--foreground)]">

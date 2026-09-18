@@ -21,7 +21,7 @@ export default function LandingBentoGrid() {
             className="mt-2 text-2xl font-semibold tracking-tight text-[#0f172a] sm:text-3xl"
             style={{ fontFamily: "var(--font-display), serif" }}
           >
-            Why Aether
+            Why Afyvia
           </h2>
         </div>
 

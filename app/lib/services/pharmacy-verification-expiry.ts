@@ -140,7 +140,7 @@ export async function enforceExpiredPharmacyLicences(limit = 100) {
           "",
           "Once the renewed dossier is submitted, the platform verification team will repeat the PPB and responsible-professional checks before restoring verified status.",
           "",
-          "— Aether Network",
+          "— Afyvia Network",
         ].join("\n"),
       });
       if (delivery.status === "failed") {

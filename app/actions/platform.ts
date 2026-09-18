@@ -56,7 +56,7 @@ async function notifyOwnerOfDecision(opts: {
     body = [
       `Hi ${ownerName},`,
       "",
-      `Great news — **${opts.pharmacyName}** has been verified and approved to join the Aether Pharmacy Network.`,
+      `Great news — **${opts.pharmacyName}** has been verified and approved to join the Afyvia Pharmacy Network.`,
       opts.notes ? `\nReviewer note: ${opts.notes}` : "",
       "",
       "### What to do next",
@@ -67,7 +67,7 @@ async function notifyOwnerOfDecision(opts: {
       `[Continue to setup](${base}/admin/setup)`,
       "",
       "Welcome aboard.",
-      "— Aether Network",
+      "— Afyvia Network",
     ]
       .filter(Boolean)
       .join("\n");
@@ -82,7 +82,7 @@ async function notifyOwnerOfDecision(opts: {
       "",
       "If you believe this was in error, reply to this email or contact support with any additional documentation.",
       "",
-      "— Aether Network",
+      "— Afyvia Network",
     ].join("\n");
   } else {
     subject = `More information needed for ${opts.pharmacyName}`;
@@ -96,7 +96,7 @@ async function notifyOwnerOfDecision(opts: {
       "You can edit and resubmit from the onboarding flow:",
       `[Open onboarding](${base}/onboard)`,
       "",
-      "— Aether Network",
+      "— Afyvia Network",
     ].join("\n");
   }
 

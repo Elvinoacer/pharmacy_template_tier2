@@ -266,7 +266,7 @@ export default async function PharmacyBillingPage(props: PageProps) {
             </li>
           </ul>
           <p className="mt-2 rounded-lg bg-[var(--brand-soft)] p-2 text-[11px] font-semibold text-[var(--brand)]">
-            💡 Just 1 saved chronic refill covers 5 full months of Aether.
+            💡 Just 1 saved chronic refill covers 5 full months of Afyvia.
           </p>
         </section>
       </div>

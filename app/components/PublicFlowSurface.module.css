@@ -22,7 +22,7 @@
 }
 
 /* Convert hard-coded light palette utilities used by these public routes to the
-   shared Aether theme tokens. The selectors are intentionally scoped to this
+   shared Afyvia theme tokens. The selectors are intentionally scoped to this
    wrapper so admin/portal surfaces remain untouched. */
 .surface :global([class~="bg-white"]),
 .surface :global([class~="bg-white/70"]),

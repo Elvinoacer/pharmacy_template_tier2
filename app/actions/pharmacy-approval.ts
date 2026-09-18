@@ -55,7 +55,7 @@ async function notifyOwnerPharmacyIsApproved(opts: {
   const body = [
     `Hi ${ownerName},`,
     "",
-    `**${opts.pharmacyName}** has passed pharmacy verification on the Aether Pharmacy Network.`,
+    `**${opts.pharmacyName}** has passed pharmacy verification on the Afyvia Pharmacy Network.`,
     opts.notes ? `Reviewer note: ${opts.notes}` : "",
     "",
     "Your verified premises location, map pin and contact details have already been carried into your account.",
@@ -67,7 +67,7 @@ async function notifyOwnerPharmacyIsApproved(opts: {
     "",
     "The pharmacy stays off the public directory until you finish setup and choose Publish.",
     "",
-    "— Aether Network",
+    "— Afyvia Network",
   ].filter(Boolean).join("\n");
 
   try {

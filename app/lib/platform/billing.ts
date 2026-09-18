@@ -158,7 +158,7 @@ export async function issueSubscriptionInvoice(subscriptionId: string, period?: 
             channel: "email",
             purpose: "transactional",
             recipient: { email },
-            subject: `Your Aether pharmacy invoice ${number}`,
+            subject: `Your Afyvia pharmacy invoice ${number}`,
             body: waived
               ? "Your monthly platform service fee has been waived for this period. Review your invoices at /onboard/billing."
               : `Your monthly platform service invoice is KES ${price}. If M-PESA Ratiba is authorized, Safaricom will collect it automatically; otherwise open Pricing & billing to pay securely with M-PESA STK Push.`,
@@ -524,7 +524,7 @@ export async function createIntasendBillingCheckout(
     amount: Number(invoice.totalKes),
     currency: "KES",
     apiRef,
-    email: invoice.pharmacy.owner?.email || invoice.pharmacy.email || "billing@aether.co.ke",
+    email: invoice.pharmacy.owner?.email || invoice.pharmacy.email || "billing@afyvia.co.ke",
     firstName: invoice.pharmacy.name,
     phone: invoice.pharmacy.phone || undefined,
     redirectUrl,
@@ -685,7 +685,7 @@ export async function collectInvoicePayment(invoiceId: string, opts?: { phone?: 
   const payment = await prismaUnscoped.billingPayment.create({
     data: { pharmacyId: invoice.pharmacyId, invoiceId: invoice.id, provider: "daraja", status: "pending", amountKes: invoice.totalKes, phone },
   });
-  const push = await stkPush({ amount: Number(invoice.totalKes), phone, accountReference: invoice.number.slice(0, 12), transactionDesc: `Aether ${invoice.number}`, credentials: creds });
+  const push = await stkPush({ amount: Number(invoice.totalKes), phone, accountReference: invoice.number.slice(0, 12), transactionDesc: `Afyvia ${invoice.number}`, credentials: creds });
   if (!push.ok) {
     await prismaUnscoped.billingPayment.update({ where: { id: payment.id }, data: { status: "failed", failureReason: push.error } });
     return { ok: false as const, error: push.error, paymentId: payment.id };

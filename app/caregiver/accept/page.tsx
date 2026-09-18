@@ -52,7 +52,7 @@ export default async function CaregiverAcceptPage({
   const state = await getInviteState(token);
 
   return (
-    <main className="aether-artwork-surface aether-route-surface min-h-screen bg-transparent px-4 py-16">
+    <main className="afyvia-artwork-surface afyvia-route-surface min-h-screen bg-transparent px-4 py-16">
       <section className="liquid-glass care-glass mx-auto max-w-lg rounded-3xl border border-[var(--care-border)] bg-[var(--care-glass)] p-8 shadow-xl backdrop-blur-xl">
         {state.kind === "valid" ? (
           <div className="text-center">

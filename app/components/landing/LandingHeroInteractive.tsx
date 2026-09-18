@@ -149,7 +149,7 @@ export default function LandingHeroInteractive({
               <div className="relative aspect-[16/10] w-full overflow-hidden rounded-[1.5rem]">
                 <Image
                   src="https://pub-cc07856d657b4a7197710051042b3eda.r2.dev/images/gallery/welcoming_retail_floor.webp"
-                  alt="Aether accredited partner pharmacy"
+                  alt="Afyvia accredited partner pharmacy"
                   fill
                   priority
                   className="object-cover"
@@ -180,7 +180,7 @@ export default function LandingHeroInteractive({
                     className="text-xl font-medium text-white"
                     style={{ fontFamily: "var(--font-display), serif" }}
                   >
-                    Aether Central Pharmacy
+                    Afyvia Central Pharmacy
                   </p>
                 </div>
               </div>
@@ -207,14 +207,14 @@ export default function LandingHeroInteractive({
               {/* Action Buttons */}
               <div className="mt-4 flex gap-3">
                 <Link
-                  href="/p/aether"
+                  href="/p/afyvia"
                   className="flex-1 inline-flex items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-white to-slate-100 px-4 py-3 text-xs font-bold text-[#0c1a14] shadow-lg transition-all hover:from-slate-100 hover:to-white active:scale-98"
                 >
                   <span>Visit Storefront</span>
                   <ArrowRight className="h-3.5 w-3.5" />
                 </Link>
                 <a
-                  href="https://wa.me/254790670542?text=Hello%20Aether%20Pharmacy,%20I%20would%20like%20to%20inquire%20about%20a%20prescription"
+                  href="https://wa.me/254790670542?text=Hello%20Afyvia%20Pharmacy,%20I%20would%20like%20to%20inquire%20about%20a%20prescription"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="inline-flex items-center gap-2 rounded-2xl border border-amber-400/40 bg-amber-400/10 px-4 py-3 text-xs font-bold text-amber-200 backdrop-blur-sm transition-all hover:bg-amber-400/20 hover:border-amber-400/60"

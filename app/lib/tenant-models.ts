@@ -113,4 +113,4 @@ export const TENANT_RELATION_MODELS = new Map<string, string>([
  */
 
 export const DEFAULT_PHARMACY_ID = "00000000-0000-4000-a000-000000000001";
-export const DEFAULT_PHARMACY_SLUG = "aether";
+export const DEFAULT_PHARMACY_SLUG = "afyvia";

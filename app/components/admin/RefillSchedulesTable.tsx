@@ -146,7 +146,7 @@ export function RefillSchedulesTable({
             prescriptionId: sch.prescriptionId,
             channel: "whatsapp",
             subject: `Prescription Refill Reminder: ${sch.medicineName}`,
-            body: `Hello ${sch.customerName.split(" ")[0]}, this is a refill reminder from Aether Pharmacy for ${sch.medicineName}. Your next refill is due soon. Tap here to order: https://aetherpharmacy.com/portal/refills`,
+            body: `Hello ${sch.customerName.split(" ")[0]}, this is a refill reminder from Afyvia Pharmacy for ${sch.medicineName}. Your next refill is due soon. Tap here to order: https://afyviapharmacy.com/portal/refills`,
           }),
         });
         successCount++;

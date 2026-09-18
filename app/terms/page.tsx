@@ -26,7 +26,7 @@ const sectionClass =
 
 export default function TermsPage() {
   return (
-    <div className="aether-route-surface aether-artwork-surface min-h-screen bg-transparent overflow-x-hidden text-[var(--foreground)] transition-colors duration-300">
+    <div className="afyvia-route-surface afyvia-artwork-surface min-h-screen bg-transparent overflow-x-hidden text-[var(--foreground)] transition-colors duration-300">
       <PageHero
         eyebrow="Legal"
         title="Terms of Service"

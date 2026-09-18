@@ -21,10 +21,10 @@ let cachedAttentionCounts: AttentionCounts = { count: 0, feel: 0 };
  * Supports drag-to-resize, favorite pinning, and collapsible navigation groups.
  */
 export function useSidebarEnhanced(storageKey: "portal" | "admin" | "caregiver") {
-  const collapsedKey = `aether:sidebar:${storageKey}:collapsed`;
-  const widthKey = `aether:sidebar:${storageKey}:width`;
-  const pinnedKey = `aether:sidebar:${storageKey}:pinned`;
-  const groupsKey = `aether:sidebar:${storageKey}:groups`;
+  const collapsedKey = `afyvia:sidebar:${storageKey}:collapsed`;
+  const widthKey = `afyvia:sidebar:${storageKey}:width`;
+  const pinnedKey = `afyvia:sidebar:${storageKey}:pinned`;
+  const groupsKey = `afyvia:sidebar:${storageKey}:groups`;
 
   const cached = sidebarMemoryCache[storageKey];
 
@@ -234,7 +234,7 @@ export function useSidebarEnhanced(storageKey: "portal" | "admin" | "caregiver")
  * Also ensures the active link stays in view without snapping to the top.
  */
 export function useSidebarScroll(storageKey: string) {
-  const scrollKey = `aether:sidebar:${storageKey}:scroll`;
+  const scrollKey = `afyvia:sidebar:${storageKey}:scroll`;
   const navRef = useRef<HTMLElement | null>(null);
   const pathname = usePathname();
 
@@ -355,13 +355,13 @@ export function useAttentionCounts(): AttentionCounts {
     document.addEventListener("visibilitychange", onVisibility);
 
     const onRefresh = () => void fetchCount();
-    window.addEventListener("aether:attention-refresh", onRefresh);
+    window.addEventListener("afyvia:attention-refresh", onRefresh);
 
     return () => {
       cancelled = true;
       clearInterval(interval);
       document.removeEventListener("visibilitychange", onVisibility);
-      window.removeEventListener("aether:attention-refresh", onRefresh);
+      window.removeEventListener("afyvia:attention-refresh", onRefresh);
     };
   }, [pathname]);
 

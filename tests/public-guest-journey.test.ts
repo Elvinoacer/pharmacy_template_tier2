@@ -41,7 +41,7 @@ describe("guest quantity clamp", () => {
 
 describe("pharmacy directory filters", () => {
   it("requires category inventory even when the pharmacy name matches the search", () => {
-    const where = buildDirectoryPharmacyWhere({ q: "Aether", category: "pain-relief" });
+    const where = buildDirectoryPharmacyWhere({ q: "Afyvia", category: "pain-relief" });
     assert.ok(Array.isArray(where.AND));
     assert.equal(where.AND.length, 2);
     const categoryClause = where.AND[0] as { inventory: { some: { medicationMaster: { category: { equals: string } } } } };

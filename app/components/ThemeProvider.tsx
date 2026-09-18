@@ -4,8 +4,8 @@ import { createContext, useContext, useEffect, useRef, useState } from "react";
 import { Monitor, Moon, Sun } from "lucide-react";
 
 export type ThemeMode = "light" | "dark" | "system";
-const KEY = "aether-theme";
-const ADMIN_KEY = "aether-admin-theme";
+const KEY = "afyvia-theme";
+const ADMIN_KEY = "afyvia-admin-theme";
 
 export interface ThemeContextValue {
   mode: ThemeMode;
@@ -38,7 +38,7 @@ function applyThemeToDocument(resolved: "light" | "dark") {
 function writeThemeCookie(value: "light" | "dark") {
   if (typeof document === "undefined") return;
   try {
-    document.cookie = `aether-theme=${value}; path=/; max-age=31536000; SameSite=Lax`;
+    document.cookie = `afyvia-theme=${value}; path=/; max-age=31536000; SameSite=Lax`;
   } catch {
     /* ignore cookie write failure */
   }

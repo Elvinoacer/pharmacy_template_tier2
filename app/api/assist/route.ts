@@ -137,7 +137,7 @@ async function rulesResponse(query: string, base: string, live: AssistLiveMatche
     message:
       intent.id === "find-medicine"
         ? live.medicines.length
-          ? "I found medicine matches across the public Aether network."
+          ? "I found medicine matches across the public Afyvia network."
           : "I’ll check the public medicine listings and show pharmacies that match it."
         : `I’ll take you to the fastest way to ${intent.label.toLowerCase()}.`,
     actions: normalizeActions(null, intent.actions, base),
@@ -154,7 +154,7 @@ function buildSystemPrompt(): string {
     return `  - id: "${intent.id}" — ${intent.label}: ${intent.blurb}\n    example queries: ${intent.examples.join("; ")}\n    suggested actions:\n${actions}`;
   }).join("\n");
 
-  return `You are Aether's navigation assistant for a Kenyan pharmacy network.
+  return `You are Afyvia's navigation assistant for a Kenyan pharmacy network.
 Your job is to understand what a person wants and guide them to the right place in the product.
 
 The app includes these public destinations:

@@ -1,4 +1,4 @@
-# Aether — Pharmacy Network (multi-tenant)
+# Afyvia — Pharmacy Network (multi-tenant)
 
 Tier 1 is the public digital presence. **Tier 2** adds the pharmacy’s **digital relationship manager**: customer accounts, CRM, communication, AI self-service, refill workflows, reminders, campaigns, loyalty, and analytics.
 
@@ -110,15 +110,15 @@ Password for all: **`Password123!`**
 
 | Email | Role | Entry |
 | --- | --- | --- |
-| `platform@aether.health` | Super-admin | `/platform` |
-| `manager@aetherpharmacy.com` | Aether owner + Coast Care manager | `/admin` (switcher) |
-| `pharmacist@aetherpharmacy.com` | Pharmacist (Aether) | `/admin` |
-| `staff@aetherpharmacy.com` | Staff (Aether) | `/admin` |
-| `jane@example.com` | Customer (Aether + Coast Care) | `/portal` → My pharmacies |
-| `john@example.com` | Customer (Aether) | `/portal` |
+| `platform@afyvia.health` | Super-admin | `/platform` |
+| `manager@afyviapharmacy.com` | Afyvia owner + Coast Care manager | `/admin` (switcher) |
+| `pharmacist@afyviapharmacy.com` | Pharmacist (Afyvia) | `/admin` |
+| `staff@afyviapharmacy.com` | Staff (Afyvia) | `/admin` |
+| `jane@example.com` | Customer (Afyvia + Coast Care) | `/portal` → My pharmacies |
+| `john@example.com` | Customer (Afyvia) | `/portal` |
 | `peter@example.com` | Caregiver | `/caregiver` |
 
-Demo tenants: **Aether** (`/p/aether`, live), **Coast Care** (`/p/coast-care`, live), **Highlands** (submitted, in the verification queue).
+Demo tenants: **Afyvia** (`/p/afyvia`, live), **Coast Care** (`/p/coast-care`, live), **Highlands** (submitted, in the verification queue).
 
 ## Key routes
 

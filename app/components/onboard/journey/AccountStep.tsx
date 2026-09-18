@@ -65,7 +65,7 @@ export function AccountStep({ snapshot }: { snapshot: PharmacyOnboardingSnapshot
   useEffect(() => {
     if (typeof window !== "undefined") {
       window.dispatchEvent(
-        new CustomEvent("aether-onboard-sync", {
+        new CustomEvent("afyvia-onboard-sync", {
           detail: {
             name: name || undefined,
             slug: liveSlug || undefined,
@@ -232,7 +232,7 @@ export function AccountStep({ snapshot }: { snapshot: PharmacyOnboardingSnapshot
 
         {!user ? (
           <p className={styles.signIn}>
-            Already registered on Aether? <Link href="/login?next=/onboard">Sign in</Link>
+            Already registered on Afyvia? <Link href="/login?next=/onboard">Sign in</Link>
           </p>
         ) : null}
       </form>

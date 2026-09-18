@@ -23,7 +23,7 @@ const PUBLIC_DESTINATIONS = [
 
 function safeDestination(raw: string | null): string {
   const candidate = isSafeInternalPath(raw) ? raw : "/";
-  const parsed = new URL(candidate, "https://aether.local");
+  const parsed = new URL(candidate, "https://afyvia.local");
   const allowed =
     parsed.pathname === "/" ||
     PUBLIC_DESTINATIONS.some(

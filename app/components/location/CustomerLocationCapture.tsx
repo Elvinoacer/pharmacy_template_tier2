@@ -75,7 +75,7 @@ export default function CustomerLocationCapture() {
             Find pharmacies near you
           </h2>
           <p className="mt-1 text-xs leading-5 text-[#5a6b62]">
-            Share your current location to help Aether show nearby pharmacies and improve location-aware services. Your browser will ask for permission first.
+            Share your current location to help Afyvia show nearby pharmacies and improve location-aware services. Your browser will ask for permission first.
           </p>
         </div>
       </div>

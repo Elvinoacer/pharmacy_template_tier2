@@ -896,7 +896,7 @@ const FALLBACK_CONTENT: PageAssistContent = P({
   kicker: "Quick help",
   title: "What you can do here",
   about:
-    "You're on the Aether pharmacy network. Find a verified pharmacy, refill a prescription, order OTC products for delivery, or get free AI health guidance — describe what you need below and we'll point you to the right page.",
+    "You're on the Afyvia pharmacy network. Find a verified pharmacy, refill a prescription, order OTC products for delivery, or get free AI health guidance — describe what you need below and we'll point you to the right page.",
   highlights: [
     "Find a pharmacy near you",
     "Request refills and order medicines",

@@ -12,7 +12,7 @@ import { randomBytes } from "crypto";
  *   3. Call validateCsrfToken(token) in server actions before processing
  */
 
-const CSRF_COOKIE_NAME = "aether_csrf_token";
+const CSRF_COOKIE_NAME = "afyvia_csrf_token";
 const CSRF_HEADER_NAME = "x-csrf-token";
 
 /**

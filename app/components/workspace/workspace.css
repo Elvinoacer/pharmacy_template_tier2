@@ -1,20 +1,20 @@
 /* ============================================================
-   AETHER COMMAND WORKSPACE
+   AFYVIA COMMAND WORKSPACE
    Unified styles for Rail, Command Center, Contextual Surfaces,
    Progress Bar, and Mobile Dock.
    ============================================================ */
 
 :root {
-  --aether-rail-width: 72px;
-  --aether-flyout-width: 290px;
-  --aether-header-height: 64px;
-  --aether-dock-height: 62px;
+  --afyvia-rail-width: 72px;
+  --afyvia-flyout-width: 290px;
+  --afyvia-header-height: 64px;
+  --afyvia-dock-height: 62px;
 }
 
 @import "../../workspace-compat.css";
 
 /* Base Workspace Layout Container */
-.aether-workspace-root {
+.afyvia-workspace-root {
   display: flex !important;
   grid-template-columns: none !important;
   grid-template-rows: none !important;
@@ -29,13 +29,13 @@
 }
 
 @media (min-width: 1024px) {
-  .aether-workspace-root {
+  .afyvia-workspace-root {
     height: 100dvh;
     min-height: 0;
     overflow: hidden;
   }
 
-  .aether-workspace-root > .flex {
+  .afyvia-workspace-root > .flex {
     min-height: 0;
   }
 
@@ -47,9 +47,9 @@
 }
 
 /* Light theme definition for workspace root */
-html[data-theme="light"] .aether-workspace-root,
-html[data-admin-theme="light"] .aether-workspace-root,
-.aether-workspace-root[data-theme="light"] {
+html[data-theme="light"] .afyvia-workspace-root,
+html[data-admin-theme="light"] .afyvia-workspace-root,
+.afyvia-workspace-root[data-theme="light"] {
   --admin-bg: #f3f6f4;
   --admin-panel: #ffffff;
   --admin-card: #ffffff;
@@ -91,10 +91,10 @@ html[data-admin-theme="light"] .aether-workspace-root,
 }
 
 /* Dark theme definition for workspace root */
-html[data-theme="dark"] .aether-workspace-root,
-html[data-admin-theme="dark"] .aether-workspace-root,
-html.dark .aether-workspace-root,
-.aether-workspace-root[data-theme="dark"] {
+html[data-theme="dark"] .afyvia-workspace-root,
+html[data-admin-theme="dark"] .afyvia-workspace-root,
+html.dark .afyvia-workspace-root,
+.afyvia-workspace-root[data-theme="dark"] {
   --admin-bg: #0b0f14;
   --admin-panel: #11161e;
   --admin-card: #161d27;
@@ -136,7 +136,7 @@ html.dark .aether-workspace-root,
 
 @media (prefers-color-scheme: dark) {
   html:not([data-theme="light"]):not([data-admin-theme="light"])
-    .aether-workspace-root:not([data-theme="light"]) {
+    .afyvia-workspace-root:not([data-theme="light"]) {
     --admin-bg: #0b0f14;
     --admin-panel: #11161e;
     --admin-card: #161d27;
@@ -178,7 +178,7 @@ html.dark .aether-workspace-root,
 }
 
 /* Workspace Theme Toggle Button Geometry Safeguards */
-.aether-workspace-root .theme-toggle {
+.afyvia-workspace-root .theme-toggle {
   display: inline-flex !important;
   align-items: center !important;
   justify-content: center !important;
@@ -198,7 +198,7 @@ html.dark .aether-workspace-root,
   padding: 0 !important;
 }
 
-.aether-workspace-root .theme-toggle:hover {
+.afyvia-workspace-root .theme-toggle:hover {
   background: var(--admin-hover) !important;
   color: var(--admin-text) !important;
 }
@@ -206,11 +206,11 @@ html.dark .aether-workspace-root,
 /* ============================================================
    1. ADAPTIVE WORKSPACE RAIL (Desktop only, never scrolls)
    ============================================================ */
-.aether-rail {
+.afyvia-rail {
   display: none;
-  width: var(--aether-rail-width);
-  min-width: var(--aether-rail-width);
-  max-width: var(--aether-rail-width);
+  width: var(--afyvia-rail-width);
+  min-width: var(--afyvia-rail-width);
+  max-width: var(--afyvia-rail-width);
   height: 100vh;
   height: 100dvh;
   position: sticky;
@@ -227,21 +227,21 @@ html.dark .aether-workspace-root,
 }
 
 @media (min-width: 1024px) {
-  .aether-rail {
+  .afyvia-rail {
     display: flex;
   }
 }
 
-.aether-rail-brand {
+.afyvia-rail-brand {
   display: flex;
   align-items: center;
   justify-content: center;
-  height: var(--aether-header-height);
+  height: var(--afyvia-header-height);
   width: 100%;
   border-bottom: 1px solid var(--admin-border, rgba(29, 64, 49, 0.08));
 }
 
-.aether-rail-mark {
+.afyvia-rail-mark {
   display: grid;
   place-items: center;
   width: 40px;
@@ -258,12 +258,12 @@ html.dark .aether-workspace-root,
     box-shadow 150ms ease;
 }
 
-.aether-rail-mark:hover {
+.afyvia-rail-mark:hover {
   transform: scale(1.04);
   box-shadow: 0 6px 16px rgba(13, 110, 90, 0.35);
 }
 
-.aether-rail-groups {
+.afyvia-rail-groups {
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -274,7 +274,7 @@ html.dark .aether-workspace-root,
   overflow: hidden; /* Guaranteed no vertical scroll for top-level rail */
 }
 
-.aether-rail-btn {
+.afyvia-rail-btn {
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -291,18 +291,18 @@ html.dark .aether-workspace-root,
   padding: 2px;
 }
 
-.aether-rail-btn:hover {
+.afyvia-rail-btn:hover {
   background: var(--admin-hover, rgba(13, 110, 90, 0.08));
   color: var(--admin-text, #0c1a14);
 }
 
-.aether-rail-btn.active {
+.afyvia-rail-btn.active {
   background: var(--admin-accent-soft, rgba(13, 110, 90, 0.12));
   color: var(--admin-accent-text, #0d6e5a);
   font-weight: 650;
 }
 
-.aether-rail-btn.active::before {
+.afyvia-rail-btn.active::before {
   content: "";
   position: absolute;
   left: -6px;
@@ -313,19 +313,19 @@ html.dark .aether-workspace-root,
   background: var(--admin-accent, #0d6e5a);
 }
 
-.aether-rail-btn.selected {
+.afyvia-rail-btn.selected {
   border-color: var(--admin-border-2, rgba(29, 64, 49, 0.25));
   box-shadow: 0 4px 14px rgba(0, 0, 0, 0.05);
 }
 
-.aether-rail-icon-wrap {
+.afyvia-rail-icon-wrap {
   display: grid;
   place-items: center;
   width: 28px;
   height: 28px;
 }
 
-.aether-rail-label {
+.afyvia-rail-label {
   font-size: 10px;
   font-weight: 600;
   line-height: 1.15;
@@ -338,7 +338,7 @@ html.dark .aether-workspace-root,
   white-space: nowrap;
 }
 
-.aether-rail-badge {
+.afyvia-rail-badge {
   position: absolute;
   top: -2px;
   right: -5px;
@@ -356,7 +356,7 @@ html.dark .aether-workspace-root,
   border: 2px solid var(--admin-panel, #ffffff);
 }
 
-.aether-rail-footer {
+.afyvia-rail-footer {
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -366,7 +366,7 @@ html.dark .aether-workspace-root,
   border-top: 1px solid var(--admin-border, rgba(29, 64, 49, 0.08));
 }
 
-.aether-rail-footer-btn {
+.afyvia-rail-footer-btn {
   display: grid;
   place-items: center;
   width: 42px;
@@ -376,18 +376,18 @@ html.dark .aether-workspace-root,
   transition: all 150ms ease;
 }
 
-.aether-rail-footer-btn:hover {
+.afyvia-rail-footer-btn:hover {
   background: var(--admin-hover, rgba(13, 110, 90, 0.08));
   color: var(--admin-text, #0c1a14);
 }
 
 /* Contextual Flyout Panel */
-.aether-context-flyout {
+.afyvia-context-flyout {
   position: fixed;
   top: 0;
   bottom: 0;
-  left: var(--aether-rail-width);
-  width: var(--aether-flyout-width);
+  left: var(--afyvia-rail-width);
+  width: var(--afyvia-flyout-width);
   z-index: 25;
   display: flex;
   flex-direction: column;
@@ -408,7 +408,7 @@ html.dark .aether-workspace-root,
   }
 }
 
-.aether-context-flyout.is-pinned {
+.afyvia-context-flyout.is-pinned {
   position: sticky;
   top: 0;
   height: 100vh;
@@ -420,22 +420,22 @@ html.dark .aether-workspace-root,
 }
 
 @media (max-width: 1023px) {
-  .aether-rail,
-  .aether-context-flyout {
+  .afyvia-rail,
+  .afyvia-context-flyout {
     display: none !important;
   }
 }
 
-.aether-flyout-header {
+.afyvia-flyout-header {
   display: flex;
   align-items: flex-start;
   gap: 8px;
   padding: 16px;
-  min-height: var(--aether-header-height);
+  min-height: var(--afyvia-header-height);
   border-bottom: 1px solid var(--admin-border, rgba(29, 64, 49, 0.1));
 }
 
-.aether-flyout-eyebrow {
+.afyvia-flyout-eyebrow {
   font-size: 10px;
   font-weight: 700;
   letter-spacing: 0.12em;
@@ -443,22 +443,22 @@ html.dark .aether-workspace-root,
   color: var(--admin-accent-text, #0d6e5a);
 }
 
-.aether-flyout-title {
+.afyvia-flyout-title {
   font-size: 15px;
   font-weight: 700;
   color: var(--admin-text, #0c1a14);
   line-height: 1.3;
 }
 
-.aether-flyout-desc {
+.afyvia-flyout-desc {
   font-size: 11.5px;
   color: var(--admin-text-muted, #465e53);
   margin-top: 3px;
   line-height: 1.4;
 }
 
-.aether-flyout-pin-btn,
-.aether-flyout-close-btn {
+.afyvia-flyout-pin-btn,
+.afyvia-flyout-close-btn {
   display: grid;
   place-items: center;
   width: 32px;
@@ -468,18 +468,18 @@ html.dark .aether-workspace-root,
   transition: background-color 150ms ease;
 }
 
-.aether-flyout-pin-btn:hover,
-.aether-flyout-close-btn:hover {
+.afyvia-flyout-pin-btn:hover,
+.afyvia-flyout-close-btn:hover {
   background: var(--admin-hover, rgba(13, 110, 90, 0.08));
   color: var(--admin-text, #0c1a14);
 }
 
-.aether-flyout-pin-btn.active {
+.afyvia-flyout-pin-btn.active {
   color: var(--admin-accent, #0d6e5a);
   background: var(--admin-accent-soft, rgba(13, 110, 90, 0.12));
 }
 
-.aether-flyout-body {
+.afyvia-flyout-body {
   flex: 1;
   overflow-y: auto;
   overscroll-behavior: contain;
@@ -487,7 +487,7 @@ html.dark .aether-workspace-root,
   scrollbar-width: thin;
 }
 
-.aether-flyout-link {
+.afyvia-flyout-link {
   display: flex;
   align-items: center;
   gap: 10px;
@@ -499,18 +499,18 @@ html.dark .aether-workspace-root,
   min-height: 44px;
 }
 
-.aether-flyout-link:hover {
+.afyvia-flyout-link:hover {
   background: var(--admin-hover, rgba(13, 110, 90, 0.08));
   color: var(--admin-text, #0c1a14);
 }
 
-.aether-flyout-link.active {
+.afyvia-flyout-link.active {
   background: var(--admin-accent-soft, rgba(13, 110, 90, 0.12));
   color: var(--admin-accent-text, #0d6e5a);
   font-weight: 650;
 }
 
-.aether-flyout-item-icon {
+.afyvia-flyout-item-icon {
   display: grid;
   place-items: center;
   width: 28px;
@@ -521,29 +521,29 @@ html.dark .aether-workspace-root,
   color: var(--admin-accent, #0d6e5a);
 }
 
-.aether-flyout-item-label {
+.afyvia-flyout-item-label {
   font-size: 13px;
   font-weight: 600;
   line-height: 1.3;
 }
 
-.aether-flyout-item-sub {
+.afyvia-flyout-item-sub {
   font-size: 11px;
   color: var(--admin-text-soft, #566b62);
   line-height: 1.35;
 }
 
-.aether-flyout-chevron {
+.afyvia-flyout-chevron {
   opacity: 0;
   transition: opacity 120ms ease;
   color: var(--admin-text-soft, #566b62);
 }
 
-.aether-flyout-link:hover .aether-flyout-chevron {
+.afyvia-flyout-link:hover .afyvia-flyout-chevron {
   opacity: 1;
 }
 
-.aether-flyout-pin-item-btn {
+.afyvia-flyout-pin-item-btn {
   position: absolute;
   right: 6px;
   top: 50%;
@@ -560,20 +560,20 @@ html.dark .aether-workspace-root,
     color 120ms ease;
 }
 
-.group:hover .aether-flyout-pin-item-btn,
-.aether-flyout-pin-item-btn.is-pinned {
+.group:hover .afyvia-flyout-pin-item-btn,
+.afyvia-flyout-pin-item-btn.is-pinned {
   opacity: 1;
 }
 
-.aether-flyout-pin-item-btn.is-pinned {
+.afyvia-flyout-pin-item-btn.is-pinned {
   color: var(--admin-accent, #0d6e5a);
 }
 
 /* ============================================================
-   2. UNIVERSAL AETHER COMMAND BAR & COMMAND CENTER
+   2. UNIVERSAL AFYVIA COMMAND BAR & COMMAND CENTER
    ============================================================ */
 
-.aether-command-bar-trigger {
+.afyvia-command-bar-trigger {
   display: flex;
   align-items: center;
   gap: 10px;
@@ -592,28 +592,28 @@ html.dark .aether-workspace-root,
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
 }
 
-.aether-command-bar-trigger:hover {
+.afyvia-command-bar-trigger:hover {
   border-color: var(--admin-accent, #0d6e5a);
   background: var(--admin-card, #ffffff);
   color: var(--admin-text, #0c1a14);
   box-shadow: 0 2px 8px rgba(13, 110, 90, 0.08);
 }
 
-.aether-command-bar-text {
+.afyvia-command-bar-text {
   flex: 1;
   text-align: left;
   font-size: 13px;
 }
 
-.aether-command-bar-kbd {
+.afyvia-command-bar-kbd {
   display: flex;
   align-items: center;
   gap: 3px;
 }
 
-.aether-command-bar-kbd kbd,
-.aether-command-footer kbd,
-.aether-command-close-btn kbd {
+.afyvia-command-bar-kbd kbd,
+.afyvia-command-footer kbd,
+.afyvia-command-close-btn kbd {
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -630,7 +630,7 @@ html.dark .aether-workspace-root,
 }
 
 /* Command Center Dialog Modal */
-.aether-command-dialog {
+.afyvia-command-dialog {
   position: fixed;
   inset: 10vh 0 auto;
   margin-inline: auto;
@@ -645,19 +645,19 @@ html.dark .aether-workspace-root,
   z-index: 60;
 }
 
-.aether-command-dialog::backdrop {
+.afyvia-command-dialog::backdrop {
   background: rgba(8, 20, 16, 0.55);
   backdrop-filter: blur(6px);
   -webkit-backdrop-filter: blur(6px);
 }
 
-.aether-command-card {
+.afyvia-command-card {
   display: flex;
   flex-direction: column;
   max-height: 80vh;
 }
 
-.aether-command-input-row {
+.afyvia-command-input-row {
   display: flex;
   align-items: center;
   gap: 12px;
@@ -665,7 +665,7 @@ html.dark .aether-workspace-root,
   border-bottom: 1px solid var(--admin-border, rgba(29, 64, 49, 0.12));
 }
 
-.aether-command-input {
+.afyvia-command-input {
   flex: 1;
   border: 0;
   background: transparent;
@@ -675,12 +675,12 @@ html.dark .aether-workspace-root,
   outline: none;
 }
 
-.aether-command-input::placeholder {
+.afyvia-command-input::placeholder {
   color: var(--admin-text-soft, #566b62);
   font-weight: 400;
 }
 
-.aether-command-clear-btn {
+.afyvia-command-clear-btn {
   display: grid;
   place-items: center;
   width: 26px;
@@ -689,7 +689,7 @@ html.dark .aether-workspace-root,
   color: var(--admin-text-soft, #566b62);
 }
 
-.aether-command-results-body {
+.afyvia-command-results-body {
   flex: 1;
   overflow-y: auto;
   max-height: 52vh;
@@ -697,13 +697,13 @@ html.dark .aether-workspace-root,
   scrollbar-width: thin;
 }
 
-.aether-command-list {
+.afyvia-command-list {
   display: flex;
   flex-direction: column;
   gap: 4px;
 }
 
-.aether-command-item {
+.afyvia-command-item {
   display: flex;
   align-items: center;
   gap: 12px;
@@ -714,12 +714,12 @@ html.dark .aether-workspace-root,
   transition: background-color 100ms ease;
 }
 
-.aether-command-item:hover,
-.aether-command-item.selected {
+.afyvia-command-item:hover,
+.afyvia-command-item.selected {
   background: var(--admin-hover, rgba(13, 110, 90, 0.08));
 }
 
-.aether-command-item-icon {
+.afyvia-command-item-icon {
   display: grid;
   place-items: center;
   width: 34px;
@@ -730,23 +730,23 @@ html.dark .aether-workspace-root,
   flex-shrink: 0;
 }
 
-.aether-command-item.selected .aether-command-item-icon {
+.afyvia-command-item.selected .afyvia-command-item-icon {
   background: var(--admin-accent, #0d6e5a);
   color: #ffffff;
 }
 
-.aether-command-item-content {
+.afyvia-command-item-content {
   flex: 1;
   min-width: 0;
 }
 
-.aether-command-item-label {
+.afyvia-command-item-label {
   font-size: 14px;
   font-weight: 600;
   line-height: 1.3;
 }
 
-.aether-command-item-desc {
+.afyvia-command-item-desc {
   font-size: 12px;
   color: var(--admin-text-muted, #465e53);
   line-height: 1.4;
@@ -756,7 +756,7 @@ html.dark .aether-workspace-root,
   white-space: nowrap;
 }
 
-.aether-command-item-badge {
+.afyvia-command-item-badge {
   display: inline-flex;
   align-items: center;
   padding: 2px 7px;
@@ -769,13 +769,13 @@ html.dark .aether-workspace-root,
   color: var(--admin-accent-text, #0d6e5a);
 }
 
-.aether-command-item-actions {
+.afyvia-command-item-actions {
   display: flex;
   align-items: center;
   gap: 8px;
 }
 
-.aether-command-pin-btn {
+.afyvia-command-pin-btn {
   display: grid;
   place-items: center;
   width: 28px;
@@ -786,26 +786,26 @@ html.dark .aether-workspace-root,
   transition: opacity 120ms ease;
 }
 
-.aether-command-item:hover .aether-command-pin-btn,
-.aether-command-pin-btn.pinned {
+.afyvia-command-item:hover .afyvia-command-pin-btn,
+.afyvia-command-pin-btn.pinned {
   opacity: 1;
 }
 
-.aether-command-pin-btn.pinned {
+.afyvia-command-pin-btn.pinned {
   color: var(--admin-accent, #0d6e5a);
 }
 
-.aether-command-enter-hint {
+.afyvia-command-enter-hint {
   display: none;
   place-items: center;
   color: var(--admin-text-soft, #566b62);
 }
 
-.aether-command-item.selected .aether-command-enter-hint {
+.afyvia-command-item.selected .afyvia-command-enter-hint {
   display: grid;
 }
 
-.aether-ai-panel {
+.afyvia-ai-panel {
   margin: 12px 16px 4px;
   padding: 14px 16px;
   border-radius: 14px;
@@ -817,7 +817,7 @@ html.dark .aether-workspace-root,
   border: 1px solid rgba(13, 110, 90, 0.2);
 }
 
-.aether-pulse-dot {
+.afyvia-pulse-dot {
   width: 8px;
   height: 8px;
   border-radius: 999px;
@@ -836,13 +836,13 @@ html.dark .aether-workspace-root,
   }
 }
 
-.aether-command-empty {
+.afyvia-command-empty {
   padding: 32px 16px;
   text-align: center;
   color: var(--admin-text, #0c1a14);
 }
 
-.aether-command-footer {
+.afyvia-command-footer {
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -855,7 +855,7 @@ html.dark .aether-workspace-root,
    3. LAYERED NAVIGATION PROGRESS BAR
    ============================================================ */
 
-.aether-nav-progress-bar {
+.afyvia-nav-progress-bar {
   position: fixed;
   top: 0;
   left: 0;
@@ -885,16 +885,16 @@ html.dark .aether-workspace-root,
   border-radius: 50%;
   border: 2px solid var(--admin-accent, #0d6e5a);
   border-top-color: transparent;
-  animation: aetherNavSpin 600ms linear infinite;
+  animation: afyviaNavSpin 600ms linear infinite;
 }
 
-@keyframes aetherNavSpin {
+@keyframes afyviaNavSpin {
   to {
     transform: rotate(360deg);
   }
 }
 
-.aether-nav-progress-indicator {
+.afyvia-nav-progress-indicator {
   width: 100%;
   height: 100%;
   background: linear-gradient(90deg, #0d6e5a, #2dd4bf, #0d6e5a);
@@ -918,7 +918,7 @@ html.dark .aether-workspace-root,
    4. CONTEXTUAL TASK SURFACE (Nearby Actions)
    ============================================================ */
 
-.aether-contextual-surface {
+.afyvia-contextual-surface {
   display: flex;
   align-items: center;
   gap: 10px;
@@ -930,7 +930,7 @@ html.dark .aether-workspace-root,
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.03);
 }
 
-.aether-context-chip {
+.afyvia-context-chip {
   display: inline-flex;
   align-items: center;
   gap: 7px;
@@ -948,23 +948,23 @@ html.dark .aether-workspace-root,
   cursor: pointer;
 }
 
-.aether-context-chip:hover {
+.afyvia-context-chip:hover {
   background: var(--admin-hover, rgba(13, 110, 90, 0.08));
   border-color: var(--admin-accent, #0d6e5a);
   color: var(--admin-accent-text, #0d6e5a);
 }
 
-.aether-context-chip.primary {
+.afyvia-context-chip.primary {
   background: var(--admin-accent-soft, rgba(13, 110, 90, 0.12));
   border-color: var(--admin-accent, #0d6e5a);
   color: var(--admin-accent-text, #0d6e5a);
 }
 
-.aether-context-chip.subtle {
+.afyvia-context-chip.subtle {
   background: transparent;
 }
 
-.aether-context-dropdown {
+.afyvia-context-dropdown {
   position: absolute;
   top: calc(100% + 6px);
   left: 0;
@@ -977,7 +977,7 @@ html.dark .aether-workspace-root,
   z-index: 40;
 }
 
-.aether-context-dropdown-item {
+.afyvia-context-dropdown-item {
   display: flex;
   align-items: flex-start;
   gap: 10px;
@@ -988,7 +988,7 @@ html.dark .aether-workspace-root,
   transition: background-color 100ms ease;
 }
 
-.aether-context-dropdown-item:hover {
+.afyvia-context-dropdown-item:hover {
   background: var(--admin-hover, rgba(13, 110, 90, 0.08));
 }
 
@@ -996,7 +996,7 @@ html.dark .aether-workspace-root,
    5. MOBILE WORKSPACE DOCK & SHEET
    ============================================================ */
 
-.aether-mobile-dock {
+.afyvia-mobile-dock {
   position: fixed;
   bottom: 0;
   left: 0;
@@ -1009,15 +1009,15 @@ html.dark .aether-workspace-root,
   padding-bottom: env(safe-area-inset-bottom, 0px);
 }
 
-.aether-mobile-dock-inner {
+.afyvia-mobile-dock-inner {
   display: flex;
   align-items: center;
   justify-content: space-around;
-  height: var(--aether-dock-height);
+  height: var(--afyvia-dock-height);
   padding: 0 8px;
 }
 
-.aether-dock-item {
+.afyvia-dock-item {
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -1033,18 +1033,18 @@ html.dark .aether-workspace-root,
   min-width: 48px;
 }
 
-.aether-dock-item:hover,
-.aether-dock-item.active {
+.afyvia-dock-item:hover,
+.afyvia-dock-item.active {
   color: var(--admin-accent-text, #0d6e5a);
 }
 
-.aether-dock-label {
+.afyvia-dock-label {
   font-size: 10px;
   font-weight: 600;
   margin-top: 3px;
 }
 
-.aether-dock-badge {
+.afyvia-dock-badge {
   position: absolute;
   top: -4px;
   right: -6px;
@@ -1061,11 +1061,11 @@ html.dark .aether-workspace-root,
   justify-content: center;
 }
 
-.aether-dock-item.command-trigger {
+.afyvia-dock-item.command-trigger {
   margin-top: -12px;
 }
 
-.aether-dock-command-icon {
+.afyvia-dock-command-icon {
   display: grid;
   place-items: center;
   width: 38px;
@@ -1077,7 +1077,7 @@ html.dark .aether-workspace-root,
 }
 
 /* Mobile Slide-Up Sheet */
-.aether-mobile-sheet {
+.afyvia-mobile-sheet {
   position: fixed;
   inset: auto 0 0 0;
   margin: 0;
@@ -1093,19 +1093,19 @@ html.dark .aether-workspace-root,
   overflow: hidden;
 }
 
-.aether-mobile-sheet::backdrop {
+.afyvia-mobile-sheet::backdrop {
   background: rgba(8, 20, 16, 0.55);
   backdrop-filter: blur(4px);
   -webkit-backdrop-filter: blur(4px);
 }
 
-.aether-mobile-sheet-content {
+.afyvia-mobile-sheet-content {
   display: flex;
   flex-direction: column;
   max-height: 82vh;
 }
 
-.aether-mobile-sheet-header {
+.afyvia-mobile-sheet-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -1113,7 +1113,7 @@ html.dark .aether-workspace-root,
   border-bottom: 1px solid var(--admin-border, rgba(29, 64, 49, 0.12));
 }
 
-.aether-mobile-sheet-close {
+.afyvia-mobile-sheet-close {
   display: grid;
   place-items: center;
   width: 36px;
@@ -1123,14 +1123,14 @@ html.dark .aether-workspace-root,
   background: var(--admin-inset, rgba(0, 0, 0, 0.04));
 }
 
-.aether-mobile-sheet-body {
+.afyvia-mobile-sheet-body {
   flex: 1;
   overflow-y: auto;
   padding: 16px 14px;
   scrollbar-width: thin;
 }
 
-.aether-sheet-link {
+.afyvia-sheet-link {
   display: flex;
   align-items: center;
   gap: 12px;
@@ -1144,56 +1144,56 @@ html.dark .aether-workspace-root,
   transition: background-color 100ms ease;
 }
 
-.aether-sheet-link:hover,
-.aether-sheet-link.active {
+.afyvia-sheet-link:hover,
+.afyvia-sheet-link.active {
   background: var(--admin-hover, rgba(13, 110, 90, 0.08));
   color: var(--admin-accent-text, #0d6e5a);
 }
 
-.aether-mobile-sheet-footer {
+.afyvia-mobile-sheet-footer {
   padding: 14px 20px calc(14px + env(safe-area-inset-bottom, 0px));
   border-top: 1px solid var(--admin-border, rgba(29, 64, 49, 0.12));
   background: var(--admin-card, #ffffff);
 }
 
-html[data-theme="dark"] .aether-command-dialog,
-html[data-admin-theme="dark"] .aether-command-dialog,
-html.dark .aether-command-dialog,
-[data-theme="dark"] .aether-command-dialog {
+html[data-theme="dark"] .afyvia-command-dialog,
+html[data-admin-theme="dark"] .afyvia-command-dialog,
+html.dark .afyvia-command-dialog,
+[data-theme="dark"] .afyvia-command-dialog {
   background: var(--admin-panel, #11161e);
   color: var(--admin-text, #f1f5f9);
   border-color: var(--admin-border-2, rgba(148, 163, 184, 0.2));
   color-scheme: dark;
 }
 
-html[data-theme="dark"] .aether-mobile-sheet,
-html[data-admin-theme="dark"] .aether-mobile-sheet,
-html.dark .aether-mobile-sheet,
-[data-theme="dark"] .aether-mobile-sheet {
+html[data-theme="dark"] .afyvia-mobile-sheet,
+html[data-admin-theme="dark"] .afyvia-mobile-sheet,
+html.dark .afyvia-mobile-sheet,
+[data-theme="dark"] .afyvia-mobile-sheet {
   background: var(--admin-panel, #11161e);
   color: var(--admin-text, #f1f5f9);
   color-scheme: dark;
 }
 
-html[data-theme="dark"] .aether-mobile-sheet-footer,
-html[data-admin-theme="dark"] .aether-mobile-sheet-footer,
-html.dark .aether-mobile-sheet-footer,
-[data-theme="dark"] .aether-mobile-sheet-footer {
+html[data-theme="dark"] .afyvia-mobile-sheet-footer,
+html[data-admin-theme="dark"] .afyvia-mobile-sheet-footer,
+html.dark .afyvia-mobile-sheet-footer,
+[data-theme="dark"] .afyvia-mobile-sheet-footer {
   background: var(--admin-card, #161d27);
   border-color: var(--admin-border, rgba(148, 163, 184, 0.12));
 }
 
-html[data-theme="dark"] .aether-command-footer,
-html[data-admin-theme="dark"] .aether-command-footer,
-html.dark .aether-command-footer,
-[data-theme="dark"] .aether-command-footer {
+html[data-theme="dark"] .afyvia-command-footer,
+html[data-admin-theme="dark"] .afyvia-command-footer,
+html.dark .afyvia-command-footer,
+[data-theme="dark"] .afyvia-command-footer {
   background: var(--admin-inset, rgba(255, 255, 255, 0.03));
   border-color: var(--admin-border, rgba(148, 163, 184, 0.12));
 }
 
 @media (prefers-color-scheme: dark) {
   html:not([data-theme="light"]):not([data-admin-theme="light"])
-    .aether-command-dialog {
+    .afyvia-command-dialog {
     background: var(--admin-panel, #11161e);
     color: var(--admin-text, #f1f5f9);
     border-color: var(--admin-border-2, rgba(148, 163, 184, 0.2));
@@ -1201,20 +1201,20 @@ html.dark .aether-command-footer,
   }
 
   html:not([data-theme="light"]):not([data-admin-theme="light"])
-    .aether-mobile-sheet {
+    .afyvia-mobile-sheet {
     background: var(--admin-panel, #11161e);
     color: var(--admin-text, #f1f5f9);
     color-scheme: dark;
   }
 
   html:not([data-theme="light"]):not([data-admin-theme="light"])
-    .aether-mobile-sheet-footer {
+    .afyvia-mobile-sheet-footer {
     background: var(--admin-card, #161d27);
     border-color: var(--admin-border, rgba(148, 163, 184, 0.12));
   }
 
   html:not([data-theme="light"]):not([data-admin-theme="light"])
-    .aether-command-footer {
+    .afyvia-command-footer {
     background: var(--admin-inset, rgba(255, 255, 255, 0.03));
     border-color: var(--admin-border, rgba(148, 163, 184, 0.12));
   }
@@ -1222,9 +1222,9 @@ html.dark .aether-command-footer,
 
 /* Reduced motion preference */
 @media (prefers-reduced-motion: reduce) {
-  .aether-context-flyout,
-  .aether-nav-progress-indicator,
-  .aether-pulse-dot {
+  .afyvia-context-flyout,
+  .afyvia-nav-progress-indicator,
+  .afyvia-pulse-dot {
     animation: none !important;
     transition: none !important;
   }

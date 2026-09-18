@@ -35,7 +35,7 @@ export async function POST(req: Request) {
       customerId,
       prescriptionId,
       channel,
-      customSubject: "Clinical Adherence Follow-up from Aether Pharmacy",
+      customSubject: "Clinical Adherence Follow-up from Afyvia Pharmacy",
       customBody: message,
       actorId: user.id,
     });

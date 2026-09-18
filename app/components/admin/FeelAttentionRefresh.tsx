@@ -8,7 +8,7 @@ import { useEffect } from "react";
  */
 export default function FeelAttentionRefresh() {
   useEffect(() => {
-    window.dispatchEvent(new Event("aether:attention-refresh"));
+    window.dispatchEvent(new Event("afyvia:attention-refresh"));
   }, []);
   return null;
 }

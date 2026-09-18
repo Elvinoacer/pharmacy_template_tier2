@@ -60,7 +60,7 @@ export function verifyInboundProvider(input: {
       return verifyHmacSha256(secret, input.rawBody, part);
     }
     case "delivery": {
-      const header = get("x-webhook-signature") || get("x-aether-signature");
+      const header = get("x-webhook-signature") || get("x-afyvia-signature");
       if (secret && header) return verifyHmacSha256(secret, input.rawBody, header);
       if (!secret) return process.env.NODE_ENV !== "production";
       return get("authorization") === `Bearer ${secret}`;
@@ -69,7 +69,7 @@ export function verifyInboundProvider(input: {
       return Boolean(get("authorization")?.startsWith("Bearer "));
     default:
       if (!secret) return process.env.NODE_ENV !== "production";
-      return verifyHmacSha256(secret, input.rawBody, get("x-aether-signature") || get("x-webhook-signature"));
+      return verifyHmacSha256(secret, input.rawBody, get("x-afyvia-signature") || get("x-webhook-signature"));
   }
 }
 
@@ -119,8 +119,8 @@ async function postOnce(url: string, secret: string, eventType: string, pharmacy
     method: "POST",
     headers: {
       "Content-Type": "application/json",
-      "X-Aether-Signature": `sha256=${sig}`,
-      "X-Aether-Event": eventType,
+      "X-Afyvia-Signature": `sha256=${sig}`,
+      "X-Afyvia-Event": eventType,
     },
     body,
   });

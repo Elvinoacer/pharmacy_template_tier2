@@ -1,7 +1,7 @@
 # Commerce Ledger Extension — Changes Summary
 
 This document summarizes the commerce-ledger rebuild that powers the new analytics
-dashboards, following the audit (`Aether_Pharmacy_Analytics_Full_Repo_Audit.md`).
+dashboards, following the audit (`Afyvia_Pharmacy_Analytics_Full_Repo_Audit.md`).
 
 ## TL;DR
 

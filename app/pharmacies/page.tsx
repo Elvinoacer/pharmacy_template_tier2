@@ -45,7 +45,7 @@ export default async function PharmaciesPage({ searchParams }: { searchParams: P
   ]);
 
   return (
-    <div className="aether-route-surface min-h-screen overflow-hidden text-[var(--foreground)]">
+    <div className="afyvia-route-surface min-h-screen overflow-hidden text-[var(--foreground)]">
       <section className="px-4 pb-16 pt-24 sm:px-6 sm:pb-20 sm:pt-32">
         <div className="mx-auto max-w-7xl">
           <header className="page-hero-glass mb-4 sm:mb-5">
@@ -109,7 +109,7 @@ export default async function PharmaciesPage({ searchParams }: { searchParams: P
               <div className="mb-2 flex items-center justify-between gap-3 px-1">
                 <div>
                   <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-[var(--muted-2)]">Optional helper</p>
-                  <p className="mt-0.5 text-xs text-[var(--muted)]">Use Aether when ordinary filters are not enough.</p>
+                  <p className="mt-0.5 text-xs text-[var(--muted)]">Use Afyvia when ordinary filters are not enough.</p>
                 </div>
               </div>
               <DirectoryAssistant />

@@ -84,7 +84,7 @@ describe("PostgreSQL RLS GUC", { skip: !hasDb }, () => {
       const failingClient = {
         query: async (sql: string) => {
           if (sql.startsWith("SET ROLE")) {
-            throw new Error("permission denied to set role aether_runtime");
+            throw new Error("permission denied to set role afyvia_runtime");
           }
           return { rows: [] };
         },

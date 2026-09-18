@@ -156,7 +156,7 @@ export default async function TopicalTreatmentsPage() {
                   </div>
                   <div className="col-span-2 rounded-2xl border border-[var(--line-2)] bg-[var(--card-elev)] p-3 sm:col-span-1">
                     <span className="text-[10px] font-bold uppercase tracking-wide text-[var(--muted-2)]">Scope</span>
-                    <p className="mt-1 line-clamp-1 text-sm font-bold text-[var(--foreground)]">Aether network</p>
+                    <p className="mt-1 line-clamp-1 text-sm font-bold text-[var(--foreground)]">Afyvia network</p>
                     <p className="text-[10px] text-[var(--muted)]">verified pharmacies</p>
                   </div>
                 </div>
@@ -224,7 +224,7 @@ export default async function TopicalTreatmentsPage() {
           <div className="mb-4 flex flex-col gap-3 sm:mb-5 sm:flex-row sm:items-end sm:justify-between">
             <div>
               <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-[var(--brand)] sm:text-xs">
-                Live stock · Aether network
+                Live stock · Afyvia network
               </p>
               <h2
                 className="mt-1 text-xl font-semibold text-[var(--foreground)] sm:text-2xl"

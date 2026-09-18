@@ -57,8 +57,8 @@ export function WorkspaceRail({
   const [pinnedItems, setPinnedItems] = useState<string[]>([]);
 
   const flyoutRef = useRef<HTMLDivElement>(null);
-  const pinnedStorageKey = `aether:pinned:${role}`;
-  const panelPinnedKey = `aether:panel-pinned:${role}`;
+  const pinnedStorageKey = `afyvia:pinned:${role}`;
+  const panelPinnedKey = `afyvia:panel-pinned:${role}`;
 
   // Hydrate panel pin state and pinned items
   useEffect(() => {
@@ -124,7 +124,7 @@ export function WorkspaceRail({
       const target = event.target as Node | null;
       if (flyoutRef.current && !flyoutRef.current.contains(target)) {
         // If click is not inside the rail itself
-        const railEl = document.getElementById("aether-adaptive-rail");
+        const railEl = document.getElementById("afyvia-adaptive-rail");
         if (railEl && !railEl.contains(target)) {
           setActiveFlyout(null);
         }
@@ -190,19 +190,19 @@ export function WorkspaceRail({
     >
       {/* 1. Narrow Adaptive Navigation Rail (never scrolls vertically) */}
       <aside
-        id="aether-adaptive-rail"
+        id="afyvia-adaptive-rail"
         aria-label="Workspace Rail"
-        className="aether-rail"
+        className="afyvia-rail"
         onMouseEnter={() => {
           if (!pinnedPanel) setActiveFlyout(activeGroupId);
         }}
       >
         {/* Brand Mark */}
-        <div className="aether-rail-brand">
+        <div className="afyvia-rail-brand">
           <Link
             href={homeHref}
-            className="aether-rail-mark"
-            aria-label={`${brand?.name || "Aether"} workspace home`}
+            className="afyvia-rail-mark"
+            aria-label={`${brand?.name || "Afyvia"} workspace home`}
             onClick={() => startNavigation(homeHref, "Dashboard")}
           >
             {brandMarkText}
@@ -210,7 +210,7 @@ export function WorkspaceRail({
         </div>
 
         {/* Workspace Groups (5–6 items strictly) */}
-        <nav aria-label="Conceptual Workspaces" className="aether-rail-groups">
+        <nav aria-label="Conceptual Workspaces" className="afyvia-rail-groups">
           {groups.map((group) => {
             const isSelected = activeFlyout === group.id;
             const isRouteActive = activeGroupId === group.id;
@@ -235,30 +235,30 @@ export function WorkspaceRail({
                 aria-haspopup="true"
                 aria-label={`${group.label} workspace`}
                 title={`${group.label} — ${group.description}`}
-                className={`aether-rail-btn ${isRouteActive ? "active" : ""} ${
+                className={`afyvia-rail-btn ${isRouteActive ? "active" : ""} ${
                   isSelected ? "selected" : ""
                 }`}
               >
-                <span className="aether-rail-icon-wrap relative">
+                <span className="afyvia-rail-icon-wrap relative">
                   <WorkspaceIcon name={group.icon} size={20} />
                   {badgeCount > 0 && (
-                    <span className="aether-rail-badge">
+                    <span className="afyvia-rail-badge">
                       {formatBadgeCount(badgeCount)}
                     </span>
                   )}
                 </span>
-                <span className="aether-rail-label">{group.shortLabel}</span>
+                <span className="afyvia-rail-label">{group.shortLabel}</span>
               </button>
             );
           })}
         </nav>
 
         {/* Rail Footer (Theme, Website, Sign out / bottom controls) */}
-        <div className="aether-rail-footer">
+        <div className="afyvia-rail-footer">
           {brand?.slug && (
             <Link
               href={`/p/${brand.slug}`}
-              className="aether-rail-footer-btn"
+              className="afyvia-rail-footer-btn"
               title="View public storefront"
               aria-label="View public storefront"
             >
@@ -276,22 +276,22 @@ export function WorkspaceRail({
           ref={flyoutRef}
           role="region"
           aria-label={`${activeGroup.label} contextual actions`}
-          className={`aether-context-flyout ${pinnedPanel ? "is-pinned" : ""}`}
+          className={`afyvia-context-flyout ${pinnedPanel ? "is-pinned" : ""}`}
         >
           {/* Flyout Header */}
-          <div className="aether-flyout-header">
+          <div className="afyvia-flyout-header">
             <div className="min-w-0 flex-1">
-              <p className="aether-flyout-eyebrow">Workspace</p>
-              <h2 className="aether-flyout-title truncate">
+              <p className="afyvia-flyout-eyebrow">Workspace</p>
+              <h2 className="afyvia-flyout-title truncate">
                 {activeGroup.label}
               </h2>
-              <p className="aether-flyout-desc">{activeGroup.description}</p>
+              <p className="afyvia-flyout-desc">{activeGroup.description}</p>
             </div>
             <div className="flex items-center gap-1 shrink-0">
               <button
                 type="button"
                 onClick={togglePanelPin}
-                className={`aether-flyout-pin-btn ${pinnedPanel ? "active" : ""}`}
+                className={`afyvia-flyout-pin-btn ${pinnedPanel ? "active" : ""}`}
                 aria-label={
                   pinnedPanel ? "Unpin panel (auto-close)" : "Pin panel open"
                 }
@@ -308,7 +308,7 @@ export function WorkspaceRail({
               <button
                 type="button"
                 onClick={() => setActiveFlyout(null)}
-                className="aether-flyout-close-btn"
+                className="afyvia-flyout-close-btn"
                 aria-label="Close panel"
               >
                 <X size={16} />
@@ -317,7 +317,7 @@ export function WorkspaceRail({
           </div>
 
           {/* Flyout Navigation Items */}
-          <div className="aether-flyout-body">
+          <div className="afyvia-flyout-body">
             <ul className="space-y-1">
               {flyoutDestinations.map((dest) => {
                 const isItemActive =
@@ -335,24 +335,24 @@ export function WorkspaceRail({
                         startNavigation(dest.href, dest.label);
                         if (!pinnedPanel) setActiveFlyout(null);
                       }}
-                      className={`aether-flyout-link ${isItemActive ? "active" : ""} ${isPending ? "is-navigating-pending" : ""}`}
+                      className={`afyvia-flyout-link ${isItemActive ? "active" : ""} ${isPending ? "is-navigating-pending" : ""}`}
                     >
-                      <span className="aether-flyout-item-icon">
+                      <span className="afyvia-flyout-item-icon">
                         <WorkspaceIcon name={dest.icon} size={16} />
                       </span>
                       <div className="min-w-0 flex-1">
-                        <span className="aether-flyout-item-label truncate block">
+                        <span className="afyvia-flyout-item-label truncate block">
                           {dest.label}
                         </span>
                         {dest.description && (
-                          <span className="aether-flyout-item-sub truncate block">
+                          <span className="afyvia-flyout-item-sub truncate block">
                             {dest.description}
                           </span>
                         )}
                       </div>
                       <ChevronRight
                         size={14}
-                        className="aether-flyout-chevron shrink-0"
+                        className="afyvia-flyout-chevron shrink-0"
                         aria-hidden
                       />
                     </Link>
@@ -361,7 +361,7 @@ export function WorkspaceRail({
                     <button
                       type="button"
                       onClick={(e) => togglePinItem(dest.href, e)}
-                      className={`aether-flyout-pin-item-btn ${isPinned ? "is-pinned" : ""}`}
+                      className={`afyvia-flyout-pin-item-btn ${isPinned ? "is-pinned" : ""}`}
                       aria-label={
                         isPinned ? "Unpin from favorites" : "Pin to favorites"
                       }

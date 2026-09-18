@@ -99,7 +99,7 @@ export async function generateDynamicQr(input: {
   const amount = Math.max(1, Math.round(input.amountKes));
   const size = Math.min(500, Math.max(200, Math.round(input.size || 300)));
   return requestDaraja("/mpesa/qrcode/v1/generate", {
-    MerchantName: (input.merchantName || process.env.PLATFORM_BRAND_NAME || "Aether").slice(0, 30),
+    MerchantName: (input.merchantName || process.env.PLATFORM_BRAND_NAME || "Afyvia").slice(0, 30),
     RefNo: input.reference.replace(/[^a-zA-Z0-9-]/g, "").slice(0, 20),
     Amount: amount,
     TrxCode: input.transactionCode || "PB",
@@ -161,8 +161,8 @@ export async function queryTransactionStatus(transactionId: string) {
     IdentifierType: "4",
     ResultURL: command.resultUrl,
     QueueTimeOutURL: command.timeoutUrl,
-    Remarks: "Aether transaction verification",
-    Occasion: "AetherPaymentVerification",
+    Remarks: "Afyvia transaction verification",
+    Occasion: "AfyviaPaymentVerification",
   }, credentials);
 }
 
@@ -180,7 +180,7 @@ export async function requestReversal(input: { transactionId: string; amountKes:
     RecieverIdentifierType: "11",
     ResultURL: command.resultUrl,
     QueueTimeOutURL: command.timeoutUrl,
-    Remarks: (input.remarks || "Aether payment reversal").slice(0, 100),
-    Occasion: "AetherReversal",
+    Remarks: (input.remarks || "Afyvia payment reversal").slice(0, 100),
+    Occasion: "AfyviaReversal",
   }, credentials);
 }

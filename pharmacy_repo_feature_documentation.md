@@ -259,7 +259,7 @@ The database contains:
 
 Sessions store hashed tokens rather than plain session secrets.
 
-The application also uses an `aether_session_claim` JWT-style cookie for
+The application also uses an `afyvia_session_claim` JWT-style cookie for
 a fast authorization check in `proxy.ts`.
 
 ## 3.4 Route protection

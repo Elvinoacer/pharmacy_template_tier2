@@ -85,10 +85,10 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
         title,
         description:
           med.medicationMaster.description ||
-          `Buy ${med.medicationMaster.name} (${med.medicationMaster.genericName}) online in ${locationStr} at ${med.pharmacy?.name || "Aether"}. Check real-time stock, pricing, and fast delivery or pickup.`,
+          `Buy ${med.medicationMaster.name} (${med.medicationMaster.genericName}) online in ${locationStr} at ${med.pharmacy?.name || "Afyvia"}. Check real-time stock, pricing, and fast delivery or pickup.`,
         alternates: { canonical: `/p/${pharmacy.slug}/medicines/${med.slug}` },
         openGraph: {
-          title: `${med.medicationMaster.name} — ${med.pharmacy?.name || "Aether"}`,
+          title: `${med.medicationMaster.name} — ${med.pharmacy?.name || "Afyvia"}`,
           description: med.medicationMaster.description || `In stock at ${med.pharmacy?.name || "verified pharmacies"} in ${locationStr}.`,
           images: med.medicationMaster.imageUrl ? [med.medicationMaster.imageUrl] : undefined,
         },
@@ -107,13 +107,13 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     const first = listings[0];
     if (first) {
       return {
-        title: `${first.medicationMaster.name} — Price, Availability & Guidance | Aether`,
+        title: `${first.medicationMaster.name} — Price, Availability & Guidance | Afyvia`,
         description:
           first.medicationMaster.description ||
-          `Compare ${first.medicationMaster.name} availability across verified Aether pharmacies.`,
+          `Compare ${first.medicationMaster.name} availability across verified Afyvia pharmacies.`,
         alternates: { canonical: `/medicines/${slug}` },
         openGraph: {
-          title: `${first.medicationMaster.name} — Aether`,
+          title: `${first.medicationMaster.name} — Afyvia`,
           description: first.medicationMaster.description || "Compare live pharmacy availability.",
           images: first.medicationMaster.imageUrl ? [first.medicationMaster.imageUrl] : undefined,
         },
@@ -308,14 +308,14 @@ export default async function CategoryOrMedicinePage({ params }: Props) {
                     Compare genuine products with clear pharmacist guidance
                   </h2>
                   <p className="mt-2 text-sm leading-6 text-[var(--muted)] sm:text-base sm:leading-7">
-                    {cat.description || (pharmacy ? "Review available medicines from this pharmacy and check safety guidance before starting home treatment." : "Review available medicines across verified Aether pharmacies and check safety guidance before starting home treatment.")}
+                    {cat.description || (pharmacy ? "Review available medicines from this pharmacy and check safety guidance before starting home treatment." : "Review available medicines across verified Afyvia pharmacies and check safety guidance before starting home treatment.")}
                   </p>
 
                   <div className="mt-5 grid grid-cols-2 gap-2 sm:grid-cols-3">
                     {[
                       ["Listed", String(items.length), "products"],
                       ["Available", String(available), "in stock now"],
-                      ["Pharmacy", pharmacy?.name ?? "Aether network", pharmacy ? "live catalogue" : "verified pharmacies"],
+                      ["Pharmacy", pharmacy?.name ?? "Afyvia network", pharmacy ? "live catalogue" : "verified pharmacies"],
                     ].map(([label, value, note], index) => (
                       <div key={label} className={`rounded-2xl border border-[var(--line-2)] bg-[var(--card-elev)]/80 backdrop-blur-md p-3 ${index === 2 ? "col-span-2 sm:col-span-1" : ""}`}>
                         <span className="text-[10px] font-bold uppercase tracking-wide text-[var(--muted-2)]">{label}</span>
@@ -360,7 +360,7 @@ export default async function CategoryOrMedicinePage({ params }: Props) {
                 <div>
                   <p className="text-[10px] font-bold uppercase tracking-[.18em] text-[var(--brand)] sm:text-xs">Current verified inventory</p>
                   <h2 className="mt-1 text-xl font-semibold text-[var(--foreground)] sm:text-2xl" style={{ fontFamily: "var(--font-display), serif" }}>
-                    {pharmacy ? `${cat.name} available at ${pharmacy.name}` : `${cat.name} across Aether`}
+                    {pharmacy ? `${cat.name} available at ${pharmacy.name}` : `${cat.name} across Afyvia`}
                   </h2>
                   <p className="mt-1 max-w-2xl text-xs leading-relaxed text-[var(--muted)] sm:text-sm">
                     {pharmacy ? "Live stock and direct pricing verified by the pharmacy." : "Live stock and pricing reported by verified pharmacies. Confirm when you reserve."}

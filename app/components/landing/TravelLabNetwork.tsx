@@ -28,9 +28,9 @@ const R2 = "https://pub-cc07856d657b4a7197710051042b3eda.r2.dev";
 
 const FALLBACK_PHARMACIES: DirectoryPharmacy[] = [
   {
-    id: "aether-central",
-    slug: "aether",
-    name: "Aether Pharmacy",
+    id: "afyvia-central",
+    slug: "afyvia",
+    name: "Afyvia Pharmacy",
     tagline: "Your neighbourhood pharmacy, built on trust",
     description: "Dispensing excellence and personalised care in central Nairobi.",
     featured: true,
@@ -52,9 +52,9 @@ const FALLBACK_PHARMACIES: DirectoryPharmacy[] = [
     searchedMedicineCount: 0,
   },
   {
-    id: "aether-westlands",
-    slug: "aether-westlands",
-    name: "Aether Westlands Care",
+    id: "afyvia-westlands",
+    slug: "afyvia-westlands",
+    name: "Afyvia Westlands Care",
     tagline: "Modern healthcare & chronic refill management",
     description: "Serving the Westlands community with speedy doorstep delivery.",
     featured: true,
@@ -76,9 +76,9 @@ const FALLBACK_PHARMACIES: DirectoryPharmacy[] = [
     searchedMedicineCount: 0,
   },
   {
-    id: "aether-kilimani",
-    slug: "aether-kilimani",
-    name: "Aether Kilimani Pharmacy",
+    id: "afyvia-kilimani",
+    slug: "afyvia-kilimani",
+    name: "Afyvia Kilimani Pharmacy",
     tagline: "Family pharmacy and preventive clinic",
     description: "Your local destination for verified genuine pharmaceuticals.",
     featured: true,
@@ -129,7 +129,7 @@ export default function TravelLabNetwork({ pharmacies }: TravelLabNetworkProps) 
         /\D/g,
         ""
       )}?text=${encodeURIComponent(
-        `Hello ${activePharmacy.name}, I found you on Aether and would like to ask about a medicine or service.`
+        `Hello ${activePharmacy.name}, I found you on Afyvia and would like to ask about a medicine or service.`
       )}`
     : "https://wa.me/254790670542";
 

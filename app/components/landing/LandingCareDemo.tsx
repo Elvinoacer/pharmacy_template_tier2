@@ -94,7 +94,7 @@ export default function LandingCareDemo() {
           {/* Left Column: Headline, Subtitle, 3 Trust Indicators */}
           <div className="lg:col-span-4 xl:col-span-4">
             <p className="text-xs font-semibold uppercase tracking-[0.25em] text-[var(--brand)]">
-              Aether Care
+              Afyvia Care
             </p>
 
             <h2

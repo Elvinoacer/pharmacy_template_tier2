@@ -20,7 +20,7 @@ import styles from "@/app/components/onboard/OnboardSurface.module.css";
 
 export const dynamic = "force-dynamic";
 export const metadata = {
-  title: "Join as a pharmacy | Aether",
+  title: "Join as a pharmacy | Afyvia",
   description: "One clear journey from registration to verified pharmacy launch.",
 };
 

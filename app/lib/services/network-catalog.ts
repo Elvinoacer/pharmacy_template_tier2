@@ -16,6 +16,8 @@ export type NetworkPharmacySummary = {
   logoUrl: string | null;
   latitude?: number | null;
   longitude?: number | null;
+  phone?: string | null;
+  whatsapp?: string | null;
 };
 
 export type NetworkMedicineListing = {
@@ -30,6 +32,8 @@ export type NetworkMedicineListing = {
   prescriptionRequired: boolean;
   pharmacy: NetworkPharmacySummary;
   medicationMaster: {
+    id?: string;
+    slug?: string;
     name: string;
     description: string | null;
     category: string;
@@ -169,6 +173,8 @@ export async function listNetworkMedicineListings(opts?: {
           },
           medicationMaster: {
             select: {
+              id: true,
+              slug: true,
               name: true,
               description: true,
               category: true,
@@ -285,6 +291,8 @@ export async function listNetworkListingsForSlug(
         },
         medicationMaster: {
           select: {
+            id: true,
+            slug: true,
             name: true,
             description: true,
             category: true,
@@ -365,6 +373,8 @@ export async function listNetworkServiceListings(opts?: {
               logoUrl: true,
               latitude: true,
               longitude: true,
+              phone: true,
+              whatsapp: true,
             },
           },
         },
@@ -411,3 +421,78 @@ export async function listNetworkServiceListings(opts?: {
     return { services, selectedPharmacy };
   });
 }
+
+/** Network-wide offerings for one clinical service slug across all active, listed pharmacies. */
+export async function listNetworkServicesForSlug(
+  slug: string,
+  origin?: Coordinates | null,
+): Promise<NetworkServiceListing[]> {
+  return withPlatformBypass(async () => {
+    const normalized = slug.trim().toLowerCase();
+    if (!normalized) return [];
+
+    const rows = await prismaUnscoped.pharmacyService.findMany({
+      where: {
+        active: true,
+        pharmacy: QUALIFYING_PHARMACY_WHERE,
+        slug: normalized,
+      },
+      select: {
+        id: true,
+        slug: true,
+        title: true,
+        short: true,
+        description: true,
+        benefits: true,
+        eligibility: true,
+        duration: true,
+        imageUrl: true,
+        icon: true,
+        price: true,
+        bookable: true,
+        sortOrder: true,
+        pharmacy: {
+          select: {
+            id: true,
+            slug: true,
+            name: true,
+            city: true,
+            county: true,
+            logoUrl: true,
+            latitude: true,
+            longitude: true,
+            phone: true,
+            whatsapp: true,
+          },
+        },
+      },
+      orderBy: [{ sortOrder: "asc" }, { title: "asc" }],
+      take: 50,
+    });
+
+    const services: NetworkServiceListing[] = rows.map((row) => ({
+      id: row.id,
+      slug: row.slug,
+      href: `/p/${row.pharmacy.slug}/services/${row.slug}`,
+      title: row.title,
+      short: row.short,
+      description: row.description,
+      benefits: row.benefits || [],
+      eligibility: row.eligibility,
+      duration: row.duration,
+      imageUrl: row.imageUrl,
+      icon: row.icon,
+      price: priceNumber(row.price),
+      bookable: row.bookable,
+      sortOrder: row.sortOrder,
+      distanceKm: origin ? distanceKm(origin, row.pharmacy) : null,
+      pharmacy: row.pharmacy,
+    }));
+
+    if (origin) {
+      services.sort((a, b) => proximityOrder(a, b) || (a.price ?? 0) - (b.price ?? 0));
+    }
+    return services;
+  });
+}
+

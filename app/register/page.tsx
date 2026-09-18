@@ -24,7 +24,7 @@ export default async function RegisterPage({ searchParams }: { searchParams: Pro
   }
 
   return (
-    <div className={`${styles.registerSurface} aether-artwork-surface`}>
+    <div className={`${styles.registerSurface} afyvia-artwork-surface`}>
       <RegisterPanel action={registerAction} next={next} />
     </div>
   );

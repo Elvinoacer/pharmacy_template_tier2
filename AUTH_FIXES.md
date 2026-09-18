@@ -50,7 +50,7 @@ Three issues in `app/api/auth/google/callback/route.ts`:
 
 a) **No `email_verified` check** — anyone could create a Google account with
    someone else's email (unverified) and use it to take over an existing
-   Aether account.
+   Afyvia account.
 
 b) **`redirect_uri` derived from `request.url`** — breaks behind reverse
    proxies / serverless platforms where the inbound host differs from the
@@ -77,8 +77,8 @@ The `app/lib/session-claim.ts` module already existed with `signSessionClaim`
 and `verifySessionClaim` helpers, but was never wired up.
 
 **Fix:**
-- `createSession()` now signs and sets a `aether_session_claim` JWT cookie
-  alongside the opaque `aether_session` cookie.
+- `createSession()` now signs and sets a `afyvia_session_claim` JWT cookie
+  alongside the opaque `afyvia_session` cookie.
 - `proxy.ts` verifies the JWT claim for a fast DB-free check. If the JWT is
   missing or invalid but the session cookie exists, it falls through and lets
   the layout's `getSessionUser()` do the authoritative DB lookup.

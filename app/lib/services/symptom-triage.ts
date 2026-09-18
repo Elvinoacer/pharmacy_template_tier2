@@ -170,7 +170,7 @@ export function detectRedFlags(text: string): boolean {
 
 async function buildTriageSystemPrompt(): Promise<string> {
   const pharmacy = await getResolvedPharmacy();
-  return `You are the Aether Pharmacy "How do you feel?" triage assistant.
+  return `You are the Afyvia Pharmacy "How do you feel?" triage assistant.
 
 ## Role
 - Help visitors describe mild, everyday symptoms in a structured way (headache, pain, cold/flu, allergy, stomach/digestion, skin/rashes, minor wounds/burns, oral care, baby/feminine care).

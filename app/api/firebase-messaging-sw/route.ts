@@ -137,7 +137,7 @@ function doseNotificationOptions(title, body, data, url) {
     icon: icon,
     badge: BRAND_ICON,
     data: Object.assign({}, data || {}, { url: url, icon: icon, image: image || "" }),
-    tag: (data && data.tag) || "aether-pharmacy",
+    tag: (data && data.tag) || "afyvia-pharmacy",
     renotify: true,
     requireInteraction: isDoseNotification(data),
     silent: false,
@@ -184,7 +184,7 @@ if (firebaseConfig.apiKey && firebaseConfig.projectId && firebaseConfig.appId) {
       const title =
         (payload.notification && payload.notification.title) ||
         data.title ||
-        "Aether Pharmacy";
+        "Afyvia Pharmacy";
       const body =
         (payload.notification && payload.notification.body) ||
         data.body ||
@@ -264,7 +264,7 @@ async function focusOrOpen(url) {
       }
       // Fallback: post message so the open tab can route itself.
       try {
-        client.postMessage({ type: "aether:dose-navigate", url: target });
+        client.postMessage({ type: "afyvia:dose-navigate", url: target });
       } catch (e) { /* ignore */ }
       return client;
     }
@@ -332,7 +332,7 @@ self.addEventListener("notificationclick", function (event) {
             body: confirmBody,
             icon: resolveAsset(data.icon || BRAND_ICON),
             badge: BRAND_ICON,
-            tag: (data.tag || "aether-pharmacy") + "-ack",
+            tag: (data.tag || "afyvia-pharmacy") + "-ack",
             data: { url: targetUrl },
           };
           if (data.image) ackOpts.image = resolveAsset(data.image);
@@ -347,7 +347,7 @@ self.addEventListener("notificationclick", function (event) {
             clients.forEach(function (c) {
               try {
                 c.postMessage({
-                  type: "aether:dose-logged",
+                  type: "afyvia:dose-logged",
                   status: doseStatus,
                   prescriptionId: data.prescriptionId || "",
                 });
@@ -364,7 +364,7 @@ self.addEventListener("notificationclick", function (event) {
           body: "Complete the dose update in the app.",
           icon: resolveAsset(data.icon || BRAND_ICON),
           badge: BRAND_ICON,
-          tag: (data.tag || "aether-pharmacy") + "-ack",
+          tag: (data.tag || "afyvia-pharmacy") + "-ack",
           data: { url: deepLink },
         });
         await focusOrOpen(deepLink);

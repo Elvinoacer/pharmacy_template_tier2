@@ -11,9 +11,12 @@ import {
   Clock3,
   MapPin,
   MessageCircle,
+  Navigation,
   Phone,
   ShieldCheck,
 } from "lucide-react";
+import { getBrowseLocation } from "@/app/lib/browse-location";
+import { distanceKm, distanceLabel } from "@/app/lib/proximity";
 import CtaBanner from "../../components/CtaBanner";
 import { ServiceBookingForm } from "../../components/ServiceBookingForm";
 import {
@@ -29,6 +32,7 @@ import { prismaUnscoped } from "@/app/lib/db";
 import { acceptingCareRequests } from "@/app/lib/services/care-request-availability";
 import { redirect } from "next/navigation";
 import { loadStorefront } from "@/app/components/StorefrontGate";
+import NetworkServiceView from "../NetworkServiceView";
 import styles from "./ServiceDetail.module.css";
 
 type Props = { params: Promise<{ slug: string }> };
@@ -93,7 +97,25 @@ export default async function ServiceDetailPage({ params }: Props) {
       select: { pharmacy: { select: { slug: true } } }, take: 2,
     }));
     if (listings.length === 1) redirect(`/p/${listings[0].pharmacy.slug}/services/${slug}`);
-    return <div className="mx-auto max-w-xl px-6 py-16"><h1 className="text-2xl font-semibold">Find an available service</h1><p className="mt-3">Open a service listing to see the pharmacy and book your visit.</p><Link className="btn-primary mt-6 inline-flex" href="/services">Explore services</Link></div>;
+    if (listings.length > 1) {
+      return <NetworkServiceView slug={slug} />;
+    }
+    return (
+      <div className="mx-auto max-w-xl px-6 py-24 text-center">
+        <h1 className="text-2xl font-semibold text-[var(--foreground)]" style={{ fontFamily: "var(--font-display), serif" }}>
+          Service not currently available
+        </h1>
+        <p className="mt-3 text-sm text-[var(--muted)]">
+          Explore other verified clinical services or check back soon.
+        </p>
+        <Link
+          className="mt-6 inline-flex h-10 items-center justify-center rounded-2xl bg-[var(--brand)] px-5 text-xs font-bold text-[var(--background)] shadow-sm transition hover:brightness-95"
+          href="/services"
+        >
+          Explore all services
+        </Link>
+      </div>
+    );
   }
   return withPharmacy(tenant.pharmacyId, async () => {
   const pharmacy = await loadStorefront();
@@ -146,6 +168,12 @@ export default async function ServiceDetailPage({ params }: Props) {
     },
   };
 
+  const origin = await getBrowseLocation();
+  const userDistance =
+    origin && pharmacy.latitude != null && pharmacy.longitude != null
+      ? distanceKm(origin, { latitude: pharmacy.latitude, longitude: pharmacy.longitude })
+      : null;
+
   return (
     <div className={styles.page}>
       <script
@@ -173,6 +201,12 @@ export default async function ServiceDetailPage({ params }: Props) {
               <p className={styles.summary}>{service.short}</p>
 
               <div className={styles.metaRow} aria-label="Service summary">
+                {userDistance != null && (
+                  <span className={styles.metaPill}>
+                    <MapPin className="h-3.5 w-3.5 text-amber-500" aria-hidden="true" />
+                    {distanceLabel(userDistance)}
+                  </span>
+                )}
                 {service.duration && (
                   <span className={styles.metaPill}>
                     <Clock3 className="h-3.5 w-3.5" aria-hidden="true" />
@@ -195,7 +229,21 @@ export default async function ServiceDetailPage({ params }: Props) {
                 </span>
               </div>
 
-              <Link href={`/pharmacies/${pharmacy.slug}`} className="mt-5 inline-flex items-center gap-2 text-sm font-semibold text-[var(--brand)]">About {pharmacy.name} · contacts & directions <ArrowRight size={15} aria-hidden /></Link>
+              <div className="mt-4 flex flex-wrap items-center gap-3">
+                <Link href={`/pharmacies/${pharmacy.slug}`} className="inline-flex items-center gap-1.5 text-xs font-semibold text-[var(--brand)] hover:underline">
+                  About {pharmacy.name} <ArrowRight size={13} aria-hidden />
+                </Link>
+                {pharmacy.latitude != null && pharmacy.longitude != null && (
+                  <a
+                    href={`https://www.google.com/maps/dir/?api=1&destination=${pharmacy.latitude},${pharmacy.longitude}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-1 text-xs font-semibold text-[var(--muted)] hover:text-[var(--brand)]"
+                  >
+                    <Navigation className="h-3 w-3 text-teal-600" /> Get directions ↗
+                  </a>
+                )}
+              </div>
               <div className={styles.heroActions}>
                 {service.bookable ? (
                   <a href="#booking" className={styles.primaryAction}>

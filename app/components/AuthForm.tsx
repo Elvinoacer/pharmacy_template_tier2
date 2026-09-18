@@ -202,7 +202,7 @@ export default function AuthForm({
               </svg>
             </span>
             <span className="text-xl font-semibold text-[var(--foreground)]" style={{ fontFamily: "var(--font-display), serif" }}>
-              Aether
+              Afyvia
             </span>
           </Link>
           <h1

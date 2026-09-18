@@ -172,7 +172,7 @@ export function ratibaAccountReference(subscriptionId: string) {
 }
 
 export function ratibaStandingOrderName(subscriptionId: string) {
-  return `Aether-${subscriptionId.replace(/-/g, "").slice(0, 12)}`;
+  return `Afyvia-${subscriptionId.replace(/-/g, "").slice(0, 12)}`;
 }
 
 export async function createMonthlyRatibaStandingOrder(input: {
@@ -213,7 +213,7 @@ export async function createMonthlyRatibaStandingOrder(input: {
     PartyA: phone,
     CallBackURL: callback,
     AccountReference: ratibaAccountReference(input.subscriptionId),
-    TransactionDesc: "Aether monthly",
+    TransactionDesc: "Afyvia monthly",
     Frequency: Number.isFinite(frequency) && frequency > 0 ? frequency : 5,
   });
 }

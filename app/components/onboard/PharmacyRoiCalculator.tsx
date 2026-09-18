@@ -7,12 +7,12 @@ import Link from "next/link";
 export default function PharmacyRoiCalculator() {
   const [patients, setPatients] = useState(40);
   const avgRefillValue = 2500; // KES average chronic refill in Kenya
-  const monthlyAetherFee = 500; // KES 500/mo
+  const monthlyAfyviaFee = 500; // KES 500/mo
   const monthlyTurnover = patients * avgRefillValue;
   // Conservative 30% retention preservation from stopping silent churn
   const preservedMonthlyRevenue = Math.round(patients * 0.3 * avgRefillValue);
   const preservedAnnualRevenue = preservedMonthlyRevenue * 12;
-  const roiMultiplier = Math.round(preservedMonthlyRevenue / monthlyAetherFee);
+  const roiMultiplier = Math.round(preservedMonthlyRevenue / monthlyAfyviaFee);
 
   return (
     <section className="mt-6 rounded-2xl border border-[var(--line-2)] bg-gradient-to-br from-[var(--card)] via-[var(--card)] to-[var(--brand-soft)] p-4 sm:p-6 shadow-sm" aria-label="Pharmacy ROI and Retention Calculator">
@@ -133,7 +133,7 @@ export default function PharmacyRoiCalculator() {
             <div className="flex items-start gap-2 text-[var(--muted)]">
               <CheckCircle2 size={14} className="text-[var(--brand)] shrink-0 mt-0.5" />
               <span>
-                <strong>Just 1 saved refill (KES 2,500)</strong> pays for 5 full months of Aether.
+                <strong>Just 1 saved refill (KES 2,500)</strong> pays for 5 full months of Afyvia.
               </span>
             </div>
           </div>

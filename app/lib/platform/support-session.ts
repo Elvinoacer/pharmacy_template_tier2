@@ -6,8 +6,8 @@ import { STAFF_PHARMACY_COOKIE } from "@/app/lib/tenant-context";
 import { recordAuditRequired } from "@/app/lib/platform/audit";
 import { getRequestMeta } from "@/app/lib/env";
 
-export const SUPPORT_SESSION_COOKIE = "aether_support_session";
-export const IMPERSONATION_COOKIE = "aether_impersonation";
+export const SUPPORT_SESSION_COOKIE = "afyvia_support_session";
+export const IMPERSONATION_COOKIE = "afyvia_impersonation";
 
 export async function startSupportSession(opts: {
   adminId: string;

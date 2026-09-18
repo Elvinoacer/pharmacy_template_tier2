@@ -129,7 +129,7 @@ export function AdminAdherenceCommandCenter({
       );
     } else if (templateKey === "refill_overdue") {
       setCustomOutreachText(
-        `Hello ${name}, your refill for ${med} is overdue. Staying consistent on your therapy is important. Order your refill online at https://aetherpharmacy.com/portal/refills or reply to this message for free delivery.`
+        `Hello ${name}, your refill for ${med} is overdue. Staying consistent on your therapy is important. Order your refill online at https://afyviapharmacy.com/portal/refills or reply to this message for free delivery.`
       );
     } else if (templateKey === "med_sync_invite") {
       setCustomOutreachText(

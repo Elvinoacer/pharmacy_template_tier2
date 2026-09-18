@@ -4,8 +4,8 @@
  */
 import { SignJWT, jwtVerify } from "jose";
 
-export const SESSION_COOKIE = "aether_session";
-export const SESSION_CLAIM_COOKIE = "aether_session_claim";
+export const SESSION_COOKIE = "afyvia_session";
+export const SESSION_CLAIM_COOKIE = "afyvia_session_claim";
 
 export type SessionClaim = {
   sub: string;

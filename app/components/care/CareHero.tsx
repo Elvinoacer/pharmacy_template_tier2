@@ -32,7 +32,7 @@ export default function CareHero({
     <section className={styles.hero}>
       <div className={styles.heroCopy}>
         <Link href="/" className={styles.crumb}>
-          Aether / Your care, connected
+          Afyvia / Your care, connected
         </Link>
         <p className={styles.kicker}>{eyebrow}</p>
         <h1>

@@ -38,14 +38,14 @@ export type NetworkPublicPharmacy = {
 };
 
 type GlobalNetworkDb = typeof globalThis & {
-  __aether_network_pharmacy_pool?: Pool;
+  __afyvia_network_pharmacy_pool?: Pool;
 };
 
 const globalNetworkDb = globalThis as GlobalNetworkDb;
 
 function getNetworkPool(): Pool {
-  if (globalNetworkDb.__aether_network_pharmacy_pool) {
-    return globalNetworkDb.__aether_network_pharmacy_pool;
+  if (globalNetworkDb.__afyvia_network_pharmacy_pool) {
+    return globalNetworkDb.__afyvia_network_pharmacy_pool;
   }
 
   const connectionString = process.env.DATABASE_URL;
@@ -64,7 +64,7 @@ function getNetworkPool(): Pool {
     allowExitOnIdle: true,
   });
 
-  globalNetworkDb.__aether_network_pharmacy_pool = pool;
+  globalNetworkDb.__afyvia_network_pharmacy_pool = pool;
   return pool;
 }
 

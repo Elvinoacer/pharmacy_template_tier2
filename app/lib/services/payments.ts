@@ -356,7 +356,7 @@ export const initiatePharmacyDarajaPayment = initiateStkPayment;
 
 /**
  * Customer commerce orders cannot be routed through IntaSend.
- * Disallowed by Aether payment architecture invariant.
+ * Disallowed by Afyvia payment architecture invariant.
  */
 export async function createIntasendOrderCheckout(_opts: {
   orderId: string;

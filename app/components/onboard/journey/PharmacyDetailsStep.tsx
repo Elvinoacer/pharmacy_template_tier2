@@ -74,7 +74,7 @@ export function PharmacyDetailsStep({
   useEffect(() => {
     if (typeof window !== "undefined" && city) {
       window.dispatchEvent(
-        new CustomEvent("aether-onboard-sync", {
+        new CustomEvent("afyvia-onboard-sync", {
           detail: { city },
         }),
       );

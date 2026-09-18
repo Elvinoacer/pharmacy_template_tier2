@@ -13,13 +13,13 @@ interface FaqItem {
 const FAQS: FaqItem[] = [
   {
     category: "patients",
-    q: "How does Aether verify that pharmacies are licensed and safe?",
-    a: "Every pharmacy listed on Aether must submit a valid Pharmacy and Poisons Board (PPB) premise registration number, superintendent pharmacist credentials, and proof of proper cold-chain refrigeration. Superadmins inspect and verify each record before any storefront goes live.",
+    q: "How does Afyvia verify that pharmacies are licensed and safe?",
+    a: "Every pharmacy listed on Afyvia must submit a valid Pharmacy and Poisons Board (PPB) premise registration number, superintendent pharmacist credentials, and proof of proper cold-chain refrigeration. Superadmins inspect and verify each record before any storefront goes live.",
   },
   {
     category: "patients",
     q: "Can I use one patient account across multiple different pharmacies in Kenya?",
-    a: "Yes! Your Aether account is universal across the entire network. When you move between neighborhoods or cities (e.g. Nairobi to Mombasa), your medication history, allergies, and refill reminders travel with you securely while each independent pharmacy remains in control of its local dispensing.",
+    a: "Yes! Your Afyvia account is universal across the entire network. When you move between neighborhoods or cities (e.g. Nairobi to Mombasa), your medication history, allergies, and refill reminders travel with you securely while each independent pharmacy remains in control of its local dispensing.",
   },
   {
     category: "patients",
@@ -33,18 +33,18 @@ const FAQS: FaqItem[] = [
   },
   {
     category: "payments",
-    q: "Are there extra hidden fees when ordering through Aether?",
+    q: "Are there extra hidden fees when ordering through Afyvia?",
     a: "No. Medicine prices are set directly by each pharmacy at standard retail counter rates. There are zero surprise service fees or platform commissions charged to patients.",
   },
   {
     category: "owners",
-    q: "How does an independent pharmacy join the Aether Network?",
+    q: "How does an independent pharmacy join the Afyvia Network?",
     a: "You can start your application online in under 3 minutes at /onboard. Submit your legal entity name, PPB premise number, and location. Our compliance team will review your application within 1 to 2 business days and help you configure your digital storefront.",
   },
   {
     category: "owners",
-    q: "Does Aether take over my pharmacy branding or customer relationships?",
-    a: "Never. Aether provides the digital rails — your pharmacy keeps its own brand, logo, hours, WhatsApp number, M-Pesa till, and direct customer relationships. You gain access to our unified patient network, refill management tools, and analytics dashboard.",
+    q: "Does Afyvia take over my pharmacy branding or customer relationships?",
+    a: "Never. Afyvia provides the digital rails — your pharmacy keeps its own brand, logo, hours, WhatsApp number, M-Pesa till, and direct customer relationships. You gain access to our unified patient network, refill management tools, and analytics dashboard.",
   },
 ];
 

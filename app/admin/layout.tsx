@@ -84,7 +84,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
   let impersonatedName: string | null = null;
   try {
     const jar = await cookies();
-    const marker = jar.get("aether_impersonation")?.value;
+    const marker = jar.get("afyvia_impersonation")?.value;
     if (marker && user.platformAdmin) {
       const row = await prismaUnscoped.pharmacy.findUnique({
         where: { id: marker },

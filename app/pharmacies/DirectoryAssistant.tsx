@@ -94,7 +94,7 @@ export default function DirectoryAssistant() {
             <p className="flex items-center gap-1.5 text-[9px] font-bold uppercase tracking-[0.17em] text-[var(--brand)] sm:text-[10px]">
               <Sparkles className="h-3 w-3" aria-hidden /> Directory assistant
             </p>
-            <h2 className="mt-1 text-lg font-bold tracking-[-0.02em] text-[var(--foreground)] sm:text-xl">Ask Aether</h2>
+            <h2 className="mt-1 text-lg font-bold tracking-[-0.02em] text-[var(--foreground)] sm:text-xl">Ask Afyvia</h2>
           </div>
           <span className="inline-flex shrink-0 items-center gap-1.5 rounded-full border border-[var(--line)] bg-[var(--brand-soft)] px-2.5 py-1 text-[9px] font-bold text-[var(--brand-deep)]">
             <span className="h-1.5 w-1.5 rounded-full bg-[var(--success)]" aria-hidden /> Live listings
@@ -102,7 +102,7 @@ export default function DirectoryAssistant() {
         </div>
 
         <p className="mt-2 max-w-2xl text-xs leading-5 text-[var(--muted)] sm:text-sm">
-          Describe what you need naturally. Aether checks public listings, visible stock and service signals.
+          Describe what you need naturally. Afyvia checks public listings, visible stock and service signals.
         </p>
       </div>
 
@@ -113,13 +113,13 @@ export default function DirectoryAssistant() {
           void ask();
         }}
       >
-        <label htmlFor="aether-directory-query" className="sr-only">
-          Ask Aether about pharmacies
+        <label htmlFor="afyvia-directory-query" className="sr-only">
+          Ask Afyvia about pharmacies
         </label>
         <div className="relative">
           <Search className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-[var(--brand)]" aria-hidden />
           <input
-            id="aether-directory-query"
+            id="afyvia-directory-query"
             value={query}
             onChange={(event) => setQuery(event.target.value)}
             placeholder="Panadol near Westlands"
@@ -135,7 +135,7 @@ export default function DirectoryAssistant() {
                 setErrorMessage("");
                 setResults([]);
               }}
-              aria-label="Clear Aether search"
+              aria-label="Clear Afyvia search"
               className="absolute right-2.5 top-1/2 flex h-7 w-7 -translate-y-1/2 items-center justify-center rounded-lg text-[var(--muted)] transition hover:bg-[var(--brand-soft)] hover:text-[var(--foreground)]"
             >
               <X className="h-3.5 w-3.5" aria-hidden />
@@ -149,7 +149,7 @@ export default function DirectoryAssistant() {
           className="mt-2 inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-xl bg-[var(--brand)] px-4 text-sm font-bold text-[var(--background)] shadow-sm transition hover:brightness-95 disabled:cursor-not-allowed disabled:opacity-50"
         >
           <Sparkles className={`h-4 w-4 ${loading ? "animate-pulse" : ""}`} aria-hidden />
-          {loading ? "Checking the network…" : "Ask Aether"}
+          {loading ? "Checking the network…" : "Ask Afyvia"}
         </button>
       </form>
 
@@ -202,14 +202,14 @@ export default function DirectoryAssistant() {
           className="relative mt-4 rounded-2xl border border-[var(--line)] bg-[var(--card-elev)] p-3.5"
         >
           <p className="text-[10px] font-bold uppercase tracking-[0.12em] text-[var(--brand-deep)]">
-            {source === "ai" ? "Aether summary" : "Live directory result"}
+            {source === "ai" ? "Afyvia summary" : "Live directory result"}
           </p>
           <p className="mt-1.5 text-xs leading-5 text-[var(--foreground)] sm:text-sm">{answer}</p>
         </div>
       )}
 
       {results.length > 0 && (
-        <div className="relative mt-3 space-y-2" role="list" aria-label="Aether pharmacy matches">
+        <div className="relative mt-3 space-y-2" role="list" aria-label="Afyvia pharmacy matches">
           {results.slice(0, 6).map((result) => (
             <Link
               key={result.slug}

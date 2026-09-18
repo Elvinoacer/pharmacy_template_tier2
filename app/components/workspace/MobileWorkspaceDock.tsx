@@ -75,9 +75,9 @@ export function MobileWorkspaceDock({
       {/* Bottom Workspace Dock (4 Primary Tabs + More Sheet) */}
       <nav
         aria-label="Mobile workspace dock"
-        className="aether-mobile-dock lg:hidden"
+        className="afyvia-mobile-dock lg:hidden"
       >
-        <div className="aether-mobile-dock-inner">
+        <div className="afyvia-mobile-dock-inner">
           {/* 4 Primary Tabs */}
           {primaryGroups.map((group) => {
             const isRouteActive = activeGroupId === group.id;
@@ -97,18 +97,18 @@ export function MobileWorkspaceDock({
                 key={group.id}
                 href={targetHref}
                 onClick={() => startNavigation(targetHref, group.label)}
-                className={`aether-dock-item ${isRouteActive ? "active" : ""} ${isPending ? "is-navigating-pending" : ""}`}
+                className={`afyvia-dock-item ${isRouteActive ? "active" : ""} ${isPending ? "is-navigating-pending" : ""}`}
                 aria-current={isRouteActive ? "page" : undefined}
               >
                 <span className="relative inline-flex items-center justify-center">
                   <WorkspaceIcon name={group.icon} size={20} />
                   {badgeCount > 0 && (
-                    <span className="aether-dock-badge">
+                    <span className="afyvia-dock-badge">
                       {formatBadgeCount(badgeCount)}
                     </span>
                   )}
                 </span>
-                <span className="aether-dock-label">{group.shortLabel}</span>
+                <span className="afyvia-dock-label">{group.shortLabel}</span>
               </Link>
             );
           })}
@@ -120,12 +120,12 @@ export function MobileWorkspaceDock({
             aria-expanded={sheetOpen}
             aria-haspopup="dialog"
             aria-label="More workspaces and settings"
-            className={`aether-dock-item ${
+            className={`afyvia-dock-item ${
               secondaryGroups.some((g) => g.id === activeGroupId) ? "active" : ""
             }`}
           >
             <MoreHorizontal size={20} />
-            <span className="aether-dock-label">More</span>
+            <span className="afyvia-dock-label">More</span>
           </button>
         </div>
       </nav>
@@ -135,7 +135,7 @@ export function MobileWorkspaceDock({
         ref={sheetRef}
         closedby="any"
         aria-label="More workspaces and actions"
-        className="aether-mobile-sheet"
+        className="afyvia-mobile-sheet"
         onClose={() => setSheetOpen(false)}
         onClick={(e) => {
           const rect = e.currentTarget.getBoundingClientRect();
@@ -147,20 +147,20 @@ export function MobileWorkspaceDock({
           if (!clickedInDialog) closeSheet();
         }}
       >
-        <div className="aether-mobile-sheet-content">
-          <div className="aether-mobile-sheet-header">
+        <div className="afyvia-mobile-sheet-content">
+          <div className="afyvia-mobile-sheet-header">
             <div className="min-w-0 flex-1">
               <h2 className="text-base font-semibold text-[var(--admin-text)]">
                 More Workspaces
               </h2>
               <p className="text-xs text-[var(--admin-text-muted)]">
-                {brand?.name || "Aether Workspace"}
+                {brand?.name || "Afyvia Workspace"}
               </p>
             </div>
             <button
               type="button"
               onClick={closeSheet}
-              className="aether-mobile-sheet-close"
+              className="afyvia-mobile-sheet-close"
               aria-label="Close sheet"
             >
               <X size={18} />
@@ -185,13 +185,13 @@ export function MobileWorkspaceDock({
               className="w-full flex items-center gap-2.5 px-3 py-2 rounded-xl bg-[var(--admin-hover)] text-xs font-semibold text-[var(--admin-text)] border border-[var(--admin-border)] cursor-pointer"
             >
               <Search size={15} className="text-[var(--admin-accent)] shrink-0" />
-              <span className="flex-1 text-left">Search or ask Aether…</span>
+              <span className="flex-1 text-left">Search or ask Afyvia…</span>
               <kbd className="px-1.5 py-0.5 rounded bg-[var(--admin-panel)] text-[10px] text-[var(--admin-text-soft)] border border-[var(--admin-border)]">⌘K</kbd>
             </button>
           </div>
 
           {/* Secondary Groups & Pages */}
-          <div className="aether-mobile-sheet-body">
+          <div className="afyvia-mobile-sheet-body">
             {/* Show all groups and destinations in a clean grouped list */}
             {groups.map((group) => {
               const dests = getDestinationsForGroup(role, group.id, user);
@@ -216,7 +216,7 @@ export function MobileWorkspaceDock({
                             startNavigation(dest.href, dest.label);
                             closeSheet();
                           }}
-                          className={`aether-sheet-link ${isItemActive ? "active" : ""} ${isPending ? "is-navigating-pending" : ""}`}
+                          className={`afyvia-sheet-link ${isItemActive ? "active" : ""} ${isPending ? "is-navigating-pending" : ""}`}
                         >
                           <WorkspaceIcon name={dest.icon} size={16} />
                           <span className="truncate flex-1">{dest.label}</span>
@@ -231,7 +231,7 @@ export function MobileWorkspaceDock({
           </div>
 
           {/* Sheet Footer: Storefront, Theme, Logout */}
-          <div className="aether-mobile-sheet-footer">
+          <div className="afyvia-mobile-sheet-footer">
             <div className="flex items-center justify-between gap-3 mb-3">
               {brand?.slug && (
                 <Link

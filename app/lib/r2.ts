@@ -83,7 +83,7 @@ function privateStorageEncryptionKey(): Buffer | null {
   const secret = process.env.AUTH_SECRET?.trim() || process.env.NEXTAUTH_SECRET?.trim();
   if (!secret) return null;
   return createHmac("sha256", secret)
-    .update("aether/private-r2-storage-encryption/v1")
+    .update("afyvia/private-r2-storage-encryption/v1")
     .digest();
 }
 
@@ -466,7 +466,7 @@ export async function uploadPrivateImageToR2(
     Body: body,
     ContentType: config.encrypted ? "application/octet-stream" : validated.contentType,
     CacheControl: "private, no-store, max-age=0",
-    Metadata: config.encrypted ? { "aether-private-encrypted": "aes-256-gcm-v1" } : undefined,
+    Metadata: config.encrypted ? { "afyvia-private-encrypted": "aes-256-gcm-v1" } : undefined,
   }));
   return { key, reference: `${PRIVATE_PREFIX}${key}`, contentType: validated.contentType, size: validated.size };
 }

@@ -13,7 +13,7 @@ const REVIEWS = [
   {
     name: "Dr. Faith Mwangi",
     location: "Kilimani, Nairobi",
-    quote: "With Aether, my mother’s regular chemist receives her chronic refills automatically and delivers straight to her doorstep.",
+    quote: "With Afyvia, my mother’s regular chemist receives her chronic refills automatically and delivers straight to her doorstep.",
   },
   {
     name: "David Otieno",
@@ -23,7 +23,7 @@ const REVIEWS = [
   {
     name: "Dr. Kamau Karanja",
     location: "Westlands, Nairobi",
-    quote: "Aether gives our pharmacy digital scale without taking away our brand or patient relationships.",
+    quote: "Afyvia gives our pharmacy digital scale without taking away our brand or patient relationships.",
   },
 ];
 

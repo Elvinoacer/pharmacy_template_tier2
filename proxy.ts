@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
 import { verifySessionClaim, claimIsStaff, isSafeInternalPath } from '@/app/lib/session-claim'
 
-const PUBLIC_PHARMACY_COOKIE = 'aether_pharmacy'
+const PUBLIC_PHARMACY_COOKIE = 'afyvia_pharmacy'
 const PUBLIC_SLUG_RE = /^[a-z0-9][a-z0-9-]{1,60}$/i
 
 function publicPharmacyCookie() {
@@ -90,7 +90,7 @@ export async function proxy(request: NextRequest) {
     requestHeaders.set('x-platform-bypass', '1')
   }
 
-  const staffPharmacy = request.cookies.get('aether_staff_pharmacy')?.value
+  const staffPharmacy = request.cookies.get('afyvia_staff_pharmacy')?.value
   if (
     staffPharmacy &&
     (pathname.startsWith('/admin') || pathname.startsWith('/api/admin'))
@@ -124,8 +124,8 @@ export async function proxy(request: NextRequest) {
     return NextResponse.next({ request: { headers: requestHeaders } })
   }
 
-  const claimCookie = request.cookies.get('aether_session_claim')?.value
-  const sessionCookie = request.cookies.get('aether_session')?.value
+  const claimCookie = request.cookies.get('afyvia_session_claim')?.value
+  const sessionCookie = request.cookies.get('afyvia_session')?.value
 
   if (!claimCookie && !sessionCookie) {
     const loginUrl = new URL(`/login?next=${encodeURIComponent(pathname + request.nextUrl.search)}`, request.url)

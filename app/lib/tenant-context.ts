@@ -1,6 +1,6 @@
 import { AsyncLocalStorage, createHook, executionAsyncId } from "node:async_hooks";
-export const STAFF_PHARMACY_COOKIE = "aether_staff_pharmacy";
-export const PUBLIC_PHARMACY_COOKIE = "aether_pharmacy";
+export const STAFF_PHARMACY_COOKIE = "afyvia_staff_pharmacy";
+export const PUBLIC_PHARMACY_COOKIE = "afyvia_pharmacy";
 
 export const ZERO_UUID = "00000000-0000-0000-0000-000000000000";
 
@@ -11,21 +11,21 @@ export type TenantStore = {
 };
 
 const globalTenant = globalThis as unknown as {
-  __aether_tenant_als?: AsyncLocalStorage<TenantStore>;
-  __aether_tenant_scopes?: Map<number, TenantStore>;
-  __aether_tenant_hook?: boolean;
+  __afyvia_tenant_als?: AsyncLocalStorage<TenantStore>;
+  __afyvia_tenant_scopes?: Map<number, TenantStore>;
+  __afyvia_tenant_hook?: boolean;
 };
 
 export const tenantAls: AsyncLocalStorage<TenantStore> =
-  globalTenant.__aether_tenant_als ??
-  (globalTenant.__aether_tenant_als = new AsyncLocalStorage<TenantStore>());
+  globalTenant.__afyvia_tenant_als ??
+  (globalTenant.__afyvia_tenant_als = new AsyncLocalStorage<TenantStore>());
 
 const scopes: Map<number, TenantStore> =
-  globalTenant.__aether_tenant_scopes ??
-  (globalTenant.__aether_tenant_scopes = new Map<number, TenantStore>());
+  globalTenant.__afyvia_tenant_scopes ??
+  (globalTenant.__afyvia_tenant_scopes = new Map<number, TenantStore>());
 
-if (!globalTenant.__aether_tenant_hook) {
-  globalTenant.__aether_tenant_hook = true;
+if (!globalTenant.__afyvia_tenant_hook) {
+  globalTenant.__afyvia_tenant_hook = true;
   createHook({
     init(asyncId, _type, triggerAsyncId) {
       const scope = scopes.get(triggerAsyncId);

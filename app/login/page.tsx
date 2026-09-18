@@ -31,9 +31,12 @@ export default async function LoginPage({
   }
 
   return (
-    <div className="aether-login-page aether-artwork-surface aether-route-surface">
+    <div data-auth-artwork="true" className="afyvia-login-page afyvia-artwork-surface afyvia-route-surface">
       {verified ? (
-        <div className="mx-auto mb-4 flex w-full max-w-xl items-start gap-3 rounded-2xl border border-emerald-500/25 bg-emerald-500/10 px-4 py-3 text-sm text-emerald-950 dark:text-emerald-100" role="status">
+        <div
+          className="mx-auto mb-4 flex w-full max-w-xl items-start gap-3 rounded-2xl border border-emerald-500/25 bg-emerald-500/10 px-4 py-3 text-sm text-emerald-950 dark:text-emerald-100"
+          role="status"
+        >
           <CheckCircle2 className="mt-0.5 h-5 w-5 shrink-0" aria-hidden />
           <div>
             <p className="font-bold">Email verified successfully.</p>
@@ -64,7 +67,10 @@ export default async function LoginPage({
           <>
             <p>
               No account?{" "}
-              <Link href={next ? `/register?next=${encodeURIComponent(next)}` : "/register"} className="font-semibold text-[var(--brand)] hover:underline">
+              <Link
+                href={next ? `/register?next=${encodeURIComponent(next)}` : "/register"}
+                className="font-semibold text-[var(--brand)] hover:underline"
+              >
                 Create one
               </Link>
             </p>
@@ -75,13 +81,28 @@ export default async function LoginPage({
             </p>
             {process.env.SHOW_DEMO_CREDENTIALS === "1" && (
               <p className="mt-4 rounded-2xl border border-[var(--line)] bg-[var(--surface-sunken)] px-3 py-2.5 text-xs leading-relaxed text-[var(--muted)]">
-                Demo password for all: <code className="rounded bg-[var(--card)] px-1 py-0.5 text-[11px] text-[var(--foreground)] border border-[var(--line)]">Password123!</code>
+                Demo password for all:{" "}
+                <code className="rounded bg-[var(--card)] px-1 py-0.5 text-[11px] text-[var(--foreground)] border border-[var(--line)]">
+                  Password123!
+                </code>
                 <br />
-                Super-admin <code className="rounded bg-[var(--card)] px-1 py-0.5 text-[11px] text-[var(--foreground)] border border-[var(--line)]">platform@aether.health</code> → /platform
+                Super-admin{" "}
+                <code className="rounded bg-[var(--card)] px-1 py-0.5 text-[11px] text-[var(--foreground)] border border-[var(--line)]">
+                  platform@afyvia.health
+                </code>{" "}
+                → /platform
                 <br />
-                Pharmacy manager <code className="rounded bg-[var(--card)] px-1 py-0.5 text-[11px] text-[var(--foreground)] border border-[var(--line)]">manager@aetherpharmacy.com</code> → /admin
+                Pharmacy manager{" "}
+                <code className="rounded bg-[var(--card)] px-1 py-0.5 text-[11px] text-[var(--foreground)] border border-[var(--line)]">
+                  manager@afyviapharmacy.com
+                </code>{" "}
+                → /admin
                 <br />
-                Patient <code className="rounded bg-[var(--card)] px-1 py-0.5 text-[11px] text-[var(--foreground)] border border-[var(--line)]">jane@example.com</code> → /portal
+                Patient{" "}
+                <code className="rounded bg-[var(--card)] px-1 py-0.5 text-[11px] text-[var(--foreground)] border border-[var(--line)]">
+                  jane@example.com
+                </code>{" "}
+                → /portal
               </p>
             )}
           </>

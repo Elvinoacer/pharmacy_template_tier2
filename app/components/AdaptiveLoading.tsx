@@ -36,7 +36,7 @@ export default function AdaptiveLoading({
           {title ? (
             <div>
               <p className="text-[11px] font-bold uppercase tracking-wider text-[var(--admin-accent-text,#0d6e5a)]">
-                {eyebrow || "Aether Workspace"}
+                {eyebrow || "Afyvia Workspace"}
               </p>
               <h2 className="mt-1 text-2xl font-bold tracking-tight text-[var(--admin-text,#0c1a14)]">
                 {title}

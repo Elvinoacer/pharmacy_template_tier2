@@ -41,7 +41,7 @@ function mockSession(
   };
 }
 
-describe("Aether Command Workspace Navigation Architecture", () => {
+describe("Afyvia Command Workspace Navigation Architecture", () => {
   describe("1. Workspace Group Hierarchy & Rail Boundaries", () => {
     const roles: WorkspaceRole[] = ["admin", "platform", "portal", "caregiver"];
 
@@ -242,7 +242,7 @@ describe("Aether Command Workspace Navigation Architecture", () => {
     });
   });
 
-  describe("4. Aether Command Center Deterministic Intent Matching", () => {
+  describe("4. Afyvia Command Center Deterministic Intent Matching", () => {
     it("handles 'update Panadol stock' by navigating directly to inventory with query", () => {
       const managerUser = mockSession("manager");
       const results = searchWorkspace("update Panadol stock", "admin", managerUser);

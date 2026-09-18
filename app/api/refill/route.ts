@@ -238,7 +238,7 @@ async function submitRefill(raw: Record<string, unknown>) {
 
   if (parsed.data.prescriptionPhoto) {
     if (!targetCustomerId) {
-      const guestEmail = `guest-${randomUUID()}@guest.aether.internal`;
+      const guestEmail = `guest-${randomUUID()}@guest.afyvia.internal`;
       const u = await prisma.user.create({
         data: {
           email: guestEmail,

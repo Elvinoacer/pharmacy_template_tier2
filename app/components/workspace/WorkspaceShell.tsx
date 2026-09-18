@@ -67,12 +67,12 @@ export function WorkspaceShell({
   const currentGroup = groups.find((g) => g.id === currentDest?.groupId);
 
   const defaultBrand = {
-    name: brand?.name || user.memberships?.[0]?.name || "Aether Health",
+    name: brand?.name || user.memberships?.[0]?.name || "Afyvia Health",
     slug:
       brand?.slug !== undefined
         ? brand.slug
         : user.memberships?.[0]?.slug || null,
-    network: brand?.network || "Aether Pharmacy Network",
+    network: brand?.network || "Afyvia Pharmacy Network",
   };
 
   const commandPlaceholder =
@@ -88,7 +88,7 @@ export function WorkspaceShell({
     <TenantBrandProvider value={defaultBrand}>
       <NavigationProgressProvider>
         <div
-          className="aether-workspace-root min-h-screen shell-grid-admin admin-workspace"
+          className="afyvia-workspace-root min-h-screen shell-grid-admin admin-workspace"
           data-role={role}
           data-theme={theme.hydrated ? theme.resolved : undefined}
           data-admin-theme={theme.hydrated ? theme.resolved : undefined}

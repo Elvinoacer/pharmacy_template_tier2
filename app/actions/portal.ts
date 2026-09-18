@@ -337,7 +337,7 @@ export async function inviteCaregiverAction(formData: FormData) {
     channel: "email",
     recipient: { email: caregiver.caregiverEmail },
     subject: `${user.fullName || "A patient"} invited you to be their caregiver`,
-    body: `Hi ${caregiver.caregiverName},\n\n${user.fullName || "A patient"} has invited you to be their caregiver on Aether Pharmacy. As a caregiver, you can:\n\n- Request refills on their behalf\n- Receive pickup notifications\n- View their medication schedule\n\nClick the link below to accept the invitation and set up your account:\n\n${inviteUrl}\n\nThis link expires in 7 days.\n\n— Aether Pharmacy`,
+    body: `Hi ${caregiver.caregiverName},\n\n${user.fullName || "A patient"} has invited you to be their caregiver on Afyvia Pharmacy. As a caregiver, you can:\n\n- Request refills on their behalf\n- Receive pickup notifications\n- View their medication schedule\n\nClick the link below to accept the invitation and set up your account:\n\n${inviteUrl}\n\nThis link expires in 7 days.\n\n— Afyvia Pharmacy`,
   });
 
   await prisma.caregiver.update({

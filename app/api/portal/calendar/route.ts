@@ -19,7 +19,7 @@ export async function GET(req: Request) {
       return new Response(ics, {
         headers: {
           "Content-Type": "text/calendar; charset=utf-8",
-          "Content-Disposition": `attachment; filename="aether-medications-${user.customerId.slice(0, 8)}.ics"`,
+          "Content-Disposition": `attachment; filename="afyvia-medications-${user.customerId.slice(0, 8)}.ics"`,
         },
       });
     } catch (err) {

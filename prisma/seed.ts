@@ -158,12 +158,12 @@ async function main() {
 
   const password = await hash("Password123!");
 
-  const AETHER_ID = "00000000-0000-4000-a000-000000000001";
+  const AFYVIA_ID = "00000000-0000-4000-a000-000000000001";
   const COAST_ID = "00000000-0000-4000-a000-000000000002";
 
   const platformAdmin = await prisma.user.create({
     data: {
-      email: "platform@aether.health",
+      email: "platform@afyvia.health",
       passwordHash: password,
       role: "manager",
       emailVerified: true,
@@ -173,15 +173,15 @@ async function main() {
     },
   });
 
-  const aether = await prisma.pharmacy.create({
+  const afyvia = await prisma.pharmacy.create({
     data: {
-      id: AETHER_ID,
-      slug: "aether",
-      name: "Aether Pharmacy",
-      legalName: "Aether Pharmacy Ltd",
+      id: AFYVIA_ID,
+      slug: "afyvia",
+      name: "Afyvia Pharmacy",
+      legalName: "Afyvia Pharmacy Ltd",
       tagline: "Your neighbourhood pharmacy, built on trust",
       description:
-        "Aether Pharmacy has served families across Nairobi for over 15 years with expert dispensing, personalised counselling, and convenient care services.",
+        "Afyvia Pharmacy has served families across Nairobi for over 15 years with expert dispensing, personalised counselling, and convenient care services.",
       licenseNumber: "PPB-DEMO-0001",
       status: "active",
       lifecycleStatus: "active",
@@ -200,7 +200,7 @@ async function main() {
       setupCompletedAt: new Date(),
       settings: {
         create: {
-          displayName: "Aether Pharmacy",
+          displayName: "Afyvia Pharmacy",
           phone: "+254790670542",
           email: "support@gtss.software",
           whatsapp: "+254790670542",
@@ -228,7 +228,7 @@ async function main() {
       lifecycleStatus: "active",
       listed: true,
       featured: false,
-      email: "coast@aether.health",
+      email: "coast@afyvia.health",
       phone: "+254722000222",
       city: "Mombasa",
       county: "Mombasa",
@@ -239,14 +239,14 @@ async function main() {
         create: {
           displayName: "Coast Care Pharmacy",
           phone: "+254722000222",
-          email: "coast@aether.health",
+          email: "coast@afyvia.health",
           city: "Mombasa",
           state: "Mombasa",
           country: "Kenya",
           about:
             "Coast Care has served families around Moi Avenue since 2009 — walk-in dispensing, morning vaccination hours, and a delivery rider who knows every shortcut between Nyali and Likoni.",
           // Storefront Studio override document — proves one template can wear
-          // many personalities. Aether stays on pure defaults.
+          // many personalities. Afyvia stays on pure defaults.
           storefront: {
             version: 1,
             hero: {
@@ -308,7 +308,7 @@ async function main() {
 
   const manager = await prisma.user.create({
     data: {
-      email: "manager@aetherpharmacy.com",
+      email: "manager@afyviapharmacy.com",
       passwordHash: password,
       role: "manager",
       emailVerified: true,
@@ -317,7 +317,7 @@ async function main() {
 
   const pharmacist = await prisma.user.create({
     data: {
-      email: "pharmacist@aetherpharmacy.com",
+      email: "pharmacist@afyviapharmacy.com",
       passwordHash: password,
       role: "pharmacist",
       emailVerified: true,
@@ -326,7 +326,7 @@ async function main() {
 
   const staff = await prisma.user.create({
     data: {
-      email: "staff@aetherpharmacy.com",
+      email: "staff@afyviapharmacy.com",
       passwordHash: password,
       role: "staff",
       emailVerified: true,
@@ -365,28 +365,28 @@ async function main() {
   await prisma.pharmacyMembership.createMany({
     data: [
       {
-        pharmacyId: AETHER_ID,
+        pharmacyId: AFYVIA_ID,
         userId: platformAdmin.id,
         role: "owner",
         status: "active",
         acceptedAt: new Date(),
       },
       {
-        pharmacyId: AETHER_ID,
+        pharmacyId: AFYVIA_ID,
         userId: manager.id,
         role: "owner",
         status: "active",
         acceptedAt: new Date(),
       },
       {
-        pharmacyId: AETHER_ID,
+        pharmacyId: AFYVIA_ID,
         userId: pharmacist.id,
         role: "pharmacist",
         status: "active",
         acceptedAt: new Date(),
       },
       {
-        pharmacyId: AETHER_ID,
+        pharmacyId: AFYVIA_ID,
         userId: staff.id,
         role: "staff",
         status: "active",
@@ -439,9 +439,9 @@ async function main() {
 
   await prisma.customerPharmacy.createMany({
     data: [
-      { customerId: jane.id, pharmacyId: AETHER_ID, preferred: true },
+      { customerId: jane.id, pharmacyId: AFYVIA_ID, preferred: true },
       { customerId: jane.id, pharmacyId: COAST_ID, preferred: false },
-      { customerId: john.id, pharmacyId: AETHER_ID, preferred: true },
+      { customerId: john.id, pharmacyId: AFYVIA_ID, preferred: true },
     ],
   });
 
@@ -458,7 +458,7 @@ async function main() {
     ].map((s) =>
       prisma.segment.create({
         data: {
-      pharmacyId: AETHER_ID, ...s, createdById: manager.id },
+      pharmacyId: AFYVIA_ID, ...s, createdById: manager.id },
       }),
     ),
   );
@@ -477,7 +477,7 @@ async function main() {
 
   const metformin = await prisma.prescription.create({
     data: {
-      pharmacyId: AETHER_ID,
+      pharmacyId: AFYVIA_ID,
       customerId: jane.id,
       medicineName: "Metformin 500mg",
       rxReference: "RX-2024-88421",
@@ -493,7 +493,7 @@ async function main() {
 
   await prisma.prescription.create({
     data: {
-      pharmacyId: AETHER_ID,
+      pharmacyId: AFYVIA_ID,
       customerId: jane.id,
       medicineName: "Atorvastatin 20mg",
       rxReference: "RX-2024-88422",
@@ -509,7 +509,7 @@ async function main() {
 
   await prisma.prescription.create({
     data: {
-      pharmacyId: AETHER_ID,
+      pharmacyId: AFYVIA_ID,
       customerId: john.id,
       medicineName: "Amlodipine 5mg",
       rxReference: "RX-2025-11002",
@@ -528,7 +528,7 @@ async function main() {
   // logs so the caregiver dashboard has meaningful data to show.
   const metforminScheduleMorning = await prisma.medicationSchedule.create({
     data: {
-      pharmacyId: AETHER_ID,
+      pharmacyId: AFYVIA_ID,
       prescriptionId: metformin.id,
       customerId: jane.id,
       timeOfDay: "08:00",
@@ -538,7 +538,7 @@ async function main() {
   });
   const metforminScheduleEvening = await prisma.medicationSchedule.create({
     data: {
-      pharmacyId: AETHER_ID,
+      pharmacyId: AFYVIA_ID,
       prescriptionId: metformin.id,
       customerId: jane.id,
       timeOfDay: "20:00",
@@ -606,7 +606,7 @@ async function main() {
 
   const refill = await prisma.refillRequest.create({
     data: {
-      pharmacyId: AETHER_ID,
+      pharmacyId: AFYVIA_ID,
       customerId: jane.id,
       prescriptionId: metformin.id,
       medicineName: "Metformin 500mg",
@@ -624,7 +624,7 @@ async function main() {
 
   await prisma.refillRequest.create({
     data: {
-      pharmacyId: AETHER_ID,
+      pharmacyId: AFYVIA_ID,
       customerId: john.id,
       medicineName: "Amlodipine 5mg",
       rxReference: "RX-2025-11002",
@@ -654,7 +654,7 @@ async function main() {
 
   await prisma.loyaltyAccount.create({
     data: {
-      pharmacyId: AETHER_ID,
+      pharmacyId: AFYVIA_ID,
       customerId: jane.id,
       points: 420,
       lifetimePoints: 1200,
@@ -672,7 +672,7 @@ async function main() {
 
   await prisma.loyaltyAccount.create({
     data: {
-      pharmacyId: AETHER_ID,
+      pharmacyId: AFYVIA_ID,
       customerId: john.id,
       points: 50,
       lifetimePoints: 50,
@@ -701,7 +701,7 @@ async function main() {
   await prisma.coupon.createMany({
     data: [
       {
-        pharmacyId: AETHER_ID,
+        pharmacyId: AFYVIA_ID,
         code: "WELLNESS10",
         description: "10% off wellness products",
         discountType: "percent",
@@ -710,7 +710,7 @@ async function main() {
         maxRedemptions: 500,
       },
       {
-        pharmacyId: AETHER_ID,
+        pharmacyId: AFYVIA_ID,
         code: "FLU2026",
         description: "Free flu shot counselling voucher",
         discountType: "fixed",
@@ -723,7 +723,7 @@ async function main() {
   await prisma.timelineEvent.createMany({
     data: [
       {
-        pharmacyId: AETHER_ID,
+        pharmacyId: AFYVIA_ID,
         customerId: jane.id,
         userId: customerUser.id,
         eventType: "registered",
@@ -732,7 +732,7 @@ async function main() {
         createdById: customerUser.id,
       },
       {
-        pharmacyId: AETHER_ID,
+        pharmacyId: AFYVIA_ID,
         customerId: jane.id,
         eventType: "refill_submitted",
         title: "Refill requested",
@@ -741,7 +741,7 @@ async function main() {
         createdById: customerUser.id,
       },
       {
-        pharmacyId: AETHER_ID,
+        pharmacyId: AFYVIA_ID,
         customerId: jane.id,
         eventType: "reminder_sent",
         title: "Refill reminder sent",
@@ -749,7 +749,7 @@ async function main() {
         createdById: staff.id,
       },
       {
-        pharmacyId: AETHER_ID,
+        pharmacyId: AFYVIA_ID,
         customerId: john.id,
         userId: customer2User.id,
         eventType: "registered",
@@ -763,7 +763,7 @@ async function main() {
   await prisma.notification.createMany({
     data: [
       {
-        pharmacyId: AETHER_ID,
+        pharmacyId: AFYVIA_ID,
         customerId: jane.id,
         userId: customerUser.id,
         channel: "in_app",
@@ -774,7 +774,7 @@ async function main() {
         sentAt: new Date(),
       },
       {
-        pharmacyId: AETHER_ID,
+        pharmacyId: AFYVIA_ID,
         customerId: jane.id,
         userId: customerUser.id,
         channel: "whatsapp",
@@ -785,12 +785,12 @@ async function main() {
         sentAt: new Date(),
       },
       {
-        pharmacyId: AETHER_ID,
+        pharmacyId: AFYVIA_ID,
         customerId: john.id,
         userId: customer2User.id,
         channel: "email",
         type: "welcome",
-        title: "Welcome to Aether Pharmacy",
+        title: "Welcome to Afyvia Pharmacy",
         body: "Thanks for joining. Manage refills and preferences in your portal.",
         status: "opened",
         sentAt: new Date(),
@@ -802,7 +802,7 @@ async function main() {
   await prisma.reminder.createMany({
     data: [
       {
-        pharmacyId: AETHER_ID,
+        pharmacyId: AFYVIA_ID,
         customerId: jane.id,
         type: "refill",
         title: "Metformin refill due",
@@ -813,11 +813,11 @@ async function main() {
         createdById: manager.id,
       },
       {
-        pharmacyId: AETHER_ID,
+        pharmacyId: AFYVIA_ID,
         customerId: jane.id,
         type: "birthday",
         title: "Birthday greeting",
-        body: "Happy birthday from Aether Pharmacy!",
+        body: "Happy birthday from Afyvia Pharmacy!",
         channel: "sms",
         scheduledFor: new Date("2026-05-12T08:00:00Z"),
         status: "sent",
@@ -825,7 +825,7 @@ async function main() {
         createdById: manager.id,
       },
       {
-        pharmacyId: AETHER_ID,
+        pharmacyId: AFYVIA_ID,
         customerId: john.id,
         type: "wellness",
         title: "Blood pressure awareness week",
@@ -840,7 +840,7 @@ async function main() {
 
   await prisma.conversation.create({
     data: {
-      pharmacyId: AETHER_ID,
+      pharmacyId: AFYVIA_ID,
       customerId: jane.id,
       channel: "email",
       subject: "Delivery to Riverside",
@@ -872,15 +872,15 @@ async function main() {
   await prisma.messageTemplate.createMany({
     data: [
       {
-        pharmacyId: AETHER_ID,
+        pharmacyId: AFYVIA_ID,
         name: "Refill ready for pickup",
         channel: "sms",
-        body: "Hi {{name}}, your prescription {{medicine}} is ready for pickup at Aether Pharmacy.",
+        body: "Hi {{name}}, your prescription {{medicine}} is ready for pickup at Afyvia Pharmacy.",
         category: "refill",
         createdById: manager.id,
       },
       {
-        pharmacyId: AETHER_ID,
+        pharmacyId: AFYVIA_ID,
         name: "Refill reminder",
         channel: "whatsapp",
         body: "Hi {{name}}, your {{medicine}} may be running low. Reply REFILL or open your portal to request.",
@@ -888,10 +888,10 @@ async function main() {
         createdById: manager.id,
       },
       {
-        pharmacyId: AETHER_ID,
+        pharmacyId: AFYVIA_ID,
         name: "Welcome email",
         channel: "email",
-        subject: "Welcome to Aether Pharmacy",
+        subject: "Welcome to Afyvia Pharmacy",
         body: "Thank you for creating an account. Manage refills, caregivers, and preferences anytime.",
         category: "onboarding",
         createdById: manager.id,
@@ -901,12 +901,12 @@ async function main() {
 
   await prisma.campaign.create({
     data: {
-      pharmacyId: AETHER_ID,
+      pharmacyId: AFYVIA_ID,
       name: "Diabetes Awareness Month",
       description: "Education + free glucose counselling for diabetes segment",
       channel: "email",
       segmentId: seg("Diabetes care").id,
-      subject: "Diabetes care tips from Aether Pharmacy",
+      subject: "Diabetes care tips from Afyvia Pharmacy",
       body: "Join us for free glucose counselling this month. Book via your portal or WhatsApp.",
       status: "scheduled",
       scheduledFor: new Date("2026-08-20T09:00:00Z"),
@@ -917,7 +917,7 @@ async function main() {
 
   await prisma.campaign.create({
     data: {
-      pharmacyId: AETHER_ID,
+      pharmacyId: AFYVIA_ID,
       name: "Flu Season 2026",
       description: "Vaccination campaign for all active customers",
       channel: "multi",
@@ -931,7 +931,7 @@ async function main() {
   await prisma.enquiry.createMany({
     data: [
       {
-        pharmacyId: AETHER_ID,
+        pharmacyId: AFYVIA_ID,
         customerId: john.id,
         name: john.fullName,
         email: customer2User.email,
@@ -943,7 +943,7 @@ async function main() {
         source: "website",
       },
       {
-        pharmacyId: AETHER_ID,
+        pharmacyId: AFYVIA_ID,
         name: "Mary Kamau",
         email: "mary@example.com",
         phone: "+254700111222",
@@ -960,7 +960,7 @@ async function main() {
   await prisma.feedback.createMany({
     data: [
       {
-        pharmacyId: AETHER_ID,
+        pharmacyId: AFYVIA_ID,
         customerId: jane.id,
         name: jane.fullName,
         email: customerUser.email,
@@ -975,7 +975,7 @@ async function main() {
         isPublic: true,
       },
       {
-        pharmacyId: AETHER_ID,
+        pharmacyId: AFYVIA_ID,
         name: "Anonymous",
         rating: 3,
         type: "suggestion",
@@ -989,7 +989,7 @@ async function main() {
   await prisma.knowledgeArticle.createMany({
     data: [
       {
-        pharmacyId: AETHER_ID,
+        pharmacyId: AFYVIA_ID,
         title: "Opening hours",
         category: "store",
         content:
@@ -1000,7 +1000,7 @@ async function main() {
         createdById: manager.id,
       },
       {
-        pharmacyId: AETHER_ID,
+        pharmacyId: AFYVIA_ID,
         title: "How to request a refill",
         category: "refills",
         content:
@@ -1011,7 +1011,7 @@ async function main() {
         createdById: manager.id,
       },
       {
-        pharmacyId: AETHER_ID,
+        pharmacyId: AFYVIA_ID,
         title: "Delivery information",
         category: "delivery",
         content:
@@ -1022,7 +1022,7 @@ async function main() {
         createdById: manager.id,
       },
       {
-        pharmacyId: AETHER_ID,
+        pharmacyId: AFYVIA_ID,
         title: "Clinical safety rules for AI",
         category: "policy",
         content:
@@ -1033,7 +1033,7 @@ async function main() {
         createdById: manager.id,
       },
       {
-        pharmacyId: AETHER_ID,
+        pharmacyId: AFYVIA_ID,
         title: "Insurance accepted",
         category: "store",
         content:
@@ -1044,18 +1044,18 @@ async function main() {
         createdById: manager.id,
       },
       {
-        pharmacyId: AETHER_ID,
-        title: "Vaccinations at Aether Pharmacy",
+        pharmacyId: AFYVIA_ID,
+        title: "Vaccinations at Afyvia Pharmacy",
         category: "services",
         content:
-          "Where locally authorised, Aether Pharmacy administers adult, seasonal, and selected travel vaccines (influenza, COVID-19, hepatitis B, Tdap, pneumococcal, HPV catch-up, typhoid, hepatitis A, meningococcal, oral cholera). Every dose requires a pre-vaccination questionnaire, vaccine information sheet, signed consent, lot/expiry recording, and 15 minutes of observation. Digital certificates appear in the patient portal. Childhood KEPI vaccines are given at public immunisation clinics; we provide schedules and referral. Yellow fever ICVP cards are issued only at designated centres.",
+          "Where locally authorised, Afyvia Pharmacy administers adult, seasonal, and selected travel vaccines (influenza, COVID-19, hepatitis B, Tdap, pneumococcal, HPV catch-up, typhoid, hepatitis A, meningococcal, oral cholera). Every dose requires a pre-vaccination questionnaire, vaccine information sheet, signed consent, lot/expiry recording, and 15 minutes of observation. Digital certificates appear in the patient portal. Childhood KEPI vaccines are given at public immunisation clinics; we provide schedules and referral. Yellow fever ICVP cards are issued only at designated centres.",
         tags: ["vaccine", "vaccination", "flu", "immunisation", "travel", "consent", "aefi"],
         priority: 96,
         isApproved: true,
         createdById: manager.id,
       },
       {
-        pharmacyId: AETHER_ID,
+        pharmacyId: AFYVIA_ID,
         title: "Preventive-health counselling",
         category: "services",
         content:
@@ -1066,18 +1066,18 @@ async function main() {
         createdById: manager.id,
       },
       {
-        pharmacyId: AETHER_ID,
+        pharmacyId: AFYVIA_ID,
         title: "Health Screening & Point-of-Care Testing (POCT)",
         category: "services",
         content:
-          "Aether Pharmacy provides walk-in and booked health screening services including blood pressure checks, capillary blood glucose testing, weight & BMI calculations, temperature measurement, and authorized Kenyan point-of-care rapid tests (Malaria RDT, lipid panel, HbA1c, urinalysis). Screenings are conducted with calibrated clinical devices by licensed pharmacy professionals.",
+          "Afyvia Pharmacy provides walk-in and booked health screening services including blood pressure checks, capillary blood glucose testing, weight & BMI calculations, temperature measurement, and authorized Kenyan point-of-care rapid tests (Malaria RDT, lipid panel, HbA1c, urinalysis). Screenings are conducted with calibrated clinical devices by licensed pharmacy professionals.",
         tags: ["screening", "vitals", "blood pressure", "glucose", "bmi", "poct", "wellness"],
         priority: 95,
         isApproved: true,
         createdById: manager.id,
       },
       {
-        pharmacyId: AETHER_ID,
+        pharmacyId: AFYVIA_ID,
         title: "Screening vs Diagnosis & Medical Referral Pathways",
         category: "policy",
         content:
@@ -1092,7 +1092,7 @@ async function main() {
 
   await prisma.customerNote.create({
     data: {
-      pharmacyId: AETHER_ID,
+      pharmacyId: AFYVIA_ID,
       customerId: jane.id,
       authorId: pharmacist.id,
       body: "Prefers WhatsApp updates. Counselled on metformin with meals.",
@@ -1303,7 +1303,7 @@ async function main() {
   for (const s of serviceSeeds) {
     await prisma.pharmacyService.create({
       data: {
-      pharmacyId: AETHER_ID,
+      pharmacyId: AFYVIA_ID,
         slug: s.slug,
         title: s.title,
         short: s.short,
@@ -1544,9 +1544,9 @@ async function main() {
 
   for (const c of categorySeeds) {
     await prisma.medicationCategory.upsert({
-      where: { pharmacyId_slug: { pharmacyId: AETHER_ID, slug: c.slug } },
+      where: { pharmacyId_slug: { pharmacyId: AFYVIA_ID, slug: c.slug } },
       create: {
-        pharmacyId: AETHER_ID,
+        pharmacyId: AFYVIA_ID,
         slug: c.slug,
         name: c.name,
         description: c.description || null,
@@ -1588,7 +1588,7 @@ async function main() {
 
   const screeningJane1 = await prisma.healthScreeningRecord.create({
     data: {
-      pharmacyId: AETHER_ID,
+      pharmacyId: AFYVIA_ID,
       customerId: jane.id,
       conductedById: pharmacist.id,
       screeningType: "wellness_check",
@@ -1620,7 +1620,7 @@ async function main() {
 
   const screeningJane2 = await prisma.healthScreeningRecord.create({
     data: {
-      pharmacyId: AETHER_ID,
+      pharmacyId: AFYVIA_ID,
       customerId: jane.id,
       conductedById: pharmacist.id,
       screeningType: "blood_pressure",
@@ -1649,7 +1649,7 @@ async function main() {
 
   await prisma.clinicalReferral.create({
     data: {
-      pharmacyId: AETHER_ID,
+      pharmacyId: AFYVIA_ID,
       screeningId: screeningJane2.id,
       customerId: jane.id,
       referredById: pharmacist.id,
@@ -1672,7 +1672,7 @@ async function main() {
 
   await prisma.healthScreeningRecord.create({
     data: {
-      pharmacyId: AETHER_ID,
+      pharmacyId: AFYVIA_ID,
       conductedById: pharmacist.id,
       screeningType: "point_of_care_test",
       patientName: "David Ochieng",
@@ -1698,7 +1698,7 @@ async function main() {
 
   // ── Vaccination & preventive services (8) ──
   await prisma.pharmacyImmunizationPolicy.create({
-    data: { pharmacyId: AETHER_ID, ...DEFAULT_IMMUNIZATION_POLICY, updatedById: manager.id },
+    data: { pharmacyId: AFYVIA_ID, ...DEFAULT_IMMUNIZATION_POLICY, updatedById: manager.id },
   });
   await prisma.pharmacyImmunizationPolicy.create({
     data: { pharmacyId: COAST_ID, ...DEFAULT_IMMUNIZATION_POLICY },
@@ -1708,7 +1708,7 @@ async function main() {
   for (const v of VACCINE_CATALOG) {
     const row = await prisma.vaccineProduct.create({
       data: {
-      pharmacyId: AETHER_ID,
+      pharmacyId: AFYVIA_ID,
         slug: v.slug,
         name: v.name,
         antigen: v.antigen,
@@ -1753,7 +1753,7 @@ async function main() {
   await prisma.immunizerCredential.createMany({
     data: [
       {
-        pharmacyId: AETHER_ID,
+        pharmacyId: AFYVIA_ID,
         userId: pharmacist.id,
         credentialType: "immunization_certificate",
         title: "Pharmacist Immunisation Certificate",
@@ -1764,7 +1764,7 @@ async function main() {
         verified: true,
       },
       {
-        pharmacyId: AETHER_ID,
+        pharmacyId: AFYVIA_ID,
         userId: pharmacist.id,
         credentialType: "anaphylaxis",
         title: "Anaphylaxis & adrenaline autoinjector",
@@ -1774,7 +1774,7 @@ async function main() {
         verified: true,
       },
       {
-        pharmacyId: AETHER_ID,
+        pharmacyId: AFYVIA_ID,
         userId: pharmacist.id,
         credentialType: "cpr_bls",
         title: "BLS / CPR",
@@ -1788,7 +1788,7 @@ async function main() {
 
   const fluCampaign = await prisma.publicHealthCampaign.create({
     data: {
-      pharmacyId: AETHER_ID,
+      pharmacyId: AFYVIA_ID,
       slug: "flu-season-2026",
       title: "Flu season 2026 — protect your household",
       theme: "vaccination",
@@ -1812,7 +1812,7 @@ async function main() {
 
   await prisma.publicHealthCampaign.create({
     data: {
-      pharmacyId: AETHER_ID,
+      pharmacyId: AFYVIA_ID,
       slug: "travel-health-week",
       title: "Travel health week",
       theme: "counselling",
@@ -1835,7 +1835,7 @@ async function main() {
   if (fluId) {
     const appt = await prisma.immunizationAppointment.create({
       data: {
-      pharmacyId: AETHER_ID,
+      pharmacyId: AFYVIA_ID,
         vaccineProductId: fluId,
         customerId: jane.id,
         campaignId: fluCampaign.id,
@@ -1913,7 +1913,7 @@ async function main() {
 
   await prisma.preventiveCounsellingSession.create({
     data: {
-      pharmacyId: AETHER_ID,
+      pharmacyId: AFYVIA_ID,
       customerId: jane.id,
       counsellorId: pharmacist.id,
       topic: "diabetes_prevention",
@@ -1951,13 +1951,13 @@ async function main() {
       });
     }
   }
-  for (const pharmacyId of [AETHER_ID, COAST_ID]) {
+  for (const pharmacyId of [AFYVIA_ID, COAST_ID]) {
     const existingBranch = await prisma.pharmacyBranch.findFirst({ where: { pharmacyId, isDefault: true } });
     const branch = existingBranch ?? await prisma.pharmacyBranch.create({
       data: { pharmacyId, name: "Main Branch", code: "MAIN", isDefault: true },
     });
     await prisma.pharmacy.update({ where: { id: pharmacyId }, data: { defaultBranchId: branch.id } });
-    const planSlug = pharmacyId === AETHER_ID ? "professional" : "starter";
+    const planSlug = pharmacyId === AFYVIA_ID ? "professional" : "starter";
     const plan = await prisma.plan.findUnique({ where: { slug: planSlug } });
     const sub = await prisma.subscription.findFirst({ where: { pharmacyId } });
     if (!sub && plan) {
@@ -1979,7 +1979,7 @@ async function main() {
 
   await prisma.auditLog.create({
     data: {
-      pharmacyId: AETHER_ID,
+      pharmacyId: AFYVIA_ID,
       actorId: manager.id,
       action: "seed_completed",
       entityType: "system",
@@ -1989,11 +1989,11 @@ async function main() {
 
   console.log("Seed complete.");
   console.log("Demo accounts (password: Password123!):");
-  console.log("  platform@aether.health        (super-admin → /platform)");
-  console.log("  manager@aetherpharmacy.com    (Aether owner + Coast Care manager → /admin)");
-  console.log("  pharmacist@aetherpharmacy.com (pharmacist)");
-  console.log("  staff@aetherpharmacy.com      (staff)");
-  console.log("  jane@example.com              (customer — linked to Aether + Coast Care)");
+  console.log("  platform@afyvia.health        (super-admin → /platform)");
+  console.log("  manager@afyviapharmacy.com    (Afyvia owner + Coast Care manager → /admin)");
+  console.log("  pharmacist@afyviapharmacy.com (pharmacist)");
+  console.log("  staff@afyviapharmacy.com      (staff)");
+  console.log("  jane@example.com              (customer — linked to Afyvia + Coast Care)");
   console.log("  john@example.com              (customer)");
   console.log("  peter@example.com             (caregiver)");
 }

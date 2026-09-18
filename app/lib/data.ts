@@ -1,15 +1,15 @@
 import { searchVaccines } from "./vaccination-catalog";
 
 /**
- * Platform identity (the Aether network) vs demo-tenant seed copy.
+ * Platform identity (the Afyvia network) vs demo-tenant seed copy.
  * Public chrome on `/` uses `platform`. Per-pharmacy storefronts use
  * `getResolvedPharmacy()` — never this static shop as a silent fallback
  * when no tenant is selected.
  */
 
 export const platform = {
-  name: "Aether",
-  legalName: "Aether Pharmacy Network",
+  name: "Afyvia",
+  legalName: "Afyvia Pharmacy Network",
   tagline: "The pharmacy network for Kenya",
   promise: "We promise life, and we promise caring.",
   description:
@@ -40,10 +40,10 @@ export const platform = {
  * are migrated to tenant-aware brand/context data.
  */
 export const pharmacy = {
-  name: "Aether Pharmacy",
+  name: "Afyvia Pharmacy",
   tagline: "Your neighbourhood pharmacy, built on trust",
   description:
-    "Aether Pharmacy has served families across the community for over 15 years with expert dispensing, personalised counselling, and convenient care services.",
+    "Afyvia Pharmacy has served families across the community for over 15 years with expert dispensing, personalised counselling, and convenient care services.",
   email: "support@gtss.software",
   phone: "+254790670542",
   phoneHref: "tel:+254790670542",
@@ -96,7 +96,7 @@ export const team = [
     id: "priya-nair",
     name: "Dr. Priya Nair, PharmD",
     role: "Lead Pharmacist & Owner",
-    bio: "Priya founded Aether with a simple belief: every patient deserves clear answers and careful attention. She specialises in chronic disease management and medication therapy review.",
+    bio: "Priya founded Afyvia with a simple belief: every patient deserves clear answers and careful attention. She specialises in chronic disease management and medication therapy review.",
     qualifications: "PharmD, University of Nairobi · 18 years experience",
     photo: "https://pub-cc07856d657b4a7197710051042b3eda.r2.dev/images/team/priya-nair.webp",
   },
@@ -486,7 +486,7 @@ export const articles = [
       "Build a simple sick-day kit: thermometer, oral rehydration, tissues, and any clinician-approved fever reducers.",
       "Hand hygiene and staying home when ill protect vulnerable neighbours and family members.",
       "Antivirals work best when started early for eligible patients — call your clinician promptly if you are high risk.",
-      "Walk in for your flu shot at Aether during open hours; no appointment needed most days.",
+      "Walk in for your flu shot at Afyvia during open hours; no appointment needed most days.",
     ],
   },
   {

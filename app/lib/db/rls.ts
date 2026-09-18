@@ -39,7 +39,7 @@ export async function resolveRlsScope(): Promise<RlsScope> {
   });
 }
 
-export const RLS_RUNTIME_ROLE = "aether_runtime";
+export const RLS_RUNTIME_ROLE = "afyvia_runtime";
 
 type RawQuery = (sql: string, values?: unknown[]) => Promise<unknown>;
 

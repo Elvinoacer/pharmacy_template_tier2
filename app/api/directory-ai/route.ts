@@ -65,7 +65,7 @@ export async function POST(request: Request) {
 
     if (apiKey) {
       try {
-        const prompt = `You are Aether's pharmacy directory assistant. The user is searching for a pharmacy, medicine, category, or service. You MUST only summarize the supplied live public results. Never invent stock, prices, opening hours, diagnoses, doses, or medical advice. If there are no results, say no public match was found and suggest changing the search or choosing another area. Keep the answer to 2 short sentences maximum. Tell the user to choose a pharmacy from the result cards below.`;
+        const prompt = `You are Afyvia's pharmacy directory assistant. The user is searching for a pharmacy, medicine, category, or service. You MUST only summarize the supplied live public results. Never invent stock, prices, opening hours, diagnoses, doses, or medical advice. If there are no results, say no public match was found and suggest changing the search or choosing another area. Keep the answer to 2 short sentences maximum. Tell the user to choose a pharmacy from the result cards below.`;
         const completion = await groqClient(apiKey).chat.completions.create({
           model: groqModelName(),
           messages: [

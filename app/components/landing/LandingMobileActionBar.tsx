@@ -199,7 +199,7 @@ export default function LandingMobileActionBar() {
 
   return (
     <nav
-      aria-label="Browse Aether"
+      aria-label="Browse Afyvia"
       aria-hidden={!visible}
       className={`fixed inset-x-2 z-50 grid grid-cols-5 gap-0.5 rounded-[1.35rem] border border-[var(--line-2)] bg-[var(--card)] p-1.5 shadow-[0_18px_50px_rgba(0,0,0,0.2)] backdrop-blur-xl transition-[transform,opacity] duration-200 ease-out motion-reduce:transition-none lg:hidden ${
         visible

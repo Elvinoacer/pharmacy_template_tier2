@@ -190,8 +190,8 @@ export default function QuickPageAssist() {
         onClick={() => (open ? close() : openPanel())}
         aria-haspopup="dialog"
         aria-expanded={open}
-        aria-label={open ? "Close Aether assistant" : "Open Aether AI assistant"}
-        title={open ? "Close Aether AI assistant" : "Say hi to Aether AI assistant"}
+        aria-label={open ? "Close Afyvia assistant" : "Open Afyvia AI assistant"}
+        title={open ? "Close Afyvia AI assistant" : "Say hi to Afyvia AI assistant"}
         data-state={open ? "open" : loading ? "thinking" : "idle"}
         className={styles.robotLauncher}
       >
@@ -277,7 +277,7 @@ export default function QuickPageAssist() {
                   </div>
                   <div className="min-w-0 pt-0.5">
                     <p className="truncate text-[9px] font-bold uppercase tracking-[0.18em] text-[var(--brand)] sm:text-[10px] sm:tracking-[0.2em]">
-                      Aether care assistant
+                      Afyvia care assistant
                     </p>
                     <h2 id={titleId} className="mt-1 text-[1.2rem] font-semibold leading-tight tracking-[-0.025em] text-[var(--foreground)] sm:text-2xl">
                       How can we help?
@@ -298,7 +298,7 @@ export default function QuickPageAssist() {
 
             <div className="relative min-h-0 flex-1 touch-pan-y overflow-y-auto overscroll-contain bg-[var(--card)] px-4 py-4 sm:px-6 sm:py-6">
               <p id={descriptionId} className="max-w-2xl text-[13px] leading-5 text-[var(--muted)] sm:text-[15px] sm:leading-6">
-                Ask naturally. I can find medicines and pharmacies in the public network, or take you to the right place in Aether.
+                Ask naturally. I can find medicines and pharmacies in the public network, or take you to the right place in Afyvia.
               </p>
 
               <form
@@ -355,7 +355,7 @@ export default function QuickPageAssist() {
               {loading && (
                 <div className="mt-5 flex items-center gap-2 text-sm text-[var(--muted)]" aria-live="polite">
                   <span className="h-2 w-2 animate-pulse rounded-full bg-[var(--success)]" />
-                  Looking across the Aether network…
+                  Looking across the Afyvia network…
                 </div>
               )}
 

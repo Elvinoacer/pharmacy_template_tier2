@@ -4,7 +4,7 @@
 
 /*
  * The desktop register page keeps the cinematic split-screen presentation,
- * while functional surfaces adapt to the global Aether theme tokens.
+ * while functional surfaces adapt to the global Afyvia theme tokens.
  */
 :global(html[data-theme="light"]) .registerSurface :global(.reg-bg) {
   color: var(--foreground);

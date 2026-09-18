@@ -17,7 +17,7 @@ import {
 } from "lucide-react";
 import { useTenantHref, useTenantSlug } from "../TenantLink";
 
-const GUEST_KEY_STORAGE = "aether-feel-guest-key";
+const GUEST_KEY_STORAGE = "afyvia-feel-guest-key";
 
 const FALLBACK_CATEGORIES = [
   { id: "headache", label: "Headache & Pain", description: "Headache, muscle tension, joint ache or fever." },

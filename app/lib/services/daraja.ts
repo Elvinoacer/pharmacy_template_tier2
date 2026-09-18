@@ -255,7 +255,7 @@ export async function stkPush(input: StkPushInput): Promise<StkPushResult> {
       ? "CustomerBuyGoodsOnline"
       : "CustomerPayBillOnline";
   const transactionType = input.transactionType ?? configuredTransactionType;
-  const accountReference = darajaText(input.accountReference, 12, "Aether");
+  const accountReference = darajaText(input.accountReference, 12, "Afyvia");
   const transactionDesc = darajaText(input.transactionDesc, 19, "Payment");
 
   let res: Response;

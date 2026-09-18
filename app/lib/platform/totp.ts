@@ -60,7 +60,7 @@ export function verifyTotp(secret: string, code: string, window = 1): boolean {
   return false;
 }
 
-export function otpauthUrl(email: string, secret: string, issuer = "Aether Network"): string {
+export function otpauthUrl(email: string, secret: string, issuer = "Afyvia Network"): string {
   return `otpauth://totp/${encodeURIComponent(issuer)}:${encodeURIComponent(email)}?secret=${secret}&issuer=${encodeURIComponent(issuer)}&digits=6&period=30`;
 }
 

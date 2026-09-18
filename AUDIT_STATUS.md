@@ -1,4 +1,4 @@
-# Aether Pharmacy — Implementation Status Audit
+# Afyvia Pharmacy — Implementation Status Audit
 
 Every item from `prompt2.md` checked directly against the codebase. Status legend:
 

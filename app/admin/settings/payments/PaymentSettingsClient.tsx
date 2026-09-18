@@ -419,7 +419,7 @@ export function PaymentSettingsClient({
                 </button>
               </div>
               <p className="text-[11px] admin-soft mt-1">
-                Generated automatically by Aether from platform domain. Configure this in your Daraja portal if requested.
+                Generated automatically by Afyvia from platform domain. Configure this in your Daraja portal if requested.
               </p>
             </div>
           </div>
@@ -481,7 +481,7 @@ export function PaymentSettingsClient({
             4. Your <strong>Lipa na M-Pesa Online Passkey</strong> was sent to your authorized contact email when your shortcode went live with Safaricom.
           </p>
           <p className="text-[11px] admin-soft pt-1">
-            Note: Aether does not create shortcodes or settle funds on your behalf. Customer payments go directly from Safaricom to your pharmacy&apos;s own shortcode.
+            Note: Afyvia does not create shortcodes or settle funds on your behalf. Customer payments go directly from Safaricom to your pharmacy&apos;s own shortcode.
           </p>
         </div>
       </div>

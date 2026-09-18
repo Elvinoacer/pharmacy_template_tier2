@@ -115,7 +115,7 @@ export function OnboardingJourneyShell({
           ) : (
             <p className={styles.kicker}>
               <Sparkles className="h-3.5 w-3.5" aria-hidden />
-              Aether Pharmacy Network
+              Afyvia Pharmacy Network
             </p>
           )}
         </div>

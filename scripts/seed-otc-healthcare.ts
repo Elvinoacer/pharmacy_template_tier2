@@ -19,7 +19,7 @@ if (!url) throw new Error("DATABASE_URL is not configured");
 
 const adapter = new PrismaPg(buildPostgresConfig(url));
 const prisma = new PrismaClient({ adapter });
-const AETHER_ID = "00000000-0000-4000-a000-000000000001";
+const AFYVIA_ID = "00000000-0000-4000-a000-000000000001";
 
 interface OtcCategorySeed {
   slug: string;
@@ -542,7 +542,7 @@ const PRODUCTS: OtcProductSeed[] = [
     name: "Omeprazole 20mg OTC Gastric Relief 14s",
     slug: "omeprazole-20mg-otc-14s",
     genericName: "Omeprazole",
-    brandName: "Aether Gastro",
+    brandName: "Afyvia Gastro",
     packSize: "Pack of 14 Gastro-Resistant Capsules",
     category: "digestive-health",
     description: "Proton pump inhibitor providing 24-hour protection from frequent heartburn and acid reflux with a simple once-daily dose.",
@@ -601,7 +601,7 @@ const PRODUCTS: OtcProductSeed[] = [
     name: "Comprehensive Emergency First Aid Kit (50-Piece)",
     slug: "emergency-first-aid-kit-50pc",
     genericName: "Medical First Aid Supplies Kit",
-    brandName: "Aether Shield",
+    brandName: "Afyvia Shield",
     packSize: "Complete Hard-Shell Kit",
     category: "first-aid",
     description: "Fully equipped travel, home, and vehicle emergency kit containing sterile dressings, antiseptic wipes, burn gel, bandages, scissors, and CPR shield.",
@@ -639,7 +639,7 @@ const PRODUCTS: OtcProductSeed[] = [
     name: "Sterile Gauze Swabs 7.5cm x 7.5cm (Pack of 10)",
     slug: "sterile-gauze-swabs-75cm-10s",
     genericName: "100% Cotton Sterile Gauze Swabs",
-    brandName: "Aether Medical",
+    brandName: "Afyvia Medical",
     packSize: "Pack of 10 Swabs",
     category: "first-aid",
     description: "High-absorbency 8-ply sterile cotton gauze swabs for wound cleansing, dressing, and exudate absorption.",
@@ -698,7 +698,7 @@ const PRODUCTS: OtcProductSeed[] = [
     name: "Calamine Soothing Anti-Irritation Lotion 100ml",
     slug: "calamine-lotion-100ml",
     genericName: "Calamine + Zinc Oxide",
-    brandName: "Aether Care",
+    brandName: "Afyvia Care",
     packSize: "100ml Bottle",
     category: "topical-treatments",
     description: "Gentle cooling and soothing astringent lotion for sunburn relief, insect bites, prickly heat, and chickenpox itching.",
@@ -797,7 +797,7 @@ const PRODUCTS: OtcProductSeed[] = [
     name: "70% Isopropyl Alcohol Sterile Prep Swabs (Box of 100)",
     slug: "alcohol-prep-swabs-100s",
     genericName: "70% Isopropyl Alcohol Swabs",
-    brandName: "Aether Medi-Swab",
+    brandName: "Afyvia Medi-Swab",
     packSize: "Box of 100 Individually Foil-Wrapped Swabs",
     category: "antiseptics",
     description: "Sterile individually sealed 70% alcohol pads for rapid pre-injection, fingerstick blood glucose, and skin cleansing.",
@@ -816,7 +816,7 @@ const PRODUCTS: OtcProductSeed[] = [
     name: "Hydrogen Peroxide 3% 10-Volume Solution 200ml",
     slug: "hydrogen-peroxide-3-solution-200ml",
     genericName: "Hydrogen Peroxide 3% (10 Vol)",
-    brandName: "Aether Antiseptics",
+    brandName: "Afyvia Antiseptics",
     packSize: "200ml Amber Bottle",
     category: "antiseptics",
     description: "Mild effervescent antimicrobial solution for mechanical debridement of superficial dirty cuts and mouth gargle.",
@@ -1234,9 +1234,9 @@ async function main() {
   // 1. Upsert categories
   for (const c of CATEGORIES) {
     await prisma.medicationCategory.upsert({
-      where: { pharmacyId_slug: { pharmacyId: AETHER_ID, slug: c.slug } },
+      where: { pharmacyId_slug: { pharmacyId: AFYVIA_ID, slug: c.slug } },
       create: {
-        pharmacyId: AETHER_ID,
+        pharmacyId: AFYVIA_ID,
         slug: c.slug,
         name: c.name,
         description: c.description,
@@ -1342,9 +1342,9 @@ async function main() {
 
     // Upsert PharmacyInventory
     const inv = await prisma.pharmacyInventory.upsert({
-      where: { pharmacyId_slug: { pharmacyId: AETHER_ID, slug: p.slug } },
+      where: { pharmacyId_slug: { pharmacyId: AFYVIA_ID, slug: p.slug } },
       create: {
-        pharmacyId: AETHER_ID,
+        pharmacyId: AFYVIA_ID,
         medicationMasterId: master.id,
         slug: p.slug,
         sku: p.sku,

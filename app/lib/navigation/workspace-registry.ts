@@ -1122,7 +1122,7 @@ export const WORKSPACE_DESTINATIONS: readonly NavigationDestination[] = [
   {
     id: "platform-pharmacies",
     label: "All pharmacies",
-    description: "Directory of active, paused, and suspended pharmacy tenants in Aether.",
+    description: "Directory of active, paused, and suspended pharmacy tenants in Afyvia.",
     keywords: ["pharmacies", "tenants", "stores", "directory", "memberships"],
     href: "/platform/pharmacies",
     icon: "Store",
@@ -1406,7 +1406,7 @@ export const WORKSPACE_DESTINATIONS: readonly NavigationDestination[] = [
   {
     id: "portal-pharmacies",
     label: "Nearby pharmacies",
-    description: "Find accredited pharmacies in the Aether network near your location.",
+    description: "Find accredited pharmacies in the Afyvia network near your location.",
     keywords: ["pharmacies", "nearby", "branches", "locations", "network"],
     href: "/portal/pharmacies",
     icon: "Store",

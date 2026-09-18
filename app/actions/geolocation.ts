@@ -76,7 +76,7 @@ async function reverseGeocode(latitude: number, longitude: number): Promise<Reve
     const response = await fetch(url, {
       headers: {
         Accept: "application/json",
-        "User-Agent": "Aether Pharmacy Network/1.0 (pharmacy onboarding)",
+        "User-Agent": "Afyvia Pharmacy Network/1.0 (pharmacy onboarding)",
       },
       cache: "no-store",
       signal: controller.signal,

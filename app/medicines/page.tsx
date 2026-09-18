@@ -1,19 +1,26 @@
-import NearbyLocation from "@/app/components/location/NearbyLocation";
-import { getBrowseLocation } from "@/app/lib/browse-location";
 import Link from "next/link";
-import { ArrowRight, FileUp, PackageSearch, Search } from "lucide-react";
-import CareHero from "../components/care/CareHero";
-import { MedicineCatalogGrid } from "../components/MedicineCatalogCard";
-import { Pagination } from "../components/Pagination";
+import {
+  FileUp,
+  HeartPulse,
+  PackageSearch,
+  Pill,
+  Store,
+} from "lucide-react";
+import { getBrowseLocation } from "@/app/lib/browse-location";
 import { listNetworkMedicineListings } from "../lib/services/network-catalog";
-import styles from "../components/care/CarePages.module.css";
+import MedicinesDirectory from "./MedicinesDirectory";
+
 export const dynamic = "force-dynamic";
+
 export const metadata = {
-  title: "Find your medicine",
+  title: "Browse Medicines & Stock Proximity — Afyvia",
   description:
-    "Explore medicine availability, prices, and product details across the network.",
+    "Explore real-time medicine availability, direct pricing, and prescription dispensing across verified local pharmacies.",
+  alternates: { canonical: "/medicines" },
 };
-const PAGE_SIZE = 24;
+
+const INITIAL_PAGE_SIZE = 48;
+
 export default async function MedicinesPage({
   searchParams,
 }: {
@@ -29,172 +36,103 @@ export default async function MedicinesPage({
   const q = sp.q?.trim() || "";
   const category = sp.category?.trim() || "";
   const inStock = sp.stock !== "all";
-  const requestedPage = Math.max(1, Number.parseInt(sp.page || "1", 10) || 1);
-  let data = await listNetworkMedicineListings({
-    q,
+
+  const data = await listNetworkMedicineListings({
+    q: q || undefined,
     origin,
-    category,
+    category: category || undefined,
     inStock,
-    skip: (requestedPage - 1) * PAGE_SIZE,
-    take: PAGE_SIZE,
+    take: INITIAL_PAGE_SIZE,
   }).catch(() => null);
-  const page = Math.min(
-    requestedPage,
-    Math.max(1, Math.ceil((data?.total || 0) / PAGE_SIZE)),
-  );
-  if (data && page !== requestedPage)
-    data = await listNetworkMedicineListings({
-      q,
-      origin,
-      category,
-      inStock,
-      skip: (page - 1) * PAGE_SIZE,
-      take: PAGE_SIZE,
-    }).catch(() => null);
-  const query = new URLSearchParams();
-  if (q) query.set("q", q);
-  if (category) query.set("category", category);
-  const stockHref = (all: boolean) => {
-    const next = new URLSearchParams(query);
-    if (all) next.set("stock", "all");
-    return `/medicines?${next}`;
-  };
+
+  const items = data?.items || [];
+  const categories = data?.categories || [];
+  const total = data?.total || 0;
+
   return (
-    <div className={styles.page}>
-      <CareHero
-        section="medicines"
-        eyebrow="THE MEDICINE YOU NEED"
-        title="Your medicine."
-        accent="Closer to you."
-        description="Compare availability and prices. Order from the listing."
-      />
-      <NearbyLocation active={Boolean(origin)} />
-      <section className={styles.searchPanel} aria-label="Find medicine">
-        <form action="/medicines" className={styles.searchForm} role="search">
-          <label htmlFor="medicine-query">
-            What medicine are you looking for?
-            <input
-              id="medicine-query"
-              name="q"
-              type="search"
-              defaultValue={q}
-              placeholder="Medicine name, brand or generic"
-            />
-          </label>
-          <label htmlFor="medicine-category" className={styles.category}>
-            Category
-            <select
-              id="medicine-category"
-              name="category"
-              defaultValue={category}
-            >
-              <option value="">All categories</option>
-              {data?.categories.map((c) => (
-                <option key={c.slug} value={c.slug}>
-                  {c.name}
-                </option>
-              ))}
-            </select>
-          </label>
-          {!inStock && <input type="hidden" name="stock" value="all" />}
-          <button className={styles.primary}>
-            <Search size={17} aria-hidden /> Find medicine
-          </button>
-        </form>
-        <div className={styles.hint}>
-          <span>
-            Availability is reported by pharmacies and confirmed when you
-            request.
-          </span>
-          <Link href="/prescription">
-            <FileUp size={14} aria-hidden /> Have a prescription? Upload it{" "}
-            <ArrowRight size={14} aria-hidden />
-          </Link>
+    <div className="afyvia-route-surface min-h-screen overflow-hidden text-[var(--foreground)]">
+      <section className="px-4 pb-16 pt-24 sm:px-6 sm:pb-20 sm:pt-32">
+        <div className="mx-auto max-w-7xl">
+          {/* Sleek compact header without bloated marketing text */}
+          <header className="page-hero-glass mb-4 sm:mb-6">
+            <div className="flex flex-col gap-3 lg:flex-row lg:items-end lg:justify-between">
+              <div className="min-w-0">
+                <p className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-[0.16em] text-[var(--brand)] sm:text-xs">
+                  <Pill className="h-4 w-4" aria-hidden /> Medicine catalogue
+                </p>
+                <h1
+                  className="mt-1.5 text-2xl font-semibold tracking-[-0.03em] text-[var(--foreground)] sm:text-3xl lg:text-4xl"
+                  style={{ fontFamily: "var(--font-display), serif" }}
+                >
+                  Your medicine. Closer to you.
+                </h1>
+                <p className="mt-1.5 max-w-2xl text-xs leading-5 text-[var(--muted)] sm:text-sm sm:leading-6">
+                  Compare live stock, direct pharmacy prices, and reserve immediately for pickup or delivery.
+                </p>
+              </div>
+
+              <div className="flex flex-wrap gap-2">
+                <Link
+                  href="/prescription"
+                  className="glass inline-flex min-h-10 items-center justify-center gap-2 rounded-full px-3.5 text-xs font-bold text-[var(--brand-deep)] transition hover:border-[var(--brand)] hover:bg-[var(--card-elev)]"
+                >
+                  <FileUp className="h-3.5 w-3.5" aria-hidden /> Upload prescription
+                </Link>
+                <Link
+                  href="/services"
+                  className="glass inline-flex min-h-10 items-center justify-center gap-2 rounded-full px-3.5 text-xs font-bold text-[var(--brand-deep)] transition hover:border-[var(--brand)] hover:bg-[var(--card-elev)]"
+                >
+                  <HeartPulse className="h-3.5 w-3.5" aria-hidden /> Care services
+                </Link>
+                <Link
+                  href="/pharmacies"
+                  className="inline-flex min-h-10 items-center justify-center gap-2 rounded-full bg-[var(--brand)] px-3.5 text-xs font-bold text-[var(--background)] shadow-sm transition hover:brightness-95"
+                >
+                  <Store className="h-3.5 w-3.5" aria-hidden /> Nearby pharmacies
+                </Link>
+              </div>
+            </div>
+          </header>
+
+          {/* Interactive Medicines Directory */}
+          <MedicinesDirectory
+            initialItems={items}
+            categories={categories}
+            total={total}
+            initialQuery={q}
+            initialCategory={category}
+            initialInStock={inStock}
+            initialLocation={origin}
+          />
+
+          {/* Quick Prescription Help Banner */}
+          <div className="care-glass mt-10 rounded-3xl p-4 sm:p-6 text-xs text-[var(--muted)]">
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+              <div>
+                <p className="font-bold text-[var(--foreground)] text-sm">Have a doctor’s prescription slip?</p>
+                <p className="mt-0.5 text-xs">
+                  Upload your prescription to have a licensed pharmacist inspect dosage, confirm stock, and coordinate dispensing.
+                </p>
+              </div>
+              <div className="flex gap-2 shrink-0">
+                <Link
+                  href="/prescription"
+                  className="inline-flex min-h-9 items-center gap-1.5 rounded-xl bg-[var(--brand-soft)] px-3.5 text-xs font-bold text-[var(--brand-deep)] hover:bg-[var(--brand-tint)] transition"
+                >
+                  <FileUp className="h-3.5 w-3.5" />
+                  Upload prescription
+                </Link>
+                <Link
+                  href="/refill"
+                  className="inline-flex min-h-9 items-center gap-1.5 rounded-xl border border-[var(--line-2)] px-3 text-xs font-semibold text-[var(--foreground)] hover:bg-[var(--card-elev)] transition"
+                >
+                  Request refill
+                </Link>
+              </div>
+            </div>
+          </div>
         </div>
       </section>
-      <div className={styles.sectionHeading}>
-        <div>
-          <h2>{q ? `Results for “${q}”` : origin ? "Nearest medicines first" : "Available medicines"}</h2>
-          <p>
-            {q
-              ? "Review the exact name, strength, and form before continuing."
-              : origin ? "Approximate distance to the supplying pharmacy." : "Share your location to sort by distance."}
-          </p>
-        </div>
-        {data && (
-          <span className={styles.count}>
-            {data.total} listing{data.total === 1 ? "" : "s"}
-          </span>
-        )}
-      </div>
-      <nav className={styles.toggles} aria-label="Stock availability">
-        <Link
-          href={stockHref(false)}
-          aria-current={inStock ? "page" : undefined}
-        >
-          In stock
-        </Link>
-        <Link
-          href={stockHref(true)}
-          aria-current={!inStock ? "page" : undefined}
-        >
-          All listings
-        </Link>
-      </nav>
-      {!data ? (
-        <div role="alert" className={styles.empty}>
-          <PackageSearch size={32} aria-hidden />
-          <h3>We couldn’t load the medicine shelf.</h3>
-          <p>
-            Please refresh to try again. This doesn’t mean your medicine is out
-            of stock.
-          </p>
-          <Link href={stockHref(!inStock)} className={styles.primary}>
-            Try again <ArrowRight size={16} aria-hidden />
-          </Link>
-        </div>
-      ) : data.items.length ? (
-        <>
-          <MedicineCatalogGrid items={data.items} />
-          <Pagination
-            page={page}
-            total={data.total}
-            pageSize={PAGE_SIZE}
-            basePath="/medicines"
-            variant="platform"
-            queryParams={{ q, category, stock: inStock ? undefined : "all" }}
-          />
-        </>
-      ) : (
-        <div className={styles.empty}>
-          <PackageSearch size={34} aria-hidden />
-          <h3>
-            {q
-              ? "No matching medicine listings yet."
-              : "The medicine shelf is waiting to be stocked."}
-          </h3>
-          <p>
-            {q
-              ? "Check the spelling, try the generic name, or include all listings. You can also upload your prescription to check several medicines together."
-              : "Published pharmacy inventory will appear here. You can still prepare a prescription search or explore available care services."}
-          </p>
-          <Link
-            href={q ? "/medicines?stock=all" : "/prescription"}
-            className={styles.primary}
-          >
-            {q ? "Explore all listings" : "Start with a prescription"}
-            <ArrowRight size={16} aria-hidden />
-          </Link>
-          <Link href="/services" className={styles.primary}>
-            Explore services
-          </Link>
-        </div>
-      )}
-      <p className={styles.bottomNote}>
-        Found a medicine? Open its details to continue. You can inspect the
-        supplying pharmacy’s profile for contacts, directions, and enquiries at
-        any time.
-      </p>
     </div>
   );
 }

@@ -53,7 +53,7 @@ export function ContextualTaskSurface({
   return (
     <nav
       aria-label="Contextual task surface"
-      className="aether-contextual-surface"
+      className="afyvia-contextual-surface"
     >
       <div className="flex items-center gap-1.5 shrink-0 text-xs font-semibold text-[var(--admin-accent-text)] pr-2 border-r border-[var(--admin-border)]">
         <Zap size={14} className="text-[var(--admin-accent)]" />
@@ -66,7 +66,7 @@ export function ContextualTaskSurface({
             key={action.id}
             href={action.href}
             onClick={() => startNavigation(action.href, action.label)}
-            className={`aether-context-chip ${
+            className={`afyvia-context-chip ${
               action.variant === "primary" ? "primary" : ""
             }`}
             title={action.description}
@@ -84,7 +84,7 @@ export function ContextualTaskSurface({
               onClick={() => setMenuOpen((prev) => !prev)}
               aria-expanded={menuOpen}
               aria-haspopup="true"
-              className="aether-context-chip subtle"
+              className="afyvia-context-chip subtle"
             >
               <span>More</span>
               <ChevronDown
@@ -94,7 +94,7 @@ export function ContextualTaskSurface({
             </button>
 
             {menuOpen && (
-              <div className="aether-context-dropdown" role="menu">
+              <div className="afyvia-context-dropdown" role="menu">
                 {secondaryActions.map((action) => (
                   <Link
                     key={action.id}
@@ -104,7 +104,7 @@ export function ContextualTaskSurface({
                       startNavigation(action.href, action.label);
                       setMenuOpen(false);
                     }}
-                    className="aether-context-dropdown-item"
+                    className="afyvia-context-dropdown-item"
                   >
                     <WorkspaceIcon name={action.icon} size={15} />
                     <div>

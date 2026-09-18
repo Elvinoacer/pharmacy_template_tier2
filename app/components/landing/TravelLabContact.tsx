@@ -45,7 +45,7 @@ export default function TravelLabContact() {
                   <span>Find a pharmacy</span>
                   <ArrowRight className="h-4 w-4" />
                 </Link>
-                <a href="https://wa.me/254790670542?text=Hello%20Aether%20Healthcare,%20I%20have%20an%20inquiry." target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2.5 rounded-full border border-white/15 bg-black/40 px-7 py-3.5 text-sm font-semibold text-white shadow-sm backdrop-blur-md transition-all hover:border-white/30 hover:bg-black/60 active:scale-95 sm:text-base">
+                <a href="https://wa.me/254790670542?text=Hello%20Afyvia%20Healthcare,%20I%20have%20an%20inquiry." target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2.5 rounded-full border border-white/15 bg-black/40 px-7 py-3.5 text-sm font-semibold text-white shadow-sm backdrop-blur-md transition-all hover:border-white/30 hover:bg-black/60 active:scale-95 sm:text-base">
                   <MessageCircle className="h-4 w-4 text-[#ffd700]" />
                   <span>Ask on WhatsApp</span>
                 </a>

@@ -1789,7 +1789,7 @@ export async function adminCreateOrderAction(
           channel: "email",
           purpose: "transactional",
           recipient: { email: result.email },
-          subject: "Welcome to Aether Pharmacy — complete your account",
+          subject: "Welcome to Afyvia Pharmacy — complete your account",
           body:
             `Hi ${fullName},\n\n` +
             `Your account was created at our pharmacy counter. Verify your email and finish setup:\n\n` +
@@ -1932,7 +1932,7 @@ export async function adminCreateOrderAction(
         if (!finalCustomerId) {
           const walkInName = String(formData.get("customerName") || "Walk-in Patient").trim();
           const walkInPhone = guestPhone || String(formData.get("customerPhone") || "").trim() || null;
-          const walkInEmail = `guest-${randomUUID()}@guest.aether.internal`;
+          const walkInEmail = `guest-${randomUUID()}@guest.afyvia.internal`;
 
           const u = await tx.user.create({
             data: {
@@ -2895,7 +2895,7 @@ export async function adminInterveneMissedRefillAction(
       customerId,
       prescriptionId,
       channel,
-      customSubject: "Clinical Adherence Follow-up from Aether Pharmacy",
+      customSubject: "Clinical Adherence Follow-up from Afyvia Pharmacy",
       customBody: message,
       actorId: user.id,
     });

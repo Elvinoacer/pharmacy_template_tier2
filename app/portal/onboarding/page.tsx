@@ -39,7 +39,7 @@ export default async function OnboardingPage({
         </Link>
 
         <section className={styles.card} aria-labelledby="onboarding-title">
-          <p className={styles.kicker}>Welcome to Aether</p>
+          <p className={styles.kicker}>Welcome to Afyvia</p>
           <h1 id="onboarding-title" className={styles.title}>
             Let&apos;s get you started
           </h1>

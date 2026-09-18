@@ -302,8 +302,8 @@ export async function logFollowUpCall(input: {
   // 3. Optionally send summary message to patient / caregiver
   if (input.sendSummaryNotification && input.callOutcome.startsWith("reached")) {
     const medText = rx ? ` regarding your ${rx.medicineName}` : "";
-    const subject = "Care Follow-up from Aether Pharmacy";
-    const body = `Hello ${customer.fullName}, thank you for speaking with our pharmacy team${medText}. We are here to support your health journey. If you ever have questions or need a refill, reply here or access your portal at https://aetherpharmacy.com/portal.`;
+    const subject = "Care Follow-up from Afyvia Pharmacy";
+    const body = `Hello ${customer.fullName}, thank you for speaking with our pharmacy team${medText}. We are here to support your health journey. If you ever have questions or need a refill, reply here or access your portal at https://afyviapharmacy.com/portal.`;
 
     await sendDelivery({
       channel: customer.preferredCommunication === "whatsapp" ? "whatsapp" : "email",

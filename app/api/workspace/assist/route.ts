@@ -59,7 +59,7 @@ export async function POST(request: Request) {
           messages: [
             {
               role: "system",
-              content: `You are the Aether Workspace Command Assistant for an authenticated healthcare & pharmacy platform.
+              content: `You are the Afyvia Workspace Command Assistant for an authenticated healthcare & pharmacy platform.
 Role: ${role}
 User: ${user.fullName || user.email} (${user.role})
 Current screen: ${currentPath || "workspace"}
@@ -101,7 +101,7 @@ Respond with JSON strictly in this format:
           }
         }
       } catch (err) {
-        console.warn("[Aether Workspace Assist] Groq fallback:", err);
+        console.warn("[Afyvia Workspace Assist] Groq fallback:", err);
       }
     }
 
@@ -132,7 +132,7 @@ Respond with JSON strictly in this format:
       suggestedActions: suggestedActions.slice(0, 4),
     });
   } catch (error) {
-    console.error("[Aether Workspace Assist Error]", error);
+    console.error("[Afyvia Workspace Assist Error]", error);
     return NextResponse.json(
       { error: "Internal workspace assist error" },
       { status: 500 }

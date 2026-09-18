@@ -29,7 +29,7 @@ interface TravelLabHeroProps {
 const SCENES = [
   {
     src: "https://pub-cc07856d657b4a7197710051042b3eda.r2.dev/images/landing/hero_image_0.png",
-    alt: "Aether pharmacy apothecary with natural supplements and care counter",
+    alt: "Afyvia pharmacy apothecary with natural supplements and care counter",
     motion: "drift-east",
   },
   {

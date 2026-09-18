@@ -9,6 +9,9 @@ import {
   HeartPulse,
   LocateFixed,
   MapPin,
+  MessageCircle,
+  Navigation,
+  PhoneCall,
   Pill,
   Radio,
   Store,
@@ -27,6 +30,10 @@ export type RadarItem = {
   subDetail?: string;
   price?: number | null;
   stock?: number | null;
+  phone?: string | null;
+  whatsapp?: string | null;
+  actionLabel?: string;
+  badge?: string;
   href: string;
 };
 
@@ -36,6 +43,8 @@ type Props = {
   onRequestLocation?: () => void;
   title?: string;
   subtitle?: string;
+  defaultType?: "all" | "pharmacy" | "medicine" | "service";
+  hideTypeFilter?: boolean;
 };
 
 /** Calculate bearing in radians from Point A to Point B */
@@ -62,21 +71,31 @@ export default function CareRadar({
   onRequestLocation,
   title = "Care Proximity Radar",
   subtitle = "Live geographic scanning of nearby pharmacies, stock listings, and clinical services.",
+  defaultType = "all",
+  hideTypeFilter = false,
 }: Props) {
   const [selectedId, setSelectedId] = useState<string | null>(null);
-  const [filterType, setFilterType] = useState<"all" | "pharmacy" | "medicine" | "service">("all");
+  const [filterType, setFilterType] = useState<"all" | "pharmacy" | "medicine" | "service">(defaultType);
+  const [maxDistanceFilter, setMaxDistanceFilter] = useState<number | null>(null);
+
+  // Check distinct types
+  const distinctTypes = useMemo(() => {
+    return Array.from(new Set(items.map((i) => i.type)));
+  }, [items]);
+  const showTypeSwitcher = !hideTypeFilter && distinctTypes.length > 1;
 
   // Center coordinate (default to Nairobi CBD if user location not yet permitted)
   const center = userLocation || { lat: -1.286389, lng: 36.817223 };
 
-  // Filter items with coordinates
+  // Filter items with coordinates and distance cap
   const validItems = useMemo(() => {
     return items.filter((it) => {
       if (it.latitude == null || it.longitude == null) return false;
-      if (filterType !== "all" && it.type !== filterType) return false;
+      if (showTypeSwitcher && filterType !== "all" && it.type !== filterType) return false;
+      if (maxDistanceFilter != null && it.distanceKm != null && it.distanceKm > maxDistanceFilter) return false;
       return true;
     });
-  }, [items, filterType]);
+  }, [items, showTypeSwitcher, filterType, maxDistanceFilter]);
 
   // Determine dynamic max range (default to 25 km, minimum 5 km, capped at 100 km)
   const maxRangeKm = useMemo(() => {
@@ -136,45 +155,84 @@ export default function CareRadar({
         </div>
 
         <div className="flex flex-wrap items-center gap-2">
-          {/* Type filters */}
-          <div className="inline-flex rounded-xl bg-black/30 p-1 border border-white/10 text-xs">
-            <button
-              type="button"
-              onClick={() => setFilterType("all")}
-              className={`rounded-lg px-2.5 py-1 text-[11px] font-semibold transition ${
-                filterType === "all" ? "bg-teal-500 text-black shadow" : "text-teal-200/70 hover:text-white"
-              }`}
-            >
-              All ({items.length})
-            </button>
-            <button
-              type="button"
-              onClick={() => setFilterType("pharmacy")}
-              className={`rounded-lg px-2.5 py-1 text-[11px] font-semibold transition ${
-                filterType === "pharmacy" ? "bg-emerald-500 text-black shadow" : "text-teal-200/70 hover:text-white"
-              }`}
-            >
-              Pharmacies
-            </button>
-            <button
-              type="button"
-              onClick={() => setFilterType("medicine")}
-              className={`rounded-lg px-2.5 py-1 text-[11px] font-semibold transition ${
-                filterType === "medicine" ? "bg-cyan-500 text-black shadow" : "text-teal-200/70 hover:text-white"
-              }`}
-            >
-              Medicines
-            </button>
-            <button
-              type="button"
-              onClick={() => setFilterType("service")}
-              className={`rounded-lg px-2.5 py-1 text-[11px] font-semibold transition ${
-                filterType === "service" ? "bg-amber-400 text-black shadow" : "text-teal-200/70 hover:text-white"
-              }`}
-            >
-              Services
-            </button>
-          </div>
+          {showTypeSwitcher ? (
+            /* Type filters */
+            <div className="inline-flex rounded-xl bg-black/30 p-1 border border-white/10 text-xs">
+              <button
+                type="button"
+                onClick={() => setFilterType("all")}
+                className={`rounded-lg px-2.5 py-1 text-[11px] font-semibold transition ${
+                  filterType === "all" ? "bg-teal-500 text-black shadow" : "text-teal-200/70 hover:text-white"
+                }`}
+              >
+                All ({items.length})
+              </button>
+              {distinctTypes.includes("pharmacy") && (
+                <button
+                  type="button"
+                  onClick={() => setFilterType("pharmacy")}
+                  className={`rounded-lg px-2.5 py-1 text-[11px] font-semibold transition ${
+                    filterType === "pharmacy" ? "bg-emerald-500 text-black shadow" : "text-teal-200/70 hover:text-white"
+                  }`}
+                >
+                  Pharmacies
+                </button>
+              )}
+              {distinctTypes.includes("medicine") && (
+                <button
+                  type="button"
+                  onClick={() => setFilterType("medicine")}
+                  className={`rounded-lg px-2.5 py-1 text-[11px] font-semibold transition ${
+                    filterType === "medicine" ? "bg-cyan-500 text-black shadow" : "text-teal-200/70 hover:text-white"
+                  }`}
+                >
+                  Medicines
+                </button>
+              )}
+              {distinctTypes.includes("service") && (
+                <button
+                  type="button"
+                  onClick={() => setFilterType("service")}
+                  className={`rounded-lg px-2.5 py-1 text-[11px] font-semibold transition ${
+                    filterType === "service" ? "bg-amber-400 text-black shadow" : "text-teal-200/70 hover:text-white"
+                  }`}
+                >
+                  Services
+                </button>
+              )}
+            </div>
+          ) : (
+            /* Quick range filters */
+            <div className="inline-flex rounded-xl bg-black/30 p-1 border border-white/10 text-xs">
+              <button
+                type="button"
+                onClick={() => setMaxDistanceFilter(null)}
+                className={`rounded-lg px-2.5 py-1 text-[11px] font-semibold transition ${
+                  maxDistanceFilter === null ? "bg-teal-500 text-black shadow" : "text-teal-200/70 hover:text-white"
+                }`}
+              >
+                All ({items.length})
+              </button>
+              <button
+                type="button"
+                onClick={() => setMaxDistanceFilter(10)}
+                className={`rounded-lg px-2.5 py-1 text-[11px] font-semibold transition ${
+                  maxDistanceFilter === 10 ? "bg-teal-500 text-black shadow" : "text-teal-200/70 hover:text-white"
+                }`}
+              >
+                ≤ 10 km
+              </button>
+              <button
+                type="button"
+                onClick={() => setMaxDistanceFilter(25)}
+                className={`rounded-lg px-2.5 py-1 text-[11px] font-semibold transition ${
+                  maxDistanceFilter === 25 ? "bg-teal-500 text-black shadow" : "text-teal-200/70 hover:text-white"
+                }`}
+              >
+                ≤ 25 km
+              </button>
+            </div>
+          )}
 
           {!userLocation && onRequestLocation && (
             <button
@@ -183,14 +241,14 @@ export default function CareRadar({
               className="inline-flex items-center gap-1.5 rounded-xl border border-teal-400/40 bg-teal-500/10 px-3 py-1.5 text-xs font-bold text-teal-300 transition hover:bg-teal-500/20"
             >
               <LocateFixed className="h-3.5 w-3.5" />
-              Calibrate with GPS
+              <span>Near me</span>
             </button>
           )}
         </div>
       </div>
 
       {/* Radar Canvas Area */}
-      <div className="relative mx-auto aspect-square w-full max-w-[500px] select-none rounded-full border border-teal-500/30 bg-radial from-[#0d3b32]/40 via-[#07241e]/80 to-[#041511] p-3 shadow-inner">
+      <div className="relative mx-auto aspect-square w-full max-w-[340px] select-none rounded-full border border-teal-500/30 bg-radial from-[#0d3b32]/40 via-[#07241e]/80 to-[#041511] p-3 shadow-inner sm:max-w-[440px] md:max-w-[480px]">
         {/* Concentric rings */}
         {rings.map((factor, idx) => {
           const ringKm = Math.round(maxRangeKm * factor);
@@ -237,7 +295,7 @@ export default function CareRadar({
           </div>
         </div>
 
-        {/* Radar Blips */}
+        {/* Radar Blips with generous touch target */}
         {blips.map((blip) => {
           const isSelected = blip.id === selectedId;
           const toneColor =
@@ -252,13 +310,13 @@ export default function CareRadar({
               key={blip.id}
               type="button"
               onClick={() => setSelectedId(isSelected ? null : blip.id)}
-              className="group absolute -translate-x-1/2 -translate-y-1/2 focus:outline-none"
+              className="group absolute -translate-x-1/2 -translate-y-1/2 flex h-10 w-10 items-center justify-center focus:outline-none touch-manipulation"
               style={{ left: `${blip.x}%`, top: `${blip.y}%` }}
               aria-label={`${blip.name}, ${blip.distanceKm ? distanceLabel(blip.distanceKm) : "nearby"}`}
             >
               {/* Radar ping ring when selected */}
               {isSelected && (
-                <span className="animate-radar-ring absolute -inset-2 rounded-full bg-white/50" />
+                <span className="animate-radar-ring absolute inset-0 rounded-full bg-white/50" />
               )}
 
               <div
@@ -273,7 +331,7 @@ export default function CareRadar({
 
               {/* Mini floating label on hover/select */}
               <span
-                className={`pointer-events-none absolute left-1/2 top-5 -translate-x-1/2 whitespace-nowrap rounded-md bg-black/80 px-1.5 py-0.5 text-[9px] font-bold text-white backdrop-blur transition-opacity ${
+                className={`pointer-events-none absolute left-1/2 top-7 -translate-x-1/2 whitespace-nowrap rounded-md bg-black/85 px-1.5 py-0.5 text-[9px] font-bold text-white backdrop-blur transition-opacity ${
                   isSelected ? "opacity-100 ring-1 ring-teal-400" : "opacity-0 group-hover:opacity-100"
                 }`}
               >
@@ -284,9 +342,65 @@ export default function CareRadar({
         })}
       </div>
 
+      {/* Horizontal contact chips for fast mobile touch switching */}
+      {blips.length > 0 && (
+        <div className="mt-4 flex gap-1.5 overflow-x-auto pb-1.5 text-xs">
+          {blips.map((blip) => {
+            const isSelected = blip.id === selectedId;
+            return (
+              <button
+                key={`chip-${blip.id}`}
+                type="button"
+                onClick={() => setSelectedId(isSelected ? null : blip.id)}
+                className={`inline-flex shrink-0 items-center gap-1.5 rounded-full px-2.5 py-1 text-left transition border ${
+                  isSelected
+                    ? "bg-teal-500/20 border-teal-400 text-white ring-1 ring-teal-400 shadow-sm"
+                    : "bg-black/30 border-white/10 text-teal-100/70 hover:bg-white/10 hover:text-white"
+                }`}
+              >
+                <span
+                  className={`h-2 w-2 rounded-full shrink-0 ${
+                    blip.type === "pharmacy"
+                      ? "bg-emerald-400"
+                      : blip.type === "medicine"
+                        ? "bg-cyan-400"
+                        : "bg-amber-400"
+                  }`}
+                />
+                <span className="font-semibold text-[11px] truncate max-w-[130px]">{blip.name}</span>
+                {blip.distanceKm != null && (
+                  <span className="text-[10px] font-mono text-teal-300">
+                    {distanceLabel(blip.distanceKm)}
+                  </span>
+                )}
+              </button>
+            );
+          })}
+        </div>
+      )}
+
+      {/* Empty fallback when filtered out */}
+      {blips.length === 0 && (
+        <div className="mt-4 rounded-xl border border-teal-500/20 bg-black/40 p-4 text-center text-xs text-teal-200/70">
+          <p>No locations match the selected distance or type filter.</p>
+          {(maxDistanceFilter !== null || filterType !== "all") && (
+            <button
+              type="button"
+              onClick={() => {
+                setMaxDistanceFilter(null);
+                setFilterType("all");
+              }}
+              className="mt-2 inline-flex items-center gap-1 rounded-lg border border-teal-400/40 bg-teal-500/20 px-3 py-1 text-xs font-semibold text-teal-200 hover:bg-teal-500/30"
+            >
+              Reset filters & show all
+            </button>
+          )}
+        </div>
+      )}
+
       {/* Selected Item Card / Info Sheet */}
       {selectedItem ? (
-        <div className="relative mt-6 rounded-2xl border border-teal-400/30 bg-[#0a2923] p-4 text-white shadow-xl animate-in fade-in slide-in-from-bottom-2">
+        <div className="relative mt-4 rounded-2xl border border-teal-400/30 bg-[#0a2923] p-4 text-white shadow-xl animate-in fade-in slide-in-from-bottom-2">
           <div className="flex items-start justify-between gap-3">
             <div className="flex items-start gap-3">
               <div
@@ -313,6 +427,11 @@ export default function CareRadar({
                       {distanceLabel(selectedItem.distanceKm)}
                     </span>
                   )}
+                  {selectedItem.badge && (
+                    <span className="rounded-full bg-teal-500/20 px-2 py-0.5 text-[9px] font-semibold text-teal-200">
+                      {selectedItem.badge}
+                    </span>
+                  )}
                 </div>
 
                 <h4 className="mt-1 text-base font-bold text-white">{selectedItem.name}</h4>
@@ -335,7 +454,7 @@ export default function CareRadar({
             </button>
           </div>
 
-          <div className="mt-4 flex items-center justify-between border-t border-white/10 pt-3">
+          <div className="mt-4 flex flex-wrap items-center justify-between gap-3 border-t border-white/10 pt-3">
             <div>
               {selectedItem.price != null && (
                 <span className="text-sm font-bold text-emerald-300">
@@ -349,20 +468,61 @@ export default function CareRadar({
               )}
             </div>
 
-            <Link
-              href={selectedItem.href}
-              className="inline-flex items-center gap-1.5 rounded-xl bg-teal-500 px-3.5 py-2 text-xs font-bold text-black shadow transition hover:bg-teal-400"
-            >
-              <span>View Details</span>
-              <ArrowRight className="h-3.5 w-3.5" />
-            </Link>
+            <div className="flex flex-wrap items-center gap-2">
+              {selectedItem.phone && (
+                <a
+                  href={`tel:${selectedItem.phone.replace(/[^\d+]/g, "")}`}
+                  className="inline-flex h-8 w-8 items-center justify-center rounded-lg border border-white/20 bg-white/5 text-teal-200 hover:bg-white/15"
+                  aria-label="Call"
+                >
+                  <PhoneCall className="h-3.5 w-3.5" />
+                </a>
+              )}
+              {selectedItem.whatsapp && (
+                <a
+                  href={`https://wa.me/${selectedItem.whatsapp.replace(/\D/g, "")}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex h-8 w-8 items-center justify-center rounded-lg border border-white/20 bg-white/5 text-teal-200 hover:bg-white/15"
+                  aria-label="WhatsApp"
+                >
+                  <MessageCircle className="h-3.5 w-3.5" />
+                </a>
+              )}
+              {selectedItem.latitude != null && selectedItem.longitude != null && (
+                <a
+                  href={`https://www.google.com/maps/dir/?api=1&destination=${selectedItem.latitude},${selectedItem.longitude}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex h-8 w-8 items-center justify-center rounded-lg border border-white/20 bg-white/5 text-teal-200 hover:bg-white/15"
+                  aria-label="Directions"
+                >
+                  <Navigation className="h-3.5 w-3.5" />
+                </a>
+              )}
+
+              <Link
+                href={selectedItem.href}
+                className="inline-flex items-center gap-1.5 rounded-xl bg-teal-500 px-3.5 py-1.5 text-xs font-bold text-black shadow transition hover:bg-teal-400"
+              >
+                <span>
+                  {selectedItem.actionLabel ||
+                    (selectedItem.type === "service"
+                      ? "Book Service"
+                      : selectedItem.type === "medicine"
+                        ? "Reserve / Order"
+                        : "Visit Storefront")}
+                </span>
+                <ArrowRight className="h-3.5 w-3.5" />
+              </Link>
+            </div>
           </div>
         </div>
       ) : (
         <div className="mt-4 flex items-center justify-between text-xs text-teal-200/60">
           <p className="flex items-center gap-1.5">
             <Compass className="h-3.5 w-3.5 text-teal-400" />
-            <span>Tap any blip on the radar to inspect distance, stock, and directions.</span>
+            <span>Tap any blip or contact below to inspect distance, directions, and action options.</span>
           </p>
           <span className="font-mono text-[11px] text-teal-300">
             {blips.length} contact{blips.length === 1 ? "" : "s"} locked

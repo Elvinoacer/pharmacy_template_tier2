@@ -159,7 +159,7 @@ export default function LandingDirectorySection({
             {filteredPharmacies.map((p, idx) => {
               const whatsappUrl = p.whatsapp
                 ? `https://wa.me/${p.whatsapp.replace(/\D/g, "")}?text=${encodeURIComponent(
-                    `Hello ${p.name}, I have a prescription inquiry via Aether.`
+                    `Hello ${p.name}, I have a prescription inquiry via Afyvia.`
                   )}`
                 : null;
 

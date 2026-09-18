@@ -159,7 +159,7 @@ export function VerificationInformationStep({
       <header className={`${styles.formHead} ${polish.heading}`}>
         <h2>Share what you have — we’ll review the rest</h2>
         <p>
-          Add the verification details and documentation currently available to you. Missing PPB or licensing paperwork does not prevent you from submitting an application; Aether will review the information before approval.
+          Add the verification details and documentation currently available to you. Missing PPB or licensing paperwork does not prevent you from submitting an application; Afyvia will review the information before approval.
         </p>
       </header>
 
@@ -449,7 +449,7 @@ export function VerificationInformationStep({
                 <strong className="block text-sm font-bold text-teal-950 dark:text-teal-100">
                   Applicant Authority Declaration (Required)
                 </strong>
-                I confirm that I am authorised to register and represent this pharmacy on the Aether Network, and that the information provided is accurate to the best of my knowledge.
+                I confirm that I am authorised to register and represent this pharmacy on the Afyvia Network, and that the information provided is accurate to the best of my knowledge.
               </div>
             </label>
           </section>

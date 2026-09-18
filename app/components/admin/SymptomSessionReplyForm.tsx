@@ -21,7 +21,7 @@ export default function SymptomSessionReplyForm({
   const alreadyResolved = status === "resolved" || status === "closed";
 
   function refreshAttention() {
-    window.dispatchEvent(new Event("aether:attention-refresh"));
+    window.dispatchEvent(new Event("afyvia:attention-refresh"));
   }
 
   async function postReply(opts: { content: string; markResolved: boolean }) {

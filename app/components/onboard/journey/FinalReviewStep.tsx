@@ -55,7 +55,7 @@ export function FinalReviewStep({ snapshot }: { snapshot: PharmacyOnboardingSnap
       <header className={`${styles.formHead} ${polish.heading}`}>
         <h2>Review your application</h2>
         <p>
-          Confirm your details before submitting to the Aether review team. You can edit any section below.
+          Confirm your details before submitting to the Afyvia review team. You can edit any section below.
         </p>
       </header>
 

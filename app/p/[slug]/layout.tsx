@@ -8,8 +8,8 @@ export default async function PharmacyLayout({ children, params }: { children: R
   if (!data) notFound();
 
   return (
-    <TenantBrandProvider value={{ name: data.profile.name, slug: data.profile.slug, network: "Aether" }}>
-      <div className="aether-artwork-surface min-h-screen">{children}</div>
+    <TenantBrandProvider value={{ name: data.profile.name, slug: data.profile.slug, network: "Afyvia" }}>
+      <div className="afyvia-artwork-surface min-h-screen">{children}</div>
     </TenantBrandProvider>
   );
 }

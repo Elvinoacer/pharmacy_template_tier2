@@ -298,7 +298,7 @@ export async function generateIcsCalendar(customerId: string): Promise<string> {
   const lines: string[] = [
     "BEGIN:VCALENDAR",
     "VERSION:2.0",
-    "PRODID:-//Aether Pharmacy//Medication Schedule//EN",
+    "PRODID:-//Afyvia Pharmacy//Medication Schedule//EN",
     "CALSCALE:GREGORIAN",
     "METHOD:PUBLISH",
     `X-WR-CALNAME:Medications - ${customer.fullName}`,
@@ -318,7 +318,7 @@ export async function generateIcsCalendar(customerId: string): Promise<string> {
     for (const slot of slots) {
       const [hh, mm] = slot.timeOfDay.split(":");
       const dtStart = `${startStr}T${hh}${mm}00`;
-      const uid = `med-dose-${rx.id}-${slot.timeOfDay.replace(":", "")}@aetherpharmacy.com`;
+      const uid = `med-dose-${rx.id}-${slot.timeOfDay.replace(":", "")}@afyviapharmacy.com`;
 
       const summary = slot.label
         ? `💊 Dose: ${rx.medicineName} (${slot.label})`
@@ -328,7 +328,7 @@ export async function generateIcsCalendar(customerId: string): Promise<string> {
         `Medication: ${rx.medicineName}`,
         rx.dosage ? `Dosage: ${rx.dosage}` : null,
         rx.prescriber ? `Prescriber: ${rx.prescriber}` : null,
-        "Aether Pharmacy Medication Adherence Reminder",
+        "Afyvia Pharmacy Medication Adherence Reminder",
       ].filter(Boolean).join("\\n");
 
       lines.push("BEGIN:VEVENT");
@@ -349,14 +349,14 @@ export async function generateIcsCalendar(customerId: string): Promise<string> {
     // Also add Refill Due event if scheduled
     if (rx.nextRefillDue) {
       const refillDueStr = toLocalDateInputValue(rx.nextRefillDue).replace(/-/g, "");
-      const refillUid = `refill-due-${rx.id}@aetherpharmacy.com`;
+      const refillUid = `refill-due-${rx.id}@afyviapharmacy.com`;
 
       lines.push("BEGIN:VEVENT");
       lines.push(`UID:${refillUid}`);
       lines.push(`DTSTAMP:${nowStamp}`);
       lines.push(`DTSTART;VALUE=DATE:${refillDueStr}`);
       lines.push(`SUMMARY:🔄 Refill Due: ${rx.medicineName}`);
-      lines.push(`DESCRIPTION:Prescription refill due for ${rx.medicineName}. Order via Aether Pharmacy portal.`);
+      lines.push(`DESCRIPTION:Prescription refill due for ${rx.medicineName}. Order via Afyvia Pharmacy portal.`);
       lines.push("BEGIN:VALARM");
       lines.push("TRIGGER:-P2D"); // 2 days before
       lines.push("ACTION:DISPLAY");

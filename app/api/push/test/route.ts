@@ -15,7 +15,7 @@ export async function POST() {
   const home = isStaff(user.role) ? "/admin/notifications" : "/portal/messages";
 
   const result = await dispatchPushToUser(user.id, {
-    title: isStaff(user.role) ? "Aether · staff alerts ready" : "Aether · you're connected",
+    title: isStaff(user.role) ? "Afyvia · staff alerts ready" : "Afyvia · you're connected",
     body: isStaff(user.role)
       ? "Refills, enquiries & escalations will arrive here."
       : "Dose reminders, refills & pharmacy notes — refined.",

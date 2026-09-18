@@ -44,7 +44,7 @@ export default async function DigitalCounsellingHubPage() {
       <PageHero
         eyebrow="Digital Pharmacy Standard"
         title="Digital Patient Medication Counselling Hub"
-        description="Every medicine prescribed or dispensed by Aether Pharmacy comes with comprehensive clinical counselling. Explore administration techniques, timing, food rules, storage, device protocols, missed-dose decisions, and when to seek medical attention."
+        description="Every medicine prescribed or dispensed by Afyvia Pharmacy comes with comprehensive clinical counselling. Explore administration techniques, timing, food rules, storage, device protocols, missed-dose decisions, and when to seek medical attention."
         crumbs={[
           { label: "Health Library", href: "/health" },
           { label: "Patient Medication Counselling" },

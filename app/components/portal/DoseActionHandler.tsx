@@ -124,7 +124,7 @@ export function DoseActionHandler() {
                   ? "Dose skipped · noted"
                   : "Snoozed · we'll nudge you in 10 min",
           });
-          window.dispatchEvent(new Event("aether:attention-refresh"));
+          window.dispatchEvent(new Event("afyvia:attention-refresh"));
           closeTimer = setTimeout(() => {
             if (cancelled) return;
             router.refresh();
@@ -157,11 +157,11 @@ export function DoseActionHandler() {
       const data: unknown = event.data;
       if (!data || typeof data !== "object") return;
       const message = data as { type?: unknown; url?: unknown };
-      if (message.type === "aether:dose-logged") {
-        window.dispatchEvent(new Event("aether:attention-refresh"));
+      if (message.type === "afyvia:dose-logged") {
+        window.dispatchEvent(new Event("afyvia:attention-refresh"));
         router.refresh();
       }
-      if (message.type === "aether:dose-navigate" && typeof message.url === "string") {
+      if (message.type === "afyvia:dose-navigate" && typeof message.url === "string") {
         try {
           const url = new URL(message.url, window.location.origin);
           if (url.origin === window.location.origin) {

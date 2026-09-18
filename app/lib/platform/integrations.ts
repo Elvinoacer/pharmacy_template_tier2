@@ -61,7 +61,7 @@ export function getTenantDarajaCallbackUrl(): string {
     return `https://${vercelHost.replace(/^https?:\/\//, "")}/api/payments/daraja/callback`;
   }
 
-  return process.env.DARAJA_CALLBACK_URL?.trim() || "https://aether.co.ke/api/payments/daraja/callback";
+  return process.env.DARAJA_CALLBACK_URL?.trim() || "https://afyvia.co.ke/api/payments/daraja/callback";
 }
 
 function platformDaraja(): DarajaCredentials | null {
@@ -188,7 +188,7 @@ export async function resolveTenantDarajaCredentials(
 /**
  * Resolve Daraja credentials.
  * If pharmacyId is supplied: resolves ONLY that pharmacy's credentials (fails closed).
- * If pharmacyId is null: resolves platform Daraja credentials for internal Aether platform use.
+ * If pharmacyId is null: resolves platform Daraja credentials for internal Afyvia platform use.
  */
 export async function resolveDarajaCredentials(
   pharmacyId: string | null,

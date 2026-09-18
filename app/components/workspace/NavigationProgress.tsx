@@ -124,9 +124,9 @@ export function NavigationProgressBar() {
       role="progressbar"
       aria-label={destinationLabel ? `Opening ${destinationLabel}…` : "Loading page…"}
       aria-busy="true"
-      className="aether-nav-progress-bar"
+      className="afyvia-nav-progress-bar"
     >
-      <div className="aether-nav-progress-indicator" />
+      <div className="afyvia-nav-progress-indicator" />
       {destinationLabel && (
         <span className="sr-only">Opening {destinationLabel}…</span>
       )}

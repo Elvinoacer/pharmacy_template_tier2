@@ -1,6 +1,6 @@
-# Aether Pharmacy Network — multi-tenancy
+# Afyvia Pharmacy Network — multi-tenancy
 
-Aether is a **pharmacy network**: many independent pharmacies share one platform,
+Afyvia is a **pharmacy network**: many independent pharmacies share one platform,
 one patient identity, and one super-admin console. Tenant data never mixes.
 
 ## Architecture
@@ -10,7 +10,7 @@ one patient identity, and one super-admin console. Tenant data never mixes.
 | Isolation | Shared Neon Postgres, `pharmacy_id` on every tenant table |
 | Storefront URL | `/p/{slug}` (rewritten in `proxy.ts` to existing public routes) |
 | Marketplace | `/` lists live, listed pharmacies |
-| Pharmacy CRM | `/admin` — scoped to the staff cookie `aether_staff_pharmacy` |
+| Pharmacy CRM | `/admin` — scoped to the staff cookie `afyvia_staff_pharmacy` |
 | Super-admin | `/platform` — `User.platformAdmin`, uses unscoped Prisma |
 | Patient identity | One `User` + `CustomerProfile` across the network |
 | Patient ↔ pharmacy | `customer_pharmacies` + per-pharmacy `loyalty_accounts` |
@@ -23,7 +23,7 @@ Postgres RLS denies the row (`app.current_pharmacy_id()` is NULL). Platform
 workers must call `withPlatformBypass()` so `app.platform_bypass = '1'`.
 
 Neon table-owner roles typically have `BYPASSRLS`, which ignores even
-`FORCE ROW LEVEL SECURITY`. The app therefore `SET ROLE aether_runtime`
+`FORCE ROW LEVEL SECURITY`. The app therefore `SET ROLE afyvia_runtime`
 (NOBYPASSRLS) on every pooled connection before setting the tenant GUC.
 
 `PharmacyIntegration` is tenant **configuration** (locale, timezone, POS key
@@ -53,7 +53,7 @@ Route prefix `/platform`. Capabilities:
 - Impersonate (sets staff cookie, opens `/admin` for that pharmacy)
 - Network stats
 
-Demo: `platform@aether.health` / `Password123!`
+Demo: `platform@afyvia.health` / `Password123!`
 
 ## Staff CRM (`/admin`)
 
@@ -65,9 +65,9 @@ use `/admin/select` or the sidebar switcher.
 
 One login. Prescriptions, refills, loyalty, and messages are **per pharmacy**.
 `/portal/pharmacies` lets a patient join another storefront and switch the
-active pharmacy (cookie `aether_pharmacy`).
+active pharmacy (cookie `afyvia_pharmacy`).
 
-Jane's demo account is linked to **Aether** and **Coast Care**.
+Jane's demo account is linked to **Afyvia** and **Coast Care**.
 
 ## Public pages
 
@@ -125,7 +125,7 @@ on `pharmacy_integrations`.
 2. Header `x-platform-bypass` (`/platform`)
 3. Header `x-pharmacy-id` (staff cookie, `/admin`)
 4. Header `x-pharmacy-slug` (`/p/{slug}` rewrite or public cookie)
-5. Cookies `aether_staff_pharmacy` / `aether_pharmacy`
+5. Cookies `afyvia_staff_pharmacy` / `afyvia_pharmacy`
 6. Else fail-closed
 
 ## Schema notes
@@ -140,6 +140,6 @@ on `pharmacy_integrations`.
 
 | Slug | Status | Notes |
 | --- | --- | --- |
-| `aether` | active, featured | Full demo catalogue |
+| `afyvia` | active, featured | Full demo catalogue |
 | `coast-care` | active | Second live pharmacy |
 | `highlands` | submitted | Sitting in the verification queue |

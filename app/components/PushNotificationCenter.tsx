@@ -5,7 +5,7 @@ import { Bell, BellOff, Check, X, AlertCircle, Zap, Smartphone } from "lucide-re
 import { usePushNotifications } from "@/app/lib/firebase/usePush";
 import { localTodayStr } from "@/app/lib/time";
 
-const DISMISS_KEY = "aether-push-banner-dismissed";
+const DISMISS_KEY = "afyvia-push-banner-dismissed";
 
 type Audience = "portal" | "admin";
 
@@ -32,7 +32,7 @@ export function PushNotificationCenter({ audience = "portal" }: { audience?: Aud
   // calling clearMessage only after success / explicit close).
   useEffect(() => {
     if (!lastMessage) return;
-    window.dispatchEvent(new Event("aether:attention-refresh"));
+    window.dispatchEvent(new Event("afyvia:attention-refresh"));
     const isDose =
       lastMessage.data?.actions === "medication_dose" ||
       lastMessage.data?.type === "medication_dose";
@@ -424,7 +424,7 @@ function PushToast({
             ? "Skipped · noted"
             : "Snoozed · 10 min",
       );
-      window.dispatchEvent(new Event("aether:attention-refresh"));
+      window.dispatchEvent(new Event("afyvia:attention-refresh"));
       setTimeout(onClose, 1600);
     } catch {
       setError("Could not update dose. Check your connection.");

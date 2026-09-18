@@ -8,7 +8,7 @@
 - `{name}`, `{phone}`, `{city}`, `{description}` tokens interpolate against live tenant facts; the `__DELIVERY__` bullet token renders the pharmacy's real delivery promise.
 
 ### Dynamic pages
-- `/storefront` (home), `/about`, `/faq`, `/delivery`, `/careers` now render from `getStorefrontView()` instead of hard-coded imports. The `/about` team section no longer gates on `slug === "aether"` — any tenant that customises its roster shows it; otherwise template content shows as designed.
+- `/storefront` (home), `/about`, `/faq`, `/delivery`, `/careers` now render from `getStorefrontView()` instead of hard-coded imports. The `/about` team section no longer gates on `slug === "afyvia"` — any tenant that customises its roster shows it; otherwise template content shows as designed.
 - New "room unavailable" state: an explicit `/p/{slug}` pointing at nothing live now renders a glassmorphic `StorefrontUnavailable` screen with marketplace links, instead of silently swapping to the network chooser. Chooser behaviour stays for generic (non-`/p/`) contexts.
 - `FaqAccordion` accepts an `items` prop (default remains the shared corpus), so network surfaces are untouched while storefronts pass tenant FAQs.
 - `CtaBanner` gained an `eyebrow` prop wired to template content.
@@ -24,7 +24,7 @@
 
 ### Data & SEO
 - `PharmacySettings.storefront Json @default("{}")` added with migration `20260827090000_storefront_template_overrides`.
-- Seed gives Coast Care an override document (coastal hero line, ocean-amber theme, custom bullets/delivery steps) so multi-tenancy is visible out of the box; Aether demonstrates pure-template rendering.
+- Seed gives Coast Care an override document (coastal hero line, ocean-amber theme, custom bullets/delivery steps) so multi-tenancy is visible out of the box; Afyvia demonstrates pure-template rendering.
 - `sitemap.xml` now emits `/p/{slug}` entries for every active, listed pharmacy.
 
 ### Validation

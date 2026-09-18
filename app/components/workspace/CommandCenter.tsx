@@ -75,8 +75,8 @@ export function CommandCenter({
   const triggerRef = useRef<HTMLButtonElement>(null);
   const listRef = useRef<HTMLUListElement>(null);
 
-  const pinnedKey = `aether:pinned:${role}`;
-  const recentsKey = `aether:recents:${role}`;
+  const pinnedKey = `afyvia:pinned:${role}`;
+  const recentsKey = `afyvia:recents:${role}`;
 
   // Hydrate pinned and recents from localStorage
   useEffect(() => {
@@ -267,12 +267,12 @@ export function CommandCenter({
       });
     }
 
-    // Add "Ask Aether" action when query exists
+    // Add "Ask Afyvia" action when query exists
     actionableItems.push({
-      id: "action-ask-aether",
-      label: `Ask Aether: “${query}”`,
+      id: "action-ask-afyvia",
+      label: `Ask Afyvia: “${query}”`,
       description: "Ask AI for workflow guidance, drug interactions, or navigation help",
-      href: "#ask-aether",
+      href: "#ask-afyvia",
       icon: "Sparkles",
       category: "ai",
       badge: "AI Assist",
@@ -320,8 +320,8 @@ export function CommandCenter({
     }
   }
 
-  // Handle Ask Aether natural language inquiry
-  const handleAskAether = async (text: string) => {
+  // Handle Ask Afyvia natural language inquiry
+  const handleAskAfyvia = async (text: string) => {
     setIsAiMode(true);
     setAiLoading(true);
     setAiAnswer(null);
@@ -358,8 +358,8 @@ export function CommandCenter({
   };
 
   const handleSelectItem = (item: ActionableItem) => {
-    if (item.category === "ai" || item.href === "#ask-aether") {
-      void handleAskAether(query);
+    if (item.category === "ai" || item.href === "#ask-afyvia") {
+      void handleAskAfyvia(query);
       return;
     }
 
@@ -418,14 +418,14 @@ export function CommandCenter({
         ref={triggerRef}
         type="button"
         onClick={openDialog}
-        aria-label="Open Aether Command Workspace (Press Command or Control K)"
-        className={`aether-command-bar-trigger ${triggerClassName}`}
+        aria-label="Open Afyvia Command Workspace (Press Command or Control K)"
+        className={`afyvia-command-bar-trigger ${triggerClassName}`}
       >
-        <span className="aether-command-bar-icon-wrap">
+        <span className="afyvia-command-bar-icon-wrap">
           <Search size={16} className="text-[var(--admin-accent)] shrink-0" aria-hidden />
         </span>
-        <span className="aether-command-bar-text truncate">{placeholder}</span>
-        <span className="aether-command-bar-kbd">
+        <span className="afyvia-command-bar-text truncate">{placeholder}</span>
+        <span className="afyvia-command-bar-kbd">
           <kbd aria-hidden>⌘</kbd>
           <kbd aria-hidden>K</kbd>
         </span>
@@ -435,8 +435,8 @@ export function CommandCenter({
       <dialog
         ref={dialogRef}
         closedby="any"
-        aria-label="Aether Command Center"
-        className="aether-command-dialog"
+        aria-label="Afyvia Command Center"
+        className="afyvia-command-dialog"
         onClose={() => setIsOpen(false)}
         onClick={(e) => {
           const rect = e.currentTarget.getBoundingClientRect();
@@ -450,9 +450,9 @@ export function CommandCenter({
           }
         }}
       >
-        <div className="aether-command-card">
+        <div className="afyvia-command-card">
           {/* Search Input Surface */}
-          <div className="aether-command-input-row">
+          <div className="afyvia-command-input-row">
             <Search size={20} className="text-[var(--admin-accent)] shrink-0" aria-hidden />
             <input
               ref={inputRef}
@@ -460,7 +460,7 @@ export function CommandCenter({
               role="combobox"
               aria-expanded={isOpen}
               aria-autocomplete="list"
-              aria-controls="aether-command-results-list"
+              aria-controls="afyvia-command-results-list"
               value={query}
               onChange={(e) => {
                 setQuery(e.target.value);
@@ -468,8 +468,8 @@ export function CommandCenter({
                 setIsAiMode(false);
               }}
               onKeyDown={handleKeyDown}
-              placeholder="Type a task, medicine, patient, or 'Ask Aether'…"
-              className="aether-command-input"
+              placeholder="Type a task, medicine, patient, or 'Ask Afyvia'…"
+              className="afyvia-command-input"
             />
             {query && (
               <button
@@ -480,7 +480,7 @@ export function CommandCenter({
                   setIsAiMode(false);
                   inputRef.current?.focus();
                 }}
-                className="aether-command-clear-btn"
+                className="afyvia-command-clear-btn"
                 aria-label="Clear search"
               >
                 <X size={16} />
@@ -489,7 +489,7 @@ export function CommandCenter({
             <button
               type="button"
               onClick={closeDialog}
-              className="aether-command-close-btn"
+              className="afyvia-command-close-btn"
               aria-label="Close command center"
             >
               <kbd>ESC</kbd>
@@ -498,16 +498,16 @@ export function CommandCenter({
 
           {/* AI Response Panel if activated */}
           {isAiMode && (
-            <div className="aether-ai-panel">
+            <div className="afyvia-ai-panel">
               <div className="flex items-center gap-2 mb-2">
                 <Bot size={18} className="text-teal-600 dark:text-teal-400" />
                 <span className="text-xs font-semibold uppercase tracking-wider text-teal-700 dark:text-teal-300">
-                  Aether Command Assistant
+                  Afyvia Command Assistant
                 </span>
               </div>
               {aiLoading ? (
                 <div className="flex items-center gap-3 py-2 text-sm text-[var(--admin-text-muted)]">
-                  <span className="aether-pulse-dot" />
+                  <span className="afyvia-pulse-dot" />
                   <span>Checking clinical and workflow context…</span>
                 </div>
               ) : (
@@ -540,12 +540,12 @@ export function CommandCenter({
           )}
 
           {/* Results / Suggestions Surface */}
-          <div className="aether-command-results-body">
+          <div className="afyvia-command-results-body">
             <ul
               ref={listRef}
-              id="aether-command-results-list"
+              id="afyvia-command-results-list"
               role="listbox"
-              className="aether-command-list"
+              className="afyvia-command-list"
             >
               {actionableItems.map((item, index) => {
                 const isSelected = index === selectedIndex;
@@ -557,39 +557,39 @@ export function CommandCenter({
                     key={item.id}
                     role="option"
                     aria-selected={isSelected}
-                    className={`aether-command-item ${isSelected ? "selected" : ""} ${isPending ? "is-navigating-pending" : ""}`}
+                    className={`afyvia-command-item ${isSelected ? "selected" : ""} ${isPending ? "is-navigating-pending" : ""}`}
                     onMouseEnter={() => setSelectedIndex(index)}
                     onClick={() => handleSelectItem(item)}
                   >
-                    <span className="aether-command-item-icon">
+                    <span className="afyvia-command-item-icon">
                       <WorkspaceIcon name={item.icon} size={18} />
                     </span>
 
-                    <div className="aether-command-item-content">
+                    <div className="afyvia-command-item-content">
                       <div className="flex items-center gap-2">
-                        <span className="aether-command-item-label">{item.label}</span>
+                        <span className="afyvia-command-item-label">{item.label}</span>
                         {item.badge && (
-                          <span className="aether-command-item-badge">{item.badge}</span>
+                          <span className="afyvia-command-item-badge">{item.badge}</span>
                         )}
                       </div>
                       {item.description && (
-                        <p className="aether-command-item-desc">{item.description}</p>
+                        <p className="afyvia-command-item-desc">{item.description}</p>
                       )}
                     </div>
 
-                    <div className="aether-command-item-actions">
-                      {item.href !== "#ask-aether" && !item.href.startsWith("#switch-theme") && (
+                    <div className="afyvia-command-item-actions">
+                      {item.href !== "#ask-afyvia" && !item.href.startsWith("#switch-theme") && (
                         <button
                           type="button"
                           onClick={(e) => togglePin(item.href, e)}
-                          className={`aether-command-pin-btn ${isPinnedItem ? "pinned" : ""}`}
+                          className={`afyvia-command-pin-btn ${isPinnedItem ? "pinned" : ""}`}
                           aria-label={isPinnedItem ? "Unpin location" : "Pin location"}
                           title={isPinnedItem ? "Unpin" : "Pin"}
                         >
                           <Pin size={14} />
                         </button>
                       )}
-                      <span className="aether-command-enter-hint" aria-hidden>
+                      <span className="afyvia-command-enter-hint" aria-hidden>
                         <CornerDownLeft size={13} />
                       </span>
                     </div>
@@ -598,18 +598,18 @@ export function CommandCenter({
               })}
 
               {actionableItems.length === 0 && (
-                <div className="aether-command-empty">
+                <div className="afyvia-command-empty">
                   <p className="font-semibold text-sm">No direct tasks match “{query}”</p>
                   <p className="text-xs text-[var(--admin-text-muted)] mt-1">
-                    Try asking Aether or browsing categories in the workspace rail.
+                    Try asking Afyvia or browsing categories in the workspace rail.
                   </p>
                   <button
                     type="button"
-                    onClick={() => void handleAskAether(query)}
+                    onClick={() => void handleAskAfyvia(query)}
                     className="mt-3 inline-flex items-center gap-2 rounded-xl bg-[var(--admin-accent-soft)] px-3.5 py-2 text-xs font-semibold text-[var(--admin-accent-text)] hover:bg-[var(--admin-hover)]"
                   >
                     <Sparkles size={15} />
-                    Ask Aether for assistance
+                    Ask Afyvia for assistance
                   </button>
                 </div>
               )}
@@ -617,7 +617,7 @@ export function CommandCenter({
           </div>
 
           {/* Footer keyboard hints */}
-          <div className="aether-command-footer">
+          <div className="afyvia-command-footer">
             <div className="flex items-center gap-4 text-xs text-[var(--admin-text-soft)]">
               <span className="flex items-center gap-1">
                 <kbd>↑</kbd> <kbd>↓</kbd> Navigate
@@ -630,7 +630,7 @@ export function CommandCenter({
               </span>
             </div>
             <span className="text-[11px] text-[var(--admin-text-soft)] font-medium">
-              Aether Command Workspace
+              Afyvia Command Workspace
             </span>
           </div>
         </div>

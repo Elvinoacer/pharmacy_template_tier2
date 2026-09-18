@@ -23,6 +23,7 @@ import {
   X,
 } from "lucide-react";
 import CareRadar, { type RadarItem } from "@/app/components/radar/CareRadar";
+import { distanceKm, distanceLabel } from "@/app/lib/proximity";
 import type { DirectoryPharmacy } from "@/app/lib/services/pharmacy-directory";
 
 const FALLBACK_COVERS = [
@@ -31,16 +32,6 @@ const FALLBACK_COVERS = [
   "https://pub-cc07856d657b4a7197710051042b3eda.r2.dev/images/gallery/comfortable_waiting_area.webp",
   "https://pub-cc07856d657b4a7197710051042b3eda.r2.dev/images/gallery/careful_dispensing.webp",
 ];
-
-const distanceKm = (aLat: number, aLng: number, bLat: number, bLng: number) => {
-  const r = 6371;
-  const dLat = ((bLat - aLat) * Math.PI) / 180;
-  const dLng = ((bLng - aLng) * Math.PI) / 180;
-  const x =
-    Math.sin(dLat / 2) ** 2 +
-    Math.cos((aLat * Math.PI) / 180) * Math.cos((bLat * Math.PI) / 180) * Math.sin(dLng / 2) ** 2;
-  return r * 2 * Math.atan2(Math.sqrt(x), Math.sqrt(1 - x));
-};
 
 type Props = {
   pharmacies: DirectoryPharmacy[];
@@ -130,7 +121,10 @@ export default function PharmacyDirectory({
           ...pharmacy,
           distance:
             position && pharmacy.latitude != null && pharmacy.longitude != null
-              ? distanceKm(position.lat, position.lng, pharmacy.latitude, pharmacy.longitude)
+              ? distanceKm(
+                  { latitude: position.lat, longitude: position.lng },
+                  { latitude: pharmacy.latitude, longitude: pharmacy.longitude },
+                )
               : null,
         }))
         .sort((a, b) => {
@@ -155,6 +149,10 @@ export default function PharmacyDirectory({
         subDetail:
           pharmacy.services?.slice(0, 2).join(" • ") ||
           (pharmacy.hasDelivery ? "Delivery Available" : undefined),
+        phone: pharmacy.phone,
+        whatsapp: pharmacy.whatsapp,
+        actionLabel: "Visit Storefront",
+        badge: pharmacy.hasDelivery ? "Delivery" : undefined,
         href: `/pharmacies/${pharmacy.slug}`,
       })),
     [sorted],
@@ -229,10 +227,10 @@ export default function PharmacyDirectory({
               type="button"
               onClick={requestLocation}
               disabled={locationState === "loading"}
-              className="inline-flex h-[46px] items-center justify-center gap-2 rounded-2xl bg-[#0d6e5a] px-4 text-xs font-bold text-white transition hover:bg-[#084c3f] disabled:opacity-60 sm:text-sm"
+              className="inline-flex h-[46px] items-center justify-center gap-2 rounded-2xl bg-[var(--brand)] px-4 text-xs font-bold text-[var(--background)] shadow-sm transition hover:brightness-95 disabled:opacity-60 sm:text-sm"
             >
               <LocateFixed className="h-4 w-4" aria-hidden />
-              <span>{locationState === "loading" ? "Finding…" : position ? "Location on" : "Near me"}</span>
+              <span>{locationState === "loading" ? "Finding…" : position ? "Nearby" : "Near me"}</span>
             </button>
 
             <button
@@ -244,10 +242,62 @@ export default function PharmacyDirectory({
               <SlidersHorizontal className="h-4 w-4" aria-hidden />
               Filters
               {activeFilterCount > 0 && (
-                <span className="rounded-full bg-[#0d6e5a] px-1.5 py-0.5 text-[9px] text-white">{activeFilterCount}</span>
+                <span className="rounded-full bg-[var(--brand)] px-1.5 py-0.5 text-[9px] font-bold text-[var(--background)]">{activeFilterCount}</span>
               )}
             </button>
           </div>
+        </div>
+
+        {/* Quick horizontal filter pills for 1-tap mobile browsing */}
+        <div className="mt-2.5 flex items-center gap-1.5 overflow-x-auto pb-1 text-xs">
+          <button
+            type="button"
+            onClick={() => {
+              setCategory("");
+              setDelivery(false);
+              syncUrl({ category: "", delivery: false });
+            }}
+            className={`shrink-0 rounded-full px-3 py-1 text-[11px] font-semibold transition border ${
+              !category && !delivery
+                ? "bg-[var(--brand)] border-[var(--brand)] text-[var(--background)] shadow-xs"
+                : "bg-[var(--card)] border-[var(--line-2)] text-[var(--muted)] hover:text-[var(--foreground)]"
+            }`}
+          >
+            All
+          </button>
+          <button
+            type="button"
+            onClick={() => {
+              const next = !delivery;
+              setDelivery(next);
+              syncUrl({ delivery: next });
+            }}
+            className={`shrink-0 rounded-full px-3 py-1 text-[11px] font-semibold transition border ${
+              delivery
+                ? "bg-[var(--brand)] border-[var(--brand)] text-[var(--background)] shadow-xs"
+                : "bg-[var(--card)] border-[var(--line-2)] text-[var(--muted)] hover:text-[var(--foreground)]"
+            }`}
+          >
+            🚚 Delivery
+          </button>
+          {categories.slice(0, 6).map((cat) => (
+            <button
+              key={cat.slug}
+              type="button"
+              onClick={() => {
+                const next = category === cat.slug ? "" : cat.slug;
+                setCategory(next);
+                syncUrl({ category: next });
+              }}
+              className={`shrink-0 rounded-full px-3 py-1 text-[11px] font-semibold transition border ${
+                category === cat.slug
+                  ? "bg-[var(--brand)] border-[var(--brand)] text-[var(--background)] shadow-xs"
+                  : "bg-[var(--card)] border-[var(--line-2)] text-[var(--muted)] hover:text-[var(--foreground)]"
+              }`}
+            >
+              {cat.name}
+            </button>
+          ))}
         </div>
 
         <div
@@ -293,7 +343,7 @@ export default function PharmacyDirectory({
             aria-pressed={delivery}
             className={`inline-flex h-11 items-center justify-center gap-2 rounded-xl border px-3 text-xs font-semibold transition ${
               delivery
-                ? "border-[#0d6e5a] bg-[#0d6e5a] text-white"
+                ? "border-[var(--brand)] bg-[var(--brand)] text-[var(--background)] shadow-xs"
                 : "border-[var(--line-2)] bg-[var(--card)] text-[var(--brand-deep)] hover:bg-[var(--brand-tint)]"
             }`}
           >
@@ -348,7 +398,7 @@ export default function PharmacyDirectory({
               onClick={() => setViewMode("grid")}
               className={`inline-flex items-center gap-1.5 rounded-lg px-2.5 py-1 text-xs font-semibold transition ${
                 viewMode === "grid"
-                  ? "bg-[#0d6e5a] text-white shadow-xs"
+                  ? "bg-[var(--brand)] text-[var(--background)] shadow-xs"
                   : "text-[var(--muted)] hover:text-[var(--foreground)]"
               }`}
               aria-label="Grid view"
@@ -362,7 +412,7 @@ export default function PharmacyDirectory({
               onClick={() => setViewMode("radar")}
               className={`inline-flex items-center gap-1.5 rounded-lg px-2.5 py-1 text-xs font-semibold transition ${
                 viewMode === "radar"
-                  ? "bg-[#0d6e5a] text-white shadow-xs"
+                  ? "bg-[var(--brand)] text-[var(--background)] shadow-xs"
                   : "text-[var(--muted)] hover:text-[var(--foreground)]"
               }`}
               aria-label="Radar proximity view"
@@ -421,7 +471,7 @@ export default function PharmacyDirectory({
           <button
             type="button"
             onClick={reset}
-            className="mt-5 rounded-xl bg-[#0d6e5a] px-4 py-2.5 text-xs font-bold text-white transition hover:bg-[#084c3f]"
+            className="mt-5 rounded-xl bg-[var(--brand)] px-4 py-2.5 text-xs font-bold text-[var(--background)] shadow-sm transition hover:brightness-95"
           >
             Reset search
           </button>
@@ -618,7 +668,7 @@ function PharmacyCard({
           <div className="flex gap-2">
             <Link
               href={`/pharmacies/${pharmacy.slug}`}
-              className="inline-flex h-10 min-w-0 flex-1 items-center justify-center gap-1.5 rounded-xl bg-[#0d6e5a] px-3 text-[11px] font-bold text-white transition hover:bg-[#084c3f]"
+              className="inline-flex h-10 min-w-0 flex-1 items-center justify-center gap-1.5 rounded-xl bg-[var(--brand)] px-3 text-[11px] font-bold text-[var(--background)] shadow-xs transition hover:brightness-95"
             >
               Visit storefront <ArrowRight className="h-3.5 w-3.5 shrink-0" aria-hidden />
             </Link>

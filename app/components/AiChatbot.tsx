@@ -286,7 +286,7 @@ export default function AiChatbot() {
         id={panelId}
         role="dialog"
         aria-modal="false"
-        aria-label="Aether Care Assistant"
+        aria-label="Afyvia Care Assistant"
         aria-hidden={!open}
         className={`pointer-events-auto absolute bottom-[4.75rem] right-3 flex w-[calc(100vw-1.5rem)] max-w-[25.5rem] origin-bottom-right flex-col overflow-hidden rounded-[1.75rem] border border-teal-900/10 bg-white/95 shadow-[0_24px_70px_rgba(8,40,32,0.22)] backdrop-blur-2xl transition-all duration-300 sm:right-6 sm:bottom-[5.25rem] ${
           open
@@ -311,7 +311,7 @@ export default function AiChatbot() {
               <span className="absolute -bottom-0.5 -right-0.5 h-3 w-3 rounded-full border-2 border-[#0a5c4c] bg-emerald-400" />
             </div>
             <div className="min-w-0 flex-1">
-              <p className="truncate text-sm font-semibold tracking-tight">Aether Care Assistant</p>
+              <p className="truncate text-sm font-semibold tracking-tight">Afyvia Care Assistant</p>
               <p className="flex items-center gap-1.5 text-[11px] text-teal-100/90 font-medium">
                 <span className={`inline-block h-1.5 w-1.5 rounded-full ${busy ? "animate-ping bg-amber-300" : "bg-emerald-300"}`} />
                 {busy ? "Thinking…" : "Online · 24/7 Pharmacy Support"}

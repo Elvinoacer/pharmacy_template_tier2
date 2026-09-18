@@ -21,7 +21,7 @@ const steps = [
   {
     num: "01",
     title: "Name & Owner Account",
-    desc: "Name your pharmacy, create your login password, and choose your web address (aether.health/p/your-name). Stays completely private until you launch.",
+    desc: "Name your pharmacy, create your login password, and choose your web address (afyvia.health/p/your-name). Stays completely private until you launch.",
     duration: "1 minute",
     href: "/onboard",
     cta: "Start pharmacy profile",
@@ -66,13 +66,13 @@ const steps = [
     href: "/onboard",
     cta: "Launch your pharmacy",
     icon: Rocket,
-    detail: "Just 1 saved refill (KES 2,500) covers 5 full months of Aether.",
+    detail: "Just 1 saved refill (KES 2,500) covers 5 full months of Afyvia.",
   },
 ] as const;
 
 export default function Walkthrough() {
   return (
-    <div className={`${styles.page} aether-route-surface aether-artwork-surface bg-transparent`}>
+    <div className={`${styles.page} afyvia-route-surface afyvia-artwork-surface bg-transparent`}>
       <div className={styles.frame}>
         <div className="flex items-center justify-between">
           <Link href="/for-pharmacies" className={styles.quietLink}>

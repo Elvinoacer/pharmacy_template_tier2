@@ -25,8 +25,8 @@ import {
   X,
 } from "lucide-react";
 
-const GUEST_KEY_STORAGE = "aether-feel-guest-key";
-const SESSION_IDS_STORAGE = "aether-feel-session-ids";
+const GUEST_KEY_STORAGE = "afyvia-feel-guest-key";
+const SESSION_IDS_STORAGE = "afyvia-feel-session-ids";
 
 type Category = {
   id: string;
@@ -252,7 +252,7 @@ export default function HowDoYouFeelClient({
               durationMs: 12_000,
             },
           );
-          window.dispatchEvent(new Event("aether:attention-refresh"));
+          window.dispatchEvent(new Event("afyvia:attention-refresh"));
         }
 
         // Only replace local state when something actually changed (avoids scroll thrash).

@@ -97,7 +97,7 @@ export function AdminShell({
 
   const brand = {
     name: membership?.name || "Pharmacy",
-    network: "Aether Pharmacy Network",
+    network: "Afyvia Pharmacy Network",
     slug: membership?.slug || null,
   };
 

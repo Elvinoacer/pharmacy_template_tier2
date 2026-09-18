@@ -19,7 +19,7 @@ export const PUBLIC_STOREFRONT_SECTIONS = [
 ] as const;
 
 /**
- * Pages that exist both as Aether platform URLs and as `/p/{slug}/...` shop pages.
+ * Pages that exist both as Afyvia platform URLs and as `/p/{slug}/...` shop pages.
  * Bare `/contact` (etc.) is always the platform page; pharmacy identity is only
  * `/p/{slug}/contact`.
  */

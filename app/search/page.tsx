@@ -10,7 +10,7 @@ import { buildPublicInventoryWhere } from "@/app/lib/services/public-medication-
 
 export const metadata: Metadata = {
   title: "Search",
-  description: "Search live medicines, services, vaccines, and medication categories across the Aether network.",
+  description: "Search live medicines, services, vaccines, and medication categories across the Afyvia network.",
   alternates: { canonical: "/search" },
   robots: { index: false, follow: true },
 };
@@ -150,7 +150,7 @@ export default async function SearchPage({ searchParams }: Props) {
   };
 
   return (
-    <div className="aether-route-surface min-h-screen overflow-x-hidden bg-transparent text-[var(--foreground)] transition-colors duration-300">
+    <div className="afyvia-route-surface min-h-screen overflow-x-hidden bg-transparent text-[var(--foreground)] transition-colors duration-300">
       <PageHero
         eyebrow="Search"
         title="Search Medicines & Services"

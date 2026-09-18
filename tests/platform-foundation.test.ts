@@ -129,7 +129,7 @@ describe("RBAC", () => {
 });
 
 describe("tenant isolation conventions", () => {
-  it("keeps fail-closed UUID distinct from the old Aether default", () => {
+  it("keeps fail-closed UUID distinct from the old Afyvia default", () => {
     assert.equal(ZERO_UUID, "00000000-0000-0000-0000-000000000000");
     assert.notEqual(ZERO_UUID, "00000000-0000-4000-a000-000000000001");
   });

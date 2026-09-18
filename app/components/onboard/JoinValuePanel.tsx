@@ -38,12 +38,12 @@ export default function JoinValuePanel({
       }
     };
 
-    window.addEventListener("aether-onboard-sync", handleSync);
-    return () => window.removeEventListener("aether-onboard-sync", handleSync);
+    window.addEventListener("afyvia-onboard-sync", handleSync);
+    return () => window.removeEventListener("afyvia-onboard-sync", handleSync);
   }, []);
 
   return (
-    <aside className={styles.value} aria-label="Why join Aether">
+    <aside className={styles.value} aria-label="Why join Afyvia">
       <div className="flex flex-wrap items-center justify-between gap-1">
         <p className={styles.kicker}>Pharmacy Membership</p>
         <span className="text-[11px] font-bold text-[var(--brand)] lg:hidden">

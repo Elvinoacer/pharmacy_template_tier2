@@ -936,7 +936,7 @@ export async function sendStaffMessage(data: {
       customerId: data.customerId,
       channel: data.channel === "portal" ? "in_app" : data.channel,
       type: "message",
-      title: personalizedSubject || "Message from Aether Pharmacy",
+      title: personalizedSubject || "Message from Afyvia Pharmacy",
       body: personalizedBody.slice(0, 280),
       fullBody: personalizedBody,
       status: data.scheduledFor ? "pending" : delivery.status,
@@ -949,7 +949,7 @@ export async function sendStaffMessage(data: {
   // Fire a web push to the customer immediately for non-scheduled messages.
   if (!data.scheduledFor && customer?.user?.id) {
     await dispatchPushToUser(customer.user.id, {
-      title: personalizedSubject || "Message from Aether Pharmacy",
+      title: personalizedSubject || "Message from Afyvia Pharmacy",
       body: personalizedBody.slice(0, 200),
       url: "/portal/messages",
       data: { tag: `msg-${conversation.id}`, conversationId: conversation.id },

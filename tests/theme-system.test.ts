@@ -4,7 +4,7 @@ import fs from "node:fs";
 import path from "node:path";
 import { themeBootstrap } from "../app/lib/theme-bootstrap";
 
-describe("Aether Theme Architecture: Dark & Light Mode Integrity", () => {
+describe("Afyvia Theme Architecture: Dark & Light Mode Integrity", () => {
   describe("1. ThemeScript / themeBootstrap Pre-paint Execution", () => {
     function createMockDom(initial: {
       localStorage?: Record<string, string>;
@@ -53,9 +53,9 @@ describe("Aether Theme Architecture: Dark & Light Mode Integrity", () => {
       return { mockWindow, docElement, storage, getCookie: () => cookieString };
     }
 
-    it("activates dark theme when aether-theme in localStorage is 'dark'", () => {
+    it("activates dark theme when afyvia-theme in localStorage is 'dark'", () => {
       const { mockWindow, docElement, getCookie } = createMockDom({
-        localStorage: { "aether-theme": "dark" },
+        localStorage: { "afyvia-theme": "dark" },
         prefersDark: false,
       });
 
@@ -71,12 +71,12 @@ describe("Aether Theme Architecture: Dark & Light Mode Integrity", () => {
       assert.equal(docElement.dataset.adminTheme, "dark");
       assert.equal(docElement.classList.contains("dark"), true);
       assert.equal(docElement.style.colorScheme, "dark");
-      assert.match(getCookie(), /aether-theme=dark/);
+      assert.match(getCookie(), /afyvia-theme=dark/);
     });
 
-    it("activates light theme when aether-theme in localStorage is 'light'", () => {
+    it("activates light theme when afyvia-theme in localStorage is 'light'", () => {
       const { mockWindow, docElement, getCookie } = createMockDom({
-        localStorage: { "aether-theme": "light" },
+        localStorage: { "afyvia-theme": "light" },
         prefersDark: true, // system dark overridden by user light choice
       });
 
@@ -92,12 +92,12 @@ describe("Aether Theme Architecture: Dark & Light Mode Integrity", () => {
       assert.equal(docElement.dataset.adminTheme, "light");
       assert.equal(docElement.classList.contains("dark"), false);
       assert.equal(docElement.style.colorScheme, "light");
-      assert.match(getCookie(), /aether-theme=light/);
+      assert.match(getCookie(), /afyvia-theme=light/);
     });
 
-    it("falls back to aether-admin-theme if aether-theme is not set", () => {
+    it("falls back to afyvia-admin-theme if afyvia-theme is not set", () => {
       const { mockWindow, docElement } = createMockDom({
-        localStorage: { "aether-admin-theme": "dark" },
+        localStorage: { "afyvia-admin-theme": "dark" },
         prefersDark: false,
       });
 
@@ -117,7 +117,7 @@ describe("Aether Theme Architecture: Dark & Light Mode Integrity", () => {
     it("falls back to cookie if localStorage is empty", () => {
       const { mockWindow, docElement } = createMockDom({
         localStorage: {},
-        cookie: "aether-theme=dark",
+        cookie: "afyvia-theme=dark",
         prefersDark: false,
       });
 
@@ -161,8 +161,8 @@ describe("Aether Theme Architecture: Dark & Light Mode Integrity", () => {
     });
     it("preserves 'system' preference in localStorage even when cookie is present", () => {
       const { mockWindow, docElement } = createMockDom({
-        localStorage: { "aether-theme": "system" },
-        cookie: "aether-theme=light",
+        localStorage: { "afyvia-theme": "system" },
+        cookie: "afyvia-theme=light",
         prefersDark: true,
       });
 
@@ -206,14 +206,14 @@ describe("Aether Theme Architecture: Dark & Light Mode Integrity", () => {
       );
     });
 
-    it("binds .aether-workspace-root to dark mode tokens in globals.css", () => {
+    it("binds .afyvia-workspace-root to dark mode tokens in globals.css", () => {
       assert.ok(
-        globalsCss.includes(".aether-workspace-root[data-theme=\"dark\"]") ||
-        globalsCss.includes("html[data-theme=\"dark\"] .aether-workspace-root"),
-        "globals.css must apply dark tokens to .aether-workspace-root"
+        globalsCss.includes(".afyvia-workspace-root[data-theme=\"dark\"]") ||
+        globalsCss.includes("html[data-theme=\"dark\"] .afyvia-workspace-root"),
+        "globals.css must apply dark tokens to .afyvia-workspace-root"
       );
       assert.ok(
-        globalsCss.includes("body:has(header .theme-toggle, .shell-grid-admin, .aether-workspace-root)"),
+        globalsCss.includes("body:has(header .theme-toggle, .shell-grid-admin, .afyvia-workspace-root)"),
         "globals.css must suppress global floating theme button when workspace is active"
       );
     });
@@ -227,11 +227,11 @@ describe("Aether Theme Architecture: Dark & Light Mode Integrity", () => {
 
     it("workspace.css self-contained token definitions for light and dark modes", () => {
       assert.ok(
-        workspaceCss.includes("html[data-theme=\"light\"] .aether-workspace-root"),
+        workspaceCss.includes("html[data-theme=\"light\"] .afyvia-workspace-root"),
         "workspace.css must explicitly define light mode tokens"
       );
       assert.ok(
-        workspaceCss.includes("html[data-theme=\"dark\"] .aether-workspace-root"),
+        workspaceCss.includes("html[data-theme=\"dark\"] .afyvia-workspace-root"),
         "workspace.css must explicitly define dark mode tokens"
       );
       assert.ok(
@@ -248,24 +248,24 @@ describe("Aether Theme Architecture: Dark & Light Mode Integrity", () => {
       );
     });
 
-    it("workspace-compat.css includes .aether-workspace-root.shell-grid-admin flex layout safeguard", () => {
+    it("workspace-compat.css includes .afyvia-workspace-root.shell-grid-admin flex layout safeguard", () => {
       assert.ok(
-        workspaceCompatCss.includes(".aether-workspace-root.shell-grid-admin"),
-        "workspace-compat.css must reset grid layout on .aether-workspace-root.shell-grid-admin"
+        workspaceCompatCss.includes(".afyvia-workspace-root.shell-grid-admin"),
+        "workspace-compat.css must reset grid layout on .afyvia-workspace-root.shell-grid-admin"
       );
     });
 
     it("styles command dialog and mobile sheet in dark mode", () => {
       assert.ok(
-        workspaceCss.includes(".aether-command-dialog"),
+        workspaceCss.includes(".afyvia-command-dialog"),
         "workspace.css must style command dialog"
       );
       assert.ok(
-        workspaceCss.includes(".aether-mobile-sheet"),
+        workspaceCss.includes(".afyvia-mobile-sheet"),
         "workspace.css must style mobile dock sheet"
       );
       assert.ok(
-        workspaceCss.includes("html[data-theme=\"dark\"] .aether-command-dialog"),
+        workspaceCss.includes("html[data-theme=\"dark\"] .afyvia-command-dialog"),
         "workspace.css must style command dialog in dark mode"
       );
       assert.ok(
@@ -274,10 +274,10 @@ describe("Aether Theme Architecture: Dark & Light Mode Integrity", () => {
       );
     });
 
-    it("safeguards .aether-workspace-root .theme-toggle button geometry", () => {
+    it("safeguards .afyvia-workspace-root .theme-toggle button geometry", () => {
       assert.ok(
-        workspaceCss.includes(".aether-workspace-root .theme-toggle"),
-        "workspace.css must contain .aether-workspace-root .theme-toggle rules"
+        workspaceCss.includes(".afyvia-workspace-root .theme-toggle"),
+        "workspace.css must contain .afyvia-workspace-root .theme-toggle rules"
       );
       assert.ok(
         workspaceCss.includes("width: 36px !important"),
@@ -310,7 +310,7 @@ describe("Aether Theme Architecture: Dark & Light Mode Integrity", () => {
         "Must export ThemeToggle"
       );
       assert.ok(themeFile.includes("applyThemeToDocument"), "Must synchronize document classList and dataset");
-      assert.ok(themeFile.includes("writeThemeCookie"), "Must write aether-theme cookie");
+      assert.ok(themeFile.includes("writeThemeCookie"), "Must write afyvia-theme cookie");
 
       try {
         const themeModule = await import("../app/components/ThemeProvider");

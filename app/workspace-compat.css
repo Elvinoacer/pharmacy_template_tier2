@@ -24,8 +24,8 @@
  */
 .platform-shell.shell-grid-admin,
 .platform-security-shell.shell-grid-admin,
-.aether-workspace-root,
-.aether-workspace-root.shell-grid-admin {
+.afyvia-workspace-root,
+.afyvia-workspace-root.shell-grid-admin {
   display: flex !important;
   grid-template-columns: none !important;
   grid-template-rows: none !important;
@@ -38,8 +38,8 @@
 }
 
 @media (min-width: 1024px) {
-  .aether-workspace-root,
-  .aether-workspace-root.shell-grid-admin {
+  .afyvia-workspace-root,
+  .afyvia-workspace-root.shell-grid-admin {
     height: 100dvh !important;
     min-height: 0 !important;
     overflow: hidden !important;
@@ -50,10 +50,10 @@ html[data-admin-theme="dark"] .shell-grid-admin,
 html[data-theme="dark"] .shell-grid-admin,
 html.dark .shell-grid-admin,
 .shell-grid-admin[data-theme="dark"],
-html[data-admin-theme="dark"] .aether-workspace-root,
-html[data-theme="dark"] .aether-workspace-root,
-html.dark .aether-workspace-root,
-.aether-workspace-root[data-theme="dark"] {
+html[data-admin-theme="dark"] .afyvia-workspace-root,
+html[data-theme="dark"] .afyvia-workspace-root,
+html.dark .afyvia-workspace-root,
+.afyvia-workspace-root[data-theme="dark"] {
   --workspace-rose-text: #fda4af;
   --workspace-amber-text: #fcd34d;
   --workspace-emerald-text: #6ee7b7;

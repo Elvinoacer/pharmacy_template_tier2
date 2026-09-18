@@ -31,11 +31,11 @@ const bodyClass = "mt-2 text-[13px] leading-6 text-[var(--muted)] sm:text-sm sm:
 
 export default function PrivacyPage() {
   return (
-    <div className="aether-route-surface aether-artwork-surface min-h-screen bg-transparent overflow-x-hidden text-[var(--foreground)] transition-colors duration-300">
+    <div className="afyvia-route-surface afyvia-artwork-surface min-h-screen bg-transparent overflow-x-hidden text-[var(--foreground)] transition-colors duration-300">
       <PageHero
         eyebrow="Legal"
         title="Privacy Policy"
-        description="How information is handled across the Aether pharmacy network."
+        description="How information is handled across the Afyvia pharmacy network."
         crumbs={[{ label: "Privacy Policy" }]}
       />
 
@@ -47,7 +47,7 @@ export default function PrivacyPage() {
                 <ShieldCheck className="h-5 w-5" aria-hidden="true" />
               </span>
               <div className="min-w-0">
-                <p className="text-sm font-semibold text-[var(--foreground)]">Your privacy across Aether</p>
+                <p className="text-sm font-semibold text-[var(--foreground)]">Your privacy across Afyvia</p>
                 <p className="mt-1 text-xs leading-5 text-[var(--muted)] sm:text-sm sm:leading-6">
                   This policy explains what information may be processed, why it is used, how it is protected, and the choices available to you.
                 </p>
@@ -75,9 +75,9 @@ export default function PrivacyPage() {
             <section id="responsibility" className={sectionClass}>
               <h2 className={headingClass}>1. Who is responsible for your information</h2>
               <p className={bodyClass}>
-                {platform.legalName} operates the Aether multi-tenant pharmacy platform. Each listed pharmacy controls
+                {platform.legalName} operates the Afyvia multi-tenant pharmacy platform. Each listed pharmacy controls
                 the pharmacy-specific records it creates or receives through its storefront and staff workspace, while
-                Aether operates the shared platform, security, account, infrastructure and support services. Questions
+                Afyvia operates the shared platform, security, account, infrastructure and support services. Questions
                 can be sent to {platform.email} or {platform.phone}.
               </p>
             </section>

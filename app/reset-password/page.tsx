@@ -14,7 +14,7 @@ export default async function ResetPasswordPage({
   const token = sp.token || "";
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-transparent px-4 py-10 sm:py-14 aether-artwork-surface aether-route-surface">
+    <div className="flex min-h-screen items-center justify-center bg-transparent px-4 py-10 sm:py-14 afyvia-artwork-surface afyvia-route-surface">
       <AuthForm
         action={resetPasswordAction}
         title="Choose a new password"

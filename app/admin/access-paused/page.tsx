@@ -78,7 +78,7 @@ export default async function AccessPausedPage() {
                 <div className="rounded-2xl border border-emerald-500/20 bg-emerald-500/5 p-4 sm:p-5">
                   <p className="font-semibold text-emerald-700 dark:text-emerald-300">Restoration is automatic after payment</p>
                   <p className="mt-1 text-sm leading-6 admin-muted">
-                    Once the outstanding subscription is successfully charged, Aether restores the billing-suspended workspace and republishes an already-launched pharmacy automatically.
+                    Once the outstanding subscription is successfully charged, Afyvia restores the billing-suspended workspace and republishes an already-launched pharmacy automatically.
                   </p>
                 </div>
               ) : null}

@@ -8,7 +8,7 @@ const MILESTONES = [
   {
     phase: "2024",
     title: "Founded in Nairobi",
-    desc: "Aether is established to unite licensed independent pharmacies under one modern digital network.",
+    desc: "Afyvia is established to unite licensed independent pharmacies under one modern digital network.",
     image: "https://pub-cc07856d657b4a7197710051042b3eda.r2.dev/images/gallery/welcoming_retail_floor.webp",
   },
   {

@@ -32,7 +32,7 @@ Two complementary features:
 3. Conversational triage: one question at a time, optional photos.
 4. **How do I feel now?** check-ins (better / same / worse).
 5. **Talk to a pharmacist** anytime → ticket + staff alert; AI clinical advice pauses.
-6. `localStorage`: `aether-feel-guest-key`, recent session ids; server still stores rows keyed by `guestKey`.
+6. `localStorage`: `afyvia-feel-guest-key`, recent session ids; server still stores rows keyed by `guestKey`.
 
 ### Customer (portal `/portal/feel`)
 

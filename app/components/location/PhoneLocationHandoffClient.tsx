@@ -208,7 +208,7 @@ export default function PhoneLocationHandoffClient({ token }: Props) {
         <div className={styles.mobileBrand}>
           <div className={styles.mobileBrandMark}>
             <span className={styles.mobileBrandIcon}><MapPin className="h-4 w-4" aria-hidden /></span>
-            Aether pharmacy onboarding
+            Afyvia pharmacy onboarding
           </div>
           <span className={styles.secureBadge}><LockKeyhole className="h-3 w-3" aria-hidden /> One-time link</span>
         </div>

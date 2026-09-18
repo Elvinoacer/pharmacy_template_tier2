@@ -1,5 +1,5 @@
 /**
- * Aether storefront TEMPLATE — the shared baseline for every `/p/{slug}` room.
+ * Afyvia storefront TEMPLATE — the shared baseline for every `/p/{slug}` room.
  *
  * Architecture ("template + overrides"):
  *
@@ -162,7 +162,7 @@ export const STOREFRONT_TEMPLATE: StorefrontTemplate = {
       id: "priya-nair",
       name: "Dr. Priya Nair, PharmD",
       role: "Lead Pharmacist & Owner",
-      bio: "Priya founded Aether with a simple belief: every patient deserves clear answers and careful attention. She specialises in chronic disease management and medication therapy review.",
+      bio: "Priya founded Afyvia with a simple belief: every patient deserves clear answers and careful attention. She specialises in chronic disease management and medication therapy review.",
       qualifications: "PharmD, University of Nairobi · 18 years experience",
       photo: `${R2}/images/team/priya-nair.webp`,
     },
@@ -265,9 +265,9 @@ export const STOREFRONT_TEMPLATE: StorefrontTemplate = {
   },
 
   about: {
-    storyHeading: "A neighbourhood pharmacy on the Aether network",
+    storyHeading: "A neighbourhood pharmacy on the Afyvia network",
     closingNote:
-      "We are an independent shop — not a chain white-label. Aether gives patients a way to find us. The care is ours.",
+      "We are an independent shop — not a chain white-label. Afyvia gives patients a way to find us. The care is ours.",
     values: [
       {
         title: "Patient First",
@@ -476,7 +476,7 @@ export const STOREFRONT_TEMPLATE: StorefrontTemplate = {
   },
 
   healthLibrary: {
-    eyebrow: "Aether health library",
+    eyebrow: "Afyvia health library",
     title: "Practical advice from licensed pharmacists",
   },
 

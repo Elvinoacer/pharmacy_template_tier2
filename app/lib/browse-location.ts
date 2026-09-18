@@ -1,7 +1,7 @@
 import "server-only";
 import { cookies } from "next/headers";
 import { validCoordinates, type Coordinates } from "./proximity";
-export const BROWSE_LOCATION_COOKIE = "aether_nearby";
+export const BROWSE_LOCATION_COOKIE = "afyvia_nearby";
 export async function getBrowseLocation(): Promise<Coordinates | null> {
   const raw = (await cookies()).get(BROWSE_LOCATION_COOKIE)?.value;
   if (!raw) return null;

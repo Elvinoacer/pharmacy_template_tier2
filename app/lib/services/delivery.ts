@@ -165,7 +165,7 @@ function buildEmailHtml(subject: string, bodyText: string, identity: SenderIdent
   const phone = identity.supportPhone || supportPhone();
   const year = new Date().getFullYear();
   const logoUrl = identity.logoUrl || `${appUrl()}/icon-192.png`;
-  const brand = identity.name || "Aether Network";
+  const brand = identity.name || "Afyvia Network";
   const tagline = identity.tagline || "Care, close to home";
 
   return `<!DOCTYPE html>
@@ -400,10 +400,10 @@ export async function sendDelivery(
 }
 
 export function passwordResetBody(token: string) {
-  return `Use this password reset link: ${appUrl()}/reset-password?token=${token}\n\nIf you did not request this, ignore this message.\n\n— Aether Network (${supportEmail()})`;
+  return `Use this password reset link: ${appUrl()}/reset-password?token=${token}\n\nIf you did not request this, ignore this message.\n\n— Afyvia Network (${supportEmail()})`;
 }
 
 export function emailVerificationBody(token: string) {
   const verificationUrl = `${appUrl()}/api/verify-email?token=${token}`;
-  return `Confirm this email address to continue your Aether Network setup.\n\n[Verify email address](${verificationUrl})\n\nThe link can be opened in a new tab, another browser, or another device. If you started onboarding somewhere else, return to that onboarding page after verifying and it will detect the change automatically.\n\nIf you did not create an Aether Network account, ignore this message.\n\n— Aether Network (${supportEmail()})`;
+  return `Confirm this email address to continue your Afyvia Network setup.\n\n[Verify email address](${verificationUrl})\n\nThe link can be opened in a new tab, another browser, or another device. If you started onboarding somewhere else, return to that onboarding page after verifying and it will detect the change automatically.\n\nIf you did not create an Afyvia Network account, ignore this message.\n\n— Afyvia Network (${supportEmail()})`;
 }

@@ -136,7 +136,7 @@ export default function OnboardWizard({ signedIn, existing, verificationFeePaid 
   useEffect(() => {
     if (typeof window !== "undefined") {
       window.dispatchEvent(
-        new CustomEvent("aether-onboard-sync", {
+        new CustomEvent("afyvia-onboard-sync", {
           detail: {
             name,
             city: city || "Nearby",

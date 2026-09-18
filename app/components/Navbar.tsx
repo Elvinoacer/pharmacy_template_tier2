@@ -102,7 +102,7 @@ const PLATFORM_CATEGORIES: NavCategory[] = [
       { href: "/services", label: "Find a service", desc: "Explore care and booking options", icon: Stethoscope },
       { href: "/pharmacies", label: "Pharmacy directory", desc: "Find local verified pharmacies near you", icon: Building2 },
       { href: "/refill", label: "Refill medicine", desc: "Find availability for your next refill", icon: RotateCw },
-      { href: "/register", label: "Patient account", desc: "One login across every Aether pharmacy", icon: User },
+      { href: "/register", label: "Patient account", desc: "One login across every Afyvia pharmacy", icon: User },
       { href: "/health", label: "Health library", desc: "Guides written for people, not pamphlets", icon: HeartPulse },
       { href: "/health/self-care-guide", label: "Self-care vs doctor", desc: "When to treat at home vs seek care", icon: ShieldCheck },
       { href: "/health/counselling", label: "Medication counselling", desc: "12-pillar guides for common medicines", icon: BookOpen },
@@ -112,7 +112,7 @@ const PLATFORM_CATEGORIES: NavCategory[] = [
     key: "pharmacies",
     label: "For pharmacies",
     items: [
-      { href: "/for-pharmacies", label: "Why Aether", desc: "Be found. Keep refill patients.", icon: Building2 },
+      { href: "/for-pharmacies", label: "Why Afyvia", desc: "Be found. Keep refill patients.", icon: Building2 },
       { href: "/for-pharmacies/walkthrough", label: "Platform walkthrough", desc: "Interactive demo of pharmacist features", icon: Sparkles },
       { href: "/onboard", label: "List your pharmacy", desc: "KES 500 a month after you go live", icon: BadgeCheck, badge: "Join" },
       { href: "/login?next=/admin", label: "Staff sign in", desc: "CRM, refills, and the pharmacy workspace", icon: LayoutDashboard },
@@ -124,7 +124,7 @@ const PLATFORM_CATEGORIES: NavCategory[] = [
     items: [
       { href: "/about", label: "About Us", desc: "Why we exist — life and caring first", icon: Info },
       { href: "/careers", label: "Careers", desc: "Join our healthcare & engineering team", icon: Briefcase, badge: "Hiring" },
-      { href: "/contact", label: "Contact Us", desc: "Get in touch with the Aether support team", icon: Mail },
+      { href: "/contact", label: "Contact Us", desc: "Get in touch with the Afyvia support team", icon: Mail },
       { href: "/delivery", label: "Delivery network", desc: "Fast prescription courier network", icon: Truck },
       { href: "/faq", label: "FAQ", desc: "Common patient and pharmacy questions", icon: HelpCircle },
       { href: "/privacy", label: "Privacy", desc: "Kenya Data Protection Act 2019", icon: ShieldCheck },
@@ -233,7 +233,7 @@ export default function Navbar({
   const shortAddress = brand.addressShort;
   const isLandingPage = isPlatform && pathname === "/";
   const onDarkHero = isLandingPage && !isPlatform;
-  const brandLabel = isPlatform ? "Aether" : brand.name.replace(/ Pharmacy$/i, "") || "Aether";
+  const brandLabel = isPlatform ? "Afyvia" : brand.name.replace(/ Pharmacy$/i, "") || "Afyvia";
   const brandMeta = isPlatform ? "Network" : slug || "Pharmacy";
 
   const headerSurface = onDarkHero

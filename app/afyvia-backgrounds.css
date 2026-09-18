@@ -1,5 +1,5 @@
 /*
- * One shared Aether artwork backdrop for the entire application.
+ * One shared Afyvia artwork backdrop for the entire application.
  *
  * The photograph itself is a real <picture>/<img> mounted once in app/layout.
  * CSS only positions it and paints the readability veil. No route, section,
@@ -7,8 +7,8 @@
  */
 
 :root {
-  --aether-artwork-position: 50% 18%;
-  --aether-global-veil:
+  --afyvia-artwork-position: 50% 18%;
+  --afyvia-global-veil:
     linear-gradient(
       180deg,
       rgba(244, 247, 244, 0.36) 0%,
@@ -18,7 +18,7 @@
 }
 
 html[data-theme="dark"] {
-  --aether-global-veil:
+  --afyvia-global-veil:
     linear-gradient(
       180deg,
       rgba(5, 13, 11, 0.32) 0%,
@@ -29,7 +29,7 @@ html[data-theme="dark"] {
 
 /* Admin can resolve its theme independently from the public theme provider. */
 html[data-admin-theme="dark"] {
-  --aether-global-veil:
+  --afyvia-global-veil:
     linear-gradient(
       180deg,
       rgba(7, 12, 16, 0.45) 0%,
@@ -55,7 +55,7 @@ body {
  * z-index 0, so neither document-canvas propagation nor a negative stacking
  * context can hide it. All application content is explicitly above it at z: 1.
  */
-.aether-global-backdrop {
+.afyvia-global-backdrop {
   position: fixed;
   inset: 0;
   z-index: 0;
@@ -65,7 +65,7 @@ body {
   contain: strict;
 }
 
-.aether-global-picture {
+.afyvia-global-picture {
   position: absolute;
   inset: 0;
   display: block;
@@ -73,23 +73,23 @@ body {
   height: 100%;
 }
 
-.aether-global-image {
+.afyvia-global-image {
   display: block;
   width: 100%;
   height: 100%;
   max-width: none;
   object-fit: cover;
-  object-position: var(--aether-artwork-position);
+  object-position: var(--afyvia-artwork-position);
   user-select: none;
 }
 
-.aether-global-veil {
+.afyvia-global-veil {
   position: absolute;
   inset: 0;
-  background: var(--aether-global-veil);
+  background: var(--afyvia-global-veil);
 }
 
-.aether-app-layer {
+.afyvia-app-layer {
   position: relative;
   z-index: 1;
   display: flex;
@@ -102,22 +102,22 @@ body {
 
 /* Full-page route shells expose the single fixed backdrop. */
 .mesh-bg,
-.aether-artwork-surface,
-.aether-route-surface,
+.afyvia-artwork-surface,
+.afyvia-route-surface,
 .shell-grid,
 .shell-grid-admin,
 .platform-shell,
 main#main-content,
 main#main-content > div,
-.aether-app-layer,
+.afyvia-app-layer,
 .feel-page,
 .caregiver-surface,
-[data-aether-transparent="true"] {
+[data-afyvia-transparent="true"] {
   background-color: transparent !important;
 }
 
 /* Ensure inner main route containers do not obscure the fixed artwork */
-.aether-app-layer main .min-h-screen[class*="bg-"] {
+.afyvia-app-layer main .min-h-screen[class*="bg-"] {
   background-color: transparent !important;
 }
 
@@ -126,8 +126,8 @@ main#main-content > div,
  * login route does not own an image of its own.
  */
 body:has([data-auth-artwork="true"]) {
-  --aether-artwork-position: 50% 45%;
-  --aether-global-veil:
+  --afyvia-artwork-position: 50% 45%;
+  --afyvia-global-veil:
     linear-gradient(
       180deg,
       rgba(244, 247, 244, 0.34) 0%,
@@ -137,7 +137,7 @@ body:has([data-auth-artwork="true"]) {
 }
 
 html[data-theme="dark"] body:has([data-auth-artwork="true"]) {
-  --aether-global-veil:
+  --afyvia-global-veil:
     linear-gradient(
       180deg,
       rgba(5, 13, 11, 0.28) 0%,
@@ -147,7 +147,7 @@ html[data-theme="dark"] body:has([data-auth-artwork="true"]) {
 }
 
 /* Login page layout lives here; no route-specific background stylesheet. */
-.aether-login-page {
+.afyvia-login-page {
   position: relative;
   display: flex;
   min-height: 100vh;
@@ -228,16 +228,16 @@ html[data-theme="dark"] [data-auth-artwork="true"] > div:last-child {
 
 @media (min-width: 768px) {
   :root {
-    --aether-artwork-position: 50% 16%;
+    --afyvia-artwork-position: 50% 16%;
   }
 
   body:has([data-auth-artwork="true"]) {
-    --aether-artwork-position: 50% 45%;
+    --afyvia-artwork-position: 50% 45%;
   }
 }
 
 @media (max-width: 767px) {
-  .aether-login-page {
+  .afyvia-login-page {
     align-items: flex-start;
     padding:
       max(1rem, env(safe-area-inset-top))

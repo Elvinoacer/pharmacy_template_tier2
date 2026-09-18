@@ -281,7 +281,7 @@ export default async function PharmacyProfilePage({
           <p className={styles.body}>
             {p.about ||
               p.description ||
-              `${p.name} is part of the Aether network. Contact the pharmacy to learn about its team, services, and care.`}
+              `${p.name} is part of the Afyvia network. Contact the pharmacy to learn about its team, services, and care.`}
           </p>
           <div className={styles.contactList}>
             {hasPhone && (

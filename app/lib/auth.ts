@@ -18,7 +18,7 @@ import { getTenant } from "@/app/lib/tenant";
 
 export { addTimelineEvent, writeAuditLog };
 
-const SESSION_COOKIE = "aether_session";
+const SESSION_COOKIE = "afyvia_session";
 const SESSION_DAYS = 14;
 
 function hashToken(token: string): string {

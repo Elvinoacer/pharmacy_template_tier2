@@ -816,7 +816,7 @@ export async function sendDirectRefillReminder(data: {
 
   const medicineName = rx?.medicineName || "your prescription medication";
   const defaultSubject = `Prescription Refill Reminder: ${medicineName}`;
-  const defaultBody = `Hello ${customer.fullName}, this is a reminder from Aether Pharmacy that your refill for ${medicineName} is due. Please request your refill online at https://aetherpharmacy.com/portal/refills or reply to this message to confirm delivery.`;
+  const defaultBody = `Hello ${customer.fullName}, this is a reminder from Afyvia Pharmacy that your refill for ${medicineName} is due. Please request your refill online at https://afyviapharmacy.com/portal/refills or reply to this message to confirm delivery.`;
 
   const subject = data.customSubject || defaultSubject;
   const body = data.customBody || defaultBody;
@@ -1009,7 +1009,7 @@ export async function generateUpcomingRefillReminders(): Promise<number> {
 
     const dueDateStr = rx.nextRefillDue ? formatDate(rx.nextRefillDue) : "soon";
     const title = `Refill due for ${rx.medicineName}`;
-    const body = `Your refill for ${rx.medicineName} is due on ${dueDateStr}. Log in to your Aether Pharmacy portal to request your refill or confirm delivery.`;
+    const body = `Your refill for ${rx.medicineName} is due on ${dueDateStr}. Log in to your Afyvia Pharmacy portal to request your refill or confirm delivery.`;
 
     await prisma.reminder.create({
       data: {

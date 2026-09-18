@@ -185,7 +185,7 @@ export default async function PublicStorefrontPage({ params, searchParams }: Pro
         </section>}
         <section className={styles.contact}><div><p className={styles.eyebrow}>Talk to {p.name}</p><h2>A question? Start here.</h2></div><div className={styles.actions}>{hasPhone && <a href={p.phoneHref}><Phone size={16} aria-hidden />{p.phone}</a>}{hasEmail && <a href={`mailto:${p.email}`}>Email pharmacy</a>}{hasWhatsapp && <a href={p.whatsappHref} target="_blank" rel="noopener noreferrer">WhatsApp ↗</a>}{!hasPhone && !hasEmail && !hasWhatsapp && <p className={styles.note}>Contact details haven’t been published yet.</p>}</div></section>
       </main>
-      <footer className={styles.footer}><span>{p.name}</span><div><Link href="/privacy">Privacy</Link><Link href="/terms">Terms</Link><Link href="/pharmacies">Aether pharmacy network ↗</Link></div></footer>
+      <footer className={styles.footer}><span>{p.name}</span><div><Link href="/privacy">Privacy</Link><Link href="/terms">Terms</Link><Link href="/pharmacies">Afyvia pharmacy network ↗</Link></div></footer>
     </div>
   );
 }

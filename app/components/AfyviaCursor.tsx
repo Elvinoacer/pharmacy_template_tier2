@@ -35,7 +35,7 @@ function useMediaQuery(query: string): boolean {
   );
 }
 
-export default function AetherCursor() {
+export default function AfyviaCursor() {
   const pathname = usePathname() || "/";
   const operational = OPERATIONAL_PREFIXES.some(
     (prefix) => pathname === prefix || pathname.startsWith(`${prefix}/`),

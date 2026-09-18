@@ -77,7 +77,7 @@ export default async function PlatformLayout({ children }: { children: React.Rea
       user={user}
       brand={{
         name: platform.legalName,
-        network: "Aether Pharmacy Network",
+        network: "Afyvia Pharmacy Network",
         slug: null,
       }}
     >

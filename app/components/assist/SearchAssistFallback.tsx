@@ -66,7 +66,7 @@ export default function SearchAssistFallback({
         </span>
         <div className="min-w-0 flex-1">
           <p className="break-words text-sm font-semibold leading-5 text-[var(--foreground)]">
-            No keyword match — let Aether interpret what you need
+            No keyword match — let Afyvia interpret what you need
           </p>
           <p className="mt-1 text-xs leading-5 text-[var(--muted)]">
             It can point you toward a refill, stock search, pharmacy service, or relevant health information.

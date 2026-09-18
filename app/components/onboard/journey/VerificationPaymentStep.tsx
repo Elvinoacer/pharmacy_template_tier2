@@ -119,7 +119,7 @@ export function VerificationPaymentStep({
               type="text"
               value={promoCode}
               onChange={(e) => setPromoCode(e.target.value.toUpperCase())}
-              placeholder="e.g. AETHER2026"
+              placeholder="e.g. AFYVIA2026"
               className="input-admin uppercase font-mono text-sm flex-1 min-h-10"
               disabled={pending}
             />
