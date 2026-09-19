@@ -23,15 +23,15 @@ function strengthMeta(score: number, hasInput: boolean) {
     return { label: "Enter a password", bar: "bg-teal-900/10", text: "text-[var(--muted)]" };
   }
   if (score < 0.4) {
-    return { label: "Weak", bar: "bg-rose-500", text: "text-rose-700" };
+    return { label: "Weak", bar: "bg-rose-500", text: "text-rose-700 dark:text-rose-300" };
   }
   if (score < 0.8) {
-    return { label: "Fair", bar: "bg-amber-500", text: "text-amber-700" };
+    return { label: "Fair", bar: "bg-amber-500", text: "text-amber-700 dark:text-amber-300" };
   }
   if (score < 1) {
-    return { label: "Good", bar: "bg-sky-500", text: "text-sky-700" };
+    return { label: "Good", bar: "bg-sky-500", text: "text-sky-700 dark:text-sky-300" };
   }
-  return { label: "Strong", bar: "bg-emerald-500", text: "text-emerald-700" };
+  return { label: "Strong", bar: "bg-emerald-500", text: "text-emerald-700 dark:text-emerald-300" };
 }
 
 export default function PasswordField({
@@ -77,7 +77,7 @@ export default function PasswordField({
             setValue(next);
             onValueChange?.(next, evaluatePassword(next));
           }}
-          className="w-full rounded-2xl border border-[var(--line)] bg-[var(--card)] text-[var(--foreground)] px-4 py-3 pr-12 text-sm outline-none ring-[var(--brand)]/20 transition focus:ring-2"
+          className="w-full rounded-2xl border border-[color-mix(in_srgb,var(--foreground)_55%,var(--card-elev))] bg-[var(--card-elev)] px-4 py-3 pr-12 text-sm text-[var(--foreground)] outline-none transition placeholder:text-[var(--muted)] focus:border-[var(--brand)] focus:bg-[var(--card)] focus:ring-2 focus:ring-[color-mix(in_srgb,var(--brand)_28%,transparent)]"
         />
         <button
           type="button"
@@ -111,15 +111,17 @@ export default function PasswordField({
                 key={rule.id}
                 className={`flex items-center gap-2 rounded-xl px-2.5 py-1.5 text-xs transition ${
                   rule.met
-                    ? "bg-emerald-50 text-emerald-800"
+                    ? "bg-emerald-100 text-emerald-800 dark:bg-emerald-950/70 dark:text-emerald-200"
                     : value
-                      ? "bg-rose-50/70 text-rose-700"
+                      ? "bg-rose-100/70 text-rose-700 dark:bg-rose-950/70 dark:text-rose-200"
                       : "bg-[var(--surface-sunken)] text-[var(--muted)]"
                 }`}
               >
                 <span
                   className={`flex h-4 w-4 shrink-0 items-center justify-center rounded-full ${
-                    rule.met ? "bg-emerald-500 text-white" : "bg-[var(--card)] text-[var(--muted)] ring-1 ring-[var(--line)]"
+                    rule.met
+                      ? "bg-emerald-700 text-white dark:bg-emerald-300 dark:text-emerald-950"
+                      : "bg-[var(--card)] text-[var(--muted)] ring-1 ring-[color-mix(in_srgb,var(--foreground)_55%,var(--card))]"
                   }`}
                 >
                   {rule.met ? <Check className="h-2.5 w-2.5" strokeWidth={3} /> : <X className="h-2.5 w-2.5" />}
@@ -134,7 +136,7 @@ export default function PasswordField({
       {typeof matchValue === "string" && matchValue.length > 0 && value.length > 0 && (
         <p
           className={`mt-2 flex items-center gap-1.5 text-xs font-medium ${
-            mismatch ? "text-rose-700" : "text-emerald-700"
+            mismatch ? "text-rose-700 dark:text-rose-300" : "text-emerald-700 dark:text-emerald-300"
           }`}
           aria-live="polite"
         >
