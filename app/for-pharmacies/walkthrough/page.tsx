@@ -102,7 +102,7 @@ export default function Walkthrough() {
 
         {/* Step-by-Step Cards */}
         <div className="mx-auto mt-8 sm:mt-10 max-w-4xl space-y-3">
-          <div className="border-b border-[var(--line-2)] pb-3">
+          <div className="border-b border-[color-mix(in_srgb,var(--foreground)_55%,var(--card-elev))] pb-3">
             <h2 className="font-serif text-xl sm:text-2xl font-semibold text-[var(--foreground)]">
               Your 5-step journey to going live
             </h2>
@@ -117,7 +117,7 @@ export default function Walkthrough() {
               return (
                 <li
                   key={step.num}
-                  className="liquid-glass care-glass rounded-xl border border-[var(--care-border)] bg-[var(--care-glass)] backdrop-blur-xl p-4 sm:p-5 shadow-sm transition-all hover:border-[var(--brand)]"
+                  className="liquid-glass care-glass rounded-xl border border-[color-mix(in_srgb,var(--foreground)_55%,var(--card-elev))] bg-[var(--care-glass)] backdrop-blur-xl p-4 sm:p-5 shadow-sm transition-all hover:border-[var(--brand)]"
                 >
                   <div className="flex flex-wrap items-start justify-between gap-3">
                     <div className="flex items-center gap-3">
@@ -152,7 +152,7 @@ export default function Walkthrough() {
         </div>
 
         {/* Final CTA */}
-        <div className={`liquid-glass care-glass ${styles.closing} mx-auto mt-8 sm:mt-10 max-w-4xl rounded-2xl border border-[var(--care-border)] bg-[var(--care-glass)] backdrop-blur-xl p-6 sm:p-7 shadow-sm`}>
+        <div className={`liquid-glass care-glass ${styles.closing} mx-auto mt-8 sm:mt-10 max-w-4xl rounded-2xl border border-[color-mix(in_srgb,var(--foreground)_55%,var(--card-elev))] bg-[var(--care-glass)] backdrop-blur-xl p-6 sm:p-7 shadow-sm`}>
           <div>
             <h2 className="font-serif text-2xl sm:text-3xl font-semibold">
               Ready to claim your storefront?
