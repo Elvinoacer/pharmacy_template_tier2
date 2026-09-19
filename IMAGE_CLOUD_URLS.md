@@ -51,7 +51,7 @@ These assets already point to the same public R2 host, so they were not duplicat
 - https://pub-cc07856d657b4a7197710051042b3eda.r2.dev/images/landing/hero_bgimg1.png — `app/components/landing/TravelLabHero.tsx:41`
 - https://pub-cc07856d657b4a7197710051042b3eda.r2.dev/images/landing/hero_imag_1_1.png — `app/components/landing/TravelLabHero.tsx:36`
 - https://pub-cc07856d657b4a7197710051042b3eda.r2.dev/images/landing/hero_image_0.png — `app/components/landing/TravelLabHero.tsx:31`
-- https://pub-cc07856d657b4a7197710051042b3eda.r2.dev/images/og-preview.jpg — `app/layout.tsx:75,87`
+- https://pub-cc07856d657b4a7197710051042b3eda.r2.dev/images/banner_og.png — `app/layout.tsx:75,87`
 - https://pub-cc07856d657b4a7197710051042b3eda.r2.dev/images/otc/baby-care.webp — `app/components/landing/LandingOtcSpotlight.tsx:25`; `app/lib/data.ts:165`; `prisma/seed.ts:1494`; `scripts/seed-otc-healthcare.ts:247`
 - https://pub-cc07856d657b4a7197710051042b3eda.r2.dev/images/otc/cold-flu.webp — `app/components/landing/LandingOtcSpotlight.tsx:10`; `app/lib/data.ts:230,447`; `prisma/seed.ts:1354`; `scripts/seed-otc-healthcare.ts:77`
 - https://pub-cc07856d657b4a7197710051042b3eda.r2.dev/images/otc/diabetes-management.webp — `app/components/landing/LandingOtcSpotlight.tsx:30`

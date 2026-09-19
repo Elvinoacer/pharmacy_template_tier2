@@ -72,10 +72,10 @@ export const metadata: Metadata = {
     description: platform.description,
     images: [
       {
-        url: "https://pub-cc07856d657b4a7197710051042b3eda.r2.dev/images/og-preview.jpg",
-        width: 1200,
-        height: 675,
-        type: "image/jpeg",
+        url: "https://pub-cc07856d657b4a7197710051042b3eda.r2.dev/images/banner_og.png",
+        width: 1731,
+        height: 909,
+        type: "image/png",
         alt: `${platform.name} — ${platform.tagline}`,
       },
     ],
@@ -84,7 +84,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: `${platform.name} — ${platform.tagline}`,
     description: platform.description,
-    images: ["https://pub-cc07856d657b4a7197710051042b3eda.r2.dev/images/og-preview.jpg"],
+    images: ["https://pub-cc07856d657b4a7197710051042b3eda.r2.dev/images/banner_og.png"],
   },
   robots: { index: true, follow: true },
   // Nested indexable pages own their canonical URL. A root canonical would be
