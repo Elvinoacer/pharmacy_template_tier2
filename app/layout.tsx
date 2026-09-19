@@ -66,13 +66,19 @@ export const metadata: Metadata = {
   ],
   openGraph: {
     type: "website",
+    // A canonical URL keeps Meta/WhatsApp from treating each share variant as
+    // a separate object. `metadataBase` expands this to the public site URL.
+    url: "/",
     locale: "en_KE",
     siteName: platform.legalName,
     title: `${platform.name} — ${platform.tagline}`,
     description: platform.description,
     images: [
       {
-        url: "https://pub-cc07856d657b4a7197710051042b3eda.r2.dev/images/banner_og.png",
+        // Keep the card image on the same public origin as the page. The
+        // source file lives in `public/images` and is deployed as a static
+        // asset at this URL.
+        url: "/images/banner_og.png",
         width: 1731,
         height: 909,
         type: "image/png",
@@ -84,7 +90,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: `${platform.name} — ${platform.tagline}`,
     description: platform.description,
-    images: ["https://pub-cc07856d657b4a7197710051042b3eda.r2.dev/images/banner_og.png"],
+    images: ["/images/banner_og.png"],
   },
   robots: { index: true, follow: true },
   // Nested indexable pages own their canonical URL. A root canonical would be
