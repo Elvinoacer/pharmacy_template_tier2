@@ -1,6 +1,7 @@
 import "server-only";
 
 import { prismaUnscoped } from "@/app/lib/db";
+import { withPlatformBypass } from "@/app/lib/tenant-context";
 import { writeAuditLog } from "@/app/lib/auth";
 import { computeEnrichmentScore, normalizeForMatch } from "./medication-validation";
 
@@ -382,12 +383,18 @@ export async function updatePlatformMedication(options: {
  * 6. Audit merge.
  * 7. Archive the duplicate master.
  */
-export async function mergeDuplicateMedications(options: {
+type MergeDuplicateMedicationOptions = {
   survivorId: string;
   duplicateId: string;
   actorId: string;
   reason?: string;
-}) {
+};
+
+export async function mergeDuplicateMedications(options: MergeDuplicateMedicationOptions) {
+  return withPlatformBypass(() => mergeDuplicateMedicationsInPlatform(options));
+}
+
+async function mergeDuplicateMedicationsInPlatform(options: MergeDuplicateMedicationOptions) {
   const { survivorId, duplicateId, actorId, reason } = options;
   if (survivorId === duplicateId) {
     throw new Error("Cannot merge a medication into itself.");
