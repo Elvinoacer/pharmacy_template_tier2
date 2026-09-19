@@ -357,7 +357,7 @@ export default async function PharmacyBillingPage(props: PageProps) {
                 </h2>
                 <strong>
                   KES {Number(inv.totalKes).toLocaleString("en-KE")} ·{" "}
-                  <span className={inv.status === "paid" ? "text-emerald-700" : "text-amber-700"}>
+                  <span className={inv.status === "paid" ? "text-emerald-700 dark:text-emerald-300" : "text-amber-800 dark:text-amber-300"}>
                     {inv.status}
                   </span>
                 </strong>
@@ -380,7 +380,7 @@ export default async function PharmacyBillingPage(props: PageProps) {
               {outcome ? (
                 <div
                   className={`${styles.notice} ${outcome.ok ? styles.noticeOk : styles.noticeWarn} mb-3`}
-                  role="status"
+                  role={outcome.ok ? "status" : "alert"}
                 >
                   <div>
                     <h3 className="text-xs font-semibold">{outcome.title}</h3>
@@ -393,7 +393,7 @@ export default async function PharmacyBillingPage(props: PageProps) {
                 pending ? (
                   <p
                     role="status"
-                    className="rounded-xl border border-[var(--line-2)] p-3 text-xs leading-5 text-[var(--muted)]"
+                    className="rounded-xl border border-[color-mix(in_srgb,var(--foreground)_55%,var(--card-elev))] bg-[var(--card-elev)] p-3 text-xs leading-5 text-[var(--foreground)]"
                   >
                     Payment confirmation is in progress with IntaSend. Please allow a moment for confirmation.
                   </p>
