@@ -1,2 +1,6 @@
 import type { ReactNode } from "react";
-export default function ServicesLayout({ children }: { children: ReactNode }) { return <>{children}</>; }
+import styles from "./ServicesRouteSurface.module.css";
+
+export default function ServicesLayout({ children }: { children: ReactNode }) {
+  return <div className={`${styles.surface} afyvia-route-surface`}>{children}</div>;
+}

@@ -3,7 +3,8 @@
 .hero {
   max-width: 1380px;
   margin: auto;
-  padding: 132px 35px 38px;
+  min-width: 0;
+  padding: calc(var(--public-header-offset) - 0.25rem) 35px 38px;
 }
 .topline {
   display: flex;
@@ -42,6 +43,7 @@
 .copy {
   position: relative;
   z-index: 2;
+  min-width: 0;
   padding: 40px 0 50px;
   pointer-events: none;
 }
@@ -62,6 +64,7 @@
     serif;
   letter-spacing: -0.055em;
   max-width: 650px;
+  text-wrap: balance;
   white-space: nowrap;
 }
 .copy h1 em {
@@ -114,6 +117,7 @@
   position: relative;
   z-index: 3;
   max-width: 600px;
+  min-width: 0;
 }
 .search > svg {
   color: var(--brand);
@@ -232,6 +236,8 @@
   display: flex;
   gap: 15px;
   position: relative;
+  min-width: 0;
+  min-height: 44px;
   border-radius: 23px;
   padding: 27px 23px;
   background: var(--care-glass);
@@ -301,7 +307,7 @@
 }
 @media (min-width: 1450px) {
   .hero {
-    padding-top: 150px;
+    padding-top: calc(var(--public-header-offset) + 1.25rem);
   }
   .scene {
     min-height: 570px;
@@ -335,7 +341,7 @@
 }
 @media (max-width: 760px) {
   .hero {
-    padding: 95px 18px 28px;
+    padding: calc(var(--public-header-offset) - 1rem) 18px 28px;
   }
   .topline {
     margin-bottom: 8px;
@@ -350,6 +356,7 @@
   }
   .copy {
     width: 100%;
+    max-width: 100%;
     padding: 25px 2px 23px;
   }
   .eyebrow {
@@ -450,6 +457,37 @@
     justify-content: flex-start;
     font-size: 10px;
     padding: 0 3px;
+  }
+  .note a {
+    padding-block: 0.35rem;
+  }
+}
+
+/* The light landing theme places the hero over a photographic composition.
+   Give the copy its own quiet reading surface so body text never depends on
+   the image behind it for contrast. */
+:global(html[data-theme="light"]) .hero .copy {
+  margin: -16px 0 -16px -18px;
+  padding: 56px 18px 66px;
+  border: 1px solid color-mix(in srgb, var(--brand) 12%, var(--line-2));
+  border-radius: 28px;
+  background: color-mix(in srgb, var(--card-elev) 88%, transparent);
+  box-shadow: var(--shadow-sm);
+  -webkit-backdrop-filter: blur(18px);
+  backdrop-filter: blur(18px);
+}
+
+:global(html[data-theme="light"]) .hero .search {
+  background: color-mix(in srgb, var(--card-elev) 92%, transparent);
+  border-color: color-mix(in srgb, var(--brand) 18%, var(--line-2));
+  box-shadow: var(--shadow-md);
+}
+
+@media (max-width: 760px) {
+  :global(html[data-theme="light"]) .hero .copy {
+    margin: -8px -2px 0;
+    padding: 34px 14px 28px;
+    border-radius: 22px;
   }
 }
 @media (prefers-reduced-motion: reduce) {

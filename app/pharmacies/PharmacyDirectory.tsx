@@ -257,7 +257,7 @@ export default function PharmacyDirectory({
               setDelivery(false);
               syncUrl({ category: "", delivery: false });
             }}
-            className={`shrink-0 rounded-full px-3 py-1 text-[11px] font-semibold transition border ${
+            className={`inline-flex min-h-11 shrink-0 items-center rounded-full px-3 py-1 text-[11px] font-semibold transition border ${
               !category && !delivery
                 ? "bg-[var(--brand)] border-[var(--brand)] text-[var(--background)] shadow-xs"
                 : "bg-[var(--card)] border-[var(--line-2)] text-[var(--muted)] hover:text-[var(--foreground)]"
@@ -272,7 +272,7 @@ export default function PharmacyDirectory({
               setDelivery(next);
               syncUrl({ delivery: next });
             }}
-            className={`shrink-0 rounded-full px-3 py-1 text-[11px] font-semibold transition border ${
+            className={`inline-flex min-h-11 shrink-0 items-center rounded-full px-3 py-1 text-[11px] font-semibold transition border ${
               delivery
                 ? "bg-[var(--brand)] border-[var(--brand)] text-[var(--background)] shadow-xs"
                 : "bg-[var(--card)] border-[var(--line-2)] text-[var(--muted)] hover:text-[var(--foreground)]"
@@ -289,7 +289,7 @@ export default function PharmacyDirectory({
                 setCategory(next);
                 syncUrl({ category: next });
               }}
-              className={`shrink-0 rounded-full px-3 py-1 text-[11px] font-semibold transition border ${
+              className={`inline-flex min-h-11 shrink-0 items-center rounded-full px-3 py-1 text-[11px] font-semibold transition border ${
                 category === cat.slug
                   ? "bg-[var(--brand)] border-[var(--brand)] text-[var(--background)] shadow-xs"
                   : "bg-[var(--card)] border-[var(--line-2)] text-[var(--muted)] hover:text-[var(--foreground)]"
@@ -373,7 +373,7 @@ export default function PharmacyDirectory({
             )}
             {delivery && <FilterChip label="Delivery" onRemove={() => { setDelivery(false); syncUrl({ delivery: false }); }} />}
             {activeFilterCount > 0 && (
-              <button type="button" onClick={reset} className="ml-auto px-1 text-[10px] font-bold text-[var(--brand)] hover:underline">
+              <button type="button" onClick={reset} className="ml-auto inline-flex min-h-11 items-center px-1 text-[10px] font-bold text-[var(--brand)] hover:underline">
                 Clear filters
               </button>
             )}
@@ -396,7 +396,7 @@ export default function PharmacyDirectory({
             <button
               type="button"
               onClick={() => setViewMode("grid")}
-              className={`inline-flex items-center gap-1.5 rounded-lg px-2.5 py-1 text-xs font-semibold transition ${
+              className={`inline-flex min-h-10 min-w-10 items-center justify-center gap-1.5 rounded-lg px-2.5 py-1 text-xs font-semibold transition ${
                 viewMode === "grid"
                   ? "bg-[var(--brand)] text-[var(--background)] shadow-xs"
                   : "text-[var(--muted)] hover:text-[var(--foreground)]"
@@ -410,7 +410,7 @@ export default function PharmacyDirectory({
             <button
               type="button"
               onClick={() => setViewMode("radar")}
-              className={`inline-flex items-center gap-1.5 rounded-lg px-2.5 py-1 text-xs font-semibold transition ${
+              className={`inline-flex min-h-10 min-w-10 items-center justify-center gap-1.5 rounded-lg px-2.5 py-1 text-xs font-semibold transition ${
                 viewMode === "radar"
                   ? "bg-[var(--brand)] text-[var(--background)] shadow-xs"
                   : "text-[var(--muted)] hover:text-[var(--foreground)]"
@@ -538,7 +538,7 @@ function FilterChip({ label, onRemove }: { label: string; onRemove: () => void }
       type="button"
       onClick={onRemove}
       aria-label={`Remove filter ${label}`}
-      className="inline-flex items-center gap-1 rounded-full bg-[var(--brand-soft)] px-2.5 py-1.5 text-[10px] font-semibold text-[var(--brand-deep)] transition hover:bg-[var(--brand-tint)]"
+      className="inline-flex min-h-11 items-center gap-1 rounded-full bg-[var(--brand-soft)] px-2.5 py-1.5 text-[10px] font-semibold text-[var(--brand-deep)] transition hover:bg-[var(--brand-tint)]"
     >
       {label}
       <X className="h-3 w-3" aria-hidden />
@@ -668,7 +668,7 @@ function PharmacyCard({
           <div className="flex gap-2">
             <Link
               href={`/pharmacies/${pharmacy.slug}`}
-              className="inline-flex h-10 min-w-0 flex-1 items-center justify-center gap-1.5 rounded-xl bg-[var(--brand)] px-3 text-[11px] font-bold text-[var(--background)] shadow-xs transition hover:brightness-95"
+              className="inline-flex h-11 min-w-0 flex-1 items-center justify-center gap-1.5 rounded-xl bg-[var(--brand)] px-3 text-[11px] font-bold text-[var(--background)] shadow-xs transition hover:brightness-95"
             >
               Visit storefront <ArrowRight className="h-3.5 w-3.5 shrink-0" aria-hidden />
             </Link>
@@ -676,7 +676,7 @@ function PharmacyCard({
               <a
                 href={phoneHref}
                 aria-label={`Call ${pharmacy.name}`}
-                className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-[var(--line-2)] text-[var(--brand-deep)] transition hover:bg-[var(--brand-tint)]"
+                className="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border border-[var(--line-2)] text-[var(--brand-deep)] transition hover:bg-[var(--brand-tint)]"
               >
                 <PhoneCall className="h-4 w-4" aria-hidden />
               </a>
@@ -687,7 +687,7 @@ function PharmacyCard({
                 target="_blank"
                 rel="noopener noreferrer"
                 aria-label={`WhatsApp ${pharmacy.name}`}
-                className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-[var(--line-2)] text-[var(--brand-deep)] transition hover:bg-[var(--brand-tint)]"
+                className="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border border-[var(--line-2)] text-[var(--brand-deep)] transition hover:bg-[var(--brand-tint)]"
               >
                 <MessageCircle className="h-4 w-4" aria-hidden />
               </a>
@@ -697,13 +697,13 @@ function PharmacyCard({
           <div className="mt-2 grid grid-cols-2 gap-2">
             <Link
               href="/refill"
-              className="rounded-xl border border-[var(--line-2)] py-2 text-center text-[10px] font-bold text-[var(--brand-deep)] transition hover:bg-[var(--brand-tint)]"
+              className="inline-flex min-h-11 items-center justify-center rounded-xl border border-[var(--line-2)] px-2 py-2 text-center text-[10px] font-bold text-[var(--brand-deep)] transition hover:bg-[var(--brand-tint)]"
             >
               Request refill
             </Link>
             <Link
               href={medicineHref}
-              className="rounded-xl border border-[var(--line-2)] py-2 text-center text-[10px] font-bold text-[var(--brand-deep)] transition hover:bg-[var(--brand-tint)]"
+              className="inline-flex min-h-11 items-center justify-center rounded-xl border border-[var(--line-2)] px-2 py-2 text-center text-[10px] font-bold text-[var(--brand-deep)] transition hover:bg-[var(--brand-tint)]"
             >
               Browse medicines
             </Link>

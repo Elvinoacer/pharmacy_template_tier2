@@ -5,6 +5,7 @@ import CtaBanner from "@/app/components/CtaBanner";
 import CounsellingSearchClient from "@/app/components/health/CounsellingSearchClient";
 import MissedDoseCalculator from "@/app/components/health/MissedDoseCalculator";
 import DeviceDosageViewer from "@/app/components/health/DeviceDosageViewer";
+import styles from "./CounsellingSurface.module.css";
 import { getAllCounsellingMedications } from "@/app/lib/services/medication-counselling-db";
 import { platform } from "@/app/lib/data";
 import {
@@ -40,7 +41,7 @@ export default async function DigitalCounsellingHubPage() {
   const allMedications = await getAllCounsellingMedications();
 
   return (
-    <div className="min-h-screen bg-transparent text-[var(--foreground)]">
+    <div className={`${styles.surface} min-h-screen bg-transparent text-[var(--foreground)]`}>
       <PageHero
         eyebrow="Digital Pharmacy Standard"
         title="Digital Patient Medication Counselling Hub"

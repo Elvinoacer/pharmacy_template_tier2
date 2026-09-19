@@ -129,7 +129,7 @@ export default function ContactForm({
         <input id="company" name="company" type="text" tabIndex={-1} autoComplete="off" />
       </div>
       {status === "error" && (
-        <p className="rounded-xl border border-[var(--line-2)] bg-[var(--card-elev)] px-3.5 py-3 text-sm leading-5 text-rose-600" role="alert">
+        <p className="rounded-xl border border-[var(--line-2)] bg-[var(--card-elev)] px-3.5 py-3 text-sm leading-5 text-rose-700 dark:text-rose-300" role="alert">
           {errorMessage || "Something went wrong. Please try again or call us directly."}
         </p>
       )}

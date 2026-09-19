@@ -16,7 +16,7 @@ export function FieldLabel({
   return (
     <label htmlFor={htmlFor} className={labelClass}>
       {children}
-      {required && <span className="text-rose-600"> *</span>}
+      {required && <span className="text-rose-700 dark:text-rose-300"> *</span>}
     </label>
   );
 }

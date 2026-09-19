@@ -26,7 +26,7 @@ export default async function HowDoYouFeelPage(props?: {
   }));
 
   return (
-    <main className="feel-page min-h-screen overflow-hidden bg-transparent text-slate-950 transition-colors dark:text-slate-100">
+    <main className="feel-page min-h-screen overflow-hidden bg-transparent text-[var(--foreground)] transition-colors">
       <div
         className="pointer-events-none absolute inset-x-0 top-0 -z-0 h-[36rem] overflow-hidden"
         aria-hidden="true"

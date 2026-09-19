@@ -264,8 +264,14 @@
   border: 1px solid var(--line-2);
 }
 .error {
-  background: #fff0eb;
-  color: #923625;
+  background: color-mix(in srgb, #f97316 10%, var(--card));
+  color: color-mix(in srgb, #9a3412 84%, var(--foreground));
+}
+
+:global(html[data-theme="dark"]) .error {
+  background: rgba(249, 115, 22, .14);
+  border-color: rgba(251, 146, 60, .34);
+  color: #fed7aa;
 }
 .results {
   margin-top: 42px;
@@ -407,6 +413,14 @@
   gap: 7px;
   font-size: 11px;
   color: var(--brand);
+}
+
+.secondaryBtn:focus-visible,
+.primary:focus-visible,
+.back:focus-visible,
+.fileLabel:focus-visible {
+  outline: 3px solid var(--brand);
+  outline-offset: 3px;
 }
 @media (max-width: 700px) {
   .workspace {

@@ -1,5 +1,9 @@
 .feel-page {
+  --feel-panel: color-mix(in srgb, var(--card) 94%, transparent);
+  --feel-panel-soft: color-mix(in srgb, var(--card-elev) 90%, transparent);
+  --feel-border: var(--line-2);
   color-scheme: light;
+  color: var(--foreground);
   background:
     radial-gradient(circle at 8% 10%, rgb(110 231 183 / 0.14), transparent 22rem),
     radial-gradient(circle at 92% 7%, rgb(103 232 249 / 0.10), transparent 22rem),
@@ -10,6 +14,8 @@
 .feel-page textarea,
 .feel-page a {
   min-width: 0;
+  min-height: 44px;
+  touch-action: manipulation;
   -webkit-tap-highlight-color: transparent;
 }
 
@@ -23,13 +29,15 @@
 .feel-page button:focus-visible,
 .feel-page textarea:focus-visible,
 .feel-page a:focus-visible {
-  outline: 2px solid rgb(13 148 136);
+  outline: 3px solid var(--brand);
   outline-offset: 2px;
 }
 
 html[data-theme="light"] .feel-page {
   color-scheme: light;
-  color: rgb(15 23 42);
+  color: var(--foreground);
+  --feel-panel: color-mix(in srgb, var(--card) 94%, transparent);
+  --feel-panel-soft: color-mix(in srgb, var(--card-elev) 90%, transparent);
 }
 
 html[data-theme="light"] .feel-page [class*="bg-white"] {
@@ -57,7 +65,9 @@ html[data-theme="light"] .feel-page [class*="border-slate-700"] {
 
 html[data-theme="dark"] .feel-page {
   color-scheme: dark;
-  color: rgb(241 245 249);
+  color: var(--foreground);
+  --feel-panel: color-mix(in srgb, var(--card) 94%, transparent);
+  --feel-panel-soft: color-mix(in srgb, var(--card-elev) 90%, transparent);
   background:
     radial-gradient(circle at 8% 10%, rgb(16 185 129 / 0.11), transparent 22rem),
     radial-gradient(circle at 92% 7%, rgb(34 211 238 / 0.08), transparent 22rem),
@@ -129,6 +139,36 @@ html[data-theme="dark"] .feel-page textarea::placeholder {
   color: rgb(100 116 139) !important;
 }
 
+/* Keep the triage surface aligned with the public care tokens when the
+   client component falls back to utility classes for its conversational UI. */
+.feel-page [class~="bg-white"],
+.feel-page [class~="bg-white/90"],
+.feel-page [class~="bg-white/70"] {
+  background-color: var(--feel-panel) !important;
+}
+
+.feel-page [class~="border-slate-200"],
+.feel-page [class~="border-slate-200/80"],
+.feel-page [class~="border-slate-200/90"] {
+  border-color: var(--feel-border) !important;
+}
+
+.feel-page [class~="bg-slate-50"],
+.feel-page [class~="bg-slate-50/60"] {
+  background-color: var(--feel-panel-soft) !important;
+}
+
+.feel-page [class~="text-slate-900"],
+.feel-page [class~="text-slate-800"],
+.feel-page [class~="text-slate-700"] {
+  color: var(--foreground) !important;
+}
+
+.feel-page [class~="text-slate-600"],
+.feel-page [class~="text-slate-500"] {
+  color: var(--muted) !important;
+}
+
 @media (max-width: 640px) {
   .feel-page {
     overflow-x: hidden;
@@ -136,6 +176,10 @@ html[data-theme="dark"] .feel-page textarea::placeholder {
 
   .feel-page textarea {
     font-size: 16px;
+  }
+
+  .feel-page [role="log"] {
+    overscroll-behavior: contain;
   }
 
   .feel-page [class*="min-h-[540px]"] {

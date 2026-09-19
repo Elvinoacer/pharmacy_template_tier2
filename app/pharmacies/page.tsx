@@ -46,7 +46,7 @@ export default async function PharmaciesPage({ searchParams }: { searchParams: P
 
   return (
     <div className="afyvia-route-surface min-h-screen overflow-hidden text-[var(--foreground)]">
-      <section className="px-4 pb-16 pt-24 sm:px-6 sm:pb-20 sm:pt-32">
+      <section className="px-4 pb-16 pt-[var(--public-header-offset)] sm:px-6 sm:pb-20">
         <div className="mx-auto max-w-7xl">
           <header className="page-hero-glass mb-4 sm:mb-5">
             <div className="flex flex-col gap-3 lg:flex-row lg:items-end lg:justify-between">
@@ -68,13 +68,13 @@ export default async function PharmaciesPage({ searchParams }: { searchParams: P
               <div className="flex flex-wrap gap-2">
                 <Link
                   href="/medicines"
-                  className="glass inline-flex min-h-10 items-center justify-center gap-2 rounded-full px-3.5 text-xs font-bold text-[var(--brand-deep)] transition hover:border-[var(--brand)] hover:bg-[var(--card-elev)]"
+                  className="glass inline-flex min-h-11 items-center justify-center gap-2 rounded-full px-3.5 text-xs font-bold text-[var(--brand-deep)] transition hover:border-[var(--brand)] hover:bg-[var(--card-elev)]"
                 >
                   <Pill className="h-3.5 w-3.5" aria-hidden /> Browse medicines
                 </Link>
                 <Link
                   href="/refill"
-                  className="inline-flex min-h-10 items-center justify-center gap-2 rounded-full bg-[var(--brand)] px-3.5 text-xs font-bold text-[var(--background)] shadow-sm transition hover:brightness-95"
+                  className="inline-flex min-h-11 items-center justify-center gap-2 rounded-full bg-[var(--brand)] px-3.5 text-xs font-bold text-[var(--background)] shadow-sm transition hover:brightness-95"
                 >
                   <PackageSearch className="h-3.5 w-3.5" aria-hidden /> Request refill
                 </Link>

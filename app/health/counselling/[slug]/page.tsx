@@ -6,6 +6,7 @@ import CtaBanner from "@/app/components/CtaBanner";
 import DigitalCounsellingCard from "@/app/components/health/DigitalCounsellingCard";
 import MissedDoseCalculator from "@/app/components/health/MissedDoseCalculator";
 import DeviceDosageViewer from "@/app/components/health/DeviceDosageViewer";
+import styles from "../CounsellingSurface.module.css";
 import { getMedicationCounsellingBySlug } from "@/app/lib/services/medication-counselling-db";
 import { platform } from "@/app/lib/data";
 import { ArrowLeft } from "lucide-react";
@@ -32,7 +33,7 @@ export default async function MedicationCounsellingSlugPage({ params }: Props) {
   if (!profile) notFound();
 
   return (
-    <div className="min-h-screen bg-transparent text-[var(--foreground)]">
+    <div className={`${styles.surface} min-h-screen bg-transparent text-[var(--foreground)]`}>
       <PageHero
         eyebrow="Digital Medication Counselling"
         title={`${profile.brandNames[0]} Patient Counselling Leaflet`}

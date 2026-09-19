@@ -65,6 +65,12 @@ export default function AppChrome({
       ? storefrontBrand ?? unscopedPublicBrand()
       : platformBrand;
   const isLandingPage = pathname === "/";
+  const isSymptomCheckIn = pathname === "/how-do-you-feel";
+  const isPharmacyRoute =
+    pathname === "/pharmacies" ||
+    pathname.startsWith("/pharmacies/") ||
+    pathname === "/for-pharmacies" ||
+    pathname.startsWith("/for-pharmacies/");
   const isCarePage = true;
   const hasMobileCareDock = shouldShowMobileCareDock(pathname);
 
@@ -106,7 +112,7 @@ export default function AppChrome({
         </div>
         {surface === "storefront" ? <AiChatbot /> : null}
         {surface === "storefront" ? <LiveAlertCenter audience="public" /> : null}
-        <QuickPageAssist />
+        {!isSymptomCheckIn && !isPharmacyRoute ? <QuickPageAssist /> : null}
         {!isLandingPage && isCarePage ? <CareMobileNav /> : !isLandingPage && hasMobileCareDock ? <MobileCareDock /> : null}
         {sessionUser ? <VerificationStatusModal /> : null}
       </div>

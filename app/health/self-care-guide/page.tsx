@@ -3,6 +3,7 @@ import Link from "next/link";
 import PageHero from "@/app/components/PageHero";
 import CtaBanner from "@/app/components/CtaBanner";
 import SelfCareTriageClient from "@/app/components/health/SelfCareTriageClient";
+import styles from "./SelfCareGuideSurface.module.css";
 
 export const metadata: Metadata = {
   title: "Self-Care vs Medical Attention Guide | Clinical Triage",
@@ -13,7 +14,7 @@ export const metadata: Metadata = {
 
 export default function SelfCareGuidePage() {
   return (
-    <div className="min-h-screen bg-transparent text-[var(--foreground)]">
+    <div className={`${styles.surface} min-h-screen bg-transparent text-[var(--foreground)]`}>
       <PageHero
         eyebrow="Clinical Triage & Self-Care"
         title="When is a Condition Appropriate for Self-Care?"

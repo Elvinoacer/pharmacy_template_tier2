@@ -15,7 +15,7 @@
 
 .hero {
   position: relative;
-  padding: 6.5rem 0 2.5rem;
+  padding: calc(var(--public-header-offset) + 0.5rem) 0 2.5rem;
 }
 
 .container {
@@ -524,7 +524,7 @@
   }
 
   .hero {
-    padding-top: 7.5rem;
+    padding-top: calc(var(--public-header-offset) + 1rem);
     padding-bottom: 3rem;
   }
 
@@ -609,7 +609,7 @@
   }
 
   .hero {
-    padding-top: 5.75rem;
+    padding-top: var(--public-header-offset);
     padding-bottom: 1.5rem;
   }
 

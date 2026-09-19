@@ -11,9 +11,9 @@
   --afyvia-global-veil:
     linear-gradient(
       180deg,
-      rgba(244, 247, 244, 0.36) 0%,
-      rgba(242, 247, 244, 0.44) 48%,
-      rgba(239, 245, 242, 0.50) 100%
+      rgba(244, 247, 244, 0.68) 0%,
+      rgba(242, 247, 244, 0.74) 48%,
+      rgba(239, 245, 242, 0.80) 100%
     );
 }
 
@@ -21,9 +21,9 @@ html[data-theme="dark"] {
   --afyvia-global-veil:
     linear-gradient(
       180deg,
-      rgba(5, 13, 11, 0.32) 0%,
-      rgba(6, 16, 13, 0.38) 48%,
-      rgba(4, 11, 9, 0.46) 100%
+      rgba(5, 13, 11, 0.48) 0%,
+      rgba(6, 16, 13, 0.54) 48%,
+      rgba(4, 11, 9, 0.62) 100%
     );
 }
 
@@ -35,6 +35,19 @@ html[data-admin-theme="dark"] {
       rgba(7, 12, 16, 0.45) 0%,
       rgba(8, 14, 17, 0.50) 48%,
       rgba(6, 11, 14, 0.56) 100%
+    );
+}
+
+/* Public pages share the root data attributes with the admin shell. Resolve
+   their artwork veil from the public theme when the public chrome is present,
+   while leaving the stronger admin-specific treatment above untouched. */
+html[data-theme="dark"] body:has(.public-main) {
+  --afyvia-global-veil:
+    linear-gradient(
+      180deg,
+      rgba(5, 13, 11, 0.48) 0%,
+      rgba(6, 16, 13, 0.54) 48%,
+      rgba(4, 11, 9, 0.62) 100%
     );
 }
 

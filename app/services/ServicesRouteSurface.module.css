@@ -43,6 +43,28 @@
   color: var(--muted) !important;
 }
 
+:global(html[data-theme="dark"]) .surface :global([class~="text-emerald-700"]),
+:global(html[data-theme="dark"]) .surface :global([class~="text-emerald-800"]),
+:global(html[data-theme="dark"]) .surface :global([class~="text-emerald-900"]) {
+  color: #b9f6d5 !important;
+}
+
+:global(html[data-theme="dark"]) .surface :global([class~="text-teal-600"]),
+:global(html[data-theme="dark"]) .surface :global([class~="text-teal-700"]),
+:global(html[data-theme="dark"]) .surface :global([class~="text-teal-800"]) {
+  color: #99f6e4 !important;
+}
+
+:global(html[data-theme="dark"]) .surface :global([class~="bg-emerald-50"]),
+:global(html[data-theme="dark"]) .surface :global([class*="bg-emerald-500/"]) {
+  background-color: rgba(16, 185, 129, .14) !important;
+}
+
+:global(html[data-theme="dark"]) .surface :global([class~="border-emerald-200"]),
+:global(html[data-theme="dark"]) .surface :global([class*="border-emerald-500/"]) {
+  border-color: rgba(52, 211, 153, .34) !important;
+}
+
 @media (max-width: 639px) {
   .surface :global(form) {
     width: 100%;
@@ -55,6 +77,12 @@
   .surface :global(button),
   .surface :global(a) {
     overflow-wrap: anywhere;
+  }
+
+  .surface :global(form input),
+  .surface :global(form select),
+  .surface :global(form button) {
+    min-height: 44px;
   }
 }
 

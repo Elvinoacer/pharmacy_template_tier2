@@ -4,7 +4,9 @@
 .serviceCard { composes: liquid from "./LiquidGlass.module.css"; }
 .badge { composes: liquid from "./LiquidGlass.module.css"; }
 .page {
-  padding: 115px 28px 64px;
+  min-width: 0;
+  overflow-x: clip;
+  padding: var(--public-header-offset) 28px 64px;
   min-height: 100vh;
   max-width: 1320px;
   margin: auto;
@@ -405,7 +407,7 @@
 }
 @media (max-width: 700px) {
   .page {
-    padding: 85px 17px 35px;
+    padding: calc(var(--public-header-offset) - 1rem) 17px calc(35px + env(safe-area-inset-bottom));
   }
   .hero {
     grid-template-columns: 1fr;

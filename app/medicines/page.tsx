@@ -2,7 +2,6 @@ import Link from "next/link";
 import {
   FileUp,
   HeartPulse,
-  PackageSearch,
   Pill,
   Store,
 } from "lucide-react";
@@ -51,7 +50,7 @@ export default async function MedicinesPage({
 
   return (
     <div className="afyvia-route-surface min-h-screen overflow-hidden text-[var(--foreground)]">
-      <section className="px-4 pb-16 pt-24 sm:px-6 sm:pb-20 sm:pt-32">
+      <section className="px-4 pb-16 pt-[var(--public-header-offset)] sm:px-6 sm:pb-20">
         <div className="mx-auto max-w-7xl">
           {/* Sleek compact header without bloated marketing text */}
           <header className="page-hero-glass mb-4 sm:mb-6">
@@ -74,19 +73,19 @@ export default async function MedicinesPage({
               <div className="flex flex-wrap gap-2">
                 <Link
                   href="/prescription"
-                  className="glass inline-flex min-h-10 items-center justify-center gap-2 rounded-full px-3.5 text-xs font-bold text-[var(--brand-deep)] transition hover:border-[var(--brand)] hover:bg-[var(--card-elev)]"
+                  className="glass inline-flex min-h-11 items-center justify-center gap-2 rounded-full px-3.5 text-xs font-bold text-[var(--brand-deep)] transition hover:border-[var(--brand)] hover:bg-[var(--card-elev)]"
                 >
                   <FileUp className="h-3.5 w-3.5" aria-hidden /> Upload prescription
                 </Link>
                 <Link
                   href="/services"
-                  className="glass inline-flex min-h-10 items-center justify-center gap-2 rounded-full px-3.5 text-xs font-bold text-[var(--brand-deep)] transition hover:border-[var(--brand)] hover:bg-[var(--card-elev)]"
+                  className="glass inline-flex min-h-11 items-center justify-center gap-2 rounded-full px-3.5 text-xs font-bold text-[var(--brand-deep)] transition hover:border-[var(--brand)] hover:bg-[var(--card-elev)]"
                 >
                   <HeartPulse className="h-3.5 w-3.5" aria-hidden /> Care services
                 </Link>
                 <Link
                   href="/pharmacies"
-                  className="inline-flex min-h-10 items-center justify-center gap-2 rounded-full bg-[var(--brand)] px-3.5 text-xs font-bold text-[var(--background)] shadow-sm transition hover:brightness-95"
+                  className="inline-flex min-h-11 items-center justify-center gap-2 rounded-full bg-[var(--brand)] px-3.5 text-xs font-bold text-[var(--background)] shadow-sm transition hover:brightness-95"
                 >
                   <Store className="h-3.5 w-3.5" aria-hidden /> Nearby pharmacies
                 </Link>
@@ -117,14 +116,14 @@ export default async function MedicinesPage({
               <div className="flex gap-2 shrink-0">
                 <Link
                   href="/prescription"
-                  className="inline-flex min-h-9 items-center gap-1.5 rounded-xl bg-[var(--brand-soft)] px-3.5 text-xs font-bold text-[var(--brand-deep)] hover:bg-[var(--brand-tint)] transition"
+                  className="inline-flex min-h-11 items-center gap-1.5 rounded-xl bg-[var(--brand-soft)] px-3.5 text-xs font-bold text-[var(--brand-deep)] hover:bg-[var(--brand-tint)] transition"
                 >
                   <FileUp className="h-3.5 w-3.5" />
                   Upload prescription
                 </Link>
                 <Link
                   href="/refill"
-                  className="inline-flex min-h-9 items-center gap-1.5 rounded-xl border border-[var(--line-2)] px-3 text-xs font-semibold text-[var(--foreground)] hover:bg-[var(--card-elev)] transition"
+                  className="inline-flex min-h-11 items-center gap-1.5 rounded-xl border border-[var(--line-2)] px-3 text-xs font-semibold text-[var(--foreground)] hover:bg-[var(--card-elev)] transition"
                 >
                   Request refill
                 </Link>

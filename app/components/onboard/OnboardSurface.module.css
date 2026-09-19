@@ -6,7 +6,7 @@
   min-width: 0;
   min-height: 100vh;
   overflow-x: hidden;
-  padding: 2.25rem 0.85rem 2rem;
+  padding: var(--public-header-offset) 0.85rem 2rem;
   color: var(--foreground);
   background:
     radial-gradient(circle at 8% -4%, color-mix(in srgb, var(--brand-soft) 72%, transparent), transparent 28rem),
@@ -966,7 +966,7 @@
 
 @media (min-width: 640px) {
   .page {
-    padding: 2.75rem 1.25rem 2.5rem;
+    padding: var(--public-header-offset) 1.25rem 2.5rem;
   }
 
   .form {
@@ -995,7 +995,7 @@
 
 @media (min-width: 1024px) {
   .page {
-    padding: 3rem 1.5rem 3rem;
+    padding: var(--public-header-offset) 1.5rem 3rem;
   }
 
   .split {
@@ -1065,7 +1065,7 @@
 .heroTitle { margin-top: 0.35rem; font-family: var(--font-display), serif; font-size: clamp(1.75rem, 2.7vw, 2.35rem); font-weight: 550; letter-spacing: -.035em; line-height: 1.1; text-wrap: balance; }
 .heroTitle em { color: var(--brand); }
 .heroActions { display: flex; flex-wrap: wrap; gap: 0.65rem; align-items: center; margin-top: 0.75rem; }
-.heroActions a { display: inline-flex; align-items: center; justify-content: center; gap: .4rem; }
+.heroActions a { display: inline-flex; min-height: 44px; align-items: center; justify-content: center; gap: .4rem; }
 .outcomes { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 0.5rem; margin-top: 0.85rem; padding-top: 0.65rem; border-top: 1px solid var(--line-2); }
 .outcomes small { color: var(--brand); font-size: .65rem; font-weight: 750; }
 .outcomes strong { display: block; font-size: .75rem; margin-block: .15rem .1rem; }
@@ -1146,7 +1146,7 @@
   .page :is(button,a,input,select), .step i { transition: none !important; transform: none !important; }
 }
 .licenceTabs { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: .35rem; margin-bottom: 0.85rem; padding: .25rem; border-radius: 0.85rem; background: var(--surface); }
-.licenceTabs button { min-height: 38px; padding: .4rem .2rem; border-radius: .65rem; font-size: .72rem; font-weight: 650; color: var(--muted); }
+.licenceTabs button { min-height: 44px; padding: .4rem .2rem; border-radius: .65rem; font-size: .72rem; font-weight: 650; color: var(--muted); }
 .licenceTabs button[aria-current="step"] { background: var(--card); color: var(--brand); box-shadow: 0 2px 8px #0000000a; }
 .licenceTabs button:disabled { cursor: default; }
 .upload:focus-within { outline: 2px solid var(--brand); outline-offset: 3px; }

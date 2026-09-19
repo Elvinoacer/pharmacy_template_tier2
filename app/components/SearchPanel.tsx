@@ -165,7 +165,7 @@ export default function SearchPanel({
                   setQuery(suggestion);
                   setTouched(true);
                 }}
-                className="min-h-9 shrink-0 rounded-full border border-[var(--care-border)] bg-[var(--care-glass)] px-3.5 text-xs font-semibold capitalize text-[var(--foreground)] backdrop-blur-md transition hover:border-[var(--brand)] hover:bg-[var(--brand-tint)]"
+                className="min-h-11 shrink-0 rounded-full border border-[var(--care-border)] bg-[var(--care-glass)] px-3.5 text-xs font-semibold capitalize text-[var(--foreground)] backdrop-blur-md transition hover:border-[var(--brand)] hover:bg-[var(--brand-tint)]"
               >
                 {suggestion}
               </button>
@@ -189,7 +189,7 @@ export default function SearchPanel({
               setQuery("");
               setTouched(true);
             }}
-            className="shrink-0 text-xs font-semibold text-[var(--brand)] hover:underline"
+            className="inline-flex min-h-11 shrink-0 items-center px-2 text-xs font-semibold text-[var(--brand)] hover:underline"
           >
             Clear
           </button>

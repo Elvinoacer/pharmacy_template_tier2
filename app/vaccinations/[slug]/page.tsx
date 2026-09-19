@@ -83,15 +83,15 @@ export default async function VaccineInfoPage({ params }: Props) {
               <Row k="VIS version" val={v.visVersion || "—"} />
             </dl>
             {v.bookable && v.pharmacyAdministered ? (
-              <Link href={`/vaccinations/book?vaccine=${v.slug}`} className="btn-primary mt-2 inline-flex w-full justify-center text-sm">
+              <Link href={`/vaccinations/book?vaccine=${v.slug}`} className="btn-primary mt-2 inline-flex min-h-11 w-full justify-center text-sm">
                 Book this vaccine
               </Link>
             ) : (
-              <Link href={`${base}/preventive`} className="btn-primary mt-2 inline-flex w-full justify-center text-sm">
+              <Link href={`${base}/preventive`} className="btn-primary mt-2 inline-flex min-h-11 w-full justify-center text-sm">
                 Request counselling / referral
               </Link>
             )}
-            <Link href={`${base}/vaccinations`} className="block text-center text-sm font-semibold text-[var(--brand)]">
+            <Link href={`${base}/vaccinations`} className="flex min-h-11 items-center justify-center text-center text-sm font-semibold text-[var(--brand)]">
               All vaccines
             </Link>
           </aside>

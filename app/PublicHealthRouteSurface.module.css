@@ -116,8 +116,18 @@
 
 .surface :global([class~="btn-primary"]),
 .surface :global([class~="btn-ghost"]) {
+  min-height: 44px;
   max-width: 100%;
   white-space: normal;
+}
+
+.surface :global(a:focus-visible),
+.surface :global(button:focus-visible),
+.surface :global(input:focus-visible),
+.surface :global(select:focus-visible),
+.surface :global(textarea:focus-visible) {
+  outline: 3px solid var(--brand);
+  outline-offset: 3px;
 }
 
 :global(html[data-theme="dark"]) .surface :global([class~="bg-amber-50"]),

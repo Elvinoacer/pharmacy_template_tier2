@@ -101,7 +101,7 @@ export default async function ServiceDetailPage({ params }: Props) {
       return <NetworkServiceView slug={slug} />;
     }
     return (
-      <div className="mx-auto max-w-xl px-6 py-24 text-center">
+      <div className="mx-auto max-w-xl px-6 pb-24 pt-[var(--public-header-offset)] text-center">
         <h1 className="text-2xl font-semibold text-[var(--foreground)]" style={{ fontFamily: "var(--font-display), serif" }}>
           Service not currently available
         </h1>
