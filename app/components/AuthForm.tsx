@@ -224,7 +224,7 @@ export default function AuthForm({
           {(state?.error || initialError || csrfError) && (
             <div
               role="alert"
-              className="rounded-2xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-800"
+              className="rounded-2xl border border-rose-300 bg-rose-50 px-4 py-3 text-sm font-medium text-rose-800 dark:border-rose-400/60 dark:bg-rose-950/70 dark:text-rose-100"
             >
               {state?.error || initialError || csrfError}
             </div>
@@ -232,7 +232,7 @@ export default function AuthForm({
           {state?.success && (
             <div
               role="status"
-              className="rounded-2xl border border-teal-200 bg-teal-50 px-4 py-3 text-sm text-teal-900"
+              className="rounded-2xl border border-teal-300 bg-teal-50 px-4 py-3 text-sm font-medium text-teal-900 dark:border-teal-300/55 dark:bg-teal-950/70 dark:text-teal-100"
             >
               {state.success}
             </div>
@@ -243,7 +243,7 @@ export default function AuthForm({
           <button
             type="submit"
             disabled={!canSubmit}
-            className="btn-primary w-full !py-3.5 disabled:opacity-60"
+            className="btn-primary w-full !py-3.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--brand)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--card)]"
           >
             {pending ? "Please wait…" : !csrfToken ? "Preparing secure form…" : submitLabel}
           </button>
@@ -316,7 +316,7 @@ export function AuthField({
         required={required}
         autoComplete={autoComplete}
         placeholder={placeholder}
-        className="w-full rounded-2xl border border-[var(--line)] bg-[var(--card)] text-[var(--foreground)] px-4 py-3 text-sm outline-none ring-[var(--brand)]/20 transition focus:ring-2"
+        className="w-full rounded-2xl border border-[color-mix(in_srgb,var(--foreground)_48%,var(--card-elev))] bg-[var(--card-elev)] px-4 py-3 text-sm text-[var(--foreground)] outline-none transition placeholder:text-[var(--muted)] focus:border-[var(--brand)] focus:bg-[var(--card)] focus:ring-2 focus:ring-[color-mix(in_srgb,var(--brand)_24%,transparent)] disabled:cursor-not-allowed disabled:border-[color-mix(in_srgb,var(--foreground)_32%,var(--card-elev))] disabled:bg-[color-mix(in_srgb,var(--foreground)_7%,var(--card-elev))] disabled:text-[var(--muted)] disabled:opacity-100"
       />
     </label>
   );
