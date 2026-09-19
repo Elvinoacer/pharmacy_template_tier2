@@ -17,7 +17,7 @@ import {
 import { pharmacyBillingAction, promotionAction } from "@/app/actions/pharmacy-billing";
 
 const input =
-  "mt-1 min-h-12 w-full rounded-xl border border-[var(--line-2)] bg-[var(--card-elev)] px-3.5 text-base text-[var(--foreground)] sm:text-sm";
+  "mt-1 min-h-12 w-full rounded-xl border border-[color-mix(in_srgb,var(--foreground)_55%,var(--card-elev))] bg-[var(--card-elev)] px-3.5 text-base text-[var(--foreground)] outline-none transition-colors placeholder:text-[var(--muted)] focus:border-[var(--brand)] focus:ring-2 focus:ring-[var(--brand)] focus:ring-offset-2 focus:ring-offset-[var(--card)] disabled:cursor-not-allowed disabled:border-[color-mix(in_srgb,var(--foreground)_42%,var(--card-elev))] disabled:bg-[color-mix(in_srgb,var(--foreground)_7%,var(--card-elev))] disabled:text-[var(--muted)] disabled:opacity-100 sm:text-sm";
 
 export function PromoCardForm({ pharmacyId }: { pharmacyId: string }) {
   const [state, action, pending] = useActionState(pharmacyBillingAction, {});
@@ -26,7 +26,7 @@ export function PromoCardForm({ pharmacyId }: { pharmacyId: string }) {
   return (
     <form
       action={action}
-      className="rounded-2xl border border-teal-500/20 bg-teal-50/40 dark:bg-teal-950/20 p-4"
+      className="rounded-2xl border border-[color-mix(in_srgb,var(--foreground)_55%,var(--card-elev))] bg-teal-50/40 dark:bg-teal-950/20 p-4"
     >
       <input type="hidden" name="pharmacyId" value={pharmacyId} />
       <input type="hidden" name="intent" value="apply_promo" />
@@ -62,7 +62,7 @@ export function PromoCardForm({ pharmacyId }: { pharmacyId: string }) {
       </div>
 
       {state.error ? (
-        <p role="alert" className="mt-2.5 text-xs font-medium text-rose-600 dark:text-rose-400">
+        <p role="alert" className="mt-2.5 text-xs font-medium text-rose-700 dark:text-rose-300">
           {state.error}
         </p>
       ) : null}
@@ -136,10 +136,10 @@ export function PharmacyEnrolmentPricingSelector({
             className={`text-left rounded-2xl p-4 border transition-all relative ${
               selectedPlan === "bundle"
                 ? "border-[var(--brand)] bg-[var(--brand-soft)]/30 ring-2 ring-[var(--brand)]/20 shadow-sm"
-                : "border-[var(--line-2)] bg-[var(--card-elev)] hover:border-[var(--line-1)]"
+                : "border-[color-mix(in_srgb,var(--foreground)_55%,var(--card-elev))] bg-[var(--card-elev)] hover:border-[var(--brand)]"
             }`}
           >
-            <span className="absolute top-3 right-3 px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-[var(--brand)] text-white">
+            <span className="absolute top-3 right-3 px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-[var(--brand)] text-[var(--background)]">
               Recommended
             </span>
             <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-[var(--brand)]">
@@ -182,7 +182,7 @@ export function PharmacyEnrolmentPricingSelector({
             className={`text-left rounded-2xl p-4 border transition-all ${
               selectedPlan === "verification"
                 ? "border-[var(--brand)] bg-[var(--brand-soft)]/30 ring-2 ring-[var(--brand)]/20 shadow-sm"
-                : "border-[var(--line-2)] bg-[var(--card-elev)] hover:border-[var(--line-1)]"
+                : "border-[color-mix(in_srgb,var(--foreground)_55%,var(--card-elev))] bg-[var(--card-elev)] hover:border-[var(--brand)]"
             }`}
           >
             <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-[var(--muted)]">
@@ -236,7 +236,7 @@ export function PharmacyEnrolmentPricingSelector({
       </div>
 
       {/* Payment Action Form */}
-      <form action={action} className="rounded-2xl border border-[var(--line-2)] bg-[var(--card-elev)] p-4">
+      <form action={action} className="rounded-2xl border border-[color-mix(in_srgb,var(--foreground)_55%,var(--card-elev))] bg-[var(--card-elev)] p-4">
         <input type="hidden" name="pharmacyId" value={pharmacyId} />
         <input
           type="hidden"
@@ -284,7 +284,7 @@ export function PharmacyEnrolmentPricingSelector({
           disabled={canSubmit}
           type="submit"
           className={`btn-primary min-h-12 w-full justify-center text-sm font-semibold flex items-center gap-2 ${
-            isFree ? "bg-emerald-600 hover:bg-emerald-700 text-white" : ""
+            isFree ? "bg-emerald-700 hover:bg-emerald-800 text-white" : ""
           }`}
         >
           {pending ? (
@@ -318,7 +318,7 @@ export function PharmacyEnrolmentPricingSelector({
         )}
 
         {state.error && (
-          <p role="alert" className="mt-2.5 text-xs text-rose-600 dark:text-rose-400">
+          <p role="alert" className="mt-2.5 text-xs text-rose-700 dark:text-rose-300">
             {state.error}
           </p>
         )}
@@ -356,7 +356,7 @@ export function PharmacyPaymentForm({
   return (
     <form
       action={action}
-      className={activation ? "space-y-3" : "rounded-2xl border border-[var(--line-2)] bg-[var(--card-elev)] p-4"}
+      className={activation ? "space-y-3" : "rounded-2xl border border-[color-mix(in_srgb,var(--foreground)_55%,var(--card-elev))] bg-[var(--card-elev)] p-4"}
       aria-busy={pending}
     >
       <input type="hidden" name="pharmacyId" value={pharmacyId} />
@@ -377,7 +377,7 @@ export function PharmacyPaymentForm({
               </p>
             </div>
           </div>
-          <span className="shrink-0 rounded-full border border-[var(--line-2)] px-2 py-1 text-[10px] font-semibold text-[var(--muted)]">
+          <span className="shrink-0 rounded-full border border-[color-mix(in_srgb,var(--foreground)_55%,var(--card-elev))] px-2 py-1 text-[10px] font-semibold text-[var(--muted)]">
             IntaSend
           </span>
         </div>
@@ -398,7 +398,7 @@ export function PharmacyPaymentForm({
           )}
         </button>
       ) : (
-        <p className="mt-4 rounded-xl border border-[var(--line-2)] p-3 text-xs leading-5 text-[var(--muted)]">
+        <p className="mt-4 rounded-xl border border-[color-mix(in_srgb,var(--foreground)_55%,var(--card-elev))] bg-rose-500/10 p-3 text-xs leading-5 text-rose-700 dark:text-rose-300">
           Payment is temporarily unavailable. Please try again shortly.
         </p>
       )}
@@ -411,7 +411,10 @@ export function PharmacyPaymentForm({
         </div>
       )}
 
-      <p role={state.error ? "alert" : "status"} className="mt-2 text-sm text-[var(--muted)]">
+      <p
+        role={state.error ? "alert" : "status"}
+        className={state.error ? "mt-2 text-sm text-rose-700 dark:text-rose-300" : "mt-2 text-sm text-emerald-700 dark:text-emerald-300"}
+      >
         {state.error || state.success}
       </p>
     </form>
@@ -446,7 +449,10 @@ export function RecurringMpesaSetupForm({
             ? "Setting up Renewal…"
             : "Manage Monthly Renewal"}
       </button>
-      <p role={state.error ? "alert" : "status"} className="text-sm text-[var(--muted)]">
+      <p
+        role={state.error ? "alert" : "status"}
+        className={state.error ? "text-sm text-rose-700 dark:text-rose-300" : "text-sm text-emerald-700 dark:text-emerald-300"}
+      >
         {state.error || state.success}
       </p>
     </form>
@@ -484,7 +490,10 @@ export function RetryOverdueForm({
           </a>
         </p>
       )}
-      <p role={state.error ? "alert" : "status"} className="text-sm text-[var(--muted)]">
+      <p
+        role={state.error ? "alert" : "status"}
+        className={state.error ? "text-sm text-rose-700 dark:text-rose-300" : "text-sm text-emerald-700 dark:text-emerald-300"}
+      >
         {state.error || state.success}
       </p>
     </form>
@@ -529,7 +538,12 @@ export function PromotionForm({ promotionId }: { promotionId?: string }) {
       <button className="btn-primary min-h-11" disabled={pending}>
         {pending ? "Saving…" : promotionId ? "Stop new allocations" : "Create Promotional Card / Coupon"}
       </button>
-      <p role="status" className="text-sm text-[var(--muted)]">{state.error || state.success}</p>
+      <p
+        role={state.error ? "alert" : "status"}
+        className={state.error ? "text-sm text-rose-700 dark:text-rose-300" : "text-sm text-emerald-700 dark:text-emerald-300"}
+      >
+        {state.error || state.success}
+      </p>
     </form>
   );
 }
@@ -543,7 +557,12 @@ export function CancelServiceForm({ pharmacyId }: { pharmacyId: string }) {
       <button className="btn-ghost min-h-11" disabled={pending}>
         {pending ? "Stopping auto-renewal…" : "Cancel auto-renewal"}
       </button>
-      <p role="status" className="text-sm text-[var(--muted)]">{state.error || state.success}</p>
+      <p
+        role={state.error ? "alert" : "status"}
+        className={state.error ? "text-sm text-rose-700 dark:text-rose-300" : "text-sm text-emerald-700 dark:text-emerald-300"}
+      >
+        {state.error || state.success}
+      </p>
     </form>
   );
 }
