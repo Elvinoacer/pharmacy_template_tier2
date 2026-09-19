@@ -82,6 +82,8 @@ export default async function PharmaciesPage({ searchParams }: { searchParams: P
             </div>
           </header>
 
+          <p className="mb-4 text-sm"><Link href="/locations">Browse pharmacies, medicines and services by town</Link></p>
+
           <div className="mb-4 grid grid-cols-2 gap-2 sm:grid-cols-4">
             <QuickAction href="#directory" icon={<Search className="h-4 w-4" aria-hidden />} label="Search directory" />
             <QuickAction href="/medicines" icon={<PackageSearch className="h-4 w-4" aria-hidden />} label="Check medicine stock" />

@@ -42,6 +42,7 @@ interface FooterProps {
 }
 
 const PLATFORM_EXPLORE = [
+  { href: "/locations", label: "Care by location", icon: MapPin },
   { href: "/about", label: "About the network", icon: Info },
   { href: "/for-pharmacies", label: "For pharmacies", icon: Building2 },
   { href: "/onboard", label: "Join as a pharmacy", icon: PlusSquare },

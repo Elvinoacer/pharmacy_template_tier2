@@ -1,3 +1,5 @@
+import { platform } from "@/app/lib/data";
+import { serializeJsonLd } from "@/app/lib/seo";
 import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
@@ -102,6 +104,8 @@ export default async function PharmacyProfilePage({
   const pharmacyJsonLd = {
     "@context": "https://schema.org",
     "@type": ["Pharmacy", "MedicalBusiness"],
+    "@id": `${platform.siteUrl}/pharmacies/${slug}#pharmacy`,
+    url: `${platform.siteUrl}/pharmacies/${slug}`,
     name: p.name,
     description: p.description || p.tagline,
     image: p.coverImageUrl || p.logoUrl || "/images/care/editorial-pharmacy.png",
@@ -123,8 +127,6 @@ export default async function PharmacyProfilePage({
           },
         }
       : {}),
-    priceRange: "KES",
-    openingHours: p.hours?.map((h: { day: string; time: string }) => `${h.day} ${h.time}`).join(", "),
     hasOfferCatalog: {
       "@type": "OfferCatalog",
       name: `${p.name} Catalogue`,
@@ -132,12 +134,12 @@ export default async function PharmacyProfilePage({
         {
           "@type": "OfferCatalog",
           name: "Pharmacy Care Services",
-          url: `/p/${slug}/services`,
+          url: `${platform.siteUrl}/p/${slug}/services`,
         },
         {
           "@type": "OfferCatalog",
           name: "In-Stock Medicines & OTC Healthcare",
-          url: `/p/${slug}/medicines`,
+          url: `${platform.siteUrl}/p/${slug}/medicines`,
         },
       ],
     },
@@ -149,7 +151,7 @@ export default async function PharmacyProfilePage({
     <div className={styles.page}>
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(pharmacyJsonLd) }}
+        dangerouslySetInnerHTML={{ __html: serializeJsonLd(pharmacyJsonLd) }}
       />
       <div className="flex flex-wrap items-center justify-between gap-3 pb-4">
         <Link href="/pharmacies" className={styles.back}>

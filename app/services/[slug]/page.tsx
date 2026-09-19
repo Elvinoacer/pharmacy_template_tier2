@@ -1,3 +1,4 @@
+import { serializeJsonLd } from "@/app/lib/seo";
 import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
@@ -41,51 +42,22 @@ export const dynamic = "force-dynamic";
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
-  const tenant = await getTenant().catch(() => null);
-  const service = await prismaUnscoped.pharmacyService
-    .findFirst({
-      where: {
-        slug,
-        active: true,
-        ...(tenant?.pharmacyId && !tenant.bypass ? { pharmacyId: tenant.pharmacyId } : {}),
-        pharmacy: acceptingCareRequests,
-      },
-      include: {
-        pharmacy: {
-          select: { name: true, city: true, county: true, latitude: true, longitude: true },
-        },
-      },
-    })
-    .catch(() => null);
-
-  if (!service) return { title: "Pharmacy Service" };
-
-  const locationStr = [service.pharmacy?.city, service.pharmacy?.county, "Kenya"]
-    .filter(Boolean)
-    .join(", ");
-  const coordinates =
-    service.pharmacy?.latitude != null && service.pharmacy?.longitude != null
-      ? `${service.pharmacy.latitude};${service.pharmacy.longitude}`
-      : undefined;
-
-  return {
-    title: `${service.title} — ${service.pharmacy?.name || "Local Pharmacy"} in ${locationStr}`,
-    description: `${service.short} Book online or visit ${service.pharmacy?.name || "the pharmacy"} in ${locationStr}.`,
-    alternates: { canonical: `/services/${service.slug}` },
-    openGraph: {
-      title: `${service.title} — ${service.pharmacy?.name || "Care Service"}`,
-      description: service.short,
-      images: service.imageUrl ? [service.imageUrl] : undefined,
-    },
-    other: coordinates
-      ? {
-          "geo.position": coordinates,
-          "geo.region": "KE",
-          "geo.placename": service.pharmacy?.city || "Kenya",
-          "ICBM": `${service.pharmacy?.latitude}, ${service.pharmacy?.longitude}`,
-        }
-      : undefined,
-  };
+  const tenant = await getTenant();
+  const storefront = Boolean(tenant?.pharmacyId && !tenant.bypass);
+  const services = await withPlatformBypass(() => prismaUnscoped.pharmacyService.findMany({
+    where: { slug, active: true, ...(storefront ? { pharmacyId: tenant.pharmacyId! } : {}), pharmacy: acceptingCareRequests },
+    select: { title: true, short: true, imageUrl: true, pharmacy: { select: { name: true, city: true, slug: true } } },
+    orderBy: { id: "asc" },
+    take: 2,
+  }));
+  const service = services[0];
+  if (!service) return { title: "Pharmacy service not found", robots: { index: false } };
+  const path = storefront || services.length === 1 ? `/p/${service.pharmacy.slug}/services/${slug}` : `/services/${slug}`;
+  const title = storefront
+    ? `${service.title} at ${service.pharmacy.name}${service.pharmacy.city ? ` in ${service.pharmacy.city}` : ""}`
+    : `${service.title} — compare pharmacy providers in Kenya`;
+  const description = storefront ? `${service.short} Contact ${service.pharmacy.name} for availability and appointments.` : `Compare pharmacies offering ${service.title}, published prices and appointment options on Afyvia. Share your location to see nearby providers and distances.`;
+  return { title, description, alternates: { canonical: path }, openGraph: { title, description, url: path, images: service.imageUrl ? [service.imageUrl] : undefined } };
 }
 
 export default async function ServiceDetailPage({ params }: Props) {
@@ -178,7 +150,7 @@ export default async function ServiceDetailPage({ params }: Props) {
     <div className={styles.page}>
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(serviceJsonLd) }}
+        dangerouslySetInnerHTML={{ __html: serializeJsonLd(serviceJsonLd) }}
       />
       <section className={styles.hero}>
         <div className={styles.container}>

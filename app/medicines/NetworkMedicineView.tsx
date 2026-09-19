@@ -1,17 +1,12 @@
+import DiscoveryStructuredData from "@/app/components/DiscoveryStructuredData";
 import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import {
-  ArrowRight,
-  CheckCircle2,
-  MapPin,
-  PackageSearch,
-  Sparkles,
   Store,
 } from "lucide-react";
 import CtaBanner from "@/app/components/CtaBanner";
 import PageHero from "@/app/components/PageHero";
-import { formatPrice } from "@/app/lib/format";
 import { getBrowseLocation } from "@/app/lib/browse-location";
 import { listNetworkListingsForSlug } from "@/app/lib/services/network-catalog";
 import NetworkMedicineComparison from "./NetworkMedicineComparison";
@@ -29,6 +24,7 @@ export default async function NetworkMedicineView({ slug }: { slug: string }) {
 
   return (
     <div className="min-w-0">
+      <DiscoveryStructuredData name={master.name} path={`/medicines/${slug}`} section={{ name: "Medicines", path: "/medicines" }} items={listings.map(item => ({ name: item.pharmacy.name, href: item.href }))} />
       <PageHero
         eyebrow={`${categoryLabel} · Network availability`}
         title={master.name}

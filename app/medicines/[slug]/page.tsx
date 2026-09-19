@@ -1,3 +1,4 @@
+import { serializeJsonLd } from "@/app/lib/seo";
 import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
@@ -6,7 +7,6 @@ import {
   AlertOctagon,
   CheckCircle2,
   Clock3,
-  HelpCircle,
   PackageSearch,
   ShieldAlert,
   ShieldCheck,
@@ -518,7 +518,7 @@ export default async function CategoryOrMedicinePage({ params }: Props) {
     <div className="min-w-0">
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(productJsonLd) }}
+        dangerouslySetInnerHTML={{ __html: serializeJsonLd(productJsonLd) }}
       />
       <PageHero
         eyebrow={categoryLabel}

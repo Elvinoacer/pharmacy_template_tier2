@@ -15,7 +15,9 @@ import PharmacyRoiCalculator from "@/app/components/onboard/PharmacyRoiCalculato
 import styles from "@/app/components/onboard/OnboardSurface.module.css";
 
 export const metadata = {
-  title: "For pharmacies | Afyvia Health",
+  title: "Pharmacy platform in Kenya — online storefront, medicines & services",
+  alternates: { canonical: "/for-pharmacies" },
+  openGraph: { title: "Afyvia for pharmacies in Kenya", description: "Publish your pharmacy storefront, medicines and services, and receive customer requests on Afyvia.", url: "/for-pharmacies" },
   description:
     "Your online storefront, refill requests and patient follow-up. KES 100 verification, then KES 500/month when you start service.",
 };

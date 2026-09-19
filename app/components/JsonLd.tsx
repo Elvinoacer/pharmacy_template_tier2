@@ -1,3 +1,4 @@
+import { serializeJsonLd } from "@/app/lib/seo";
 import { platform } from "@/app/lib/data";
 import type { ResolvedPharmacy } from "@/app/lib/services/pharmacy-settings";
 
@@ -67,7 +68,7 @@ export default function JsonLd({ pharmacy = null }: { pharmacy?: ResolvedPharmac
   return (
     <script
       type="application/ld+json"
-      dangerouslySetInnerHTML={{ __html: JSON.stringify(payload) }}
+      dangerouslySetInnerHTML={{ __html: serializeJsonLd(payload) }}
     />
   );
 }

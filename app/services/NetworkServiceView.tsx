@@ -1,14 +1,9 @@
+import DiscoveryStructuredData from "@/app/components/DiscoveryStructuredData";
 import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import {
-  ArrowRight,
-  BadgeCheck,
-  CalendarCheck2,
-  Clock3,
   HeartPulse,
-  MapPin,
-  Sparkles,
   Store,
 } from "lucide-react";
 import CtaBanner from "@/app/components/CtaBanner";
@@ -31,6 +26,7 @@ export default async function NetworkServiceView({ slug }: { slug: string }) {
 
   return (
     <div className="min-w-0">
+      <DiscoveryStructuredData name={first.title} path={`/services/${slug}`} section={{ name: "Services", path: "/services" }} items={listings.map(item => ({ name: item.pharmacy.name, href: item.href }))} />
       <PageHero
         eyebrow="Clinical Care · Provider Comparison"
         title={first.title}
