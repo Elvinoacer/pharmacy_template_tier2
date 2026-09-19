@@ -1,0 +1,818 @@
+/* ============================================================
+   Unified Auth Experience — Mobile & PC Stylesheet
+   Serene Botanical / Zen Medical Aesthetic
+   ============================================================ */
+
+.authRoot {
+  position: relative;
+  z-index: 1;
+  isolation: isolate;
+  min-height: 100vh;
+  min-height: 100dvh;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow-x: hidden;
+  background-color: #05140b;
+  color: #f8fafc;
+  padding: clamp(1.25rem, 3.5vh, 2.5rem) clamp(0.75rem, 3.2vw, 2.5rem);
+}
+
+/* ------------------------------------------------------------
+   Background Architecture
+   Responsive High-Fetch-Priority Zen Imagery + Ambient Glow
+   ------------------------------------------------------------ */
+.bgWrapper {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.bgPicture {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+.bgImage {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center 30%;
+  display: block;
+  user-select: none;
+  transform: scale(1.02);
+  transition: transform 1.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.bgVeil {
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(ellipse at 50% 0%, rgba(20, 60, 36, 0.45) 0%, transparent 70%),
+    linear-gradient(135deg, rgba(3, 22, 12, 0.72) 0%, rgba(5, 34, 18, 0.48) 50%, rgba(2, 15, 8, 0.76) 100%);
+  backdrop-filter: blur(1px);
+  -webkit-backdrop-filter: blur(1px);
+}
+
+.ambientGlowPrimary {
+  position: absolute;
+  top: 15%;
+  left: 20%;
+  width: clamp(280px, 38vw, 540px);
+  height: clamp(280px, 38vw, 540px);
+  border-radius: 9999px;
+  background: radial-gradient(circle, rgba(163, 230, 53, 0.14) 0%, transparent 68%);
+  filter: blur(52px);
+  pointer-events: none;
+  animation: pulseGlow 9s ease-in-out infinite alternate;
+}
+
+.ambientGlowAccent {
+  position: absolute;
+  bottom: 12%;
+  right: 18%;
+  width: clamp(240px, 32vw, 460px);
+  height: clamp(240px, 32vw, 460px);
+  border-radius: 9999px;
+  background: radial-gradient(circle, rgba(74, 222, 128, 0.12) 0%, transparent 68%);
+  filter: blur(48px);
+  pointer-events: none;
+  animation: pulseGlow 11s ease-in-out infinite alternate-reverse;
+}
+
+@keyframes pulseGlow {
+  0% {
+    opacity: 0.35;
+    transform: translate3d(0, 0, 0) scale(0.96);
+  }
+  100% {
+    opacity: 0.75;
+    transform: translate3d(12px, -14px, 0) scale(1.06);
+  }
+}
+
+/* ------------------------------------------------------------
+   Main Floating Glass Container
+   ------------------------------------------------------------ */
+.mainContainer {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  max-width: 1380px;
+  min-height: min(88vh, 880px);
+  margin-inline: auto;
+  border-radius: clamp(20px, 2.6vw, 30px);
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  background: linear-gradient(
+    140deg,
+    rgba(14, 45, 29, 0.38) 0%,
+    rgba(5, 27, 16, 0.26) 60%,
+    rgba(3, 18, 10, 0.34) 100%
+  );
+  box-shadow:
+    0 32px 100px -28px rgba(0, 0, 0, 0.82),
+    inset 0 1px 0 rgba(255, 255, 255, 0.42),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.25);
+  backdrop-filter: blur(12px) saturate(115%);
+  -webkit-backdrop-filter: blur(12px) saturate(115%);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.contentGrid {
+  display: grid;
+  grid-template-columns: 1fr;
+  min-height: 100%;
+  flex: 1 1 auto;
+}
+
+@media (min-width: 1024px) {
+  .contentGrid {
+    grid-template-columns: minmax(0, 1.12fr) minmax(0, 0.88fr);
+  }
+}
+
+@media (min-width: 1280px) {
+  .contentGrid {
+    grid-template-columns: minmax(0, 1.22fr) minmax(0, 0.98fr);
+  }
+}
+
+/* ------------------------------------------------------------
+   Left Column: Storytelling & Trust Experience (Desktop)
+   ------------------------------------------------------------ */
+.storyColumn {
+  display: flex;
+  flex-direction: column;
+  padding: clamp(1.5rem, 3.2vw, 3rem);
+  position: relative;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+@media (min-width: 1024px) {
+  .storyColumn {
+    border-bottom: none;
+    border-right: 1px solid rgba(255, 255, 255, 0.12);
+  }
+}
+
+.storyHeroBlock {
+  margin-top: clamp(1.25rem, 3.5vh, 2.75rem);
+  transition: opacity 280ms ease, transform 280ms ease;
+}
+
+.storyTitle {
+  font-family: var(--font-display), Georgia, serif;
+  font-size: clamp(34px, 4.4vw, 56px);
+  line-height: 1.04;
+  font-weight: 600;
+  letter-spacing: -0.035em;
+  color: #ffffff;
+  text-shadow: 0 2px 20px rgba(0, 0, 0, 0.38);
+}
+
+.storySubtitle {
+  margin-top: clamp(0.75rem, 1.8vh, 1.35rem);
+  max-width: 520px;
+  font-size: clamp(14px, 1.1vw, 16px);
+  line-height: 1.62;
+  color: rgba(255, 255, 255, 0.76);
+}
+
+.featureCardsGrid {
+  margin-top: clamp(1.25rem, 2.8vh, 2.25rem);
+  display: grid;
+  gap: clamp(0.6rem, 1vw, 0.85rem);
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+}
+
+@media (min-width: 1024px) and (max-width: 1279px) {
+  .featureCardsGrid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.featureCard {
+  border-radius: 18px;
+  border: 1px solid rgba(190, 242, 100, 0.18);
+  background: rgba(4, 24, 14, 0.32);
+  padding: clamp(0.85rem, 1.4vw, 1.25rem);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  transition: transform 220ms ease, border-color 220ms ease, background-color 220ms ease;
+}
+
+.featureCard:hover {
+  transform: translateY(-2px);
+  border-color: rgba(190, 242, 100, 0.35);
+  background: rgba(4, 24, 14, 0.44);
+}
+
+.featureIconWrap {
+  display: flex;
+  height: 42px;
+  width: 42px;
+  align-items: center;
+  justify-content: center;
+  border-radius: 12px;
+  background: rgba(163, 230, 53, 0.14);
+  border: 1px solid rgba(163, 230, 53, 0.22);
+  color: #bef264;
+  margin-bottom: clamp(0.65rem, 1.4vh, 1.1rem);
+}
+
+.featureTitle {
+  font-size: 15px;
+  font-weight: 600;
+  color: #ffffff;
+  letter-spacing: -0.01em;
+}
+
+.featureDesc {
+  margin-top: 0.35rem;
+  font-size: 12px;
+  line-height: 1.5;
+  color: rgba(255, 255, 255, 0.68);
+}
+
+.trustFooter {
+  margin-top: auto;
+  padding-top: clamp(1.25rem, 2.5vh, 2.5rem);
+  display: flex;
+  align-items: center;
+  gap: 1.75rem;
+  font-size: 11px;
+  color: rgba(255, 255, 255, 0.62);
+}
+
+/* ------------------------------------------------------------
+   Right Column: Interactive Auth Surface (Form & Switcher)
+   ------------------------------------------------------------ */
+.authColumn {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: clamp(1.25rem, 3.2vw, 2.75rem);
+  position: relative;
+}
+
+.authCard {
+  width: 100%;
+  max-width: 530px;
+  margin-inline: auto;
+  border-radius: clamp(18px, 2.2vw, 26px);
+  border: 1px solid rgba(255, 255, 255, 0.32);
+  background: linear-gradient(
+    145deg,
+    rgba(255, 255, 255, 0.13) 0%,
+    rgba(14, 46, 30, 0.38) 100%
+  );
+  box-shadow:
+    0 24px 70px -15px rgba(0, 0, 0, 0.55),
+    inset 0 1px 0 rgba(255, 255, 255, 0.35);
+  backdrop-filter: blur(18px) saturate(120%);
+  -webkit-backdrop-filter: blur(18px) saturate(120%);
+  padding: clamp(1.25rem, 2.6vw, 2rem);
+  position: relative;
+}
+
+/* ------------------------------------------------------------
+   Segmented Mode Switcher (Sign In <-> Create Account)
+   Seamless, Ergonomic, Physics-feel sliding indicator
+   ------------------------------------------------------------ */
+.segmentedWrapper {
+  margin-bottom: clamp(1rem, 2.2vh, 1.5rem);
+}
+
+.segmentedControl {
+  position: relative;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  padding: 4px;
+  border-radius: 16px;
+  background: rgba(3, 20, 12, 0.42);
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.25);
+  min-height: 48px;
+  user-select: none;
+}
+
+.segmentedIndicator {
+  position: absolute;
+  top: 4px;
+  bottom: 4px;
+  left: 4px;
+  width: calc(50% - 4px);
+  border-radius: 12px;
+  background: linear-gradient(135deg, rgba(163, 230, 53, 0.28) 0%, rgba(132, 204, 22, 0.18) 100%);
+  border: 1px solid rgba(190, 242, 100, 0.38);
+  box-shadow:
+    0 4px 14px rgba(101, 163, 13, 0.28),
+    inset 0 1px 0 rgba(255, 255, 255, 0.35);
+  transition: transform 320ms cubic-bezier(0.16, 1, 0.3, 1);
+  pointer-events: none;
+}
+
+.segmentButton {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  border: none;
+  background: transparent;
+  color: rgba(255, 255, 255, 0.65);
+  font-size: clamp(13px, 1vw, 14px);
+  font-weight: 500;
+  padding: 0.6rem 0.75rem;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: color 200ms ease, font-weight 200ms ease;
+  min-height: 40px;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.segmentButton:focus-visible {
+  outline: 2px solid #bef264;
+  outline-offset: 2px;
+}
+
+.segmentButton:hover {
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.segmentActive {
+  color: #ffffff !important;
+  font-weight: 600;
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.4);
+}
+
+/* ------------------------------------------------------------
+   Form Animated Panels (Directional Transition)
+   ------------------------------------------------------------ */
+.panelAnimated {
+  will-change: transform, opacity;
+}
+
+.slideForward {
+  animation: slideInFromRight 320ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.slideBackward {
+  animation: slideInFromLeft 320ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes slideInFromRight {
+  0% {
+    opacity: 0;
+    transform: translate3d(24px, 0, 0);
+  }
+  100% {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+@keyframes slideInFromLeft {
+  0% {
+    opacity: 0;
+    transform: translate3d(-24px, 0, 0);
+  }
+  100% {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+/* ------------------------------------------------------------
+   Inputs & Controls Ergonomics
+   ------------------------------------------------------------ */
+.fieldGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.fieldLabel {
+  font-size: 11px;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.85);
+  letter-spacing: 0.01em;
+}
+
+.inputWrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.inputIcon {
+  position: absolute;
+  left: 14px;
+  color: #bef264;
+  opacity: 0.85;
+  pointer-events: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.textInput {
+  width: 100%;
+  height: 54px;
+  min-height: 54px;
+  border-radius: 14px;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  background: rgba(3, 20, 11, 0.32);
+  padding: 0 14px 0 46px;
+  font-size: 14px;
+  color: #ffffff;
+  outline: none;
+  transition: border-color 200ms ease, background-color 200ms ease, box-shadow 200ms ease;
+}
+
+.textInput::placeholder {
+  color: rgba(255, 255, 255, 0.35);
+}
+
+.textInput:focus {
+  border-color: rgba(190, 242, 100, 0.55);
+  background: rgba(3, 20, 11, 0.52);
+  box-shadow:
+    0 0 0 3px rgba(163, 230, 53, 0.16),
+    0 8px 24px rgba(0, 0, 0, 0.25);
+}
+
+.passwordInput {
+  padding-right: 48px;
+}
+
+.eyeButton {
+  position: absolute;
+  right: 6px;
+  height: 42px;
+  width: 42px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 10px;
+  border: none;
+  background: transparent;
+  color: rgba(255, 255, 255, 0.5);
+  cursor: pointer;
+  transition: color 180ms ease;
+}
+
+.eyeButton:hover {
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.eyeButton:focus-visible {
+  outline: 2px solid #bef264;
+  outline-offset: 1px;
+}
+
+/* ------------------------------------------------------------
+   Primary Action Button
+   ------------------------------------------------------------ */
+.submitButton {
+  width: 100%;
+  height: 54px;
+  min-height: 54px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  border-radius: 14px;
+  border: 1px solid rgba(255, 255, 255, 0.28);
+  background: linear-gradient(110deg, #507d1b 0%, #8ac72d 54%, #bde754 100%);
+  color: #ffffff;
+  font-size: 16px;
+  font-weight: 600;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+  box-shadow:
+    0 12px 28px -6px rgba(90, 137, 26, 0.38),
+    inset 0 1px 0 rgba(255, 255, 255, 0.45);
+  cursor: pointer;
+  transition: transform 180ms ease, filter 180ms ease, box-shadow 180ms ease;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.submitButton:hover:not(:disabled) {
+  filter: brightness(1.06);
+  box-shadow:
+    0 14px 34px -4px rgba(110, 168, 32, 0.48),
+    inset 0 1px 0 rgba(255, 255, 255, 0.55);
+}
+
+.submitButton:active:not(:disabled) {
+  transform: scale(0.985);
+}
+
+.submitButton:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+  filter: grayscale(0.2);
+}
+
+/* ------------------------------------------------------------
+   Social SSO Buttons
+   ------------------------------------------------------------ */
+.socialGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.75rem;
+}
+
+.socialButton {
+  height: 50px;
+  min-height: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.6rem;
+  border-radius: 13px;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  background: rgba(255, 255, 255, 0.04);
+  color: #ffffff;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  text-decoration: none;
+  transition: background-color 180ms ease, border-color 180ms ease;
+}
+
+.socialButton:hover {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.28);
+}
+
+/* ------------------------------------------------------------
+   Mobile Overrides & Ergonomic Touch Refinements
+   ------------------------------------------------------------ */
+@media (max-width: 767px) {
+  .authRoot {
+    padding: max(10px, env(safe-area-inset-top)) 10px max(18px, env(safe-area-inset-bottom));
+    align-items: flex-start;
+  }
+
+  .mainContainer {
+    border-radius: 22px;
+    max-width: 100%;
+    min-height: 0;
+    box-shadow: 0 18px 50px -15px rgba(0, 0, 0, 0.85);
+  }
+
+  .storyColumn {
+    padding: 16px 16px 8px;
+    border-right: none;
+    border-bottom: none;
+  }
+
+  .storyHeroBlock,
+  .featureCardsGrid,
+  .trustFooter {
+    display: none !important;
+  }
+
+  .authColumn {
+    padding: 8px 12px 18px;
+  }
+
+  .authCard {
+    padding: 18px 14px 16px;
+    border-radius: 18px;
+    max-width: 100%;
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+  }
+
+  .segmentedControl {
+    min-height: 44px;
+    padding: 3px;
+  }
+
+  .segmentedIndicator {
+    top: 3px;
+    bottom: 3px;
+    left: 3px;
+    width: calc(50% - 3px);
+  }
+
+  .segmentButton {
+    min-height: 38px;
+    padding: 0.4rem 0.5rem;
+    font-size: 13px;
+  }
+
+  /* Prevent iOS zoom on input focus */
+  .textInput {
+    height: 50px;
+    min-height: 50px;
+    font-size: 16px !important;
+    border-radius: 12px;
+  }
+
+  .submitButton {
+    height: 50px;
+    min-height: 50px;
+    font-size: 15px;
+    border-radius: 12px;
+  }
+
+  .socialButton {
+    height: 46px;
+    min-height: 46px;
+    font-size: 13px;
+    border-radius: 12px;
+  }
+}
+
+/* Extra small screens (iPhone SE, etc.) */
+@media (max-width: 374px) {
+  .authRoot {
+    padding: 6px 6px 12px;
+  }
+
+  .authCard {
+    padding: 14px 10px 14px;
+  }
+}
+
+/* ------------------------------------------------------------
+   Light Theme Adaptations
+   Preserves lush botanical atmosphere with crisp daylight contrast
+   ------------------------------------------------------------ */
+:global(html[data-theme="light"]) .authRoot {
+  background-color: #e9f2eb;
+  color: #0d281e;
+}
+
+:global(html[data-theme="light"]) .bgVeil {
+  background:
+    radial-gradient(ellipse at 50% 0%, rgba(240, 252, 244, 0.4) 0%, transparent 70%),
+    linear-gradient(135deg, rgba(244, 250, 246, 0.62) 0%, rgba(234, 247, 238, 0.45) 50%, rgba(224, 242, 230, 0.68) 100%);
+}
+
+:global(html[data-theme="light"]) .mainContainer {
+  border-color: rgba(45, 138, 78, 0.22);
+  background: linear-gradient(
+    140deg,
+    rgba(255, 255, 255, 0.82) 0%,
+    rgba(240, 250, 244, 0.74) 60%,
+    rgba(232, 246, 238, 0.80) 100%
+  );
+  box-shadow:
+    0 30px 90px -25px rgba(20, 60, 36, 0.2),
+    inset 0 1px 0 rgba(255, 255, 255, 0.95);
+}
+
+:global(html[data-theme="light"]) .storyColumn {
+  border-right-color: rgba(45, 138, 78, 0.15);
+  border-bottom-color: rgba(45, 138, 78, 0.15);
+}
+
+:global(html[data-theme="light"]) .storyTitle {
+  color: #0c2b1e;
+  text-shadow: none;
+}
+
+:global(html[data-theme="light"]) .storySubtitle {
+  color: #294c3c;
+}
+
+:global(html[data-theme="light"]) .featureCard {
+  border-color: rgba(45, 138, 78, 0.2);
+  background: rgba(255, 255, 255, 0.7);
+}
+
+:global(html[data-theme="light"]) .featureTitle {
+  color: #0c2b1e;
+}
+
+:global(html[data-theme="light"]) .featureDesc {
+  color: #3b5c4d;
+}
+
+:global(html[data-theme="light"]) .featureIconWrap {
+  background: rgba(45, 138, 78, 0.12);
+  border-color: rgba(45, 138, 78, 0.25);
+  color: #1b6335;
+}
+
+:global(html[data-theme="light"]) .trustFooter {
+  color: #3b5c4d;
+}
+
+:global(html[data-theme="light"]) .authCard {
+  border-color: rgba(45, 138, 78, 0.22);
+  background: linear-gradient(
+    145deg,
+    rgba(255, 255, 255, 0.92) 0%,
+    rgba(242, 250, 245, 0.86) 100%
+  );
+  box-shadow:
+    0 24px 70px -15px rgba(16, 52, 33, 0.16),
+    inset 0 1px 0 rgba(255, 255, 255, 0.98);
+}
+
+:global(html[data-theme="light"]) .segmentedControl {
+  background: rgba(225, 240, 230, 0.85);
+  border-color: rgba(45, 138, 78, 0.2);
+}
+
+:global(html[data-theme="light"]) .segmentedIndicator {
+  background: linear-gradient(135deg, rgba(45, 138, 78, 0.18) 0%, rgba(30, 100, 55, 0.12) 100%);
+  border-color: rgba(45, 138, 78, 0.35);
+  box-shadow: 0 4px 12px rgba(25, 80, 45, 0.12);
+}
+
+:global(html[data-theme="light"]) .segmentButton {
+  color: #3b5c4d;
+}
+
+:global(html[data-theme="light"]) .segmentActive {
+  color: #0c2b1e !important;
+  text-shadow: none;
+}
+
+:global(html[data-theme="light"]) .fieldLabel {
+  color: #143527;
+}
+
+:global(html[data-theme="light"]) .textInput {
+  color: #0c2b1e;
+  border-color: rgba(45, 138, 78, 0.25);
+  background: rgba(255, 255, 255, 0.92);
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.04);
+}
+
+:global(html[data-theme="light"]) .textInput::placeholder {
+  color: #7b9c8d;
+}
+
+:global(html[data-theme="light"]) .textInput:focus {
+  border-color: #2d8a4e;
+  background: #ffffff;
+  box-shadow:
+    0 0 0 3px rgba(45, 138, 78, 0.16),
+    0 6px 18px rgba(25, 80, 45, 0.08);
+}
+
+:global(html[data-theme="light"]) .inputIcon {
+  color: #1b6335;
+}
+
+:global(html[data-theme="light"]) .eyeButton {
+  color: #5a7b6c;
+}
+
+:global(html[data-theme="light"]) .eyeButton:hover {
+  color: #0c2b1e;
+}
+
+:global(html[data-theme="light"]) .submitButton {
+  border-color: rgba(255, 255, 255, 0.4);
+  background: linear-gradient(110deg, #246e3e 0%, #359858 56%, #52b876 100%);
+  box-shadow:
+    0 12px 28px -6px rgba(36, 110, 62, 0.35),
+    inset 0 1px 0 rgba(255, 255, 255, 0.4);
+}
+
+:global(html[data-theme="light"]) .socialButton {
+  border-color: rgba(45, 138, 78, 0.2);
+  background: rgba(255, 255, 255, 0.85);
+  color: #0c2b1e;
+}
+
+:global(html[data-theme="light"]) .socialButton:hover {
+  background: #ffffff;
+  border-color: rgba(45, 138, 78, 0.35);
+}
+
+/* ------------------------------------------------------------
+   Reduced Motion Accessibility
+   ------------------------------------------------------------ */
+@media (prefers-reduced-motion: reduce) {
+  .bgImage,
+  .ambientGlowPrimary,
+  .ambientGlowAccent,
+  .segmentedIndicator,
+  .slideForward,
+  .slideBackward,
+  .submitButton,
+  .featureCard {
+    animation: none !important;
+    transition-duration: 0.01ms !important;
+    transform: none !important;
+  }
+}

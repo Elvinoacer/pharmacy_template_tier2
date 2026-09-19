@@ -134,6 +134,11 @@
 
 /* Auth routes: the shared AuthForm still carries a few fixed utility colours.
    Normalize those without flattening the branded left-hand panel. */
+.surface[data-flow="login"],
+.surface[data-flow="register"] {
+  background: transparent !important;
+}
+
 .surface[data-flow="login"] :global([class~="bg-white/80"]),
 .surface[data-flow="forgot-password"] :global([class~="bg-white/80"]),
 .surface[data-flow="reset-password"] :global([class~="bg-white/80"]) {

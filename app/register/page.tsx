@@ -1,14 +1,21 @@
 import { redirect } from "next/navigation";
-import { registerAction } from "@/app/actions/auth";
-import RegisterPanel from "@/app/components/RegisterPanel";
+import { loginAction, registerAction } from "@/app/actions/auth";
+import UnifiedAuthSurface from "@/app/components/UnifiedAuthSurface";
 import { getSessionUser } from "@/app/lib/auth";
 import { resolvePostLoginPath } from "@/app/lib/session-claim";
-import styles from "./RegisterSurface.module.css";
 
 export const metadata = { title: "Create account" };
 
-export default async function RegisterPage({ searchParams }: { searchParams: Promise<{ next?: string }> }) {
-  const { next } = await searchParams;
+export default async function RegisterPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ next?: string; error?: string; mode?: string }>;
+}) {
+  const sp = await searchParams;
+  const next = sp.next || "";
+  const error = sp.error || "";
+  const initialMode = sp.mode === "login" ? "login" : "register";
+
   const session = await getSessionUser().catch(() => null);
   if (session) {
     redirect(
@@ -18,14 +25,19 @@ export default async function RegisterPage({ searchParams }: { searchParams: Pro
           customerId: session.customerId,
           platformAdmin: session.platformAdmin,
         },
-        next,
+        next || null,
       ),
     );
   }
 
   return (
-    <div className={`${styles.registerSurface} afyvia-artwork-surface`}>
-      <RegisterPanel action={registerAction} next={next} />
-    </div>
+    <UnifiedAuthSurface
+      initialMode={initialMode}
+      next={next}
+      initialError={error}
+      loginAction={loginAction}
+      registerAction={registerAction}
+      showDemoCredentials={process.env.SHOW_DEMO_CREDENTIALS === "1"}
+    />
   );
 }
