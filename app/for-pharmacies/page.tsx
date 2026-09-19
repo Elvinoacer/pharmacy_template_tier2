@@ -25,7 +25,7 @@ export default function ForPharmaciesPage() {
     <div className={`${styles.page} ${styles.landing} afyvia-route-surface afyvia-artwork-surface bg-transparent`}>
       <div className={styles.frame}>
         {/* Top Trust Notification Bar */}
-        <div className="liquid-glass care-glass mb-2.5 sm:mb-3.5 flex flex-wrap items-center justify-between gap-2 rounded-xl border border-[var(--care-border)] bg-[var(--care-glass)] backdrop-blur-xl px-3 py-1.5 text-[11px] text-[var(--muted)] shadow-sm">
+        <div className="liquid-glass care-glass mb-2.5 sm:mb-3.5 flex flex-wrap items-center justify-between gap-2 rounded-xl border border-[color-mix(in_srgb,var(--foreground)_55%,var(--card-elev))] bg-[var(--care-glass)] backdrop-blur-xl px-3 py-1.5 text-[11px] text-[var(--muted)] shadow-sm">
           <div className="flex items-center gap-2">
             <span className="flex h-2 w-2 rounded-full bg-emerald-500 animate-pulse" />
             <span className="font-semibold text-[var(--foreground)]">Community Chemist Network:</span>
@@ -131,14 +131,14 @@ export default function ForPharmaciesPage() {
         {/* WHY THESE FEES - DETAILED TRANSPARENCY */}
         <section className="mt-6 sm:mt-8 grid gap-4 sm:gap-6 md:grid-cols-2" aria-label="Why these fees">
           {/* Card 1: KES 100 Verification Fee */}
-          <div className="liquid-glass care-glass rounded-2xl border border-[var(--care-border)] bg-[var(--care-glass)] backdrop-blur-xl p-5 sm:p-6 shadow-sm flex flex-col justify-between">
+          <div className="liquid-glass care-glass rounded-2xl border border-[color-mix(in_srgb,var(--foreground)_55%,var(--card-elev))] bg-[var(--care-glass)] backdrop-blur-xl p-5 sm:p-6 shadow-sm flex flex-col justify-between">
             <div>
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-[var(--brand)]">
                   <ShieldCheck size={16} aria-hidden />
                   <span>Why KES 100 Verification Fee?</span>
                 </div>
-                <span className="rounded-full bg-emerald-100 px-2.5 py-0.5 text-xs font-bold text-emerald-800">
+                <span className="rounded-full bg-emerald-100 px-2.5 py-0.5 text-xs font-bold text-emerald-800 dark:bg-emerald-950/70 dark:text-emerald-200">
                   Paid Once
                 </span>
               </div>
@@ -175,14 +175,14 @@ export default function ForPharmaciesPage() {
           </div>
 
           {/* Card 2: KES 500/Month Subscription */}
-          <div className="liquid-glass care-glass rounded-2xl border border-[var(--care-border)] bg-[var(--care-glass)] backdrop-blur-xl p-5 sm:p-6 shadow-sm flex flex-col justify-between">
+          <div className="liquid-glass care-glass rounded-2xl border border-[color-mix(in_srgb,var(--foreground)_55%,var(--card-elev))] bg-[var(--care-glass)] backdrop-blur-xl p-5 sm:p-6 shadow-sm flex flex-col justify-between">
             <div>
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-[var(--brand)]">
                   <Sparkles size={16} aria-hidden />
                   <span>Why KES 500 / Month Subscription?</span>
                 </div>
-                <span className="rounded-full bg-emerald-100 px-2.5 py-0.5 text-xs font-bold text-emerald-800">
+                <span className="rounded-full bg-emerald-100 px-2.5 py-0.5 text-xs font-bold text-emerald-800 dark:bg-emerald-950/70 dark:text-emerald-200">
                   After Launch
                 </span>
               </div>
@@ -220,7 +220,7 @@ export default function ForPharmaciesPage() {
         </section>
 
         {/* COMPARISON: CUSTOM AGENCY BUILD VS AFYVIA */}
-        <section className="liquid-glass care-glass mt-8 sm:mt-10 rounded-2xl border border-[var(--care-border)] bg-[var(--care-glass)] backdrop-blur-xl p-4 sm:p-6 shadow-sm" aria-label="Comparison with custom build">
+        <section className="liquid-glass care-glass mt-8 sm:mt-10 rounded-2xl border border-[color-mix(in_srgb,var(--foreground)_55%,var(--card-elev))] bg-[var(--care-glass)] backdrop-blur-xl p-4 sm:p-6 shadow-sm" aria-label="Comparison with custom build">
           <div className="text-center max-w-xl mx-auto">
             <span className="text-xs font-bold uppercase tracking-wider text-[var(--brand)]">The Smart Choice</span>
             <h3 className="mt-1 font-serif text-xl sm:text-2xl font-semibold text-[var(--foreground)]">
@@ -234,13 +234,13 @@ export default function ForPharmaciesPage() {
           <div className="mt-6 overflow-x-auto">
             <table className="w-full text-left text-xs border-collapse">
               <thead>
-                <tr className="border-b border-[var(--line-2)] text-[var(--muted)]">
+                <tr className="border-b border-[color-mix(in_srgb,var(--foreground)_55%,var(--card-elev))] text-[var(--muted)]">
                   <th className="py-2.5 px-3 font-bold">Requirement</th>
-                  <th className="py-2.5 px-3 font-bold text-rose-600">Hiring an Agency</th>
+                  <th className="py-2.5 px-3 font-bold text-rose-700 dark:text-rose-300">Hiring an Agency</th>
                   <th className="py-2.5 px-3 font-bold text-[var(--brand)]">Afyvia Pharmacy Platform</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-[var(--line-2)] text-[var(--foreground)]">
+              <tbody className="divide-y divide-[color-mix(in_srgb,var(--foreground)_55%,var(--card-elev))] text-[var(--foreground)]">
                 <tr>
                   <td className="py-2.5 px-3 font-semibold">Upfront development cost</td>
                   <td className="py-2.5 px-3 text-[var(--muted)]">KES 60,000 – KES 120,000</td>
@@ -291,7 +291,7 @@ export default function ForPharmaciesPage() {
               ["Confirm with KES 100", "Quick STK test links your M-PESA Till or Paybill."],
               ["Set up & launch", "After admin approval, pick your stocked medicines, set your hours, and welcome patients."],
             ].map(([title, desc], i) => (
-              <div key={title} className="liquid-glass care-glass flex flex-col p-3.5 sm:p-4 rounded-xl border border-[var(--care-border)] bg-[var(--care-glass)] backdrop-blur-xl shadow-sm">
+              <div key={title} className="liquid-glass care-glass flex flex-col p-3.5 sm:p-4 rounded-xl border border-[color-mix(in_srgb,var(--foreground)_55%,var(--card-elev))] bg-[var(--care-glass)] backdrop-blur-xl shadow-sm">
                 <span className="text-xs font-mono font-bold text-[var(--brand)]">{String(i + 1).padStart(2, "0")}</span>
                 <strong className="mt-1 text-sm font-semibold text-[var(--foreground)]">{title}</strong>
                 <p className="mt-0.5 text-xs text-[var(--muted)] leading-relaxed">{desc}</p>
@@ -308,7 +308,7 @@ export default function ForPharmaciesPage() {
         </section>
 
         {/* CLOSING BANNER */}
-        <div className={`liquid-glass care-glass ${styles.closing} mt-8 sm:mt-10 rounded-2xl border border-[var(--care-border)] bg-[var(--care-glass)] backdrop-blur-xl p-6 sm:p-7 shadow-sm`}>
+        <div className={`liquid-glass care-glass ${styles.closing} mt-8 sm:mt-10 rounded-2xl border border-[color-mix(in_srgb,var(--foreground)_55%,var(--card-elev))] bg-[var(--care-glass)] backdrop-blur-xl p-6 sm:p-7 shadow-sm`}>
           <div>
             <span className="text-xs font-bold uppercase tracking-wider text-[var(--brand)]">Zero Risk. Immediate Impact.</span>
             <h2 className="mt-1 font-serif text-2xl sm:text-3xl font-semibold text-[var(--foreground)]">
