@@ -60,9 +60,9 @@
   border-color: var(--line-2) !important;
 }
 
-.surface :global(input:not([type="hidden"]):not([type="checkbox"]):not([type="radio"])),
-.surface :global(select),
-.surface :global(textarea) {
+.surface:not([data-flow="login"]):not([data-flow="register"]):not([data-flow="forgot-password"]):not([data-flow="reset-password"]) :global(input:not([type="hidden"]):not([type="checkbox"]):not([type="radio"])),
+.surface:not([data-flow="login"]):not([data-flow="register"]):not([data-flow="forgot-password"]):not([data-flow="reset-password"]) :global(select),
+.surface:not([data-flow="login"]):not([data-flow="register"]):not([data-flow="forgot-password"]):not([data-flow="reset-password"]) :global(textarea) {
   width: 100%;
   max-width: 100%;
   min-width: 0;
@@ -71,15 +71,15 @@
   background: var(--card) !important;
 }
 
-.surface :global(input::placeholder),
-.surface :global(textarea::placeholder) {
+.surface:not([data-flow="login"]):not([data-flow="register"]):not([data-flow="forgot-password"]):not([data-flow="reset-password"]) :global(input::placeholder),
+.surface:not([data-flow="login"]):not([data-flow="register"]):not([data-flow="forgot-password"]):not([data-flow="reset-password"]) :global(textarea::placeholder) {
   color: var(--muted-2) !important;
   opacity: 1;
 }
 
-.surface :global(input:focus),
-.surface :global(select:focus),
-.surface :global(textarea:focus) {
+.surface:not([data-flow="login"]):not([data-flow="register"]):not([data-flow="forgot-password"]):not([data-flow="reset-password"]) :global(input:focus),
+.surface:not([data-flow="login"]):not([data-flow="register"]):not([data-flow="forgot-password"]):not([data-flow="reset-password"]) :global(select:focus),
+.surface:not([data-flow="login"]):not([data-flow="register"]):not([data-flow="forgot-password"]):not([data-flow="reset-password"]) :global(textarea:focus) {
   border-color: color-mix(in srgb, var(--brand) 58%, var(--line-2)) !important;
   box-shadow: 0 0 0 3px color-mix(in srgb, var(--brand) 13%, transparent);
 }
