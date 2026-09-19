@@ -28,6 +28,7 @@ import { canAccessAdminPath } from "../app/lib/platform/admin-access";
 import type { SessionUser } from "../app/lib/types";
 import { TENANT_MODELS } from "../app/lib/tenant-models";
 import { ZERO_UUID } from "../app/lib/tenant-context";
+import { buildOnboardingRateLimitKeys } from "../app/lib/onboarding-rate-limit";
 
 describe("TOTP", () => {
   it("verifies a code generated from the same secret", () => {
@@ -35,6 +36,44 @@ describe("TOTP", () => {
     const code = totpCode(secret);
     assert.equal(verifyTotp(secret, code), true);
     assert.equal(verifyTotp(secret, "000000"), false);
+  });
+});
+
+describe("pharmacy onboarding rate-limit keys", () => {
+  it("uses the signed-in user as the primary bucket and keeps IP as a broad secondary bucket", () => {
+    const keys = buildOnboardingRateLimitKeys({
+      userId: "user-123",
+      email: "owner@example.test",
+      ip: "203.0.113.10",
+    });
+
+    assert.equal(keys.principalKey, "onboard-draft:user:user-123");
+    assert.equal(keys.ipKey, "onboard-draft:ip:203.0.113.10");
+  });
+
+  it("normalizes and hashes email addresses instead of storing raw email in the bucket key", () => {
+    const lower = buildOnboardingRateLimitKeys({
+      email: "owner@example.test",
+      ip: "203.0.113.10",
+    });
+    const mixedCase = buildOnboardingRateLimitKeys({
+      email: "  Owner@Example.Test ",
+      ip: "203.0.113.10",
+    });
+
+    assert.equal(lower.principalKey, mixedCase.principalKey);
+    assert.match(lower.principalKey || "", /^onboard-draft:email:[a-f0-9]{24}$/);
+    assert.equal(lower.principalKey?.includes("owner@example.test"), false);
+  });
+
+  it("never creates a shared global bucket for an unknown IP", () => {
+    const keys = buildOnboardingRateLimitKeys({
+      email: "owner@example.test",
+      ip: "unknown",
+    });
+
+    assert.match(keys.principalKey || "", /^onboard-draft:email:/);
+    assert.equal(keys.ipKey, null);
   });
 });
 
