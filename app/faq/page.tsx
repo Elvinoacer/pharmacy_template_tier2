@@ -36,7 +36,7 @@ export default async function FaqPage() {
       <section className="px-3 pb-12 sm:px-6 sm:pb-16">
         <div className="mx-auto w-full max-w-3xl">
           {!isTenant && (
-            <div className="mb-6 flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-[var(--care-border)] bg-[var(--care-glass)] p-4 text-xs backdrop-blur-xl sm:text-sm">
+            <div className="mb-6 flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-[color-mix(in_srgb,var(--foreground)_55%,var(--card-elev))] bg-[var(--care-glass)] p-4 text-xs backdrop-blur-xl sm:text-sm">
               <span className="text-[var(--foreground)]">
                 Looking for specific questions and operating policies of a local pharmacy?
               </span>
@@ -50,11 +50,11 @@ export default async function FaqPage() {
             </div>
           )}
 
-          <div className="liquid-glass care-glass rounded-2xl border border-[var(--care-border)] bg-[var(--care-glass)] p-4 shadow-sm backdrop-blur-xl sm:rounded-3xl sm:p-6">
+          <div className="liquid-glass care-glass rounded-2xl border !border-[color-mix(in_srgb,var(--foreground)_55%,var(--card-elev))] bg-[var(--care-glass)] p-4 shadow-sm backdrop-blur-xl sm:rounded-3xl sm:p-6">
             <FaqAccordion items={faqItems} />
           </div>
 
-          <div className="liquid-glass care-glass mt-7 rounded-2xl border border-[var(--care-border)] bg-[var(--care-glass)] p-4 shadow-sm backdrop-blur-xl sm:mt-8 sm:rounded-3xl sm:p-6">
+          <div className="liquid-glass care-glass mt-7 rounded-2xl border !border-[color-mix(in_srgb,var(--foreground)_55%,var(--card-elev))] bg-[var(--care-glass)] p-4 shadow-sm backdrop-blur-xl sm:mt-8 sm:rounded-3xl sm:p-6">
             <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
               <div className="min-w-0">
                 <p className="text-sm font-semibold text-[var(--foreground)]">Still need help?</p>
@@ -68,14 +68,14 @@ export default async function FaqPage() {
               <div className="grid w-full grid-cols-1 gap-2 sm:w-auto sm:grid-cols-2">
                 <Link
                   href={pharmacy ? `/p/${pharmacy.slug}/contact` : "/contact"}
-                  className="inline-flex min-h-11 items-center justify-center gap-2 rounded-xl border border-[var(--care-border)] bg-[var(--card-elev)] px-4 text-xs font-semibold text-[var(--foreground)] shadow-sm transition hover:border-[var(--brand)] hover:bg-[var(--brand-tint)]"
+                  className="inline-flex min-h-11 items-center justify-center gap-2 rounded-xl border border-[color-mix(in_srgb,var(--foreground)_55%,var(--card-elev))] bg-[var(--card-elev)] px-4 text-xs font-semibold text-[var(--foreground)] shadow-sm transition hover:border-[var(--brand)] hover:bg-[var(--brand-tint)]"
                 >
                   <MessageCircle className="h-4 w-4 text-[var(--brand)]" aria-hidden="true" />
                   Send message
                 </Link>
                 <a
                   href={pharmacy ? pharmacy.phoneHref : `tel:${platform.phone}`}
-                  className="inline-flex min-h-11 items-center justify-center gap-2 rounded-xl bg-[var(--brand)] px-4 text-xs font-semibold text-white shadow-sm transition hover:opacity-90"
+                  className="inline-flex min-h-11 items-center justify-center gap-2 rounded-xl bg-[var(--brand)] px-4 text-xs font-semibold text-[var(--background)] shadow-sm transition-colors hover:bg-[var(--brand-deep)]"
                 >
                   <Phone className="h-4 w-4" aria-hidden="true" />
                   Call {pharmacy ? pharmacy.phone : platform.phone}
