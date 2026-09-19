@@ -1,11 +1,9 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
 import { useCallback, useEffect, useId, useRef, useState } from "react";
 import { ArrowRight, LifeBuoy, MapPin, Search, X } from "lucide-react";
 import { useTenantSlug } from "@/app/components/TenantLink";
-import { getPageAssist } from "@/app/lib/assist-catalog";
 import styles from "./QuickPageAssist.module.css";
 
 type LiveMedicine = {
@@ -58,10 +56,8 @@ function availabilityLabel(value: LiveMedicine["availability"]) {
 }
 
 export default function QuickPageAssist() {
-  const pathname = usePathname() || "/";
   const slug = useTenantSlug();
   const base = slug ? `/p/${slug}` : "";
-  const content = getPageAssist(pathname);
   const titleId = useId();
   const descriptionId = useId();
   const inputId = useId();
@@ -191,13 +187,13 @@ export default function QuickPageAssist() {
         aria-haspopup="dialog"
         aria-expanded={open}
         aria-label={open ? "Close Afyvia assistant" : "Open Afyvia AI assistant"}
-        title={open ? "Close Afyvia AI assistant" : "Say hi to Afyvia AI assistant"}
+        title={open ? "Close Afyvia AI assistant" : "Ask Afyvia AI assistant"}
         data-state={open ? "open" : loading ? "thinking" : "idle"}
         className={styles.robotLauncher}
       >
         <span className={styles.ambientRing} aria-hidden="true" />
         <span className={styles.greeting} aria-hidden="true">
-          <span>Hi!</span>
+          <span>Need help?</span>
         </span>
         <span className={styles.robot} aria-hidden="true">
           <span className={`${styles.arm} ${styles.leftArm}`}>
@@ -248,7 +244,7 @@ export default function QuickPageAssist() {
 
       {open && (
         <div
-          className="fixed inset-0 z-[150] flex items-end justify-center bg-black/45 p-2 backdrop-blur-sm sm:items-center sm:p-6"
+          className={`${styles.modalBackdrop} fixed inset-0 z-[150] flex items-end justify-center p-2 sm:items-center sm:p-6`}
           onMouseDown={(e) => {
             if (e.target === e.currentTarget) close();
           }}
@@ -259,7 +255,7 @@ export default function QuickPageAssist() {
             aria-modal="true"
             aria-labelledby={titleId}
             aria-describedby={descriptionId}
-            className="relative flex max-h-[88dvh] w-full max-w-[36rem] flex-col overflow-hidden rounded-[1.5rem] border border-[var(--line-2)] bg-[var(--card)] text-[var(--foreground)] shadow-[0_28px_90px_rgba(0,0,0,0.34)] sm:max-h-[78dvh] sm:rounded-[1.75rem]"
+            className={`${styles.assistDialog} relative flex max-h-[88dvh] w-full max-w-[36rem] flex-col overflow-hidden text-[var(--foreground)] sm:max-h-[78dvh]`}
             onMouseDown={(e) => e.stopPropagation()}
           >
             <div className="pointer-events-none absolute -left-20 -top-24 h-52 w-52 rounded-full bg-[var(--brand-soft)] opacity-70 blur-3xl" />
@@ -268,10 +264,10 @@ export default function QuickPageAssist() {
 
             {/* Deliberately not a semantic <header>: landing-page theme rules target
                 every descendant header and previously overrode this modal in light mode. */}
-            <div className="relative shrink-0 border-b border-[var(--line)] bg-[var(--card)] px-4 py-3.5 sm:px-6 sm:py-5">
+            <div className={`${styles.dialogHeader} relative shrink-0 px-4 py-3.5 sm:px-6 sm:py-5`}>
               <div className="flex items-start justify-between gap-3 sm:gap-4">
                 <div className="flex min-w-0 items-start gap-3 sm:gap-3.5">
-                  <div className="relative mt-0.5 flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-[var(--line-2)] bg-[var(--brand-soft)] text-[var(--brand-deep)] shadow-sm sm:h-11 sm:w-11 sm:rounded-2xl">
+                  <div className={`${styles.dialogAvatar} relative mt-0.5 flex h-10 w-10 shrink-0 items-center justify-center sm:h-11 sm:w-11`}>
                     <LifeBuoy className="h-5 w-5" aria-hidden="true" />
                     <span className="absolute -bottom-1 -right-1 h-2.5 w-2.5 rounded-full border-2 border-[var(--card)] bg-[var(--success)]" />
                   </div>
@@ -289,14 +285,14 @@ export default function QuickPageAssist() {
                   type="button"
                   onClick={close}
                   aria-label="Close page help"
-                  className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-[var(--line-2)] bg-[var(--background)] text-[var(--muted)] transition hover:border-[var(--brand)] hover:bg-[var(--brand-soft)] hover:text-[var(--foreground)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--brand)] sm:h-11 sm:w-11"
+                  className={`${styles.closeButton} flex h-10 w-10 shrink-0 items-center justify-center text-[var(--muted)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--brand)] sm:h-11 sm:w-11`}
                 >
                   <X className="h-5 w-5" aria-hidden="true" />
                 </button>
               </div>
             </div>
 
-            <div className="relative min-h-0 flex-1 touch-pan-y overflow-y-auto overscroll-contain bg-[var(--card)] px-4 py-4 sm:px-6 sm:py-6">
+            <div className={`${styles.dialogBody} relative min-h-0 flex-1 touch-pan-y overflow-y-auto overscroll-contain px-4 py-4 sm:px-6 sm:py-6`}>
               <p id={descriptionId} className="max-w-2xl text-[13px] leading-5 text-[var(--muted)] sm:text-[15px] sm:leading-6">
                 Ask naturally. I can find medicines and pharmacies in the public network, or take you to the right place in Afyvia.
               </p>
@@ -309,7 +305,7 @@ export default function QuickPageAssist() {
                 }}
               >
                 <label htmlFor={inputId} className="sr-only">What do you need?</label>
-                <div className="grid gap-2 sm:grid-cols-[minmax(0,1fr)_auto]">
+                <div className={styles.searchForm}>
                   <div className="relative min-w-0">
                     <Search className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-[var(--brand)]" aria-hidden="true" />
                     <input
@@ -324,13 +320,13 @@ export default function QuickPageAssist() {
                       }}
                       placeholder="e.g. Panadol near Westlands"
                       autoComplete="off"
-                      className="min-h-12 w-full rounded-xl border border-[var(--line-2)] bg-[var(--background)] py-3 pl-10 pr-3 text-[var(--foreground)] outline-none placeholder:text-[var(--muted-2)] transition focus:border-[var(--brand)] focus:bg-[var(--card-elev)] focus:ring-2 focus:ring-[var(--brand-soft)] sm:rounded-2xl sm:text-sm"
+                      className={`${styles.searchInput} min-h-12 w-full py-3 pl-10 pr-3 text-[var(--foreground)] outline-none placeholder:text-[var(--muted-2)] sm:text-sm`}
                     />
                   </div>
                   <button
                     type="submit"
                     disabled={loading || query.trim().length < 2}
-                    className="min-h-12 w-full rounded-xl bg-[var(--brand)] px-5 text-sm font-semibold text-[var(--background)] shadow-sm transition hover:brightness-95 disabled:cursor-not-allowed disabled:opacity-45 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--brand)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--card)] sm:w-auto sm:min-w-24 sm:rounded-2xl"
+                    className={`${styles.searchButton} min-h-12 w-full px-5 text-sm font-semibold text-[var(--background)] disabled:cursor-not-allowed disabled:opacity-45 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--brand)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--card)] sm:w-auto sm:min-w-24`}
                   >
                     {loading ? "Searching…" : "Search"}
                   </button>
@@ -467,7 +463,7 @@ export default function QuickPageAssist() {
             </div>
 
             {/* Also avoid a semantic <footer> so site-footer theme rules can never leak in. */}
-            <div className="relative shrink-0 border-t border-[var(--line)] bg-[var(--card)] px-4 py-2.5 sm:px-6 sm:py-3">
+            <div className={`${styles.dialogFooter} relative shrink-0 px-4 py-2.5 sm:px-6 sm:py-3`}>
               <p className="flex items-center justify-center gap-1.5 text-[10px] text-[var(--muted-2)] sm:justify-start">
                 <span className="hidden sm:inline">
                   <kbd className="rounded border border-[var(--line-2)] bg-[var(--background)] px-1.5 py-0.5 text-[var(--muted)]">?</kbd>

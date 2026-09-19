@@ -7,26 +7,26 @@
   --robot-gold: #f6c85f;
   --robot-scale: 1;
   position: fixed;
-  right: 1rem;
-  bottom: 6rem;
+  right: 0.85rem;
+  bottom: 5.35rem;
   z-index: 55;
   isolation: isolate;
   display: grid;
-  width: 4.75rem;
-  height: 4.75rem;
+  width: 4.1rem;
+  height: 4.1rem;
   place-items: center;
   border: 0;
   border-radius: 9999px;
   background: transparent;
   color: var(--robot-primary);
   cursor: pointer;
-  filter: drop-shadow(0 12px 18px rgba(4, 48, 42, 0.22));
-  transition: filter 180ms ease, transform 180ms ease;
+  filter: drop-shadow(0 8px 14px rgba(4, 48, 42, 0.18));
+  transition: filter 180ms ease, transform 180ms ease, opacity 180ms ease;
 }
 
 .robotLauncher:hover {
-  filter: drop-shadow(0 17px 23px rgba(4, 48, 42, 0.3));
-  transform: translateY(-0.22rem) scale(1.035);
+  filter: drop-shadow(0 13px 20px rgba(4, 48, 42, 0.24));
+  transform: translateY(-0.14rem) scale(1.02);
 }
 
 .robotLauncher:active {
@@ -46,7 +46,7 @@
   border: 1px solid color-mix(in srgb, var(--robot-primary) 36%, transparent);
   border-radius: 9999px;
   background: color-mix(in srgb, var(--robot-primary) 8%, transparent);
-  animation: robotHalo 3.8s ease-out infinite;
+  opacity: 0.45;
 }
 
 .greeting {
@@ -55,20 +55,19 @@
   top: -0.2rem;
   z-index: 3;
   display: grid;
-  min-width: 2.55rem;
-  height: 1.65rem;
+  min-width: 4.8rem;
+  height: 1.8rem;
   place-items: center;
   border: 1px solid color-mix(in srgb, var(--robot-primary) 17%, white);
   border-radius: 0.8rem 0.8rem 0.25rem 0.8rem;
   background: color-mix(in srgb, var(--card, white) 93%, white);
   box-shadow: 0 7px 18px rgba(4, 48, 42, 0.14);
   color: var(--robot-ink);
-  font-size: 0.66rem;
+  font-size: 0.64rem;
   font-weight: 800;
   letter-spacing: -0.02em;
-  opacity: 0;
-  transform: translate(0.45rem, 0.35rem) scale(0.75);
-  animation: robotGreeting 6.5s cubic-bezier(0.22, 1, 0.36, 1) infinite;
+  opacity: 1;
+  transform: none;
 }
 
 .greeting::after {
@@ -88,10 +87,10 @@
   position: relative;
   z-index: 1;
   display: block;
-  width: 4.6rem;
-  height: 4.7rem;
+  width: 4.1rem;
+  height: 4.2rem;
   transform-origin: 50% 76%;
-  animation: robotFloat 3.7s ease-in-out infinite;
+  animation: none;
 }
 
 .robotHead {
@@ -162,7 +161,7 @@
   background: #d4fff3;
   box-shadow: 0 0 0.32rem rgba(120, 255, 219, 0.76);
   transform-origin: 50% 50%;
-  animation: robotBlink 5.2s ease-in-out infinite;
+  animation: none;
 }
 
 .leftEye { left: 0.76rem; }
@@ -175,7 +174,7 @@
   border-radius: 9999px;
   background: #063d35;
   box-shadow: 0 0 0.11rem rgba(6, 61, 53, 0.65);
-  animation: robotLook 3.8s ease-in-out infinite;
+  animation: none;
 }
 
 .rightEye .pupil { animation-delay: -0.05s; }
@@ -207,7 +206,7 @@
   background: #052c27;
   box-shadow: inset 0 0.08rem 0.1rem rgba(0, 0, 0, 0.42), 0 0 0.24rem rgba(112, 251, 211, 0.2);
   transform: translateX(-50%);
-  animation: robotTalk 2.4s ease-in-out infinite;
+  animation: none;
 }
 
 .mouthLight {
@@ -234,7 +233,7 @@
   box-shadow: 0 0 0.1rem rgba(11, 103, 85, 0.6);
   transform: translateX(-50%) rotate(10deg);
   transform-origin: 50% 100%;
-  animation: robotAntenna 3.7s ease-in-out infinite;
+  animation: none;
 }
 
 .antennaTip {
@@ -248,7 +247,7 @@
   background: var(--robot-gold);
   box-shadow: 0 0 0.32rem rgba(246, 200, 95, 0.96);
   transform: translateX(-50%);
-  animation: robotAntennaLight 2.1s ease-in-out infinite;
+  animation: none;
 }
 
 .neck {
@@ -288,7 +287,7 @@
   background: var(--robot-gold);
   box-shadow: 0 0 0.31rem rgba(246, 200, 95, 0.95);
   transform: translateX(-50%);
-  animation: robotAntennaLight 2.1s ease-in-out infinite 0.35s;
+  animation: none;
 }
 
 .bodyLine {
@@ -312,14 +311,14 @@
 
 .leftArm {
   left: 0.08rem;
-  animation: robotWave 5.6s cubic-bezier(0.45, 0.05, 0.3, 1) infinite;
+  transform: rotate(-11deg);
 }
 
 .rightArm {
   right: 0.08rem;
   transform: scaleX(-1) rotate(-9deg);
   transform-origin: calc(100% - 0.2rem) 0.28rem;
-  animation: robotGesture 2.8s ease-in-out infinite;
+  animation: none;
 }
 
 .upperArm,
@@ -392,16 +391,114 @@
 
 .robotLauncher[data-state="thinking"] .mouth,
 .robotLauncher[data-state="open"] .mouth {
-  animation-duration: 0.82s;
+  animation: none;
 }
 
 .robotLauncher[data-state="thinking"] .pupil {
-  animation-duration: 1.05s;
+  animation: none;
 }
 
 .robotLauncher[data-state="open"] .greeting {
-  opacity: 0;
-  animation: none;
+  opacity: 0.75;
+}
+
+.modalBackdrop {
+  background: rgba(3, 36, 31, 0.56);
+  backdrop-filter: blur(10px);
+  animation: assistBackdropIn 180ms ease-out both;
+}
+
+.assistDialog {
+  border: 1px solid color-mix(in srgb, var(--brand, #0d6e5a) 22%, var(--line-2));
+  border-radius: 1.5rem;
+  background: var(--card);
+  box-shadow: 0 30px 90px rgba(1, 31, 27, 0.4), 0 2px 0 rgba(255, 255, 255, 0.5) inset;
+  animation: assistDialogIn 260ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.dialogHeader {
+  border-bottom: 1px solid color-mix(in srgb, var(--brand, #0d6e5a) 13%, var(--line));
+  background:
+    radial-gradient(circle at 8% 0%, color-mix(in srgb, var(--brand-soft) 80%, transparent), transparent 36%),
+    linear-gradient(135deg, color-mix(in srgb, var(--card) 94%, #fff), var(--card));
+}
+
+.dialogAvatar {
+  border: 1px solid color-mix(in srgb, var(--brand, #0d6e5a) 32%, white);
+  border-radius: 1rem;
+  background: linear-gradient(145deg, #eefff8, #a8efd9 58%, #65cdb0);
+  box-shadow: inset 0 1px rgba(255, 255, 255, 0.8), 0 7px 18px rgba(4, 79, 66, 0.15);
+  color: var(--robot-ink);
+}
+
+.dialogAvatar::before {
+  position: absolute;
+  right: -0.28rem;
+  bottom: -0.28rem;
+  width: 0.62rem;
+  height: 0.62rem;
+  border: 2px solid var(--card);
+  border-radius: 9999px;
+  background: var(--robot-gold);
+  box-shadow: 0 0 0 1px rgba(5, 63, 54, 0.12);
+  content: "";
+}
+
+.dialogAvatar > span { display: none; }
+
+.closeButton {
+  border: 1px solid color-mix(in srgb, var(--brand, #0d6e5a) 17%, var(--line-2));
+  border-radius: 1rem;
+  background: color-mix(in srgb, var(--card) 90%, white);
+  transition: border-color 180ms ease, background 180ms ease, color 180ms ease, transform 180ms ease;
+}
+
+.closeButton:hover {
+  border-color: var(--brand);
+  background: var(--brand-soft);
+  color: var(--foreground);
+  transform: rotate(4deg);
+}
+
+.dialogBody {
+  background: linear-gradient(180deg, color-mix(in srgb, var(--card) 94%, var(--brand-soft)), var(--card) 24%);
+}
+
+.searchForm {
+  display: grid;
+  gap: 0.5rem;
+}
+
+.searchInput {
+  border: 1px solid color-mix(in srgb, var(--brand, #0d6e5a) 16%, var(--line-2));
+  border-radius: 1rem;
+  background: color-mix(in srgb, var(--background) 92%, white);
+  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.75) inset;
+  transition: border-color 180ms ease, background 180ms ease, box-shadow 180ms ease;
+}
+
+.searchInput:focus {
+  border-color: var(--brand);
+  background: var(--card-elev);
+  box-shadow: 0 0 0 4px color-mix(in srgb, var(--brand-soft) 78%, transparent);
+}
+
+.searchButton {
+  border-radius: 1rem;
+  background: linear-gradient(135deg, var(--brand-deep), var(--brand));
+  box-shadow: 0 7px 16px color-mix(in srgb, var(--brand, #0d6e5a) 28%, transparent), 0 1px 0 rgba(255, 255, 255, 0.2) inset;
+  transition: transform 180ms ease, filter 180ms ease, box-shadow 180ms ease;
+}
+
+.searchButton:not(:disabled):hover {
+  filter: brightness(1.04);
+  box-shadow: 0 10px 20px color-mix(in srgb, var(--brand, #0d6e5a) 34%, transparent), 0 1px 0 rgba(255, 255, 255, 0.2) inset;
+  transform: translateY(-1px);
+}
+
+.dialogFooter {
+  border-top: 1px solid color-mix(in srgb, var(--brand, #0d6e5a) 10%, var(--line));
+  background: color-mix(in srgb, var(--card) 95%, var(--brand-soft));
 }
 
 @keyframes robotFloat {
@@ -462,18 +559,36 @@
   72% { transform: scaleX(-1) rotate(0deg); }
 }
 
+@keyframes assistBackdropIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes assistDialogIn {
+  from { opacity: 0; transform: translateY(0.9rem) scale(0.98); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
 @media (min-width: 768px) {
   .robotLauncher {
     right: 1.5rem;
     bottom: 1.5rem;
-    width: 5.45rem;
-    height: 5.45rem;
-    --robot-scale: 1.12;
+    width: 4.85rem;
+    height: 4.85rem;
+    --robot-scale: 1.04;
   }
 
   .greeting {
     right: calc(100% - 0.25rem);
   }
+
+  .assistDialog { border-radius: 1.75rem; }
+  .searchForm { grid-template-columns: minmax(0, 1fr) auto; }
+  .searchInput, .searchButton { border-radius: 1rem; }
+}
+
+@media (max-width: 420px) {
+  .greeting { display: none; }
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -489,6 +604,11 @@
   .core,
   .leftArm,
   .rightArm {
+    animation: none !important;
+  }
+
+  .modalBackdrop,
+  .assistDialog {
     animation: none !important;
   }
 
