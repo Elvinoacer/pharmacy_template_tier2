@@ -83,6 +83,7 @@ export function PharmacyEnrolmentPricingSelector({
   verificationPaid = false,
   subscriptionActive = false,
   defaultPhone,
+  paymentAvailable = true,
 }: {
   pharmacyId: string;
   grant?: {
@@ -92,6 +93,7 @@ export function PharmacyEnrolmentPricingSelector({
   verificationPaid?: boolean;
   subscriptionActive?: boolean;
   defaultPhone?: string | null;
+  paymentAvailable?: boolean;
 }) {
   const [selectedPlan, setSelectedPlan] = useState<"bundle" | "verification" | "recurring">(
     verificationPaid ? "recurring" : "verification",
@@ -120,6 +122,7 @@ export function PharmacyEnrolmentPricingSelector({
         : effectiveMonthly;
 
   const isFree = activeCost === 0;
+  const canSubmit = pending || (!paymentAvailable && !isFree);
 
   return (
     <div className="space-y-4">
@@ -271,8 +274,14 @@ export function PharmacyEnrolmentPricingSelector({
           )}
         </div>
 
+        {!paymentAvailable && !isFree ? (
+          <p role="alert" className="mb-3 rounded-xl border border-rose-500/30 bg-rose-500/10 p-3 text-xs text-rose-700 dark:text-rose-300">
+            Online payment is temporarily unavailable. Please try again later or contact support.
+          </p>
+        ) : null}
+
         <button
-          disabled={pending}
+          disabled={canSubmit}
           type="submit"
           className={`btn-primary min-h-12 w-full justify-center text-sm font-semibold flex items-center gap-2 ${
             isFree ? "bg-emerald-600 hover:bg-emerald-700 text-white" : ""

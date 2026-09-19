@@ -69,12 +69,22 @@ const METHODS: MethodCard[] = [
   },
   {
     href: "/admin/medications/new",
-    icon: Pencil,
-    title: "Manual entry",
+    icon: Zap,
+    title: "Quick manual entry",
     description:
-      "Use the complete medicine form when no reusable record exists or when you need full control over every field.",
-    helper: "Most detailed option",
+      "Add the essentials in one short form: name, strength, price, stock, access and a pack image.",
+    badge: "Fastest manual path",
+    helper: "About 30 seconds",
     priority: 5,
+  },
+  {
+    href: "/admin/medications/new?mode=full",
+    icon: Pencil,
+    title: "Full manual entry",
+    description:
+      "Use the complete medicine form when you need clinical notes, relationships, storage guidance or every catalogue field.",
+    helper: "Most detailed option",
+    priority: 6,
   },
   {
     href: "#",

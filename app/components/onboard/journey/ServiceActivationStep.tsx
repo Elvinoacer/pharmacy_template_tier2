@@ -17,8 +17,10 @@ import polish from "@/app/components/onboard/OnboardFormPolish.module.css";
 
 export function ServiceActivationStep({
   snapshot,
+  paymentAvailable = true,
 }: {
   snapshot: PharmacyOnboardingSnapshot;
+  paymentAvailable?: boolean;
 }) {
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -50,6 +52,7 @@ export function ServiceActivationStep({
   const hasPrepaidCredit =
     payment.hasPrepaidBundleCredit ||
     Boolean(grant?.recurringMonths && grant.recurringMonths > 0);
+  const canSubmit = pending || (!paymentAvailable && !hasPrepaidCredit);
 
   return (
     <div className={`${styles.form} ${polish.wizardShell}`} aria-busy={pending}>
@@ -88,6 +91,12 @@ export function ServiceActivationStep({
       {state.error ? (
         <p className={`${styles.alert} ${styles.alertError} mb-4`} role="alert">
           {state.error}
+        </p>
+      ) : null}
+
+      {!paymentAvailable && !hasPrepaidCredit ? (
+        <p className={`${styles.alert} ${styles.alertError} mb-4`} role="alert">
+          Online payment is temporarily unavailable. Please try again later or contact support.
         </p>
       ) : null}
 
@@ -141,7 +150,7 @@ export function ServiceActivationStep({
           <button
             className={`btn-primary justify-center ${polish.primaryAction}`}
             type="submit"
-            disabled={pending}
+            disabled={canSubmit}
           >
             {pending ? (
               "Activating platform service…"

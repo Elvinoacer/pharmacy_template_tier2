@@ -7,6 +7,7 @@ import { buildPostgresConfig } from "../app/lib/db/config";
 import { createRlsPool } from "../app/lib/db/rls";
 import { withPlatformBypass } from "../app/lib/tenant-context";
 import { VACCINE_CATALOG, DEFAULT_IMMUNIZATION_POLICY } from "../app/lib/vaccination-catalog";
+import { seedDirectoryPharmacies } from "./seed-directory-pharmacies";
 
 loadEnv({ path: path.resolve(process.cwd(), ".env") });
 loadEnv({ path: path.resolve(process.cwd(), ".env.local"), override: true });
@@ -280,6 +281,9 @@ async function main() {
       integrations: { create: {} },
     },
   });
+
+  const seededDirectoryCount = await seedDirectoryPharmacies(prisma);
+  console.log(`Seeded ${seededDirectoryCount} Kenya directory pharmacies.`);
 
   await prisma.pharmacy.create({
     data: {

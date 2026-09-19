@@ -9,7 +9,7 @@ import { recordAuditRequired } from "@/app/lib/platform/audit";
 import { recordLifecycle } from "@/app/lib/platform/lifecycle";
 import { stkPush } from "@/app/lib/services/daraja";
 import { resolveDarajaCredentials } from "@/app/lib/platform/integrations";
-import { createIntasendCheckout } from "@/app/lib/services/intasend";
+import { createIntasendCheckout, getIntasendConfig, logIntasend } from "@/app/lib/services/intasend";
 
 export async function ensureDefaultPlans() {
   await prismaUnscoped.plan.updateMany({ where: { slug: { in: ["professional", "enterprise"] } }, data: { active: false, priceKes: MONTHLY_FEE_KES } });
@@ -496,14 +496,11 @@ export async function createIntasendBillingCheckout(
     },
   });
 
-  const appBaseUrl =
-    process.env.NEXT_PUBLIC_APP_URL ||
-    process.env.NEXT_PUBLIC_SITE_URL ||
-    "http://localhost:3000";
+  const intasendConfig = getIntasendConfig();
 
-  let defaultRedirect = `${appBaseUrl}/onboard?stage=payment&status=returned&invoice=${invoice.id}`;
+  let defaultRedirect = `${intasendConfig.appBaseUrl}/onboard?stage=payment&status=returned&invoice=${invoice.id}`;
   if (invoice.subscriptionId || invoice.number.startsWith("SUB-")) {
-    defaultRedirect = `${appBaseUrl}/onboard?stage=service&status=returned&invoice=${invoice.id}`;
+    defaultRedirect = `${intasendConfig.appBaseUrl}/onboard?stage=service&status=returned&invoice=${invoice.id}`;
   }
 
   const redirectUrl = opts?.redirectUrl || defaultRedirect;
@@ -532,6 +529,12 @@ export async function createIntasendBillingCheckout(
   });
 
   if (!checkoutRes.ok) {
+    logIntasend("error", "billing.checkout.failed", {
+      invoiceId,
+      pharmacyId: invoice.pharmacyId,
+      apiRef,
+      errorCode: checkoutRes.error,
+    });
     return {
       ok: false as const,
       error: checkoutRes.error,
@@ -551,6 +554,14 @@ export async function createIntasendBillingCheckout(
       checkoutRequestId: checkoutRes.id || checkoutRes.invoiceId,
       providerRef: checkoutRes.invoiceId,
     },
+  });
+
+  logIntasend("info", "billing.payment.pending", {
+    invoiceId: invoice.id,
+    paymentId: payment.id,
+    pharmacyId: invoice.pharmacyId,
+    apiRef,
+    amount: Number(invoice.totalKes),
   });
 
   await recordAuditRequired({
@@ -603,13 +614,18 @@ export async function completeIntasendBillingPayment(opts: {
     }
 
     if (!invoice) {
-      console.warn("[intasend][completeBillingPayment] invoice not found for apiRef:", opts.apiRef);
+      logIntasend("warn", "billing.webhook.invoice_not_found", { apiRef: opts.apiRef });
       return null;
     }
 
     const expected = Number(invoice.totalKes);
     if (Math.abs(expected - opts.amount) > 0.05) {
-      console.error("[intasend] billing amount mismatch:", { expected, received: opts.amount });
+      logIntasend("error", "billing.webhook.amount_mismatch", {
+        apiRef: opts.apiRef,
+        invoiceId: invoice.id,
+        expected,
+        received: opts.amount,
+      });
       throw new Error("billing_amount_mismatch");
     }
 
@@ -662,9 +678,15 @@ export async function failIntasendBillingPayment(opts: {
   });
   if (!invoice) return;
 
-  await prismaUnscoped.billingPayment.updateMany({
-    where: { invoiceId: invoice.id, provider: "intasend", status: "pending" },
+  const result = await prismaUnscoped.billingPayment.updateMany({
+    where: { invoiceId: invoice.id, provider: "intasend", status: { in: ["pending", "processing"] } },
     data: { status: "failed", failureReason: opts.reason.slice(0, 500) },
+  });
+  logIntasend("warn", "billing.payment.failed", {
+    apiRef: opts.apiRef,
+    invoiceId: invoice.id,
+    updatedPayments: result.count,
+    reason: opts.reason.slice(0, 160),
   });
 }
 

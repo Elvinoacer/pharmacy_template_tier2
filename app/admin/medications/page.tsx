@@ -22,6 +22,7 @@ import {
   Search,
   Tag,
   TrendingUp,
+  Zap,
   X,
 } from "lucide-react";
 
@@ -302,10 +303,16 @@ export default async function AdminMedicationsPage({
       actions={
         <div className="grid w-full grid-cols-2 gap-2 sm:flex sm:w-auto sm:flex-wrap sm:justify-end">
           <Link
-            href="/admin/medications/add"
-            className="col-span-2 inline-flex min-h-11 items-center justify-center gap-2 rounded-xl bg-emerald-600 px-4 text-sm font-bold text-white shadow-sm transition hover:bg-emerald-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/50 sm:order-last sm:rounded-full"
+            href="/admin/medications/new"
+            className="inline-flex min-h-11 items-center justify-center gap-2 rounded-xl bg-emerald-600 px-3 text-sm font-bold text-white shadow-sm transition hover:bg-emerald-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/50 sm:order-last sm:rounded-full sm:px-4"
           >
-            <Plus className="h-4 w-4" /> Add medication
+            <Zap className="h-4 w-4" /> Quick add
+          </Link>
+          <Link
+            href="/admin/medications/add"
+            className="inline-flex min-h-11 items-center justify-center gap-2 rounded-xl bg-[var(--admin-inset)] px-3 text-sm font-semibold admin-muted transition hover:text-[var(--admin-text)] sm:rounded-full sm:px-4"
+          >
+            <Plus className="h-4 w-4" /> More ways
           </Link>
           <Link href="/admin/inventory" className="inline-flex min-h-10 items-center justify-center gap-1.5 rounded-xl bg-[var(--admin-inset)] px-3 text-xs font-semibold admin-muted transition hover:text-[var(--admin-text)] sm:rounded-full">
             <Package className="h-3.5 w-3.5" /> Inventory

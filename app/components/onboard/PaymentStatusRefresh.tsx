@@ -10,6 +10,7 @@ export default function PaymentStatusRefresh({ pending }: { pending: boolean }) 
   const [refreshing, startTransition] = useTransition();
   const [checking, setChecking] = useState(false);
   const [providerPending, setProviderPending] = useState(pending);
+  const [checkError, setCheckError] = useState<string | null>(null);
   const checkingRef = useRef(false);
 
   const check = useCallback(async () => {
@@ -26,7 +27,14 @@ export default function PaymentStatusRefresh({ pending }: { pending: boolean }) 
       const data = (await response.json().catch(() => null)) as { pending?: number } | null;
       if (response.ok && typeof data?.pending === "number") {
         setProviderPending(data.pending > 0);
+        setCheckError(null);
+      } else if (!response.ok) {
+        setCheckError(
+          "We couldn't confirm payment status right now. You can retry in a moment.",
+        );
       }
+    } catch {
+      setCheckError("Payment status is temporarily unavailable. Please retry shortly.");
     } finally {
       startTransition(() => router.refresh());
       setChecking(false);
@@ -59,6 +67,11 @@ export default function PaymentStatusRefresh({ pending }: { pending: boolean }) 
       {waiting ? (
         <p role="status" className="mb-3 text-sm text-[var(--muted)]">
           Confirming your payment. You can stay on this page; the status updates automatically.
+        </p>
+      ) : null}
+      {checkError ? (
+        <p role="alert" className="mb-3 text-sm text-rose-600 dark:text-rose-400">
+          {checkError}
         </p>
       ) : null}
       <button

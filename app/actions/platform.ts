@@ -411,6 +411,47 @@ export async function suspendPharmacyAction(formData: FormData): Promise<void> {
   revalidatePath(`/platform/pharmacies/${pharmacyId}`);
 }
 
+/** Remove only a directory seed. Real tenant records must follow the normal lifecycle. */
+export async function removeSeededPharmacyAction(formData: FormData): Promise<void> {
+  const user = await actor(["super_admin"], true);
+  const pharmacyId = String(formData.get("pharmacyId") || "");
+  if (!pharmacyId) throw new Error("Missing pharmacy.");
+
+  const pharmacy = await prismaUnscoped.pharmacy.findUnique({
+    where: { id: pharmacyId },
+    select: { id: true, name: true, slug: true, isSeeded: true, seededSourceUrl: true },
+  });
+  if (!pharmacy) throw new Error("Pharmacy not found.");
+  if (!pharmacy.isSeeded) throw new Error("Only seeded directory records can be removed here.");
+
+  // Preserve audit history without leaving a foreign-key dependency that would
+  // make the requested seeded tenant impossible to remove.
+  await prismaUnscoped.auditLog.updateMany({
+    where: { pharmacyId },
+    data: { pharmacyId: null },
+  });
+  await prismaUnscoped.auditLog.create({
+    data: {
+      actorId: user.id,
+      action: "pharmacy.seed.remove",
+      entityType: "pharmacy",
+      entityId: pharmacyId,
+      details: {
+        name: pharmacy.name,
+        slug: pharmacy.slug,
+        sourceUrl: pharmacy.seededSourceUrl,
+      },
+      reason: "Remove seeded Kenya directory record",
+    },
+  });
+  await prismaUnscoped.pharmacy.delete({ where: { id: pharmacyId } });
+
+  revalidatePath("/pharmacies");
+  revalidatePath("/platform");
+  revalidatePath("/platform/pharmacies");
+  redirect("/platform/pharmacies?seeded=1");
+}
+
 export async function updateUserAction(formData: FormData): Promise<void> {
   const admin = await actor(["super_admin", "security"], true);
   const userId = String(formData.get("userId") || "");

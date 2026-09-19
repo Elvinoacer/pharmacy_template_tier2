@@ -17,6 +17,7 @@ import { ServiceActivationStep } from "@/app/components/onboard/journey/ServiceA
 import { ReadyToLaunchStep } from "@/app/components/onboard/journey/ReadyToLaunchStep";
 import JoinValuePanel from "@/app/components/onboard/JoinValuePanel";
 import styles from "@/app/components/onboard/OnboardSurface.module.css";
+import { isIntasendConfigured } from "@/app/lib/services/intasend";
 
 export const dynamic = "force-dynamic";
 export const metadata = {
@@ -48,6 +49,7 @@ export default async function OnboardPage({ searchParams }: PageProps) {
     snapshot,
     params.stage,
   );
+  const intasendConfigured = isIntasendConfigured();
 
   // If already live and setup complete, take owner directly to admin dashboard
   if (stage === "COMPLETE") {
@@ -92,7 +94,11 @@ export default async function OnboardPage({ searchParams }: PageProps) {
       ) : null}
 
       {stage === "VERIFICATION_PAYMENT" ? (
-        <VerificationPaymentStep snapshot={snapshot} isReviewEdit={isReviewEdit} />
+        <VerificationPaymentStep
+          snapshot={snapshot}
+          isReviewEdit={isReviewEdit}
+          paymentAvailable={intasendConfigured}
+        />
       ) : null}
 
       {stage === "FINAL_REVIEW" ? (
@@ -108,7 +114,7 @@ export default async function OnboardPage({ searchParams }: PageProps) {
       ) : null}
 
       {stage === "SERVICE_ACTIVATION" ? (
-        <ServiceActivationStep snapshot={snapshot} />
+        <ServiceActivationStep snapshot={snapshot} paymentAvailable={intasendConfigured} />
       ) : null}
 
       {stage === "READY_TO_LAUNCH" ? (

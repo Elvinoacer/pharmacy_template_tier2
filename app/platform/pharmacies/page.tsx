@@ -27,15 +27,22 @@ const STATUS_TABS = [
 export default async function PharmaciesAdminPage({
   searchParams,
 }: {
-  searchParams: Promise<{ q?: string; status?: string; page?: string }>;
+  searchParams: Promise<{ q?: string; status?: string; page?: string; seeded?: string }>;
 }) {
   const params = await searchParams;
   const q = (params.q || "").trim();
-  const requestedStatus = params.status == null ? "review" : params.status.trim();
+  const seededOnly = params.seeded === "1";
+  const requestedStatus = seededOnly ? "" : params.status == null ? "review" : params.status.trim();
   const status = STATUS_TABS.some((tab) => tab.value === requestedStatus) ? requestedStatus : "review";
 
   const where = {
-    ...(status === "review" ? { status: { in: ["submitted", "under_review"] as PharmacyStatus[] } } : status ? { status: status as PharmacyStatus } : {}),
+    ...(seededOnly
+      ? { isSeeded: true }
+      : status === "review"
+        ? { status: { in: ["submitted", "under_review"] as PharmacyStatus[] } }
+        : status
+          ? { status: status as PharmacyStatus }
+          : {}),
     ...(q
       ? {
           OR: [
@@ -74,10 +81,12 @@ export default async function PharmaciesAdminPage({
             className="mt-1 text-2xl font-semibold tracking-tight text-[#14211b] dark:text-white sm:text-4xl"
             style={{ fontFamily: "var(--font-display), serif" }}
           >
-            {status === "review" ? "Applications to review" : "Pharmacies"}
+            {seededOnly ? "Seeded directory" : status === "review" ? "Applications to review" : "Pharmacies"}
           </h1>
           <p className="mt-2 max-w-2xl text-sm leading-6 text-[#68776e] dark:text-teal-100/65">
-            Review submitted applications, check the evidence, and decide.
+            {seededOnly
+              ? "Public-facing pharmacy records added from the Kenya directory seed. Remove them individually when real owners claim or replace them."
+              : "Review submitted applications, check the evidence, and decide."}
           </p>
         </div>
         <div className="flex shrink-0 items-baseline gap-1 rounded-2xl border border-[#dce7e1] bg-white px-3.5 py-2.5 shadow-sm dark:border-white/10 dark:bg-white/[0.035] dark:shadow-none">
@@ -86,10 +95,23 @@ export default async function PharmaciesAdminPage({
         </div>
       </header>
 
+      <div className="flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-sky-200 bg-sky-50/70 px-4 py-3 text-sm dark:border-sky-400/25 dark:bg-sky-400/[0.07]">
+        <p className="text-sky-900 dark:text-sky-100">
+          {seededOnly ? "Seeded records are labelled privately here and look like normal listings on the public directory." : "Need to review the directory starter records? Open the seeded directory."}
+        </p>
+        <Link
+          href={seededOnly ? "/platform/pharmacies" : "/platform/pharmacies?seeded=1"}
+          className="shrink-0 font-semibold text-sky-800 underline-offset-4 hover:underline dark:text-sky-200"
+        >
+          {seededOnly ? "Back to applications" : "View seeded directory"}
+        </Link>
+      </div>
+
       <form
         method="GET"
         className="grid gap-2.5 rounded-2xl border border-[#dce7e1] bg-white p-3 shadow-sm dark:border-white/10 dark:bg-white/[0.035] dark:shadow-none sm:grid-cols-[minmax(0,1fr)_14rem_auto] sm:items-center"
       >
+        {seededOnly && <input type="hidden" name="seeded" value="1" />}
         <div className="relative min-w-0">
           <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[#7b8981] dark:text-teal-100/40" />
           <input
@@ -123,7 +145,7 @@ export default async function PharmaciesAdminPage({
 
       <div className="flex items-center justify-between gap-3 text-xs text-[#74837a] dark:text-teal-100/50">
         <p>{total ? `Showing ${start}–${end} of ${total}` : "No matching tenants"}</p>
-        {(q || status) && (
+        {(q || status || seededOnly) && (
           <Link
             href="/platform/pharmacies"
             className="font-semibold text-teal-700 underline-offset-4 hover:underline dark:text-teal-200"
@@ -169,6 +191,11 @@ export default async function PharmaciesAdminPage({
               {pharmacy.featured && (
                 <span className="rounded-full border border-amber-200 bg-amber-50 px-2.5 py-1 text-amber-900 dark:border-amber-400/30 dark:bg-amber-400/10 dark:text-amber-200">
                   Featured
+                </span>
+              )}
+              {pharmacy.isSeeded && (
+                <span className="rounded-full border border-sky-200 bg-sky-50 px-2.5 py-1 text-sky-800 dark:border-sky-400/30 dark:bg-sky-400/10 dark:text-sky-200">
+                  Seeded directory
                 </span>
               )}
             </div>

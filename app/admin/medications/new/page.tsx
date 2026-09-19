@@ -12,38 +12,48 @@ import {
 } from "@/app/lib/medication-lookups";
 import { AdminShell } from "@/app/components/admin/AdminShell";
 import MedicationForm from "@/app/components/admin/MedicationForm";
+import QuickMedicationForm from "@/app/components/admin/QuickMedicationForm";
 import Link from "next/link";
-import { ArrowLeft, Library, Pill, ShieldCheck, Sparkles } from "lucide-react";
+import { ArrowLeft, Library, Pill, ShieldCheck, Sparkles, Zap } from "lucide-react";
 
 export const metadata = { title: "Manual Entry — Medication" };
 
-export default async function NewMedicationPage() {
+export default async function NewMedicationPage({
+  searchParams,
+}: {
+  searchParams?: Promise<{ mode?: string }>;
+}) {
   const user = await getSessionUser();
   if (!user) redirect("/login");
+  const params = searchParams ? await searchParams : {};
+  const fullMode = params.mode === "full";
 
-  const [
-    categories,
-    dosageForms,
-    routes,
-    pregnancyCategories,
-    manufacturers,
-    activeIngredients,
-    clinicalTags,
-  ] = await Promise.all([
+  const [categories, dosageForms] = await Promise.all([
     listActiveCategoryOptions(),
     listDosageForms(),
-    listRoutes(),
-    listPregnancyCategories(),
-    listManufacturers(),
-    listActiveIngredients(),
-    listClinicalTags(),
   ]);
+
+  let routes: Awaited<ReturnType<typeof listRoutes>> = [];
+  let pregnancyCategories: Awaited<ReturnType<typeof listPregnancyCategories>> = [];
+  let manufacturers: Awaited<ReturnType<typeof listManufacturers>> = [];
+  let activeIngredients: Awaited<ReturnType<typeof listActiveIngredients>> = [];
+  let clinicalTags: Awaited<ReturnType<typeof listClinicalTags>> = [];
+
+  if (fullMode) {
+    [routes, pregnancyCategories, manufacturers, activeIngredients, clinicalTags] = await Promise.all([
+      listRoutes(),
+      listPregnancyCategories(),
+      listManufacturers(),
+      listActiveIngredients(),
+      listClinicalTags(),
+    ]);
+  }
 
   return (
     <AdminShell
       user={user}
-      title="Enter medicine details"
-      subtitle="If the medicine already exists in the network library, it will be reused automatically."
+      title={fullMode ? "Enter full medicine details" : "Add a medicine quickly"}
+      subtitle={fullMode ? "If the medicine already exists in the network library, it will be reused automatically." : "Capture the essentials now, then enrich the record whenever you have more time."}
     >
       <div className="mx-auto max-w-4xl space-y-4 sm:space-y-6">
         <div className="flex flex-wrap items-center justify-between gap-3">
@@ -54,11 +64,25 @@ export default async function NewMedicationPage() {
             <ArrowLeft className="h-4 w-4 transition-transform group-hover:-translate-x-0.5" /> Back to acquisition chooser
           </Link>
           <span className="inline-flex items-center gap-1.5 rounded-full bg-emerald-500/10 px-3 py-1.5 text-xs font-semibold text-emerald-700 dark:text-emerald-300">
-            <ShieldCheck className="h-3.5 w-3.5" /> Deduplicated before save
+            {fullMode ? <ShieldCheck className="h-3.5 w-3.5" /> : <Zap className="h-3.5 w-3.5" />} {fullMode ? "Deduplicated before save" : "Fast entry · image ready"}
           </span>
         </div>
 
-        <div className="rounded-2xl border border-sky-500/20 bg-sky-500/10 px-4 py-3 text-sm text-sky-900 dark:text-sky-100">
+        {!fullMode && (
+          <div className="rounded-2xl border border-sky-500/20 bg-sky-500/10 px-4 py-3 text-sm text-sky-900 dark:text-sky-100">
+            <div className="flex items-start gap-2.5">
+              <Library className="mt-0.5 h-4 w-4 shrink-0" />
+              <div>
+                <p className="font-semibold">Fastest when you have the pack in hand</p>
+                <p className="mt-0.5 text-xs leading-5 text-sky-800/80 dark:text-sky-100/75">
+                  Enter the label details, snap the pack image, and continue serving the next customer. You can add the clinical and supplier details later.
+                </p>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {fullMode && <div className="rounded-2xl border border-sky-500/20 bg-sky-500/10 px-4 py-3 text-sm text-sky-900 dark:text-sky-100">
           <div className="flex items-start gap-2.5">
             <Library className="mt-0.5 h-4 w-4 shrink-0" />
             <div>
@@ -68,9 +92,9 @@ export default async function NewMedicationPage() {
               </p>
             </div>
           </div>
-        </div>
+        </div>}
 
-        <div className="relative overflow-hidden rounded-2xl border border-[var(--admin-border-2)] bg-[var(--admin-card)] shadow-xl shadow-emerald-500/5 sm:rounded-3xl">
+        {fullMode ? <div className="relative overflow-hidden rounded-2xl border border-[var(--admin-border-2)] bg-[var(--admin-card)] shadow-xl shadow-emerald-500/5 sm:rounded-3xl">
           <div className="pointer-events-none absolute inset-x-0 top-0 h-28 bg-gradient-to-br from-emerald-500/10 via-transparent to-teal-500/10 dark:from-emerald-400/10 dark:to-cyan-400/5" />
 
           <div className="relative border-b border-[var(--admin-border-2)] p-4 sm:p-6 lg:p-8">
@@ -122,7 +146,18 @@ export default async function NewMedicationPage() {
               acquisitionMethod="manual"
             />
           </div>
-        </div>
+        </div> : <div className="rounded-2xl border border-[var(--admin-border-2)] bg-[var(--admin-card)] p-3 shadow-xl shadow-emerald-500/5 sm:rounded-3xl sm:p-5 lg:p-6">
+          <div className="mb-4 flex items-center gap-3 border-b border-[var(--admin-border-2)] px-1 pb-4 sm:px-0">
+            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-emerald-500 to-teal-600 text-white shadow-lg shadow-emerald-500/20">
+              <Pill className="h-5 w-5" />
+            </div>
+            <div>
+              <h2 className="text-base font-bold admin-text">Quick medication entry</h2>
+              <p className="text-xs admin-muted">A short form for busy counter and receiving workflows.</p>
+            </div>
+          </div>
+          <QuickMedicationForm action={adminCreateSharedMedicationAction} categories={categories} dosageForms={dosageForms} />
+        </div>}
       </div>
     </AdminShell>
   );

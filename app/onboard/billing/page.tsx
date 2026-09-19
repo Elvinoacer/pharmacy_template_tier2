@@ -140,6 +140,7 @@ export default async function PharmacyBillingPage(props: PageProps) {
 
   const readiness = await loadPharmacySetup(pharmacy.id);
   const commissionEnabled = isPharmacyCommissionEnabled();
+  const intasendConfigured = isIntasendConfigured();
   const feeBalance = commissionEnabled
     ? await withPharmacy(pharmacy.id, () =>
         db.usageRecord.aggregate({
@@ -216,6 +217,7 @@ export default async function PharmacyBillingPage(props: PageProps) {
           verificationPaid={verificationPaid}
           subscriptionActive={subscriptionActive}
           defaultPhone={defaultPhone}
+          paymentAvailable={intasendConfigured}
         />
       </div>
 
@@ -400,7 +402,7 @@ export default async function PharmacyBillingPage(props: PageProps) {
                     pharmacyId={pharmacy.id}
                     invoiceId={inv.id}
                     invoiceNumber={inv.number}
-                    checkoutAvailable={true}
+                    checkoutAvailable={intasendConfigured}
                   />
                 )
               ) : null}
@@ -439,7 +441,7 @@ export default async function PharmacyBillingPage(props: PageProps) {
           <p className="mb-4 mt-2 text-sm text-[var(--muted)]">
             Activate your first month with IntaSend to begin serving patients.
           </p>
-          <PharmacyPaymentForm pharmacyId={pharmacy.id} checkoutAvailable={true} />
+          <PharmacyPaymentForm pharmacyId={pharmacy.id} checkoutAvailable={intasendConfigured} />
         </section>
       ) : (
         <Link

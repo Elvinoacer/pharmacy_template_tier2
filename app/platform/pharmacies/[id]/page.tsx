@@ -13,11 +13,14 @@ import {
   MapPin,
   Phone,
   ShieldCheck,
+  Store,
+  Trash2,
   UserRound,
 } from "lucide-react";
 import { prismaUnscoped } from "@/app/lib/db";
 import {
   impersonatePharmacyAction,
+  removeSeededPharmacyAction,
   setPharmacyLiveAction,
   suspendPharmacyAction,
   updatePharmacyAction,
@@ -256,6 +259,11 @@ export default async function PharmacyReviewPage({
                 >
                   {readiness.ready ? "approval unlocked" : "verification incomplete"}
                 </span>
+                {pharmacy.isSeeded ? (
+                  <span className="rounded-full border border-sky-200 bg-sky-50 px-2.5 py-1 text-[10px] font-bold uppercase tracking-wide text-sky-800 dark:border-sky-400/30 dark:bg-sky-400/10 dark:text-sky-100">
+                    Seeded directory record
+                  </span>
+                ) : null}
               </div>
 
               <h1
@@ -345,6 +353,36 @@ export default async function PharmacyReviewPage({
           </div>
         </div>
       </header>
+
+      {pharmacy.isSeeded ? (
+        <section className="rounded-3xl border border-sky-200 bg-sky-50/70 p-4 dark:border-sky-400/25 dark:bg-sky-400/[0.07] sm:p-5">
+          <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+            <div className="flex min-w-0 items-start gap-3">
+              <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl border border-sky-200 bg-white/70 text-sky-700 dark:border-sky-300/20 dark:bg-white/5 dark:text-sky-200">
+                <Store className="h-4 w-4" />
+              </span>
+              <div className="min-w-0">
+                <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-sky-800/70 dark:text-sky-100/60">Directory starter data</p>
+                <h2 className="mt-1 text-base font-semibold text-sky-950 dark:text-sky-50">This record was seeded for public directory coverage</h2>
+                <p className="mt-1 text-xs leading-5 text-sky-900/75 dark:text-sky-100/65">
+                  Added {pharmacy.seededAt ? new Date(pharmacy.seededAt).toLocaleDateString("en-KE", { dateStyle: "medium" }) : "as part of the directory seed"}. The public page does not expose this marker. Confirm the branch details before treating the listing as claimed.
+                </p>
+                {pharmacy.seededSourceUrl ? (
+                  <a href={pharmacy.seededSourceUrl} target="_blank" rel="noopener noreferrer" className="mt-2 inline-flex text-xs font-semibold text-sky-800 underline-offset-4 hover:underline dark:text-sky-200">
+                    Open source page ↗
+                  </a>
+                ) : null}
+              </div>
+            </div>
+            <form action={removeSeededPharmacyAction} className="shrink-0">
+              <input type="hidden" name="pharmacyId" value={pharmacy.id} />
+              <button type="submit" className="inline-flex min-h-11 items-center justify-center gap-2 rounded-xl border border-rose-300 bg-white px-4 text-sm font-semibold text-rose-800 transition hover:bg-rose-50 dark:border-rose-400/35 dark:bg-transparent dark:text-rose-100 dark:hover:bg-rose-400/10">
+                <Trash2 className="h-4 w-4" /> Remove seeded record
+              </button>
+            </form>
+          </div>
+        </section>
+      ) : null}
 
       {!readiness.ready && allMissing.length > 0 ? (
         <section className="rounded-3xl border border-amber-200 bg-amber-50/65 p-4 dark:border-amber-400/25 dark:bg-amber-400/[0.07] sm:p-5">

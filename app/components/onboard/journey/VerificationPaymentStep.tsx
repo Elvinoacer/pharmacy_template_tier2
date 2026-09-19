@@ -22,9 +22,11 @@ import polish from "@/app/components/onboard/OnboardFormPolish.module.css";
 export function VerificationPaymentStep({
   snapshot,
   isReviewEdit = false,
+  paymentAvailable = true,
 }: {
   snapshot: PharmacyOnboardingSnapshot;
   isReviewEdit?: boolean;
+  paymentAvailable?: boolean;
 }) {
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -66,6 +68,7 @@ export function VerificationPaymentStep({
 
   const currentCost = selectedPlan === "bundle" ? bundleCost : verificationCost;
   const isWaivedZero = currentCost === 0;
+  const canSubmit = pending || (!paymentAvailable && !isWaivedZero);
 
   return (
     <div className={`${styles.form} ${polish.wizardShell}`} aria-busy={pending}>
@@ -151,6 +154,12 @@ export function VerificationPaymentStep({
       {state.error ? (
         <p className={`${styles.alert} ${styles.alertError} mb-4`} role="alert">
           {state.error}
+        </p>
+      ) : null}
+
+      {!paymentAvailable && !isWaivedZero ? (
+        <p className={`${styles.alert} ${styles.alertError} mb-4`} role="alert">
+          Online payment is temporarily unavailable. Please try again later or contact support.
         </p>
       ) : null}
 
@@ -257,7 +266,7 @@ export function VerificationPaymentStep({
           <button
             className={`btn-primary justify-center ${polish.primaryAction}`}
             type="submit"
-            disabled={pending}
+            disabled={canSubmit}
           >
             {pending ? (
               "Securing checkout…"

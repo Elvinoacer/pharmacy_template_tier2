@@ -473,6 +473,10 @@ model Pharmacy {
   /// When true, appears in the public marketplace (requires status=active).
   listed             Boolean        @default(false)
   featured           Boolean        @default(false)
+  /// Platform-managed directory seed. Hidden from public responses; used only for admin cleanup.
+  isSeeded           Boolean        @default(false) @map("is_seeded")
+  seededAt           DateTime?      @map("seeded_at")
+  seededSourceUrl    String?        @map("seeded_source_url")
   /// Super-admin review
   verificationNotes  String?        @map("verification_notes")
   rejectionReason    String?        @map("rejection_reason")
@@ -587,6 +591,7 @@ model Pharmacy {
   @@index([status])
   @@index([lifecycleStatus])
   @@index([listed, featured])
+  @@index([isSeeded])
   @@index([city])
   @@index([county])
   @@map("pharmacies")
