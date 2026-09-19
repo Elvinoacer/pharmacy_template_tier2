@@ -1,4 +1,4 @@
-import { AsyncLocalStorage, createHook, executionAsyncId } from "node:async_hooks";
+import { AsyncLocalStorage } from "node:async_hooks";
 export const STAFF_PHARMACY_COOKIE = "afyvia_staff_pharmacy";
 export const PUBLIC_PHARMACY_COOKIE = "afyvia_pharmacy";
 
@@ -12,37 +12,14 @@ export type TenantStore = {
 
 const globalTenant = globalThis as unknown as {
   __afyvia_tenant_als?: AsyncLocalStorage<TenantStore>;
-  __afyvia_tenant_scopes?: Map<number, TenantStore>;
-  __afyvia_tenant_hook?: boolean;
 };
 
 export const tenantAls: AsyncLocalStorage<TenantStore> =
   globalTenant.__afyvia_tenant_als ??
   (globalTenant.__afyvia_tenant_als = new AsyncLocalStorage<TenantStore>());
 
-const scopes: Map<number, TenantStore> =
-  globalTenant.__afyvia_tenant_scopes ??
-  (globalTenant.__afyvia_tenant_scopes = new Map<number, TenantStore>());
-
-if (!globalTenant.__afyvia_tenant_hook) {
-  globalTenant.__afyvia_tenant_hook = true;
-  createHook({
-    init(asyncId, _type, triggerAsyncId) {
-      const scope = scopes.get(triggerAsyncId);
-      if (scope) scopes.set(asyncId, scope);
-    },
-    destroy(asyncId) {
-      scopes.delete(asyncId);
-    },
-  }).enable();
-}
-
-function bindScope(store: TenantStore) {
-  scopes.set(executionAsyncId(), store);
-}
-
 export function boundTenant(): TenantStore | undefined {
-  return tenantAls.getStore() ?? scopes.get(executionAsyncId());
+  return tenantAls.getStore();
 }
 
 function isPromiseLike(value: unknown): value is PromiseLike<unknown> {
@@ -52,32 +29,18 @@ function isPromiseLike(value: unknown): value is PromiseLike<unknown> {
 }
 
 function runScoped<T>(store: TenantStore, fn: () => T): T {
-  const parentAsyncId = executionAsyncId();
-  const previousScope = scopes.get(parentAsyncId);
-  bindScope(store);
+  return tenantAls.run(store, () => {
+    const result = fn();
 
-  try {
-    return tenantAls.run(store, () => {
-      const result = fn();
+    // Prisma returns lazy thenables. Assimilate them while ALS is active so
+    // the actual SQL and every descendant async operation inherit the intended
+    // tenant/bypass context without leaking that context back to the caller.
+    if (isPromiseLike(result)) {
+      return (async () => await result)() as T;
+    }
 
-      // Prisma returns lazy thenables. If we return one directly from
-      // AsyncLocalStorage.run(), its actual SQL may start only after the scope has
-      // already unwound, causing RLS to see an empty/wrong tenant. Assimilate any
-      // thenable while the tenant store is still active so the whole async chain
-      // inherits the correct pharmacy/bypass context.
-      if (isPromiseLike(result)) {
-        return (async () => await result)() as T;
-      }
-
-      return result;
-    });
-  } finally {
-    // bindScope() also feeds the fallback async-hook map. Restore the caller's
-    // prior value when this lexical scope exits so platform/tenant privileges
-    // cannot leak into unrelated work on the same execution async id.
-    if (previousScope) scopes.set(parentAsyncId, previousScope);
-    else scopes.delete(parentAsyncId);
-  }
+    return result;
+  });
 }
 
 export function withPlatformBypass<T>(fn: () => T): T {
