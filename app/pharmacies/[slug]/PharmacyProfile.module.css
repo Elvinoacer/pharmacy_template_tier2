@@ -2,7 +2,7 @@
 .page {
   max-width: 1240px;
   margin: auto;
-  padding: 120px 26px 70px;
+  padding: var(--public-header-offset) 26px 70px;
 }
 .back {
   display: inline-flex;
@@ -332,7 +332,7 @@
 }
 @media (max-width: 700px) {
   .page {
-    padding: 85px 17px 45px;
+    padding: var(--public-header-offset) 17px 45px;
   }
   .hero,
   .detailsGrid,

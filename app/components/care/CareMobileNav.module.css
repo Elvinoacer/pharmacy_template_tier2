@@ -19,6 +19,15 @@
     border-radius: 22px;
     padding: 9px 5px;
     box-shadow: 0 8px 32px #102b292b;
+    opacity: 0;
+    pointer-events: none;
+    transform: translateY(calc(100% + 1rem));
+    transition: opacity 180ms ease, transform 180ms ease;
+  }
+  .nav[data-visible="true"] {
+    opacity: 1;
+    pointer-events: auto;
+    transform: translateY(0);
   }
   .nav a {
     display: flex;
@@ -40,5 +49,11 @@
   :global(body:has(textarea:focus)) .nav,
   :global(body:has(select:focus)) .nav {
     display: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .nav {
+    transition: none;
   }
 }

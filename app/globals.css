@@ -82,6 +82,10 @@
   --admin-sidebar-w: 264px;
   --admin-sidebar-collapsed: 76px;
   --admin-header-h: 64px;
+
+  /* Fixed public chrome needs one shared anchor offset. Keeping this token
+     above the tallest compact header prevents deep links from hiding under it. */
+  --public-header-offset: 8rem;
 }
 
 
@@ -263,6 +267,10 @@ html {
   scroll-behavior: smooth;
 }
 
+html:has(.public-main) {
+  scroll-padding-block-start: var(--public-header-offset);
+}
+
 body {
   background: var(--background);
   color: var(--foreground);
@@ -270,6 +278,23 @@ body {
   overflow-x: hidden;
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
+}
+
+/* Public pages use a fixed header and a mobile discovery dock. Reserve the
+   space once in the shell so route content and form controls stay reachable. */
+.public-main {
+  min-width: 0;
+  scroll-margin-block-start: var(--public-header-offset);
+}
+
+.public-main :where([id]) {
+  scroll-margin-block-start: calc(var(--public-header-offset) + 1rem);
+}
+
+@media (max-width: 767px) {
+  .public-main {
+    padding-bottom: calc(5.5rem + env(safe-area-inset-bottom));
+  }
 }
 
 ::selection {

@@ -91,7 +91,16 @@ export default function AppChrome({
           brand={brand}
         />
         <a href="#main-content" className="skip-link">Skip to content</a>
-        <main id="main-content" tabIndex={-1} className="min-w-0 flex-1"><div key={pathname} className={isCarePage ? careStyles.enter : undefined}>{children}{isCarePage && <CareMotion />}</div></main>
+        <main
+          id="main-content"
+          tabIndex={-1}
+          className="public-main min-w-0 flex-1"
+        >
+          <div key={pathname} className={isCarePage ? careStyles.enter : undefined}>
+            {children}
+            {isCarePage && <CareMotion />}
+          </div>
+        </main>
         <div id="site-footer" className="shrink-0">
           <Footer surface={surface} brand={brand} clearMobileActionBar={hasMobileCareDock} />
         </div>

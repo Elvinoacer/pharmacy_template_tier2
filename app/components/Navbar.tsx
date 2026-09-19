@@ -342,6 +342,7 @@ export default function Navbar({
                       }`}
                       aria-expanded={isOpen}
                       aria-haspopup="menu"
+                      aria-controls={`desktop-nav-menu-${cat.key}`}
                     >
                       <span>{cat.label}</span>
                       <ChevronDown className={`h-3.5 w-3.5 shrink-0 transition-transform duration-200 ${isOpen ? "rotate-180" : ""}`} />
@@ -352,6 +353,8 @@ export default function Navbar({
                         className={`absolute top-full z-50 w-80 animate-in fade-in slide-in-from-top-2 pt-2 duration-200 ${
                           alignRight ? "right-0" : "left-0"
                         }`}
+                        id={`desktop-nav-menu-${cat.key}`}
+                        role="menu"
                         onMouseEnter={() => handleMouseEnter(cat.key)}
                         onMouseLeave={handleMouseLeave}
                       >
@@ -371,6 +374,7 @@ export default function Navbar({
                                 <Link
                                   key={sub.href}
                                   href={withBase(sub.href)}
+                                  role="menuitem"
                                   className={`flex items-start gap-3 rounded-xl p-2.5 transition-all ${
                                     subActive
                                       ? onDarkHero

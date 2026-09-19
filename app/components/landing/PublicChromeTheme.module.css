@@ -4,6 +4,15 @@
   transition: background-color 300ms ease, border-color 300ms ease, color 300ms ease;
 }
 
+/* Keep the fixed public header visually separate from content while scrolling.
+   The glass effect stays, but a mostly opaque token prevents headings and cards
+   from showing through interactive controls. */
+.publicChrome :global(header [data-care-header-surface]) {
+  background:
+    linear-gradient(115deg, var(--glass-shine), transparent 55%),
+    color-mix(in srgb, var(--background) 88%, var(--brand-soft) 12%);
+}
+
 /* --------------------------------------------------------------------------
    Footer: keep the existing cinematic dark treatment in dark mode, but let
    the same structure become a premium translucent light surface in light mode.
