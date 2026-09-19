@@ -15,6 +15,34 @@ try {
 import { parseDarajaCallbackEvidence } from "../app/lib/services/daraja-callback-verification";
 import { isCronAuthorized } from "../app/lib/cron-auth";
 
+
+describe("runtime RLS role provisioning", () => {
+  it("provisions the same runtime role the application SET ROLEs to", () => {
+    const rlsSource = readFileSync(
+      new URL("../app/lib/db/rls.ts", import.meta.url),
+      "utf8",
+    );
+    const repairMigration = readFileSync(
+      new URL(
+        "../prisma/migrations/20260919070000_repair_afyvia_runtime_role/migration.sql",
+        import.meta.url,
+      ),
+      "utf8",
+    );
+
+    const match = rlsSource.match(/RLS_RUNTIME_ROLE\s*=\s*"([^"]+)"/);
+    assert.ok(match, "RLS runtime role constant must be declared");
+    const runtimeRole = match[1];
+
+    assert.equal(runtimeRole, "afyvia_runtime");
+    assert.match(repairMigration, new RegExp(`CREATE ROLE ${runtimeRole}\\b`));
+    assert.match(repairMigration, new RegExp(`GRANT ${runtimeRole} TO CURRENT_USER`));
+    assert.match(repairMigration, new RegExp(`ALL TABLES IN SCHEMA public TO ${runtimeRole}`));
+    assert.match(repairMigration, new RegExp(`ALL SEQUENCES IN SCHEMA public TO ${runtimeRole}`));
+    assert.match(repairMigration, new RegExp(`ALL FUNCTIONS IN SCHEMA app TO ${runtimeRole}`));
+  });
+});
+
 describe("Daraja callback settlement evidence", () => {
   it("requires a positive amount and receipt for a successful result", () => {
     const missingAmount = parseDarajaCallbackEvidence({
