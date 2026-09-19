@@ -1,6 +1,6 @@
 "use client";
 
-import { useActionState, useEffect, useMemo, useRef, useState } from "react";
+import { useActionState, useCallback, useEffect, useId, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import {
   ArrowRight,
@@ -37,14 +37,17 @@ type Props = {
   showDemoCredentials?: boolean;
 };
 
+/**
+ * 3D-styled medical cross logo with emerald/lime sheen.
+ */
 function MedicalCrossMark() {
   return (
     <span
       aria-hidden
-      className="relative flex h-11 w-11 shrink-0 items-center justify-center rounded-[14px] bg-lime-400/15 ring-1 ring-lime-300/35 shadow-[0_0_20px_rgba(163,230,53,0.22)]"
+      className="relative flex h-11 w-11 shrink-0 items-center justify-center rounded-[14px] bg-lime-400/15 ring-1 ring-lime-300/35 shadow-[0_0_20px_rgba(163,230,53,0.25)]"
     >
-      <span className="absolute h-[25px] w-[9px] rounded-[4px] bg-gradient-to-b from-lime-200 via-lime-400 to-lime-600 shadow-[0_0_18px_rgba(163,230,53,0.32)]" />
-      <span className="absolute h-[9px] w-[25px] rounded-[4px] bg-gradient-to-r from-lime-200 via-lime-400 to-lime-600 shadow-[0_0_18px_rgba(163,230,53,0.32)]" />
+      <span className="absolute h-[25px] w-[9px] rounded-[4px] bg-gradient-to-b from-lime-200 via-lime-400 to-lime-600 shadow-[0_0_18px_rgba(163,230,53,0.35)]" />
+      <span className="absolute h-[9px] w-[25px] rounded-[4px] bg-gradient-to-r from-lime-200 via-lime-400 to-lime-600 shadow-[0_0_18px_rgba(163,230,53,0.35)]" />
     </span>
   );
 }
@@ -56,15 +59,42 @@ function Brand() {
       <span className="leading-none">
         <span
           className="block text-[19px] font-semibold tracking-[-0.02em] text-white sm:text-[21px] transition-colors group-hover:text-lime-200"
-          style={{ fontFamily: "var(--font-display), serif" }}
+          style={{ fontFamily: "var(--font-display), Georgia, serif" }}
         >
           {platform.name}
         </span>
-        <span className="mt-1.5 block text-[9px] font-semibold uppercase tracking-[0.22em] text-white/60 sm:text-[10px]">
+        <span className="mt-1.5 block text-[9px] font-semibold uppercase tracking-[0.22em] text-white/65 sm:text-[10px]">
           Care. Connect. Convenience.
         </span>
       </span>
     </Link>
+  );
+}
+
+/**
+ * Glowing 3D Botanical Cross Plaque
+ * Recreates the floating emerald glass plaque with sculpted leaf
+ * seen above the moss pedestal in the official design mockup.
+ */
+function BotanicalCrossPlaque() {
+  return (
+    <div className={styles.plaqueWrapper} aria-hidden="true">
+      <div className={styles.glowingCrossPlaque}>
+        <div className={styles.plaqueInnerGlow} />
+        {/* Glowing glass cross with inner leaf */}
+        <div className="relative flex h-20 w-20 items-center justify-center">
+          {/* Vertical beam */}
+          <span className="absolute h-16 w-5 rounded-md bg-gradient-to-b from-lime-200 via-lime-400/80 to-emerald-600/90 shadow-[0_0_24px_rgba(163,230,53,0.55)]" />
+          {/* Horizontal beam */}
+          <span className="absolute h-5 w-16 rounded-md bg-gradient-to-r from-lime-200 via-lime-400/80 to-emerald-600/90 shadow-[0_0_24px_rgba(163,230,53,0.55)]" />
+          {/* Center sculpted leaf */}
+          <Leaf
+            className="relative z-10 h-6 w-6 text-white drop-shadow-[0_2px_8px_rgba(20,83,45,0.8)]"
+            strokeWidth={2.4}
+          />
+        </div>
+      </div>
+    </div>
   );
 }
 
@@ -111,17 +141,26 @@ export default function UnifiedAuthSurface({
   const [mode, setMode] = useState<AuthMode>(initialMode);
   const [direction, setDirection] = useState<"forward" | "backward">("forward");
 
+  // Unique IDs for accessibility
+  const tabLoginId = useId();
+  const tabRegisterId = useId();
+  const panelLoginId = useId();
+  const panelRegisterId = useId();
+
   // CSRF token bootstrap
   const [csrfToken, setCsrfToken] = useState("");
   const [csrfError, setCsrfError] = useState<string | null>(null);
 
-  // Shared form inputs
+  // Shared form inputs (preserved across mode switches)
   const [email, setEmail] = useState("");
 
   // Sign In specific state
   const [loginPassword, setLoginPassword] = useState("");
   const [showLoginPassword, setShowLoginPassword] = useState(false);
-  const [loginState, runLoginAction, loginPending] = useActionState(loginAction, {} as AuthActionState);
+  const [loginState, runLoginAction, loginPending] = useActionState(
+    loginAction,
+    {} as AuthActionState,
+  );
 
   // Create Account specific state
   const [firstName, setFirstName] = useState("");
@@ -140,18 +179,19 @@ export default function UnifiedAuthSurface({
   // Demo credentials panel toggle
   const [showDemoDrawer, setShowDemoDrawer] = useState(false);
 
+  // Touch Swipe Gesture State for Mobile
+  const touchStartX = useRef<number | null>(null);
+  const touchStartY = useRef<number | null>(null);
+
   // Password calculations for registration
   const pwCheck = useMemo(() => evaluatePassword(registerPassword), [registerPassword]);
   const confirmMismatch =
     registerConfirm.length > 0 && registerPassword.length > 0 && registerPassword !== registerConfirm;
   const fullName = `${firstName.trim()} ${lastName.trim()}`.trim();
-  const filledSegments = registerPassword ? Math.max(1, Math.round(pwCheck.score * 6)) : 0;
+  const filledSegments = registerPassword ? Math.max(1, Math.round(pwCheck.score * 5)) : 0;
   const canSubmitRegister =
     Boolean(csrfToken) && !registerPending && agreed && pwCheck.ok && !confirmMismatch;
   const canSubmitLogin = Boolean(csrfToken) && !loginPending;
-
-  // Track initial render to avoid replacing history on mount
-  const hasMounted = useRef(false);
 
   // Bootstrap CSRF token on mount
   useEffect(() => {
@@ -198,51 +238,105 @@ export default function UnifiedAuthSurface({
   }, []);
 
   // Unified Mode Switcher with Directional Navigation & URL Sync
-  const switchMode = (newMode: AuthMode) => {
-    if (newMode === mode) return;
+  const switchMode = useCallback(
+    (newMode: AuthMode) => {
+      if (newMode === mode) return;
 
-    const nextDirection = newMode === "register" ? "forward" : "backward";
-    setDirection(nextDirection);
+      const nextDirection = newMode === "register" ? "forward" : "backward";
+      setDirection(nextDirection);
 
-    const updateDOM = () => {
-      setMode(newMode);
-    };
+      const updateDOM = () => {
+        setMode(newMode);
+        // Dynamic title update
+        if (typeof document !== "undefined") {
+          document.title =
+            newMode === "register"
+              ? `Create account | ${platform.name}`
+              : `Sign in | ${platform.name}`;
+        }
+      };
 
-    // Modern View Transitions API with graceful fallback
-    const doc = typeof document !== "undefined" ? (document as Document & {
-      startViewTransition?: (options: { update: () => void; types?: string[] }) => void;
-    }) : null;
-    if (doc?.startViewTransition) {
-      try {
-        doc.startViewTransition({
-          update: updateDOM,
-          types: [nextDirection],
-        });
-      } catch {
+      // Modern View Transitions API with graceful fallback
+      const doc =
+        typeof document !== "undefined"
+          ? (document as Document & {
+              startViewTransition?: (options: { update: () => void; types?: string[] }) => void;
+            })
+          : null;
+
+      if (doc?.startViewTransition) {
+        try {
+          doc.startViewTransition({
+            update: updateDOM,
+            types: [nextDirection],
+          });
+        } catch {
+          updateDOM();
+        }
+      } else {
         updateDOM();
       }
-    } else {
-      updateDOM();
-    }
 
-    // Seamlessly update browser URL without full-page reload
-    const targetPath =
-      newMode === "register"
-        ? next
-          ? `/register?next=${encodeURIComponent(next)}`
-          : "/register"
-        : next
-          ? `/login?next=${encodeURIComponent(next)}`
-          : "/login";
+      // Seamlessly update browser URL without full-page reload
+      const targetPath =
+        newMode === "register"
+          ? next
+            ? `/register?next=${encodeURIComponent(next)}`
+            : "/register"
+          : next
+            ? `/login?next=${encodeURIComponent(next)}`
+            : "/login";
 
-    if (typeof window !== "undefined") {
-      window.history.replaceState({ mode: newMode }, "", targetPath);
+      if (typeof window !== "undefined") {
+        window.history.replaceState({ mode: newMode }, "", targetPath);
+      }
+    },
+    [mode, next],
+  );
+
+  // Keyboard navigation for tablist (WAI-ARIA tabs pattern)
+  const handleTabKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === "ArrowRight" || e.key === "ArrowDown") {
+      e.preventDefault();
+      switchMode(mode === "login" ? "register" : "login");
+    } else if (e.key === "ArrowLeft" || e.key === "ArrowUp") {
+      e.preventDefault();
+      switchMode(mode === "register" ? "login" : "register");
+    } else if (e.key === "Home") {
+      e.preventDefault();
+      switchMode("login");
+    } else if (e.key === "End") {
+      e.preventDefault();
+      switchMode("register");
     }
   };
 
-  useEffect(() => {
-    hasMounted.current = true;
-  }, []);
+  // Mobile Swipe Gesture Handlers
+  const handleTouchStart = (e: React.TouchEvent) => {
+    const touch = e.touches[0];
+    touchStartX.current = touch.clientX;
+    touchStartY.current = touch.clientY;
+  };
+
+  const handleTouchEnd = (e: React.TouchEvent) => {
+    if (touchStartX.current === null || touchStartY.current === null) return;
+    const touch = e.changedTouches[0];
+    const diffX = touch.clientX - touchStartX.current;
+    const diffY = touch.clientY - touchStartY.current;
+
+    // Only recognize horizontal swipes (prevent hijacking vertical scrolling)
+    if (Math.abs(diffX) > 60 && Math.abs(diffX) > Math.abs(diffY) * 1.5) {
+      if (diffX < 0 && mode === "login") {
+        // Swiped left -> Switch to Register
+        switchMode("register");
+      } else if (diffX > 0 && mode === "register") {
+        // Swiped right -> Switch to Login
+        switchMode("login");
+      }
+    }
+    touchStartX.current = null;
+    touchStartY.current = null;
+  };
 
   // Demo auto-fill helper
   const fillDemoAccount = (demoEmail: string) => {
@@ -254,7 +348,10 @@ export default function UnifiedAuthSurface({
   return (
     <div className={styles.authRoot}>
       {/* High-Fidelity Zen/Botanical Background Layer */}
-      <div className={styles.bgWrapper} aria-hidden="true">
+      <div
+        className={`${styles.bgWrapper} ${direction === "forward" ? styles.bgShiftForward : styles.bgShiftBackward}`}
+        aria-hidden="true"
+      >
         <picture className={styles.bgPicture}>
           <source media="(min-width: 1024px)" srcSet="/register/reg-bg-pc.png" />
           <img
@@ -277,8 +374,8 @@ export default function UnifiedAuthSurface({
           <aside className={styles.storyColumn}>
             <Brand />
 
-            <div className="mt-8 flex flex-wrap items-center gap-3 sm:mt-10">
-              <span className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-black/20 px-3.5 py-1.5 text-[10px] font-medium text-white/80 backdrop-blur-md sm:text-[11px]">
+            <div className="mt-7 flex flex-wrap items-center gap-3 sm:mt-9">
+              <span className="inline-flex items-center gap-2 rounded-full border border-white/18 bg-black/25 px-3.5 py-1.5 text-[10px] font-medium text-white/85 backdrop-blur-md sm:text-[11px]">
                 <Users className="h-3.5 w-3.5 text-lime-300" strokeWidth={2.2} />
                 Trusted by thousands of families
               </span>
@@ -309,10 +406,18 @@ export default function UnifiedAuthSurface({
                   <h2 className={styles.storyTitle}>
                     Welcome back
                     <br />
-                    to seamless <span className="relative inline-block text-lime-300">care<Leaf className="absolute -right-7 -top-2.5 h-5 w-5 text-lime-300/85" strokeWidth={2.2} /></span>
+                    to seamless{" "}
+                    <span className="relative inline-block text-lime-300">
+                      care
+                      <Leaf
+                        className={`${styles.leafAccent} absolute -right-7 -top-2.5 h-5 w-5 text-lime-300/90`}
+                        strokeWidth={2.3}
+                      />
+                    </span>
                   </h2>
                   <p className={styles.storySubtitle}>
-                    One sign-in for your care, your pharmacy, or platform administration. We’ll open the right workspace for you.
+                    One sign-in for your prescriptions, consultations, or platform workspace.
+                    We’ll open the right portal for you.
                   </p>
                 </>
               ) : (
@@ -320,16 +425,24 @@ export default function UnifiedAuthSurface({
                   <h2 className={styles.storyTitle}>
                     Your health
                     <br />
-                    is our <span className="relative inline-block text-lime-300">priority<Leaf className="absolute -right-7 -top-2.5 h-5 w-5 text-lime-300/85" strokeWidth={2.2} /></span>
+                    is our{" "}
+                    <span className="relative inline-block text-lime-300">
+                      priority
+                      <Leaf
+                        className={`${styles.leafAccent} absolute -right-7 -top-2.5 h-5 w-5 text-lime-300/90`}
+                        strokeWidth={2.3}
+                      />
+                    </span>
                   </h2>
                   <p className={styles.storySubtitle}>
-                    Create your account and discover a smarter way to manage your health, prescriptions, and pharmacy consultations.
+                    Create your account and discover a smarter way to manage your health,
+                    prescriptions, and licensed pharmacy consultations.
                   </p>
                 </>
               )}
             </div>
 
-            {/* Feature Cards Grid */}
+            {/* Feature Glass Cards Grid */}
             <div className={styles.featureCardsGrid}>
               {mode === "login"
                 ? [
@@ -353,7 +466,7 @@ export default function UnifiedAuthSurface({
                     return (
                       <div key={item.title} className={styles.featureCard}>
                         <span className={styles.featureIconWrap}>
-                          <Icon className="h-5 w-5" strokeWidth={2.1} />
+                          <Icon className="h-5 w-5" strokeWidth={2.2} />
                         </span>
                         <h3 className={styles.featureTitle}>{item.title}</h3>
                         <p className={styles.featureDesc}>{item.desc}</p>
@@ -381,7 +494,7 @@ export default function UnifiedAuthSurface({
                     return (
                       <div key={item.title} className={styles.featureCard}>
                         <span className={styles.featureIconWrap}>
-                          <Icon className="h-5 w-5" strokeWidth={2.1} />
+                          <Icon className="h-5 w-5" strokeWidth={2.2} />
                         </span>
                         <h3 className={styles.featureTitle}>{item.title}</h3>
                         <p className={styles.featureDesc}>{item.desc}</p>
@@ -390,27 +503,40 @@ export default function UnifiedAuthSurface({
                   })}
             </div>
 
+            {/* Glowing 3D Botanical Cross Plaque */}
+            <BotanicalCrossPlaque />
+
             {/* Desktop Compliance Footer */}
             <div className={styles.trustFooter}>
               <div className="flex items-center gap-2.5">
                 <span className="flex h-8 w-8 items-center justify-center rounded-full bg-lime-300/15 text-lime-300 ring-1 ring-lime-300/25">
                   <ShieldCheck className="h-4 w-4" strokeWidth={2} />
                 </span>
-                <span className="max-w-[150px] leading-[1.45]">Your health information is safe with us.</span>
+                <span className="max-w-[155px] leading-[1.45]">
+                  Your health information is safe with us.
+                </span>
               </div>
               <span className="h-8 w-px bg-white/15" aria-hidden />
               <div className="flex items-center gap-2.5">
-                <span className="flex h-8 w-8 items-center justify-center rounded-full bg-white/[0.05] text-white/80 ring-1 ring-white/15">
+                <span className="flex h-8 w-8 items-center justify-center rounded-full bg-white/[0.06] text-white/85 ring-1 ring-white/15">
                   <Lock className="h-4 w-4" strokeWidth={1.9} />
                 </span>
-                <span className="leading-[1.45]">We comply with<br />HIPAA &amp; KDPA</span>
+                <span className="leading-[1.45]">
+                  We comply with
+                  <br />
+                  HIPAA &amp; KDPA
+                </span>
               </div>
             </div>
           </aside>
 
           {/* Right Column: Unified Form Surface with Mode Switcher */}
           <section className={styles.authColumn}>
-            <div className={styles.authCard}>
+            <div
+              className={styles.authCard}
+              onTouchStart={handleTouchStart}
+              onTouchEnd={handleTouchEnd}
+            >
               {/* Trust Pill Header (as seen in reg_pc mockup) */}
               <div className="mb-4 hidden sm:flex items-center gap-2 rounded-full border border-lime-300/20 bg-lime-400/10 px-3.5 py-1.5 text-[11px] font-medium text-lime-200">
                 <Sparkles className="h-3.5 w-3.5 text-lime-300" />
@@ -421,7 +547,8 @@ export default function UnifiedAuthSurface({
               <div className={styles.segmentedWrapper}>
                 <div
                   role="tablist"
-                  aria-label="Authentication Options"
+                  aria-label="Authentication mode options"
+                  onKeyDown={handleTabKeyDown}
                   className={styles.segmentedControl}
                 >
                   <div
@@ -433,9 +560,10 @@ export default function UnifiedAuthSurface({
                   />
                   <button
                     role="tab"
-                    id="auth-tab-login"
+                    id={tabLoginId}
                     aria-selected={mode === "login"}
-                    aria-controls="auth-panel-login"
+                    aria-controls={panelLoginId}
+                    tabIndex={mode === "login" ? 0 : -1}
                     onClick={() => switchMode("login")}
                     className={`${styles.segmentButton} ${mode === "login" ? styles.segmentActive : ""}`}
                     type="button"
@@ -445,9 +573,10 @@ export default function UnifiedAuthSurface({
                   </button>
                   <button
                     role="tab"
-                    id="auth-tab-register"
+                    id={tabRegisterId}
                     aria-selected={mode === "register"}
-                    aria-controls="auth-panel-register"
+                    aria-controls={panelRegisterId}
+                    tabIndex={mode === "register" ? 0 : -1}
                     onClick={() => switchMode("register")}
                     className={`${styles.segmentButton} ${mode === "register" ? styles.segmentActive : ""}`}
                     type="button"
@@ -524,24 +653,24 @@ export default function UnifiedAuthSurface({
                  ------------------------------------------------------------ */}
               {mode === "login" ? (
                 <div
-                  id="auth-panel-login"
+                  id={panelLoginId}
                   role="tabpanel"
-                  aria-labelledby="auth-tab-login"
+                  aria-labelledby={tabLoginId}
                   className={`${styles.panelAnimated} ${direction === "forward" ? styles.slideForward : styles.slideBackward}`}
                 >
-                  <div className="mb-5">
+                  <div className="mb-4">
                     <h1
-                      className="text-[26px] font-semibold leading-tight tracking-[-0.025em] text-white sm:text-[30px]"
-                      style={{ fontFamily: "var(--font-display), serif" }}
+                      className="text-[24px] font-semibold leading-tight tracking-[-0.025em] text-white sm:text-[28px]"
+                      style={{ fontFamily: "var(--font-display), Georgia, serif" }}
                     >
                       Welcome back
                     </h1>
-                    <p className="mt-1.5 text-[13px] leading-relaxed text-white/70">
+                    <p className="mt-1 text-[13px] leading-relaxed text-white/70">
                       Sign in to manage refills, orders, and pharmacy services.
                     </p>
                   </div>
 
-                  <form action={runLoginAction} className="flex flex-col gap-4">
+                  <form action={runLoginAction} className="flex flex-col gap-3.5">
                     <input type="hidden" name="csrfToken" value={csrfToken} />
                     <input type="hidden" name="next" value={next} />
 
@@ -601,7 +730,11 @@ export default function UnifiedAuthSurface({
                           onClick={() => setShowLoginPassword((v) => !v)}
                           className={styles.eyeButton}
                         >
-                          {showLoginPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                          {showLoginPassword ? (
+                            <EyeOff className="h-4 w-4" />
+                          ) : (
+                            <Eye className="h-4 w-4" />
+                          )}
                         </button>
                       </div>
                     </div>
@@ -609,7 +742,7 @@ export default function UnifiedAuthSurface({
                     <button
                       type="submit"
                       disabled={!canSubmitLogin}
-                      className={`group ${styles.submitButton} mt-2`}
+                      className={`group ${styles.submitButton} mt-1`}
                     >
                       <span>
                         {loginPending
@@ -618,11 +751,14 @@ export default function UnifiedAuthSurface({
                             ? "Preparing secure form…"
                             : "Sign in"}
                       </span>
-                      <ArrowRight className="h-5 w-5 transition-transform group-hover:translate-x-1" strokeWidth={2} />
+                      <ArrowRight
+                        className="h-5 w-5 transition-transform group-hover:translate-x-1"
+                        strokeWidth={2}
+                      />
                     </button>
 
                     {/* Social SSO Buttons */}
-                    <div className="my-1 flex items-center gap-3 text-[11px] text-white/50">
+                    <div className="my-0.5 flex items-center gap-3 text-[11px] text-white/50">
                       <span className="h-px flex-1 bg-white/12" />
                       <span>or continue with</span>
                       <span className="h-px flex-1 bg-white/12" />
@@ -630,7 +766,11 @@ export default function UnifiedAuthSurface({
 
                     <div className={styles.socialGrid}>
                       <a
-                        href={next ? `/api/auth/google?next=${encodeURIComponent(next)}` : "/api/auth/google"}
+                        href={
+                          next
+                            ? `/api/auth/google?next=${encodeURIComponent(next)}`
+                            : "/api/auth/google"
+                        }
                         className={styles.socialButton}
                       >
                         <GoogleMark />
@@ -658,13 +798,26 @@ export default function UnifiedAuthSurface({
                       </button>
                     </div>
 
-                    {/* Demo Credentials Drawer (For testing & showcase) */}
+                    {/* Mobile Security Trust Bar */}
+                    <div className={styles.mobileTrustBar}>
+                      <span className={styles.mobileTrustItem}>
+                        <ShieldCheck className="h-3.5 w-3.5 text-lime-300" />
+                        256-bit Encrypted
+                      </span>
+                      <span className="h-3 w-px bg-white/20" />
+                      <span className={styles.mobileTrustItem}>
+                        <Lock className="h-3.5 w-3.5 text-lime-300" />
+                        HIPAA &amp; KDPA
+                      </span>
+                    </div>
+
+                    {/* Demo Credentials Drawer (For showcase / testing) */}
                     {showDemoCredentials && (
                       <div className="mt-2 border-t border-white/10 pt-3">
                         <button
                           type="button"
                           onClick={() => setShowDemoDrawer((prev) => !prev)}
-                          className="flex w-full items-center justify-between rounded-lg bg-black/20 px-3 py-1.5 text-[11px] font-medium text-white/60 hover:text-white/85"
+                          className="flex w-full items-center justify-between rounded-lg bg-black/25 px-3 py-1.5 text-[11px] font-medium text-white/60 hover:text-white/85"
                         >
                           <span>Quick Demo Logins</span>
                           <span className="text-[10px] text-lime-300">
@@ -676,21 +829,21 @@ export default function UnifiedAuthSurface({
                             <button
                               type="button"
                               onClick={() => fillDemoAccount("jane@example.com")}
-                              className="rounded-md bg-white/10 px-2 py-1.5 text-center text-white/80 hover:bg-lime-400/20 hover:text-lime-200"
+                              className="rounded-md bg-white/10 px-2 py-1.5 text-center text-white/85 hover:bg-lime-400/20 hover:text-lime-200"
                             >
                               Patient
                             </button>
                             <button
                               type="button"
                               onClick={() => fillDemoAccount("manager@afyviapharmacy.com")}
-                              className="rounded-md bg-white/10 px-2 py-1.5 text-center text-white/80 hover:bg-lime-400/20 hover:text-lime-200"
+                              className="rounded-md bg-white/10 px-2 py-1.5 text-center text-white/85 hover:bg-lime-400/20 hover:text-lime-200"
                             >
                               Manager
                             </button>
                             <button
                               type="button"
                               onClick={() => fillDemoAccount("platform@afyvia.health")}
-                              className="rounded-md bg-white/10 px-2 py-1.5 text-center text-white/80 hover:bg-lime-400/20 hover:text-lime-200"
+                              className="rounded-md bg-white/10 px-2 py-1.5 text-center text-white/85 hover:bg-lime-400/20 hover:text-lime-200"
                             >
                               Super Admin
                             </button>
@@ -705,15 +858,15 @@ export default function UnifiedAuthSurface({
                    CREATE ACCOUNT PANEL
                    ------------------------------------------------------------ */
                 <div
-                  id="auth-panel-register"
+                  id={panelRegisterId}
                   role="tabpanel"
-                  aria-labelledby="auth-tab-register"
+                  aria-labelledby={tabRegisterId}
                   className={`${styles.panelAnimated} ${direction === "forward" ? styles.slideForward : styles.slideBackward}`}
                 >
                   <div className="mb-4">
                     <h1
-                      className="text-[26px] font-semibold leading-tight tracking-[-0.025em] text-white sm:text-[30px]"
-                      style={{ fontFamily: "var(--font-display), serif" }}
+                      className="text-[24px] font-semibold leading-tight tracking-[-0.025em] text-white sm:text-[28px]"
+                      style={{ fontFamily: "var(--font-display), Georgia, serif" }}
                     >
                       Create your account
                     </h1>
@@ -846,17 +999,27 @@ export default function UnifiedAuthSurface({
                           onClick={() => setShowRegisterPassword((v) => !v)}
                           className={styles.eyeButton}
                         >
-                          {showRegisterPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                          {showRegisterPassword ? (
+                            <EyeOff className="h-4 w-4" />
+                          ) : (
+                            <Eye className="h-4 w-4" />
+                          )}
                         </button>
                       </div>
 
                       {/* Password Strength Meter */}
-                      <div className="mt-2 flex items-center gap-1.5">
-                        {Array.from({ length: 6 }, (_, index) => (
+                      <div className="mt-2 flex items-center gap-1.5" aria-live="polite">
+                        {Array.from({ length: 5 }, (_, index) => (
                           <span
                             key={index}
-                            className={`h-1.5 flex-1 rounded-full transition-colors ${
-                              index < filledSegments ? "bg-lime-300" : "bg-white/15"
+                            className={`h-1.5 flex-1 rounded-full transition-all duration-300 ${
+                              index < filledSegments
+                                ? pwCheck.score < 0.4
+                                  ? "bg-rose-400 shadow-[0_0_8px_rgba(251,113,133,0.5)]"
+                                  : pwCheck.score < 0.8
+                                    ? "bg-amber-400 shadow-[0_0_8px_rgba(251,191,36,0.5)]"
+                                    : "bg-lime-400 shadow-[0_0_8px_rgba(163,230,53,0.5)]"
+                                : "bg-white/15"
                             }`}
                           />
                         ))}
@@ -873,23 +1036,38 @@ export default function UnifiedAuthSurface({
                         </span>
                       </div>
 
-                      {/* Password Requirements Checklist */}
-                      <ul className="mt-2 space-y-1 text-[11px] text-white/65">
-                        {PASSWORD_RULES.slice(0, 3).map((rule) => {
-                          const met = rule.test(registerPassword);
-                          return (
-                            <li key={rule.id} className="flex items-center gap-2">
-                              <span
-                                className={`flex h-3.5 w-3.5 items-center justify-center rounded-full ${
-                                  met ? "bg-lime-300 text-[#1b3512]" : "bg-white/10 text-white/20"
-                                }`}
-                              >
-                                {met ? <Check className="h-2.5 w-2.5" strokeWidth={3} /> : null}
-                              </span>
-                              <span>{rule.label}</span>
-                            </li>
-                          );
-                        })}
+                      {/* Password Requirements Checklist (matching mockup) */}
+                      <ul className="mt-2 space-y-1 text-[11px] text-white/70">
+                        {[
+                          {
+                            id: "length",
+                            label: "At least 8 characters",
+                            met: registerPassword.length >= 8,
+                          },
+                          {
+                            id: "number",
+                            label: "Include a number",
+                            met: /\d/.test(registerPassword),
+                          },
+                          {
+                            id: "uppercase",
+                            label: "Include an uppercase letter",
+                            met: /[A-Z]/.test(registerPassword),
+                          },
+                        ].map((rule) => (
+                          <li key={rule.id} className="flex items-center gap-2">
+                            <span
+                              className={`flex h-4 w-4 items-center justify-center rounded-full transition-colors ${
+                                rule.met
+                                  ? "bg-lime-300 text-[#143310] shadow-[0_0_8px_rgba(163,230,53,0.4)]"
+                                  : "bg-white/12 text-white/20"
+                              }`}
+                            >
+                              {rule.met ? <Check className="h-2.5 w-2.5" strokeWidth={3} /> : null}
+                            </span>
+                            <span>{rule.label}</span>
+                          </li>
+                        ))}
                       </ul>
                     </div>
 
@@ -922,7 +1100,11 @@ export default function UnifiedAuthSurface({
                           onClick={() => setShowRegisterConfirm((v) => !v)}
                           className={styles.eyeButton}
                         >
-                          {showRegisterConfirm ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                          {showRegisterConfirm ? (
+                            <EyeOff className="h-4 w-4" />
+                          ) : (
+                            <Eye className="h-4 w-4" />
+                          )}
                         </button>
                       </div>
                       {confirmMismatch && (
@@ -933,12 +1115,12 @@ export default function UnifiedAuthSurface({
                     </div>
 
                     {/* Terms Agreement Checkbox */}
-                    <label className="flex items-start gap-2.5 text-[11px] leading-[1.5] text-white/70">
+                    <label className="flex items-start gap-2.5 text-[11px] leading-[1.5] text-white/75 cursor-pointer select-none">
                       <input
                         type="checkbox"
                         checked={agreed}
                         onChange={(e) => setAgreed(e.target.checked)}
-                        className="mt-0.5 h-4 w-4 shrink-0 appearance-none rounded border border-white/25 bg-black/20 checked:border-lime-300 checked:bg-lime-300 focus:outline-none focus:ring-2 focus:ring-lime-300/20 cursor-pointer"
+                        className="mt-0.5 h-4 w-4 shrink-0 appearance-none rounded border border-white/25 bg-black/25 checked:border-lime-300 checked:bg-lime-400 checked:shadow-[0_0_10px_rgba(163,230,53,0.4)] focus:outline-none focus:ring-2 focus:ring-lime-300/30 cursor-pointer transition-all"
                       />
                       <span>
                         I agree to the{" "}
@@ -971,7 +1153,10 @@ export default function UnifiedAuthSurface({
                             ? "Preparing secure form…"
                             : "Create account"}
                       </span>
-                      <ArrowRight className="h-5 w-5 transition-transform group-hover:translate-x-1" strokeWidth={2} />
+                      <ArrowRight
+                        className="h-5 w-5 transition-transform group-hover:translate-x-1"
+                        strokeWidth={2}
+                      />
                     </button>
 
                     {/* Social SSO Buttons */}
@@ -983,7 +1168,11 @@ export default function UnifiedAuthSurface({
 
                     <div className={styles.socialGrid}>
                       <a
-                        href={next ? `/api/auth/google?next=${encodeURIComponent(next)}` : "/api/auth/google"}
+                        href={
+                          next
+                            ? `/api/auth/google?next=${encodeURIComponent(next)}`
+                            : "/api/auth/google"
+                        }
                         className={styles.socialButton}
                       >
                         <GoogleMark />
@@ -1009,6 +1198,19 @@ export default function UnifiedAuthSurface({
                       >
                         Sign in
                       </button>
+                    </div>
+
+                    {/* Mobile Security Trust Bar */}
+                    <div className={styles.mobileTrustBar}>
+                      <span className={styles.mobileTrustItem}>
+                        <ShieldCheck className="h-3.5 w-3.5 text-lime-300" />
+                        256-bit Encrypted
+                      </span>
+                      <span className="h-3 w-px bg-white/20" />
+                      <span className={styles.mobileTrustItem}>
+                        <Lock className="h-3.5 w-3.5 text-lime-300" />
+                        HIPAA &amp; KDPA
+                      </span>
                     </div>
                   </form>
                 </div>

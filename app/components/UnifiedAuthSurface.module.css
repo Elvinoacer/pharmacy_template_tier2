@@ -1,6 +1,7 @@
 /* ============================================================
    Unified Auth Experience — Mobile & PC Stylesheet
    Serene Botanical / Zen Medical Aesthetic
+   Luminous Sunlight, Frosted Glass & Fluid Micro-Interactions
    ============================================================ */
 
 .authRoot {
@@ -14,14 +15,14 @@
   align-items: center;
   justify-content: center;
   overflow-x: hidden;
-  background-color: #05140b;
+  background-color: #031309;
   color: #f8fafc;
-  padding: clamp(1.25rem, 3.5vh, 2.5rem) clamp(0.75rem, 3.2vw, 2.5rem);
+  padding: clamp(1rem, 3vh, 2.5rem) clamp(0.75rem, 3vw, 2.5rem);
 }
 
 /* ------------------------------------------------------------
    Background Architecture
-   Responsive High-Fetch-Priority Zen Imagery + Ambient Glow
+   Radiant High-Fetch-Priority Zen Imagery + Ambient Glows
    ------------------------------------------------------------ */
 .bgWrapper {
   position: absolute;
@@ -43,57 +44,73 @@
   width: 100%;
   height: 100%;
   object-fit: cover;
-  object-position: center 30%;
+  object-position: center 35%;
   display: block;
   user-select: none;
   transform: scale(1.02);
   transition: transform 1.2s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
+.bgShiftForward .bgImage {
+  transform: scale(1.04) translate3d(-6px, -4px, 0);
+}
+
+.bgShiftBackward .bgImage {
+  transform: scale(1.03) translate3d(6px, 4px, 0);
+}
+
+/* Luminous Veil: Balances deep contrast for text while keeping
+   sunbeams, river reflections, and vibrant green foliage radiant */
 .bgVeil {
   position: absolute;
   inset: 0;
   background:
-    radial-gradient(ellipse at 50% 0%, rgba(20, 60, 36, 0.45) 0%, transparent 70%),
-    linear-gradient(135deg, rgba(3, 22, 12, 0.72) 0%, rgba(5, 34, 18, 0.48) 50%, rgba(2, 15, 8, 0.76) 100%);
-  backdrop-filter: blur(1px);
-  -webkit-backdrop-filter: blur(1px);
+    radial-gradient(ellipse at 70% 25%, rgba(217, 249, 157, 0.12) 0%, transparent 55%),
+    radial-gradient(ellipse at 25% 75%, rgba(20, 83, 45, 0.35) 0%, transparent 65%),
+    linear-gradient(
+      135deg,
+      rgba(2, 18, 9, 0.52) 0%,
+      rgba(4, 28, 15, 0.38) 45%,
+      rgba(2, 14, 7, 0.58) 100%
+    );
+  backdrop-filter: blur(0.5px);
+  -webkit-backdrop-filter: blur(0.5px);
 }
 
 .ambientGlowPrimary {
   position: absolute;
-  top: 15%;
-  left: 20%;
-  width: clamp(280px, 38vw, 540px);
-  height: clamp(280px, 38vw, 540px);
+  top: 10%;
+  left: 15%;
+  width: clamp(320px, 42vw, 620px);
+  height: clamp(320px, 42vw, 620px);
   border-radius: 9999px;
-  background: radial-gradient(circle, rgba(163, 230, 53, 0.14) 0%, transparent 68%);
-  filter: blur(52px);
+  background: radial-gradient(circle, rgba(163, 230, 53, 0.18) 0%, rgba(34, 197, 94, 0.08) 50%, transparent 72%);
+  filter: blur(60px);
   pointer-events: none;
-  animation: pulseGlow 9s ease-in-out infinite alternate;
+  animation: pulseGlow 10s ease-in-out infinite alternate;
 }
 
 .ambientGlowAccent {
   position: absolute;
-  bottom: 12%;
-  right: 18%;
-  width: clamp(240px, 32vw, 460px);
-  height: clamp(240px, 32vw, 460px);
+  bottom: 8%;
+  right: 14%;
+  width: clamp(280px, 36vw, 520px);
+  height: clamp(280px, 36vw, 520px);
   border-radius: 9999px;
-  background: radial-gradient(circle, rgba(74, 222, 128, 0.12) 0%, transparent 68%);
-  filter: blur(48px);
+  background: radial-gradient(circle, rgba(74, 222, 128, 0.16) 0%, rgba(16, 185, 129, 0.06) 50%, transparent 70%);
+  filter: blur(54px);
   pointer-events: none;
-  animation: pulseGlow 11s ease-in-out infinite alternate-reverse;
+  animation: pulseGlow 12s ease-in-out infinite alternate-reverse;
 }
 
 @keyframes pulseGlow {
   0% {
-    opacity: 0.35;
+    opacity: 0.45;
     transform: translate3d(0, 0, 0) scale(0.96);
   }
   100% {
-    opacity: 0.75;
-    transform: translate3d(12px, -14px, 0) scale(1.06);
+    opacity: 0.85;
+    transform: translate3d(16px, -18px, 0) scale(1.08);
   }
 }
 
@@ -104,23 +121,24 @@
   position: relative;
   z-index: 1;
   width: 100%;
-  max-width: 1380px;
-  min-height: min(88vh, 880px);
+  max-width: 1360px;
+  min-height: min(90vh, 900px);
   margin-inline: auto;
-  border-radius: clamp(20px, 2.6vw, 30px);
+  border-radius: clamp(20px, 2.6vw, 32px);
   border: 1px solid rgba(255, 255, 255, 0.22);
   background: linear-gradient(
     140deg,
-    rgba(14, 45, 29, 0.38) 0%,
-    rgba(5, 27, 16, 0.26) 60%,
-    rgba(3, 18, 10, 0.34) 100%
+    rgba(14, 45, 28, 0.42) 0%,
+    rgba(6, 26, 16, 0.32) 55%,
+    rgba(2, 17, 9, 0.44) 100%
   );
   box-shadow:
-    0 32px 100px -28px rgba(0, 0, 0, 0.82),
-    inset 0 1px 0 rgba(255, 255, 255, 0.42),
-    inset 0 -1px 0 rgba(0, 0, 0, 0.25);
-  backdrop-filter: blur(12px) saturate(115%);
-  -webkit-backdrop-filter: blur(12px) saturate(115%);
+    0 32px 100px -20px rgba(0, 0, 0, 0.78),
+    0 8px 32px rgba(0, 0, 0, 0.45),
+    inset 0 1px 0 rgba(255, 255, 255, 0.4),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.3);
+  backdrop-filter: blur(16px) saturate(125%);
+  -webkit-backdrop-filter: blur(16px) saturate(125%);
   overflow: hidden;
   display: flex;
   flex-direction: column;
@@ -135,7 +153,7 @@
 
 @media (min-width: 1024px) {
   .contentGrid {
-    grid-template-columns: minmax(0, 1.12fr) minmax(0, 0.88fr);
+    grid-template-columns: minmax(0, 1.14fr) minmax(0, 0.86fr);
   }
 }
 
@@ -146,12 +164,12 @@
 }
 
 /* ------------------------------------------------------------
-   Left Column: Storytelling & Trust Experience (Desktop)
+   Left Column: Brand, Storytelling & Trust Experience (Desktop)
    ------------------------------------------------------------ */
 .storyColumn {
   display: flex;
   flex-direction: column;
-  padding: clamp(1.5rem, 3.2vw, 3rem);
+  padding: clamp(1.75rem, 3.4vw, 3.25rem);
   position: relative;
   border-bottom: 1px solid rgba(255, 255, 255, 0.1);
 }
@@ -159,41 +177,63 @@
 @media (min-width: 1024px) {
   .storyColumn {
     border-bottom: none;
-    border-right: 1px solid rgba(255, 255, 255, 0.12);
+    border-right: 1px solid rgba(255, 255, 255, 0.14);
   }
 }
 
 .storyHeroBlock {
-  margin-top: clamp(1.25rem, 3.5vh, 2.75rem);
-  transition: opacity 280ms ease, transform 280ms ease;
+  margin-top: clamp(1.25rem, 3.2vh, 2.5rem);
 }
 
 .storyTitle {
   font-family: var(--font-display), Georgia, serif;
-  font-size: clamp(34px, 4.4vw, 56px);
-  line-height: 1.04;
+  font-size: clamp(32px, 4.2vw, 54px);
+  line-height: 1.05;
   font-weight: 600;
   letter-spacing: -0.035em;
   color: #ffffff;
-  text-shadow: 0 2px 20px rgba(0, 0, 0, 0.38);
+  text-shadow: 0 2px 24px rgba(0, 0, 0, 0.45);
 }
 
 .storySubtitle {
-  margin-top: clamp(0.75rem, 1.8vh, 1.35rem);
+  margin-top: clamp(0.75rem, 1.8vh, 1.25rem);
   max-width: 520px;
-  font-size: clamp(14px, 1.1vw, 16px);
+  font-size: clamp(14px, 1.08vw, 16px);
   line-height: 1.62;
-  color: rgba(255, 255, 255, 0.76);
+  color: rgba(255, 255, 255, 0.78);
+  text-shadow: 0 1px 6px rgba(0, 0, 0, 0.35);
 }
 
+.leafAccent {
+  display: inline-block;
+  vertical-align: top;
+  animation: leafSway 4s ease-in-out infinite alternate;
+  transform-origin: bottom center;
+}
+
+@keyframes leafSway {
+  0% {
+    transform: rotate(0deg) scale(1);
+  }
+  50% {
+    transform: rotate(6deg) scale(1.05);
+  }
+  100% {
+    transform: rotate(-4deg) scale(0.98);
+  }
+}
+
+/* ------------------------------------------------------------
+   Feature Glass Cards (Row on desktop)
+   ------------------------------------------------------------ */
 .featureCardsGrid {
-  margin-top: clamp(1.25rem, 2.8vh, 2.25rem);
+  margin-top: clamp(1.25rem, 2.6vh, 2.25rem);
   display: grid;
   gap: clamp(0.6rem, 1vw, 0.85rem);
-  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  grid-template-columns: repeat(3, minmax(0, 1fr));
 }
 
-@media (min-width: 1024px) and (max-width: 1279px) {
+@media (max-width: 1200px) and (min-width: 1024px) {
   .featureCardsGrid {
     grid-template-columns: 1fr;
   }
@@ -201,31 +241,42 @@
 
 .featureCard {
   border-radius: 18px;
-  border: 1px solid rgba(190, 242, 100, 0.18);
-  background: rgba(4, 24, 14, 0.32);
-  padding: clamp(0.85rem, 1.4vw, 1.25rem);
-  backdrop-filter: blur(6px);
-  -webkit-backdrop-filter: blur(6px);
-  transition: transform 220ms ease, border-color 220ms ease, background-color 220ms ease;
+  border: 1px solid rgba(190, 242, 100, 0.2);
+  background: rgba(4, 26, 15, 0.38);
+  padding: clamp(0.9rem, 1.4vw, 1.25rem);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  box-shadow:
+    0 8px 24px -6px rgba(0, 0, 0, 0.35),
+    inset 0 1px 0 rgba(255, 255, 255, 0.15);
+  transition: transform 260ms cubic-bezier(0.16, 1, 0.3, 1),
+              border-color 260ms ease,
+              background-color 260ms ease,
+              box-shadow 260ms ease;
 }
 
 .featureCard:hover {
-  transform: translateY(-2px);
-  border-color: rgba(190, 242, 100, 0.35);
-  background: rgba(4, 24, 14, 0.44);
+  transform: translateY(-3px);
+  border-color: rgba(190, 242, 100, 0.45);
+  background: rgba(4, 28, 16, 0.52);
+  box-shadow:
+    0 14px 32px -8px rgba(0, 0, 0, 0.45),
+    0 0 20px rgba(163, 230, 53, 0.15),
+    inset 0 1px 0 rgba(255, 255, 255, 0.3);
 }
 
 .featureIconWrap {
   display: flex;
-  height: 42px;
-  width: 42px;
+  height: 44px;
+  width: 44px;
   align-items: center;
   justify-content: center;
-  border-radius: 12px;
-  background: rgba(163, 230, 53, 0.14);
-  border: 1px solid rgba(163, 230, 53, 0.22);
+  border-radius: 13px;
+  background: linear-gradient(135deg, rgba(163, 230, 53, 0.2) 0%, rgba(74, 222, 128, 0.1) 100%);
+  border: 1px solid rgba(190, 242, 100, 0.3);
   color: #bef264;
-  margin-bottom: clamp(0.65rem, 1.4vh, 1.1rem);
+  margin-bottom: clamp(0.65rem, 1.4vh, 1rem);
+  box-shadow: 0 4px 14px rgba(163, 230, 53, 0.15);
 }
 
 .featureTitle {
@@ -239,7 +290,67 @@
   margin-top: 0.35rem;
   font-size: 12px;
   line-height: 1.5;
-  color: rgba(255, 255, 255, 0.68);
+  color: rgba(255, 255, 255, 0.72);
+}
+
+/* ------------------------------------------------------------
+   Glowing 3D Botanical Cross Plaque (As in reg_mobile mockup)
+   ------------------------------------------------------------ */
+.plaqueWrapper {
+  margin-top: clamp(1.2rem, 2.8vh, 2rem);
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+}
+
+.glowingCrossPlaque {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: clamp(140px, 14vw, 190px);
+  height: clamp(140px, 14vw, 190px);
+  border-radius: 26px;
+  border: 1px solid rgba(190, 242, 100, 0.32);
+  background: linear-gradient(
+    145deg,
+    rgba(163, 230, 53, 0.12) 0%,
+    rgba(14, 48, 28, 0.45) 50%,
+    rgba(5, 24, 13, 0.35) 100%
+  );
+  box-shadow:
+    0 16px 40px -10px rgba(0, 0, 0, 0.6),
+    0 0 32px rgba(163, 230, 53, 0.22),
+    inset 0 1px 0 rgba(255, 255, 255, 0.45),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  animation: plaqueFloat 6s ease-in-out infinite alternate;
+}
+
+@keyframes plaqueFloat {
+  0% {
+    transform: translateY(0) rotate(0deg);
+    box-shadow:
+      0 16px 40px -10px rgba(0, 0, 0, 0.6),
+      0 0 28px rgba(163, 230, 53, 0.2),
+      inset 0 1px 0 rgba(255, 255, 255, 0.45);
+  }
+  100% {
+    transform: translateY(-8px) rotate(1deg);
+    box-shadow:
+      0 24px 50px -12px rgba(0, 0, 0, 0.65),
+      0 0 45px rgba(163, 230, 53, 0.35),
+      inset 0 1px 0 rgba(255, 255, 255, 0.55);
+  }
+}
+
+.plaqueInnerGlow {
+  position: absolute;
+  inset: 10px;
+  border-radius: 18px;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  pointer-events: none;
 }
 
 .trustFooter {
@@ -249,7 +360,7 @@
   align-items: center;
   gap: 1.75rem;
   font-size: 11px;
-  color: rgba(255, 255, 255, 0.62);
+  color: rgba(255, 255, 255, 0.68);
 }
 
 /* ------------------------------------------------------------
@@ -267,28 +378,31 @@
   width: 100%;
   max-width: 530px;
   margin-inline: auto;
-  border-radius: clamp(18px, 2.2vw, 26px);
+  border-radius: clamp(18px, 2.2vw, 28px);
   border: 1px solid rgba(255, 255, 255, 0.32);
   background: linear-gradient(
     145deg,
-    rgba(255, 255, 255, 0.13) 0%,
-    rgba(14, 46, 30, 0.38) 100%
+    rgba(255, 255, 255, 0.14) 0%,
+    rgba(14, 46, 30, 0.42) 100%
   );
   box-shadow:
-    0 24px 70px -15px rgba(0, 0, 0, 0.55),
-    inset 0 1px 0 rgba(255, 255, 255, 0.35);
-  backdrop-filter: blur(18px) saturate(120%);
-  -webkit-backdrop-filter: blur(18px) saturate(120%);
-  padding: clamp(1.25rem, 2.6vw, 2rem);
+    0 24px 75px -15px rgba(0, 0, 0, 0.62),
+    0 8px 24px rgba(0, 0, 0, 0.35),
+    inset 0 1px 0 rgba(255, 255, 255, 0.4),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.25);
+  backdrop-filter: blur(20px) saturate(125%);
+  -webkit-backdrop-filter: blur(20px) saturate(125%);
+  padding: clamp(1.25rem, 2.6vw, 2.15rem);
   position: relative;
+  transition: transform 280ms ease, box-shadow 280ms ease;
 }
 
 /* ------------------------------------------------------------
    Segmented Mode Switcher (Sign In <-> Create Account)
-   Seamless, Ergonomic, Physics-feel sliding indicator
+   Ultra-Smooth Physics Sliding Indicator
    ------------------------------------------------------------ */
 .segmentedWrapper {
-  margin-bottom: clamp(1rem, 2.2vh, 1.5rem);
+  margin-bottom: clamp(1rem, 2.2vh, 1.4rem);
 }
 
 .segmentedControl {
@@ -297,10 +411,10 @@
   grid-template-columns: 1fr 1fr;
   padding: 4px;
   border-radius: 16px;
-  background: rgba(3, 20, 12, 0.42);
-  border: 1px solid rgba(255, 255, 255, 0.16);
-  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.25);
-  min-height: 48px;
+  background: rgba(2, 18, 10, 0.48);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.35);
+  min-height: 50px;
   user-select: none;
 }
 
@@ -311,12 +425,16 @@
   left: 4px;
   width: calc(50% - 4px);
   border-radius: 12px;
-  background: linear-gradient(135deg, rgba(163, 230, 53, 0.28) 0%, rgba(132, 204, 22, 0.18) 100%);
-  border: 1px solid rgba(190, 242, 100, 0.38);
+  background: linear-gradient(
+    135deg,
+    rgba(163, 230, 53, 0.32) 0%,
+    rgba(132, 204, 22, 0.22) 100%
+  );
+  border: 1px solid rgba(190, 242, 100, 0.45);
   box-shadow:
-    0 4px 14px rgba(101, 163, 13, 0.28),
-    inset 0 1px 0 rgba(255, 255, 255, 0.35);
-  transition: transform 320ms cubic-bezier(0.16, 1, 0.3, 1);
+    0 4px 16px rgba(132, 204, 22, 0.35),
+    inset 0 1px 0 rgba(255, 255, 255, 0.4);
+  transition: transform 340ms cubic-bezier(0.18, 0.9, 0.22, 1);
   pointer-events: none;
 }
 
@@ -326,18 +444,26 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 0.5rem;
+  gap: 0.55rem;
   border: none;
   background: transparent;
-  color: rgba(255, 255, 255, 0.65);
+  color: rgba(255, 255, 255, 0.68);
   font-size: clamp(13px, 1vw, 14px);
   font-weight: 500;
-  padding: 0.6rem 0.75rem;
+  padding: 0.65rem 0.85rem;
   border-radius: 12px;
   cursor: pointer;
-  transition: color 200ms ease, font-weight 200ms ease;
-  min-height: 40px;
+  transition: color 200ms ease, transform 160ms ease;
+  min-height: 42px;
   -webkit-tap-highlight-color: transparent;
+}
+
+.segmentButton:hover {
+  color: rgba(255, 255, 255, 0.95);
+}
+
+.segmentButton:active {
+  transform: scale(0.97);
 }
 
 .segmentButton:focus-visible {
@@ -345,46 +471,80 @@
   outline-offset: 2px;
 }
 
-.segmentButton:hover {
-  color: rgba(255, 255, 255, 0.9);
-}
-
 .segmentActive {
   color: #ffffff !important;
   font-weight: 600;
-  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.4);
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.5);
+}
+
+.segmentActive svg {
+  color: #bef264;
+  filter: drop-shadow(0 0 6px rgba(190, 242, 100, 0.5));
 }
 
 /* ------------------------------------------------------------
-   Form Animated Panels (Directional Transition)
+   Form Animated Panels (Directional Transition + Cascading Stagger)
    ------------------------------------------------------------ */
 .panelAnimated {
   will-change: transform, opacity;
 }
 
 .slideForward {
-  animation: slideInFromRight 320ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  animation: slideInFromRight 340ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
 .slideBackward {
-  animation: slideInFromLeft 320ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  animation: slideInFromLeft 340ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
 @keyframes slideInFromRight {
   0% {
     opacity: 0;
-    transform: translate3d(24px, 0, 0);
+    transform: translate3d(22px, 0, 0) scale(0.985);
   }
   100% {
     opacity: 1;
-    transform: translate3d(0, 0, 0);
+    transform: translate3d(0, 0, 0) scale(1);
   }
 }
 
 @keyframes slideInFromLeft {
   0% {
     opacity: 0;
-    transform: translate3d(-24px, 0, 0);
+    transform: translate3d(-22px, 0, 0) scale(0.985);
+  }
+  100% {
+    opacity: 1;
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+}
+
+/* Staggered cascade for form inputs on entrance */
+.slideForward .fieldGroup:nth-child(1),
+.slideBackward .fieldGroup:nth-child(1) {
+  animation: fieldFadeIn 280ms ease 40ms backwards;
+}
+.slideForward .fieldGroup:nth-child(2),
+.slideBackward .fieldGroup:nth-child(2) {
+  animation: fieldFadeIn 280ms ease 80ms backwards;
+}
+.slideForward .fieldGroup:nth-child(3),
+.slideBackward .fieldGroup:nth-child(3) {
+  animation: fieldFadeIn 280ms ease 120ms backwards;
+}
+.slideForward .fieldGroup:nth-child(4),
+.slideBackward .fieldGroup:nth-child(4) {
+  animation: fieldFadeIn 280ms ease 160ms backwards;
+}
+.slideForward .fieldGroup:nth-child(5),
+.slideBackward .fieldGroup:nth-child(5) {
+  animation: fieldFadeIn 280ms ease 200ms backwards;
+}
+
+@keyframes fieldFadeIn {
+  0% {
+    opacity: 0;
+    transform: translate3d(0, 8px, 0);
   }
   100% {
     opacity: 1;
@@ -393,7 +553,7 @@
 }
 
 /* ------------------------------------------------------------
-   Inputs & Controls Ergonomics
+   Inputs & Controls Ergonomics (Mobile & PC)
    ------------------------------------------------------------ */
 .fieldGroup {
   display: flex;
@@ -404,7 +564,7 @@
 .fieldLabel {
   font-size: 11px;
   font-weight: 500;
-  color: rgba(255, 255, 255, 0.85);
+  color: rgba(255, 255, 255, 0.88);
   letter-spacing: 0.01em;
 }
 
@@ -423,15 +583,22 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  transition: opacity 180ms ease, color 180ms ease;
+}
+
+.inputWrapper:focus-within .inputIcon {
+  opacity: 1;
+  color: #d9f99d;
+  filter: drop-shadow(0 0 5px rgba(190, 242, 100, 0.45));
 }
 
 .textInput {
   width: 100%;
-  height: 54px;
-  min-height: 54px;
+  height: 52px;
+  min-height: 52px;
   border-radius: 14px;
-  border: 1px solid rgba(255, 255, 255, 0.18);
-  background: rgba(3, 20, 11, 0.32);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  background: rgba(2, 20, 11, 0.36);
   padding: 0 14px 0 46px;
   font-size: 14px;
   color: #ffffff;
@@ -440,15 +607,15 @@
 }
 
 .textInput::placeholder {
-  color: rgba(255, 255, 255, 0.35);
+  color: rgba(255, 255, 255, 0.36);
 }
 
 .textInput:focus {
-  border-color: rgba(190, 242, 100, 0.55);
-  background: rgba(3, 20, 11, 0.52);
+  border-color: rgba(190, 242, 100, 0.6);
+  background: rgba(3, 24, 13, 0.55);
   box-shadow:
-    0 0 0 3px rgba(163, 230, 53, 0.16),
-    0 8px 24px rgba(0, 0, 0, 0.25);
+    0 0 0 3px rgba(163, 230, 53, 0.18),
+    0 8px 24px rgba(0, 0, 0, 0.32);
 }
 
 .passwordInput {
@@ -468,11 +635,16 @@
   background: transparent;
   color: rgba(255, 255, 255, 0.5);
   cursor: pointer;
-  transition: color 180ms ease;
+  transition: color 180ms ease, transform 140ms ease;
+  -webkit-tap-highlight-color: transparent;
 }
 
 .eyeButton:hover {
-  color: rgba(255, 255, 255, 0.9);
+  color: rgba(255, 255, 255, 0.95);
+}
+
+.eyeButton:active {
+  transform: scale(0.92);
 }
 
 .eyeButton:focus-visible {
@@ -481,26 +653,29 @@
 }
 
 /* ------------------------------------------------------------
-   Primary Action Button
+   Primary Action Button (Emerald to Lime Glow)
    ------------------------------------------------------------ */
 .submitButton {
+  position: relative;
+  overflow: hidden;
   width: 100%;
-  height: 54px;
-  min-height: 54px;
+  height: 52px;
+  min-height: 52px;
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 0.75rem;
   border-radius: 14px;
-  border: 1px solid rgba(255, 255, 255, 0.28);
-  background: linear-gradient(110deg, #507d1b 0%, #8ac72d 54%, #bde754 100%);
+  border: 1px solid rgba(255, 255, 255, 0.32);
+  background: linear-gradient(110deg, #4d7c17 0%, #84cc16 52%, #bef264 100%);
   color: #ffffff;
-  font-size: 16px;
+  font-size: 15px;
   font-weight: 600;
-  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.35);
   box-shadow:
-    0 12px 28px -6px rgba(90, 137, 26, 0.38),
-    inset 0 1px 0 rgba(255, 255, 255, 0.45);
+    0 12px 28px -6px rgba(101, 163, 13, 0.42),
+    0 4px 12px rgba(0, 0, 0, 0.25),
+    inset 0 1px 0 rgba(255, 255, 255, 0.5);
   cursor: pointer;
   transition: transform 180ms ease, filter 180ms ease, box-shadow 180ms ease;
   user-select: none;
@@ -510,8 +685,9 @@
 .submitButton:hover:not(:disabled) {
   filter: brightness(1.06);
   box-shadow:
-    0 14px 34px -4px rgba(110, 168, 32, 0.48),
-    inset 0 1px 0 rgba(255, 255, 255, 0.55);
+    0 16px 36px -4px rgba(101, 163, 13, 0.55),
+    0 0 24px rgba(190, 242, 100, 0.35),
+    inset 0 1px 0 rgba(255, 255, 255, 0.6);
 }
 
 .submitButton:active:not(:disabled) {
@@ -519,9 +695,9 @@
 }
 
 .submitButton:disabled {
-  opacity: 0.45;
+  opacity: 0.5;
   cursor: not-allowed;
-  filter: grayscale(0.2);
+  filter: grayscale(0.25);
 }
 
 /* ------------------------------------------------------------
@@ -534,31 +710,46 @@
 }
 
 .socialButton {
-  height: 50px;
-  min-height: 50px;
+  height: 48px;
+  min-height: 48px;
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 0.6rem;
   border-radius: 13px;
-  border: 1px solid rgba(255, 255, 255, 0.16);
-  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  background: rgba(255, 255, 255, 0.05);
   color: #ffffff;
-  font-size: 14px;
+  font-size: 13.5px;
   font-weight: 500;
   cursor: pointer;
   text-decoration: none;
-  transition: background-color 180ms ease, border-color 180ms ease;
+  transition: background-color 180ms ease, border-color 180ms ease, transform 140ms ease;
+  -webkit-tap-highlight-color: transparent;
 }
 
 .socialButton:hover {
-  background: rgba(255, 255, 255, 0.08);
-  border-color: rgba(255, 255, 255, 0.28);
+  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(255, 255, 255, 0.32);
+}
+
+.socialButton:active {
+  transform: scale(0.98);
 }
 
 /* ------------------------------------------------------------
-   Mobile Overrides & Ergonomic Touch Refinements
+   Mobile Trust Drawer & Responsive Optimizations
    ------------------------------------------------------------ */
+.mobileTrustBar {
+  display: none;
+}
+
+@media (max-width: 1023px) {
+  .plaqueWrapper {
+    display: none;
+  }
+}
+
 @media (max-width: 767px) {
   .authRoot {
     padding: max(10px, env(safe-area-inset-top)) 10px max(18px, env(safe-area-inset-bottom));
@@ -566,14 +757,14 @@
   }
 
   .mainContainer {
-    border-radius: 22px;
+    border-radius: 24px;
     max-width: 100%;
     min-height: 0;
     box-shadow: 0 18px 50px -15px rgba(0, 0, 0, 0.85);
   }
 
   .storyColumn {
-    padding: 16px 16px 8px;
+    padding: 16px 16px 6px;
     border-right: none;
     border-bottom: none;
   }
@@ -585,19 +776,19 @@
   }
 
   .authColumn {
-    padding: 8px 12px 18px;
+    padding: 6px 12px 18px;
   }
 
   .authCard {
     padding: 18px 14px 16px;
-    border-radius: 18px;
+    border-radius: 20px;
     max-width: 100%;
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
   }
 
   .segmentedControl {
-    min-height: 44px;
+    min-height: 46px;
     padding: 3px;
   }
 
@@ -609,12 +800,12 @@
   }
 
   .segmentButton {
-    min-height: 38px;
-    padding: 0.4rem 0.5rem;
-    font-size: 13px;
+    min-height: 40px;
+    padding: 0.45rem 0.5rem;
+    font-size: 13.5px;
   }
 
-  /* Prevent iOS zoom on input focus */
+  /* Prevent iOS automatic zoom when focusing inputs */
   .textInput {
     height: 50px;
     min-height: 50px;
@@ -635,9 +826,28 @@
     font-size: 13px;
     border-radius: 12px;
   }
+
+  /* Mobile Trust Bar with micro-badges */
+  .mobileTrustBar {
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+    gap: 8px;
+    margin-top: 14px;
+    padding-top: 12px;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    font-size: 10.5px;
+    color: rgba(255, 255, 255, 0.72);
+  }
+
+  .mobileTrustItem {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+  }
 }
 
-/* Extra small screens (iPhone SE, etc.) */
+/* Extra small screens (iPhone SE, Galaxy Fold outer screen) */
 @media (max-width: 374px) {
   .authRoot {
     padding: 6px 6px 12px;
@@ -650,35 +860,36 @@
 
 /* ------------------------------------------------------------
    Light Theme Adaptations
-   Preserves lush botanical atmosphere with crisp daylight contrast
+   Crisp botanical sunlit palette with WCAG AAA contrast
    ------------------------------------------------------------ */
 :global(html[data-theme="light"]) .authRoot {
-  background-color: #e9f2eb;
+  background-color: #eaf3ec;
   color: #0d281e;
 }
 
 :global(html[data-theme="light"]) .bgVeil {
   background:
-    radial-gradient(ellipse at 50% 0%, rgba(240, 252, 244, 0.4) 0%, transparent 70%),
-    linear-gradient(135deg, rgba(244, 250, 246, 0.62) 0%, rgba(234, 247, 238, 0.45) 50%, rgba(224, 242, 230, 0.68) 100%);
+    radial-gradient(ellipse at 60% 20%, rgba(255, 255, 255, 0.5) 0%, transparent 60%),
+    radial-gradient(ellipse at 20% 70%, rgba(187, 247, 208, 0.3) 0%, transparent 65%),
+    linear-gradient(135deg, rgba(245, 252, 247, 0.62) 0%, rgba(235, 248, 239, 0.48) 50%, rgba(225, 243, 232, 0.65) 100%);
 }
 
 :global(html[data-theme="light"]) .mainContainer {
-  border-color: rgba(45, 138, 78, 0.22);
+  border-color: rgba(45, 138, 78, 0.24);
   background: linear-gradient(
     140deg,
-    rgba(255, 255, 255, 0.82) 0%,
-    rgba(240, 250, 244, 0.74) 60%,
-    rgba(232, 246, 238, 0.80) 100%
+    rgba(255, 255, 255, 0.86) 0%,
+    rgba(240, 250, 244, 0.78) 55%,
+    rgba(232, 247, 238, 0.84) 100%
   );
   box-shadow:
-    0 30px 90px -25px rgba(20, 60, 36, 0.2),
+    0 30px 90px -25px rgba(20, 60, 36, 0.22),
     inset 0 1px 0 rgba(255, 255, 255, 0.95);
 }
 
 :global(html[data-theme="light"]) .storyColumn {
-  border-right-color: rgba(45, 138, 78, 0.15);
-  border-bottom-color: rgba(45, 138, 78, 0.15);
+  border-right-color: rgba(45, 138, 78, 0.16);
+  border-bottom-color: rgba(45, 138, 78, 0.16);
 }
 
 :global(html[data-theme="light"]) .storyTitle {
@@ -688,11 +899,12 @@
 
 :global(html[data-theme="light"]) .storySubtitle {
   color: #294c3c;
+  text-shadow: none;
 }
 
 :global(html[data-theme="light"]) .featureCard {
-  border-color: rgba(45, 138, 78, 0.2);
-  background: rgba(255, 255, 255, 0.7);
+  border-color: rgba(45, 138, 78, 0.22);
+  background: rgba(255, 255, 255, 0.75);
 }
 
 :global(html[data-theme="light"]) .featureTitle {
@@ -704,8 +916,8 @@
 }
 
 :global(html[data-theme="light"]) .featureIconWrap {
-  background: rgba(45, 138, 78, 0.12);
-  border-color: rgba(45, 138, 78, 0.25);
+  background: rgba(45, 138, 78, 0.14);
+  border-color: rgba(45, 138, 78, 0.28);
   color: #1b6335;
 }
 
@@ -714,26 +926,26 @@
 }
 
 :global(html[data-theme="light"]) .authCard {
-  border-color: rgba(45, 138, 78, 0.22);
+  border-color: rgba(45, 138, 78, 0.25);
   background: linear-gradient(
     145deg,
-    rgba(255, 255, 255, 0.92) 0%,
-    rgba(242, 250, 245, 0.86) 100%
+    rgba(255, 255, 255, 0.94) 0%,
+    rgba(242, 250, 245, 0.88) 100%
   );
   box-shadow:
-    0 24px 70px -15px rgba(16, 52, 33, 0.16),
+    0 24px 70px -15px rgba(16, 52, 33, 0.18),
     inset 0 1px 0 rgba(255, 255, 255, 0.98);
 }
 
 :global(html[data-theme="light"]) .segmentedControl {
-  background: rgba(225, 240, 230, 0.85);
-  border-color: rgba(45, 138, 78, 0.2);
+  background: rgba(225, 240, 230, 0.88);
+  border-color: rgba(45, 138, 78, 0.22);
 }
 
 :global(html[data-theme="light"]) .segmentedIndicator {
-  background: linear-gradient(135deg, rgba(45, 138, 78, 0.18) 0%, rgba(30, 100, 55, 0.12) 100%);
-  border-color: rgba(45, 138, 78, 0.35);
-  box-shadow: 0 4px 12px rgba(25, 80, 45, 0.12);
+  background: linear-gradient(135deg, rgba(45, 138, 78, 0.2) 0%, rgba(30, 100, 55, 0.14) 100%);
+  border-color: rgba(45, 138, 78, 0.38);
+  box-shadow: 0 4px 12px rgba(25, 80, 45, 0.15);
 }
 
 :global(html[data-theme="light"]) .segmentButton {
@@ -745,26 +957,31 @@
   text-shadow: none;
 }
 
+:global(html[data-theme="light"]) .segmentActive svg {
+  color: #1b6335;
+  filter: none;
+}
+
 :global(html[data-theme="light"]) .fieldLabel {
   color: #143527;
 }
 
 :global(html[data-theme="light"]) .textInput {
   color: #0c2b1e;
-  border-color: rgba(45, 138, 78, 0.25);
-  background: rgba(255, 255, 255, 0.92);
+  border-color: rgba(45, 138, 78, 0.28);
+  background: rgba(255, 255, 255, 0.94);
   box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.04);
 }
 
 :global(html[data-theme="light"]) .textInput::placeholder {
-  color: #7b9c8d;
+  color: #6b8d7e;
 }
 
 :global(html[data-theme="light"]) .textInput:focus {
   border-color: #2d8a4e;
   background: #ffffff;
   box-shadow:
-    0 0 0 3px rgba(45, 138, 78, 0.16),
+    0 0 0 3px rgba(45, 138, 78, 0.18),
     0 6px 18px rgba(25, 80, 45, 0.08);
 }
 
@@ -781,26 +998,31 @@
 }
 
 :global(html[data-theme="light"]) .submitButton {
-  border-color: rgba(255, 255, 255, 0.4);
+  border-color: rgba(255, 255, 255, 0.45);
   background: linear-gradient(110deg, #246e3e 0%, #359858 56%, #52b876 100%);
   box-shadow:
-    0 12px 28px -6px rgba(36, 110, 62, 0.35),
-    inset 0 1px 0 rgba(255, 255, 255, 0.4);
+    0 12px 28px -6px rgba(36, 110, 62, 0.38),
+    inset 0 1px 0 rgba(255, 255, 255, 0.45);
 }
 
 :global(html[data-theme="light"]) .socialButton {
-  border-color: rgba(45, 138, 78, 0.2);
-  background: rgba(255, 255, 255, 0.85);
+  border-color: rgba(45, 138, 78, 0.22);
+  background: rgba(255, 255, 255, 0.88);
   color: #0c2b1e;
 }
 
 :global(html[data-theme="light"]) .socialButton:hover {
   background: #ffffff;
-  border-color: rgba(45, 138, 78, 0.35);
+  border-color: rgba(45, 138, 78, 0.38);
+}
+
+:global(html[data-theme="light"]) .mobileTrustBar {
+  border-top-color: rgba(45, 138, 78, 0.16);
+  color: #294c3c;
 }
 
 /* ------------------------------------------------------------
-   Reduced Motion Accessibility
+   Accessibility: Reduced Motion Preference
    ------------------------------------------------------------ */
 @media (prefers-reduced-motion: reduce) {
   .bgImage,
@@ -810,7 +1032,9 @@
   .slideForward,
   .slideBackward,
   .submitButton,
-  .featureCard {
+  .featureCard,
+  .glowingCrossPlaque,
+  .leafAccent {
     animation: none !important;
     transition-duration: 0.01ms !important;
     transform: none !important;
