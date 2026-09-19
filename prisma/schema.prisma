@@ -2302,7 +2302,7 @@ model OrderItem {
   quantity    Int      @default(1)
   /// Billing unit for this line item (tablet, bottle, pack, etc.) — audit §14.
   billingUnit BillingUnit? @default(UNIT) @map("billing_unit")
-  unitPrice   Decimal  @default(0) @db.Decimal(10, 2)
+  unitPrice   Decimal  @default(0) @map("unit_price") @db.Decimal(10, 2)
   /// If the customer used a coupon on this line, the discount applied.
   discountApplied Decimal @default(0) @map("discount_applied") @db.Decimal(10, 2)
   couponId    String?  @map("coupon_id") @db.Uuid
