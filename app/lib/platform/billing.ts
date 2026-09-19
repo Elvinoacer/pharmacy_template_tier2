@@ -3,7 +3,7 @@ import { MONTHLY_FEE_KES, nextBillingMonth } from "./pricing";
 
 import type { Prisma } from "@/app/generated/prisma/client";
 import { prismaUnscoped } from "@/app/lib/db";
-import { withPharmacy } from "@/app/lib/tenant-context";
+import { withPharmacy, withPlatformBypass } from "@/app/lib/tenant-context";
 import { DEFAULT_PLAN_FEATURES } from "@/app/lib/platform/entitlements";
 import { recordAuditRequired } from "@/app/lib/platform/audit";
 import { recordLifecycle } from "@/app/lib/platform/lifecycle";
@@ -610,6 +610,15 @@ export async function completeIntasendBillingPayment(opts: {
   amount: number;
   provider?: string;
 }) {
+  return withPlatformBypass(() => completeIntasendBillingPaymentInPlatform(opts));
+}
+
+async function completeIntasendBillingPaymentInPlatform(opts: {
+  apiRef: string;
+  intasendInvoiceId?: string;
+  amount: number;
+  provider?: string;
+}) {
   return prismaUnscoped.$transaction(async (tx) => {
     let invoice = await tx.invoice.findFirst({
       where: {
@@ -692,6 +701,13 @@ export async function completeIntasendBillingPayment(opts: {
 }
 
 export async function failIntasendBillingPayment(opts: {
+  apiRef: string;
+  reason: string;
+}) {
+  return withPlatformBypass(() => failIntasendBillingPaymentInPlatform(opts));
+}
+
+async function failIntasendBillingPaymentInPlatform(opts: {
   apiRef: string;
   reason: string;
 }) {
