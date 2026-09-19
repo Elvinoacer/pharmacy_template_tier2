@@ -88,7 +88,7 @@ export function VerificationPaymentStep({
 
       {/* Returning from IntaSend waiting state */}
       {isReturned && !payment.paid ? (
-        <div className="mb-5 rounded-2xl border border-teal-500/30 bg-teal-50/50 dark:bg-teal-950/30 p-4">
+        <div className="mb-5 rounded-2xl border border-[color-mix(in_srgb,var(--foreground)_55%,var(--card-elev))] bg-teal-50/50 dark:bg-teal-950/30 p-4">
           <div className="flex items-center gap-3">
             <Loader2 className="h-5 w-5 animate-spin text-[var(--brand)] shrink-0" />
             <div className="min-w-0 flex-1">
@@ -105,7 +105,7 @@ export function VerificationPaymentStep({
       ) : null}
 
       {/* Promo Code Input */}
-      <section className="mb-5 rounded-2xl border border-teal-500/20 bg-teal-50/40 dark:bg-teal-950/20 p-4">
+      <section className="mb-5 rounded-2xl border border-[color-mix(in_srgb,var(--foreground)_55%,var(--card-elev))] bg-teal-50/40 dark:bg-teal-950/20 p-4">
         <form action={action} className="space-y-2">
           <input type="hidden" name="pharmacyId" value={pharmacy.id} />
           <input type="hidden" name="intent" value="apply_promo" />
@@ -172,10 +172,10 @@ export function VerificationPaymentStep({
           className={`text-left rounded-2xl p-4 border transition-all relative cursor-pointer ${
             selectedPlan === "bundle"
               ? "border-[var(--brand)] bg-[var(--brand-soft)]/30 ring-2 ring-[var(--brand)]/20 shadow-sm"
-              : "border-[var(--line-2)] bg-[var(--card-elev)] hover:border-[var(--line-1)]"
+              : "border-[color-mix(in_srgb,var(--foreground)_55%,var(--card-elev))] bg-[var(--card-elev)] hover:border-[var(--brand)]"
           }`}
         >
-          <span className="absolute top-3 right-3 px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-[var(--brand)] text-white">
+          <span className="absolute top-3 right-3 px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-[var(--brand)] text-[var(--background)]">
             Recommended
           </span>
           <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-[var(--brand)]">
@@ -212,7 +212,7 @@ export function VerificationPaymentStep({
           className={`text-left rounded-2xl p-4 border transition-all cursor-pointer ${
             selectedPlan === "verification"
               ? "border-[var(--brand)] bg-[var(--brand-soft)]/30 ring-2 ring-[var(--brand)]/20 shadow-sm"
-              : "border-[var(--line-2)] bg-[var(--card-elev)] hover:border-[var(--line-1)]"
+              : "border-[color-mix(in_srgb,var(--foreground)_55%,var(--card-elev))] bg-[var(--card-elev)] hover:border-[var(--brand)]"
           }`}
         >
           <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-[var(--muted)]">
