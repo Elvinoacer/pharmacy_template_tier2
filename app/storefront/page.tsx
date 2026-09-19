@@ -213,7 +213,7 @@ export default async function StorefrontPage() {
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-[#084c3f]/70 via-transparent to-transparent" />
                   <div className="absolute bottom-4 left-4 right-4">
-                    <p className="text-xs font-medium uppercase tracking-wider text-teal-100/80">
+                    <p className="text-xs font-medium uppercase tracking-wider text-white/90">
                       {place || "Kenya"}
                     </p>
                     <p
@@ -294,7 +294,7 @@ export default async function StorefrontPage() {
                       {s.value}
                     </span>
                   </p>
-                  <p className="mt-1 text-sm text-teal-100/80">{s.label}</p>
+                  <p className="mt-1 text-sm text-white/90">{s.label}</p>
                 </div>
               </Reveal>
             ))}
@@ -321,7 +321,7 @@ export default async function StorefrontPage() {
               </div>
             </Reveal>
             {featuredServices.length === 0 ? (
-              <div className="mt-10 rounded-3xl border border-dashed border-teal-900/15 bg-white/70 p-10 text-center backdrop-blur-sm">
+              <div className="mt-10 rounded-3xl border border-dashed border-[color-mix(in_srgb,var(--foreground)_55%,var(--card))] bg-white/70 p-10 text-center backdrop-blur-sm">
                 <p className="text-sm font-semibold text-[#0c1a14]">Services are being updated</p>
                 <p className="mx-auto mt-2 max-w-md text-sm text-[#5a6b62]">
                   {resolved.name} hasn&apos;t published its service catalogue yet. Call{" "}
@@ -440,7 +440,7 @@ export default async function StorefrontPage() {
                 {resolved.hours.map((h) => (
                   <li
                     key={h.day}
-                    className="flex items-center justify-between border-b border-teal-900/5 pb-3 text-sm last:border-0"
+                    className="flex items-center justify-between border-b border-[color-mix(in_srgb,var(--foreground)_55%,var(--card))] pb-3 text-sm last:border-0"
                   >
                     <span className="text-[#5a6b62]">{h.day}</span>
                     <span className="font-semibold text-[#0c1a14]">{h.time}</span>
