@@ -24,7 +24,7 @@ const sections = [
 ] as const;
 
 const sectionClass =
-  "liquid-glass care-glass scroll-mt-28 rounded-2xl border border-[var(--care-border)] bg-[var(--care-glass)] p-4 backdrop-blur-xl shadow-sm sm:rounded-3xl sm:p-6";
+  "liquid-glass care-glass scroll-mt-28 rounded-2xl border !border-[color-mix(in_srgb,var(--foreground)_55%,var(--card-elev))] bg-[var(--care-glass)] p-4 backdrop-blur-xl shadow-sm sm:rounded-3xl sm:p-6";
 const headingClass =
   "text-base font-semibold leading-snug text-[var(--foreground)] sm:text-lg";
 const bodyClass = "mt-2 text-[13px] leading-6 text-[var(--muted)] sm:text-sm sm:leading-7";
@@ -41,7 +41,7 @@ export default function PrivacyPage() {
 
       <section className="px-3 pb-16 sm:px-6 sm:pb-20">
         <div className="mx-auto w-full max-w-4xl">
-          <div className="liquid-glass care-glass mb-5 rounded-2xl border border-[var(--care-border)] bg-[var(--care-glass)] p-4 backdrop-blur-xl shadow-sm sm:mb-7 sm:p-5">
+          <div className="liquid-glass care-glass mb-5 rounded-2xl border !border-[color-mix(in_srgb,var(--foreground)_55%,var(--card-elev))] bg-[var(--care-glass)] p-4 backdrop-blur-xl shadow-sm sm:mb-7 sm:p-5">
             <div className="flex items-start gap-3">
               <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[var(--brand-soft)] text-[var(--brand)]">
                 <ShieldCheck className="h-5 w-5" aria-hidden="true" />
@@ -63,7 +63,7 @@ export default function PrivacyPage() {
                 <a
                   key={id}
                   href={`#${id}`}
-                  className="glass inline-flex min-h-9 shrink-0 items-center rounded-full px-3 text-[11px] font-semibold text-[var(--muted)] transition hover:border-[var(--brand)] hover:bg-[var(--brand-tint)] hover:text-[var(--brand)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--brand)] sm:text-xs"
+                  className="glass inline-flex min-h-9 shrink-0 items-center rounded-full border !border-[color-mix(in_srgb,var(--foreground)_55%,var(--card-elev))] px-3 text-[11px] font-semibold text-[var(--muted)] transition hover:border-[var(--brand)] hover:bg-[var(--brand-tint)] hover:text-[var(--brand)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--brand)] sm:text-xs"
                 >
                   {index + 1}. {label}
                 </a>
@@ -190,7 +190,7 @@ export default function PrivacyPage() {
                 </div>
                 <a
                   href={`mailto:${platform.email}`}
-                  className="inline-flex min-h-11 w-full shrink-0 items-center justify-center gap-2 rounded-xl bg-[var(--brand)] px-4 py-2.5 text-sm font-semibold text-white transition hover:opacity-90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--brand)] focus-visible:ring-offset-2 sm:w-auto"
+                  className="inline-flex min-h-11 w-full shrink-0 items-center justify-center gap-2 rounded-xl bg-[var(--brand)] px-4 py-2.5 text-sm font-semibold text-[var(--background)] transition-colors hover:bg-[var(--brand-deep)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--brand)] focus-visible:ring-offset-2 sm:w-auto"
                 >
                   <Mail className="h-4 w-4" aria-hidden="true" />
                   Email privacy team
