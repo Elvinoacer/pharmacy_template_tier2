@@ -52,21 +52,32 @@ function isPromiseLike(value: unknown): value is PromiseLike<unknown> {
 }
 
 function runScoped<T>(store: TenantStore, fn: () => T): T {
+  const parentAsyncId = executionAsyncId();
+  const previousScope = scopes.get(parentAsyncId);
   bindScope(store);
-  return tenantAls.run(store, () => {
-    const result = fn();
 
-    // Prisma returns lazy thenables. If we return one directly from
-    // AsyncLocalStorage.run(), its actual SQL may start only after the scope has
-    // already unwound, causing RLS to see an empty/wrong tenant. Assimilate any
-    // thenable while the tenant store is still active so the whole async chain
-    // inherits the correct pharmacy/bypass context.
-    if (isPromiseLike(result)) {
-      return (async () => await result)() as T;
-    }
+  try {
+    return tenantAls.run(store, () => {
+      const result = fn();
 
-    return result;
-  });
+      // Prisma returns lazy thenables. If we return one directly from
+      // AsyncLocalStorage.run(), its actual SQL may start only after the scope has
+      // already unwound, causing RLS to see an empty/wrong tenant. Assimilate any
+      // thenable while the tenant store is still active so the whole async chain
+      // inherits the correct pharmacy/bypass context.
+      if (isPromiseLike(result)) {
+        return (async () => await result)() as T;
+      }
+
+      return result;
+    });
+  } finally {
+    // bindScope() also feeds the fallback async-hook map. Restore the caller's
+    // prior value when this lexical scope exits so platform/tenant privileges
+    // cannot leak into unrelated work on the same execution async id.
+    if (previousScope) scopes.set(parentAsyncId, previousScope);
+    else scopes.delete(parentAsyncId);
+  }
 }
 
 export function withPlatformBypass<T>(fn: () => T): T {
