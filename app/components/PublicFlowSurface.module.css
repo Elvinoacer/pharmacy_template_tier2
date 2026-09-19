@@ -177,6 +177,23 @@
   background: color-mix(in srgb, var(--card) 88%, transparent) !important;
 }
 
+.surface[data-flow="storefront"] :global(.btn-primary) {
+  background: linear-gradient(
+    135deg,
+    color-mix(in srgb, var(--tenant-brand-primary, var(--brand)) 35%, #041f19) 0%,
+    color-mix(in srgb, var(--tenant-brand-primary, var(--brand)) 24%, #041f19) 100%
+  ) !important;
+  color: #ffffff !important;
+}
+
+.surface[data-flow="storefront"] :global(.btn-primary:hover) {
+  background: color-mix(in srgb, var(--tenant-brand-primary, var(--brand)) 26%, #02140f) !important;
+}
+
+.surface[data-flow="storefront"] :global(.btn-ghost) {
+  border-color: color-mix(in srgb, var(--foreground) 55%, var(--card)) !important;
+}
+
 :global(html[data-theme="dark"]) .surface[data-flow="storefront"] :global(.hero-badge) {
   color: #99f6e4 !important;
   background: rgba(8, 34, 28, 0.88) !important;
