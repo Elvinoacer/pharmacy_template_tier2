@@ -100,11 +100,11 @@ export async function createPharmacyDraftAction(_prev: OnboardState, formData: F
       console.warn("[onboard] distributed rate limiter degraded; using process-local fallback");
     }
 
-    const blocked = [principalLimit, ipLimit].filter(
-      (result): result is NonNullable<typeof result> => Boolean(result && !result.allowed),
+    const retryAfterSeconds = Math.max(
+      principalLimit && !principalLimit.allowed ? principalLimit.retryAfterSeconds : 0,
+      ipLimit && !ipLimit.allowed ? ipLimit.retryAfterSeconds : 0,
     );
-    if (blocked.length > 0) {
-      const retryAfterSeconds = Math.max(...blocked.map((result) => result.retryAfterSeconds));
+    if (retryAfterSeconds > 0) {
       return {
         error: `Too many pharmacy registration attempts. Please try again in ${retryAfterSeconds}s.`,
         field: "general",
@@ -112,9 +112,6 @@ export async function createPharmacyDraftAction(_prev: OnboardState, formData: F
     }
 
     if (!user) {
-      if (!email || !password || !fullName) return { error: "Create an owner account (name, email, password) or sign in first.", field: "general" };
-      const passwordError = validatePassword(password);
-      if (passwordError) return { error: passwordError, field: "general" };
       const existing = await prismaUnscoped.user.findUnique({ where: { email } });
       if (existing) return { error: "That email already has an account. Sign in, then continue onboarding.", field: "general" };
 
@@ -128,7 +125,6 @@ export async function createPharmacyDraftAction(_prev: OnboardState, formData: F
           profile: { create: { fullName, phone: null } },
         },
       });
-      const meta = await getRequestMeta();
       await createSession(created.id, { ip: meta.ip, userAgent: meta.userAgent });
 
       try {
