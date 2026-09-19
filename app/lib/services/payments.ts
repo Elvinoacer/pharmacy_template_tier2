@@ -15,7 +15,7 @@ import {
   resolveTenantDarajaCredentials,
 } from "@/app/lib/platform/integrations";
 import { createIntasendCheckout, queryIntasendPaymentStatus } from "@/app/lib/services/intasend";
-import { peekTenant } from "@/app/lib/tenant-context";
+import { withPharmacy, withPlatformBypass } from "@/app/lib/tenant-context";
 
 /** How long a pending STK is considered "in flight" before allowing a retry. */
 export const STK_PENDING_WINDOW_MS = 90 * 1000;
@@ -68,13 +68,25 @@ export async function verifyOrderAccessToken(orderId: string, token?: string | n
   return Boolean(row);
 }
 
-export async function canInitiatePayment(opts: {
+type CanInitiatePaymentOptions = {
   orderId: string;
   phone?: string;
   accessToken?: string | null;
   session?: { id: string; customerId?: string | null; role: string } | null;
   staff?: boolean;
-}): Promise<{ allowed: boolean; reason?: string; order: Awaited<ReturnType<typeof loadOrder>> }> {
+};
+
+export async function canInitiatePayment(
+  opts: CanInitiatePaymentOptions,
+): Promise<{ allowed: boolean; reason?: string; order: Awaited<ReturnType<typeof loadOrder>> }> {
+  const pharmacyId = await resolveOrderPharmacyId(opts.orderId);
+  if (!pharmacyId) return { allowed: false, reason: "order_not_found", order: null };
+  return withPharmacy(pharmacyId, () => canInitiatePaymentInPharmacy(opts));
+}
+
+async function canInitiatePaymentInPharmacy(
+  opts: CanInitiatePaymentOptions,
+): Promise<{ allowed: boolean; reason?: string; order: Awaited<ReturnType<typeof loadOrder>> }> {
   const order = await loadOrder(opts.orderId);
   if (!order) return { allowed: false, reason: "order_not_found", order: null };
   if (order.status === "paid" || order.status === "fulfilled" || order.status === "waived") {
@@ -95,6 +107,26 @@ export async function canInitiatePayment(opts: {
   }
 
   return { allowed: false, reason: "forbidden", order };
+}
+
+async function resolveOrderPharmacyId(orderId: string): Promise<string | null> {
+  return withPlatformBypass(async () => {
+    const row = await prismaUnscoped.order.findUnique({
+      where: { id: orderId },
+      select: { pharmacyId: true },
+    });
+    return row?.pharmacyId ?? null;
+  });
+}
+
+async function resolvePaymentPharmacyId(paymentId: string): Promise<string | null> {
+  return withPlatformBypass(async () => {
+    const row = await prismaUnscoped.payment.findUnique({
+      where: { id: paymentId },
+      select: { pharmacyId: true },
+    });
+    return row?.pharmacyId ?? null;
+  });
 }
 
 async function loadOrder(orderId: string) {
@@ -119,12 +151,26 @@ async function loadOrder(orderId: string) {
   });
 }
 
-export async function initiateStkPayment(opts: {
+type InitiateStkPaymentOptions = {
   orderId: string;
   phone?: string;
   initiatedById?: string | null;
   forceRetry?: boolean;
-}): Promise<InitiateStkResult> {
+};
+
+export async function initiateStkPayment(
+  opts: InitiateStkPaymentOptions,
+): Promise<InitiateStkResult> {
+  const pharmacyId = await resolveOrderPharmacyId(opts.orderId);
+  if (!pharmacyId) {
+    return { ok: false, error: "order_not_found", message: "Order not found.", statusCode: 404 };
+  }
+  return withPharmacy(pharmacyId, () => initiateStkPaymentInPharmacy(opts));
+}
+
+async function initiateStkPaymentInPharmacy(
+  opts: InitiateStkPaymentOptions,
+): Promise<InitiateStkResult> {
   const order = await loadOrder(opts.orderId);
   if (!order) {
     return { ok: false, error: "order_not_found", message: "Order not found.", statusCode: 404 };
@@ -421,12 +467,24 @@ export async function failIntasendOrderPayment(opts: {
  * A status-poll response alone is not enough settlement evidence because the
  * STK query response does not reliably carry the original paid amount/receipt.
  */
-export async function completeDarajaPayment(opts: {
+type CompleteDarajaPaymentOptions = {
   paymentId: string;
   mpesaReceipt?: string | null;
   resultDesc?: string | null;
   providerAmount?: number | null;
-}): Promise<{ orderId: string; status: string; alreadyDone: boolean }> {
+};
+
+export async function completeDarajaPayment(
+  opts: CompleteDarajaPaymentOptions,
+): Promise<{ orderId: string; status: string; alreadyDone: boolean }> {
+  const pharmacyId = await resolvePaymentPharmacyId(opts.paymentId);
+  if (!pharmacyId) throw new Error("payment_not_found");
+  return withPharmacy(pharmacyId, () => completeDarajaPaymentInPharmacy(opts));
+}
+
+async function completeDarajaPaymentInPharmacy(
+  opts: CompleteDarajaPaymentOptions,
+): Promise<{ orderId: string; status: string; alreadyDone: boolean }> {
   const payment = await prisma.payment.findUnique({
     where: { id: opts.paymentId },
     include: { order: true },
