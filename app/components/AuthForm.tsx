@@ -316,7 +316,7 @@ export function AuthField({
         required={required}
         autoComplete={autoComplete}
         placeholder={placeholder}
-        className="w-full rounded-2xl border border-[color-mix(in_srgb,var(--foreground)_48%,var(--card-elev))] bg-[var(--card-elev)] px-4 py-3 text-sm text-[var(--foreground)] outline-none transition placeholder:text-[var(--muted)] focus:border-[var(--brand)] focus:bg-[var(--card)] focus:ring-2 focus:ring-[color-mix(in_srgb,var(--brand)_24%,transparent)] disabled:cursor-not-allowed disabled:border-[color-mix(in_srgb,var(--foreground)_32%,var(--card-elev))] disabled:bg-[color-mix(in_srgb,var(--foreground)_7%,var(--card-elev))] disabled:text-[var(--muted)] disabled:opacity-100"
+        className="w-full rounded-2xl border border-[color-mix(in_srgb,var(--foreground)_55%,var(--card-elev))] bg-[var(--card-elev)] px-4 py-3 text-sm text-[var(--foreground)] outline-none transition placeholder:text-[var(--muted)] focus:border-[var(--brand)] focus:bg-[var(--card)] focus:ring-2 focus:ring-[color-mix(in_srgb,var(--brand)_28%,transparent)] disabled:cursor-not-allowed disabled:border-[color-mix(in_srgb,var(--foreground)_55%,var(--card-elev))] disabled:bg-[color-mix(in_srgb,var(--foreground)_7%,var(--card-elev))] disabled:text-[var(--muted)] disabled:opacity-100"
       />
     </label>
   );
