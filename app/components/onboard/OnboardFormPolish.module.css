@@ -3,7 +3,7 @@
   isolation: isolate;
   overflow: hidden;
   font-family: var(--font-sans), ui-sans-serif, system-ui, sans-serif;
-  border-color: color-mix(in srgb, var(--brand) 20%, var(--line-2)) !important;
+  border-color: color-mix(in srgb, var(--foreground) 55%, var(--card-elev)) !important;
   background:
     radial-gradient(circle at 100% 0%, color-mix(in srgb, var(--brand) 10%, transparent), transparent 24rem),
     linear-gradient(160deg, color-mix(in srgb, var(--card) 96%, transparent), color-mix(in srgb, var(--card-elev) 90%, transparent)) !important;
@@ -39,7 +39,7 @@
   gap: .4rem;
   width: fit-content;
   min-height: 30px;
-  border: 1px solid color-mix(in srgb, var(--brand) 22%, var(--line-2));
+  border: 1px solid color-mix(in srgb, var(--foreground) 55%, var(--card-elev));
   border-radius: 999px;
   padding: .35rem .7rem;
   font-size: .69rem;
@@ -53,33 +53,33 @@
 
 .journeyChapter {
   min-width: 0;
-  border: 1px solid transparent;
+  border: 1px solid color-mix(in srgb, var(--foreground) 55%, var(--card-elev));
   border-radius: .85rem;
   padding: .5rem .35rem;
-  color: #486257;
-  background: rgba(255, 255, 255, .72);
+  color: var(--muted);
+  background: var(--card);
   font-weight: 650;
   transition: background-color 180ms ease, border-color 180ms ease, color 180ms ease;
 }
 
 .journeyChapterCurrent {
-  border-color: rgba(13, 110, 90, .45);
-  background: #dff7ed;
-  color: #07523f;
+  border-color: var(--brand);
+  background: var(--brand-soft);
+  color: var(--brand-deep);
   box-shadow: 0 0 0 2px rgba(13, 110, 90, .16), 0 8px 22px rgba(4, 56, 43, .12);
   font-weight: 800;
 }
 
 .journeyChapterCompleted {
-  border-color: rgba(24, 140, 107, .24);
-  background: rgba(224, 248, 239, .88);
-  color: #11624f;
+  border-color: color-mix(in srgb, var(--foreground) 55%, var(--card-elev));
+  background: var(--card-elev);
+  color: var(--foreground);
 }
 
 .journeyChapterUpcoming {
-  border-color: rgba(255, 255, 255, .24);
-  background: rgba(5, 25, 19, .48);
-  color: #c0d8cd;
+  border-color: color-mix(in srgb, var(--foreground) 55%, var(--card-elev));
+  background: var(--card);
+  color: var(--muted);
 }
 
 .journeyChapterBadge {
@@ -89,7 +89,7 @@
   align-items: center;
   justify-content: center;
   margin: 0 auto .25rem;
-  border: 1px solid rgba(13, 110, 90, .22);
+  border: 1px solid color-mix(in srgb, var(--foreground) 55%, var(--card-elev));
   border-radius: 999px;
   background: rgba(255, 255, 255, .82);
   color: inherit;
@@ -98,8 +98,8 @@
 }
 
 .journeyChapterUpcoming .journeyChapterBadge {
-  border-color: rgba(184, 222, 207, .26);
-  background: rgba(0, 0, 0, .26);
+  border-color: color-mix(in srgb, var(--foreground) 55%, var(--card-elev));
+  background: var(--card-elev);
 }
 
 .journeyChapterLabel {
@@ -125,32 +125,32 @@
 .manualCheck { color: #08765f; }
 
 :global(html[data-theme="dark"]) .journeyChapter {
-  color: #d6eee4;
-  background: rgba(7, 28, 22, .78);
-  border-color: rgba(174, 240, 218, .24);
+  color: var(--muted);
+  background: var(--card);
+  border-color: color-mix(in srgb, var(--foreground) 55%, var(--card-elev));
 }
 
 :global(html[data-theme="dark"]) .journeyChapterCurrent {
-  border-color: rgba(108, 222, 192, .72);
-  background: #123c31;
-  color: #e8fff5;
+  border-color: var(--brand);
+  background: var(--brand-soft);
+  color: var(--brand-deep);
 }
 
 :global(html[data-theme="dark"]) .journeyChapterCompleted {
-  border-color: rgba(108, 222, 192, .38);
-  background: rgba(20, 70, 55, .72);
-  color: #baf6df;
+  border-color: color-mix(in srgb, var(--foreground) 55%, var(--card-elev));
+  background: var(--card-elev);
+  color: var(--foreground);
 }
 
 :global(html[data-theme="dark"]) .journeyChapterUpcoming {
-  border-color: rgba(174, 240, 218, .28);
-  background: rgba(3, 14, 11, .78);
-  color: #b8d6ca;
+  border-color: color-mix(in srgb, var(--foreground) 55%, var(--card-elev));
+  background: var(--card);
+  color: var(--muted);
 }
 
 :global(html[data-theme="dark"]) .journeyChapterBadge {
-  border-color: rgba(174, 240, 218, .32);
-  background: rgba(220, 255, 240, .12);
+  border-color: color-mix(in srgb, var(--foreground) 55%, var(--card-elev));
+  background: var(--card-elev);
 }
 
 :global(html[data-theme="dark"]) .waitingPanel {
@@ -215,7 +215,7 @@
   position: relative;
   min-width: 0;
   overflow: hidden;
-  border: 1px solid color-mix(in srgb, var(--brand) 14%, var(--line-2)) !important;
+  border: 1px solid color-mix(in srgb, var(--foreground) 55%, var(--card-elev)) !important;
   border-radius: 1.15rem !important;
   background:
     linear-gradient(145deg, color-mix(in srgb, var(--card-elev) 92%, transparent), color-mix(in srgb, var(--brand-soft) 18%, var(--card))) !important;
@@ -254,7 +254,7 @@
   flex: 0 0 auto;
   align-items: center;
   justify-content: center;
-  border: 1px solid color-mix(in srgb, var(--brand) 20%, var(--line-2));
+  border: 1px solid color-mix(in srgb, var(--foreground) 55%, var(--card-elev));
   border-radius: .75rem;
   background: color-mix(in srgb, var(--brand-soft) 72%, var(--card));
   color: var(--brand);
@@ -301,7 +301,7 @@
 
 .formField :global(.input-admin) {
   min-height: 44px !important;
-  border: 1px solid color-mix(in srgb, var(--line-2) 88%, transparent) !important;
+  border: 1px solid color-mix(in srgb, var(--foreground) 55%, var(--card-elev)) !important;
   border-radius: .8rem !important;
   background: color-mix(in srgb, var(--background) 38%, var(--card-elev)) !important;
   padding: .62rem .82rem !important;
@@ -314,18 +314,19 @@
 }
 
 .formField :global(.input-admin)::placeholder {
-  color: color-mix(in srgb, var(--muted) 78%, transparent);
+  color: var(--muted);
 }
 
 .formField :global(.input-admin):hover {
-  border-color: color-mix(in srgb, var(--brand) 24%, var(--line-2)) !important;
+  border-color: var(--brand) !important;
 }
 
 .formField :global(.input-admin):focus {
-  border-color: color-mix(in srgb, var(--brand) 62%, var(--line-2)) !important;
+  border-color: var(--brand) !important;
   background: color-mix(in srgb, var(--card) 96%, transparent) !important;
-  box-shadow: 0 0 0 4px color-mix(in srgb, var(--brand) 11%, transparent) !important;
-  outline: none !important;
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--brand) 35%, var(--background)) !important;
+  outline: 2px solid var(--brand) !important;
+  outline-offset: 2px;
 }
 
 .formField :global(textarea.input-admin) {
@@ -353,7 +354,7 @@
 
 .optionalPanel {
   overflow: hidden;
-  border: 1px solid color-mix(in srgb, var(--line-2) 90%, transparent) !important;
+  border: 1px solid color-mix(in srgb, var(--foreground) 55%, var(--card-elev)) !important;
   border-radius: 1.05rem;
   background: color-mix(in srgb, var(--card-elev) 55%, transparent);
   padding: 0 !important;
@@ -404,7 +405,7 @@
 .optionalBody {
   display: grid;
   gap: .9rem;
-  border-top: 1px solid var(--line-2);
+  border-top: 1px solid color-mix(in srgb, var(--foreground) 55%, var(--card-elev));
   padding: .95rem;
 }
 
@@ -414,7 +415,7 @@
   flex-direction: column-reverse;
   gap: .5rem;
   margin-top: 0.85rem !important;
-  border-top: 1px solid color-mix(in srgb, var(--line-2) 78%, transparent);
+  border-top: 1px solid color-mix(in srgb, var(--foreground) 55%, var(--card-elev));
   padding-top: 0.75rem;
 }
 
@@ -448,7 +449,7 @@
   align-items: flex-start;
   gap: .65rem;
   margin-top: .9rem;
-  border: 1px solid color-mix(in srgb, #d97706 22%, var(--line-2));
+  border: 1px solid color-mix(in srgb, var(--foreground) 55%, var(--card-elev));
   border-radius: 1rem;
   background: color-mix(in srgb, #f59e0b 7%, var(--card));
   padding: .78rem .85rem;
@@ -462,7 +463,7 @@
 .reviewHero {
   position: relative;
   overflow: hidden;
-  border: 1px solid color-mix(in srgb, var(--brand) 22%, var(--line-2));
+  border: 1px solid color-mix(in srgb, var(--foreground) 55%, var(--card-elev));
   border-radius: 1.4rem;
   background:
     linear-gradient(145deg, color-mix(in srgb, var(--brand-soft) 72%, var(--card)), color-mix(in srgb, var(--card-elev) 90%, transparent));
@@ -508,7 +509,7 @@
 }
 
 .reviewItem {
-  border: 1px solid color-mix(in srgb, var(--line-2) 82%, transparent);
+  border: 1px solid color-mix(in srgb, var(--foreground) 55%, var(--card-elev));
   border-radius: .9rem;
   background: color-mix(in srgb, var(--card) 72%, transparent);
   padding: .7rem .75rem;
@@ -537,7 +538,7 @@
   align-items: flex-start;
   gap: .65rem;
   margin-top: .85rem;
-  border: 1px solid color-mix(in srgb, var(--brand) 14%, var(--line-2));
+  border: 1px solid color-mix(in srgb, var(--foreground) 55%, var(--card-elev));
   border-radius: 1rem;
   background: color-mix(in srgb, var(--brand-soft) 34%, var(--card));
   padding: .78rem .85rem;
@@ -555,7 +556,7 @@
   justify-content: space-between;
   gap: .75rem;
   margin-bottom: 1rem;
-  border: 1px solid color-mix(in srgb, var(--brand) 14%, var(--line-2));
+  border: 1px solid color-mix(in srgb, var(--foreground) 55%, var(--card-elev));
   border-radius: 1.1rem;
   background: color-mix(in srgb, var(--brand-soft) 24%, var(--card));
   padding: .82rem .9rem;
@@ -589,7 +590,7 @@
   grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: .35rem;
   margin-bottom: 1rem;
-  border: 1px solid color-mix(in srgb, var(--line-2) 88%, transparent);
+  border: 1px solid color-mix(in srgb, var(--foreground) 55%, var(--card-elev));
   border-radius: 1rem;
   background: color-mix(in srgb, var(--background) 45%, var(--card-elev));
   padding: .3rem;
@@ -611,11 +612,11 @@
   box-shadow: 0 5px 18px color-mix(in srgb, var(--foreground) 7%, transparent), inset 0 1px 0 color-mix(in srgb, white 50%, transparent);
 }
 
-.segmented button:disabled { cursor: default; opacity: .55; }
+.segmented button:disabled { cursor: default; opacity: 1; }
 
 .uploadZone {
   border-style: dashed !important;
-  border-color: color-mix(in srgb, var(--brand) 24%, var(--line-2)) !important;
+  border-color: color-mix(in srgb, var(--foreground) 55%, var(--card-elev)) !important;
   border-radius: 1rem !important;
   background:
     linear-gradient(145deg, color-mix(in srgb, var(--brand-soft) 30%, transparent), color-mix(in srgb, var(--card) 74%, transparent)) !important;
@@ -625,7 +626,7 @@
 .previewCard {
   overflow: hidden;
   margin-top: .8rem;
-  border: 1px solid color-mix(in srgb, var(--brand) 20%, var(--line-2));
+  border: 1px solid color-mix(in srgb, var(--foreground) 55%, var(--card-elev));
   border-radius: 1rem;
   background: color-mix(in srgb, var(--card) 76%, transparent);
 }
@@ -670,7 +671,7 @@
 }
 
 .authorityCard {
-  border: 1px solid color-mix(in srgb, var(--brand) 18%, var(--line-2)) !important;
+  border: 1px solid color-mix(in srgb, var(--foreground) 55%, var(--card-elev)) !important;
   background: color-mix(in srgb, var(--brand-soft) 34%, var(--card)) !important;
 }
 
@@ -683,7 +684,7 @@
 .locationCard {
   position: relative;
   overflow: hidden;
-  border: 1px solid color-mix(in srgb, var(--brand) 18%, var(--line-2));
+  border: 1px solid color-mix(in srgb, var(--foreground) 55%, var(--card-elev));
   border-radius: 1.35rem;
   background:
     radial-gradient(circle at 100% 0%, color-mix(in srgb, var(--brand) 12%, transparent), transparent 13rem),
@@ -733,7 +734,7 @@
   border-radius: .9rem;
   background: var(--brand);
   padding: .72rem .95rem;
-  color: white;
+  color: var(--background);
   font-size: .78rem;
   font-weight: 740;
   box-shadow: 0 10px 24px color-mix(in srgb, var(--brand) 20%, transparent);
@@ -741,11 +742,11 @@
 }
 
 .locationAction:hover:not(:disabled) { filter: brightness(.97); transform: translateY(-1px); }
-.locationAction:disabled { cursor: wait; opacity: .6; }
+.locationAction:disabled { cursor: wait; opacity: 1; }
 
 .locationResult {
   margin-top: .8rem;
-  border: 1px solid color-mix(in srgb, var(--brand) 20%, var(--line-2));
+  border: 1px solid color-mix(in srgb, var(--foreground) 55%, var(--card-elev));
   border-radius: 1rem;
   background: color-mix(in srgb, var(--brand-soft) 38%, var(--card));
   padding: .8rem;
@@ -780,7 +781,7 @@
 }
 
 .locationChip {
-  border: 1px solid color-mix(in srgb, var(--brand) 15%, var(--line-2));
+  border: 1px solid color-mix(in srgb, var(--foreground) 55%, var(--card-elev));
   border-radius: .82rem;
   background: color-mix(in srgb, var(--card) 78%, transparent);
   padding: .58rem .65rem;
@@ -870,3 +871,11 @@
 }
 
 :global(html[data-theme="dark"]) .locationAlert { color: #fecdd3; }
+
+.formField :global(.input-admin):disabled {
+  cursor: not-allowed;
+  opacity: 1;
+  border-color: color-mix(in srgb, var(--foreground) 42%, var(--card-elev)) !important;
+  background: color-mix(in srgb, var(--foreground) 7%, var(--card-elev)) !important;
+  color: var(--muted) !important;
+}
