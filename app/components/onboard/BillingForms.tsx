@@ -275,7 +275,7 @@ export function PharmacyEnrolmentPricingSelector({
         </div>
 
         {!paymentAvailable && !isFree ? (
-          <p role="alert" className="mb-3 rounded-xl border border-rose-500/30 bg-rose-500/10 p-3 text-xs text-rose-700 dark:text-rose-300">
+          <p role="alert" className="mb-3 rounded-xl border border-[color-mix(in_srgb,var(--foreground)_55%,var(--card-elev))] bg-rose-500/10 p-3 text-xs text-rose-700 dark:text-rose-300">
             Online payment is temporarily unavailable. Please try again later or contact support.
           </p>
         ) : null}
