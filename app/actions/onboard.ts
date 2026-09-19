@@ -15,6 +15,7 @@ import { validatePassword } from "@/app/lib/password";
 import { isValidPharmacySlug, slugifyPharmacyName } from "@/app/lib/slug";
 import { getRequestMeta } from "@/app/lib/request-meta";
 import { checkRateLimitAsync } from "@/app/lib/rate-limit";
+import { buildOnboardingRateLimitKeys } from "@/app/lib/onboarding-rate-limit";
 import { emailVerificationBody, sendDelivery } from "@/app/lib/services/delivery";
 import { loadOwnerSubmissionReadiness } from "@/app/lib/services/pharmacy-verification";
 
@@ -42,20 +43,6 @@ function validateSlug(slug: string) {
 
 export async function createPharmacyDraftAction(_prev: OnboardState, formData: FormData): Promise<OnboardState> {
   try {
-    const meta = await getRequestMeta();
-    const rateKey = `onboard-draft:${meta.ip || "unknown"}`;
-    const rl = await checkRateLimitAsync(rateKey, {
-      limit: 6,
-      windowMs: 60 * 60 * 1000,
-      failClosed: true,
-    });
-    if (!rl.allowed) {
-      return {
-        error: `Too many pharmacy registration attempts. Please try again in ${rl.retryAfterSeconds}s.`,
-        field: "general",
-      };
-    }
-
     let user = await getSessionUser();
     const email = String(formData.get("email") || "").toLowerCase().trim();
     const password = String(formData.get("password") || "");
@@ -64,10 +51,65 @@ export async function createPharmacyDraftAction(_prev: OnboardState, formData: F
     const legalName = String(formData.get("legalName") || "").trim();
     let slug = String(formData.get("slug") || "").trim().toLowerCase();
 
+    // Do not consume an onboarding attempt for basic client-correctable validation
+    // failures. Rate limiting is for valid creation attempts, not form typos.
     if (!name) return { error: "Enter the pharmacy trading name.", field: "name" };
     if (!slug) slug = slugifyPharmacyName(name);
     const slugError = validateSlug(slug);
     if (slugError) return { error: slugError, field: "slug" };
+
+    if (!user) {
+      if (!email || !password || !fullName) {
+        return { error: "Create an owner account (name, email, password) or sign in first.", field: "general" };
+      }
+      const passwordError = validatePassword(password);
+      if (passwordError) return { error: passwordError, field: "general" };
+    }
+
+    const meta = await getRequestMeta();
+    const { principalKey, ipKey } = buildOnboardingRateLimitKeys({
+      userId: user?.id,
+      email: user?.email || email,
+      ip: meta.ip,
+    });
+
+    // A person/account gets a reasonable retry budget. The IP bucket is only a
+    // broad anti-abuse ceiling so shared Wi-Fi and carrier-grade NAT do not
+    // cause legitimate pharmacies to block one another.
+    const [principalLimit, ipLimit] = await Promise.all([
+      principalKey
+        ? checkRateLimitAsync(principalKey, {
+            limit: 8,
+            windowMs: 15 * 60 * 1000,
+            // Onboarding already depends on the DB. If the distributed limiter
+            // store has a transient issue, fall back to process memory rather
+            // than showing a false "too many attempts" error.
+            failClosed: false,
+          })
+        : Promise.resolve(null),
+      ipKey && ipKey !== principalKey
+        ? checkRateLimitAsync(ipKey, {
+            limit: 60,
+            windowMs: 15 * 60 * 1000,
+            failClosed: false,
+          })
+        : Promise.resolve(null),
+    ]);
+
+    if (principalLimit?.degraded || ipLimit?.degraded) {
+      console.warn("[onboard] distributed rate limiter degraded; using process-local fallback");
+    }
+
+    const blocked = [principalLimit, ipLimit].filter(
+      (result): result is NonNullable<typeof result> => Boolean(result && !result.allowed),
+    );
+    if (blocked.length > 0) {
+      const retryAfterSeconds = Math.max(...blocked.map((result) => result.retryAfterSeconds));
+      return {
+        error: `Too many pharmacy registration attempts. Please try again in ${retryAfterSeconds}s.`,
+        field: "general",
+      };
+    }
 
     if (!user) {
       if (!email || !password || !fullName) return { error: "Create an owner account (name, email, password) or sign in first.", field: "general" };
