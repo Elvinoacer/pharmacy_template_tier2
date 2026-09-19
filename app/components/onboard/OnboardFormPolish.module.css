@@ -653,7 +653,7 @@
   align-items: center;
   justify-content: space-between;
   gap: .5rem;
-  border-top: 1px solid color-mix(in srgb, var(--brand) 14%, var(--line-2));
+  border-top: 1px solid color-mix(in srgb, var(--foreground) 55%, var(--card-elev));
   padding: .65rem .75rem;
   font-size: .68rem;
 }
@@ -813,7 +813,7 @@
 
 .locationAlert {
   margin-top: .75rem;
-  border: 1px solid color-mix(in srgb, #e11d48 24%, var(--line-2));
+  border: 1px solid color-mix(in srgb, var(--foreground) 55%, var(--card-elev));
   border-radius: .9rem;
   background: color-mix(in srgb, #e11d48 7%, var(--card));
   padding: .7rem .75rem;
