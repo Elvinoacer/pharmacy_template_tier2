@@ -373,7 +373,7 @@ export default function Footer({
                     <button
                       type="submit"
                       disabled={newsPending}
-                      className="flex w-full items-center justify-center gap-2 rounded-full bg-gradient-to-r from-[#d4af37] via-[#c2b036] to-[#22c55e] px-6 py-3.5 text-xs font-bold text-slate-950 shadow-lg shadow-emerald-950/40 transition-all hover:scale-[1.02] hover:brightness-110 active:scale-98 disabled:opacity-60"
+                      className="flex w-full items-center justify-center gap-2 rounded-full bg-gradient-to-r from-[#d4af37] via-[#c2b036] to-[#22c55e] px-6 py-3.5 text-xs font-bold text-slate-950 shadow-lg shadow-emerald-950/40 transition-all hover:scale-[1.02] hover:brightness-110 active:scale-98 disabled:cursor-not-allowed disabled:saturate-50 disabled:brightness-75"
                     >
                       <span>{newsPending ? "Subscribing…" : "Subscribe"}</span>
                       <ArrowRight className="h-3.5 w-3.5" />

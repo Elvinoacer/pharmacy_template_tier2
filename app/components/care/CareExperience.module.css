@@ -1,8 +1,10 @@
 .experience {
   --background: #f4f4eb;
   --foreground: #193c30;
-  --muted: #617266;
-  --muted-2: #738376;
+  /* Secondary copy remains AAA-capable on the light care canvas; tertiary
+     metadata still clears AA for normal text. */
+  --muted: #44564c;
+  --muted-2: #4b5d53;
   --brand: #245c43;
   --brand-deep: #17442e;
   --brand-soft: #e1ecdb;
@@ -55,7 +57,8 @@
   transform: scale(0.975);
 }
 .experience :global(main a:active) {
-  opacity: 0.78;
+  opacity: 1;
+  transform: scale(0.985);
 }
 .experience :global(main button:focus-visible),
 .experience :global(main a:focus-visible) {
@@ -101,7 +104,8 @@
   .experience :global(main a) {
     transition: none;
   }
-  .experience :global(main button:active) {
+  .experience :global(main button:active),
+  .experience :global(main a:active) {
     transform: none;
   }
 }

@@ -18,7 +18,7 @@ const cardClass =
   "liquid-glass care-glass rounded-2xl border border-[var(--care-border)] bg-[var(--care-glass)] backdrop-blur-xl shadow-sm transition-all duration-300 sm:rounded-3xl";
 
 const actionCardClass =
-  "group flex min-w-0 items-start gap-3 rounded-2xl border border-[var(--care-border)] bg-[var(--card-elev)]/80 p-3.5 transition hover:border-[var(--brand)] hover:bg-[var(--brand-tint)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--brand)] sm:p-4";
+  "group flex min-w-0 items-start gap-3 rounded-2xl border border-[color-mix(in_srgb,var(--foreground)_55%,var(--card-elev))] bg-[var(--card-elev)]/80 p-3.5 transition hover:border-[var(--brand)] hover:bg-[var(--brand-tint)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--brand)] sm:p-4";
 
 export default async function ContactPage() {
   const view = await getStorefrontView().catch(() => null);
@@ -182,7 +182,7 @@ export default async function ContactPage() {
                 >
                   Opening hours
                 </h2>
-                <ul className="mt-4 divide-y divide-[var(--care-border)]">
+                <ul className="mt-4 divide-y divide-[color-mix(in_srgb,var(--foreground)_55%,var(--card-elev))]">
                   {pharmacy.hours.map((h: { day: string; time: string }) => (
                     <li key={h.day} className="flex min-w-0 items-start justify-between gap-4 py-2.5 text-sm first:pt-0 last:pb-0">
                       <span className="min-w-0 text-[var(--muted)]">{h.day}</span>
@@ -205,10 +205,10 @@ export default async function ContactPage() {
                   href={pharmacy.mapsDirections}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="flex min-h-14 items-center justify-between gap-3 border-t border-[var(--care-border)] bg-[var(--card)]/60 px-4 py-3.5 transition hover:bg-[var(--brand-tint)]"
+                  className="flex min-h-14 items-center justify-between gap-3 border-t border-[color-mix(in_srgb,var(--foreground)_55%,var(--card-elev))] bg-[var(--card)]/60 px-4 py-3.5 transition hover:bg-[var(--brand-tint)]"
                 >
                   <span className="text-xs text-[var(--muted)]">Find us on the map</span>
-                  <span className="inline-flex min-h-10 shrink-0 items-center justify-center gap-1.5 rounded-full bg-[var(--brand)] px-4 py-2 text-xs font-semibold text-white shadow-sm">
+                  <span className="inline-flex min-h-10 shrink-0 items-center justify-center gap-1.5 rounded-full bg-[var(--brand)] px-4 py-2 text-xs font-semibold text-[var(--background)] shadow-sm">
                     Get directions
                   </span>
                 </a>

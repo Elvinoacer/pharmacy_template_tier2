@@ -377,8 +377,8 @@ body {
   gap: 0.5rem;
   padding: 0.75rem 1.4rem;
   border-radius: 9999px;
-  background: linear-gradient(135deg, #0d6e5a 0%, #084c3f 100%);
-  color: #fff;
+  background: linear-gradient(135deg, var(--brand) 0%, var(--brand-deep) 100%);
+  color: var(--background);
   font-weight: 600;
   font-size: 0.9rem;
   letter-spacing: 0.01em;
@@ -404,9 +404,13 @@ body {
   transform: translateX(120%);
 }
 .btn-primary:disabled {
-  opacity: 0.6;
+  opacity: 1;
   cursor: not-allowed;
   transform: none;
+  background: color-mix(in srgb, var(--foreground) 10%, var(--card-elev));
+  color: var(--muted);
+  border: 1px solid color-mix(in srgb, var(--foreground) 34%, var(--card-elev));
+  box-shadow: none;
 }
 
 .btn-ghost {
@@ -416,19 +420,29 @@ body {
   gap: 0.5rem;
   padding: 0.75rem 1.3rem;
   border-radius: 9999px;
-  background: rgba(255, 255, 255, 0.7);
+  background: var(--glass-fill, var(--card));
   color: var(--brand-deep);
   font-weight: 600;
   font-size: 0.9rem;
-  border: 1px solid rgba(13, 110, 90, 0.15);
+  border: 1px solid var(--line-2);
   cursor: pointer;
   transition: all 0.25s ease;
 }
 .btn-ghost:hover {
-  background: #fff;
-  border-color: rgba(13, 110, 90, 0.3);
+  background: var(--card-elev);
+  border-color: var(--brand);
   transform: translateY(-1px);
-  box-shadow: 0 10px 24px rgba(8, 40, 32, 0.08);
+  box-shadow: var(--shadow);
+}
+.btn-ghost:disabled,
+.btn-ghost[aria-disabled="true"] {
+  opacity: 1;
+  cursor: not-allowed;
+  color: var(--muted);
+  background: color-mix(in srgb, var(--foreground) 7%, var(--card-elev));
+  border-color: color-mix(in srgb, var(--foreground) 30%, var(--card-elev));
+  box-shadow: none;
+  transform: none;
 }
 
 /* Small / icon button used in shells */
@@ -2829,7 +2843,7 @@ body { background: var(--background); color: var(--foreground); }
 body:has(header .theme-toggle, .shell-grid-admin, .afyvia-workspace-root) .global-theme-control { display: none; }
 .skip-link { position: fixed; left: 1rem; top: -6rem; z-index: 200; padding: .8rem 1.2rem; border-radius: 1rem; background: var(--card); color: var(--foreground); }
 .skip-link:focus { top: 1rem; }
-:where(a, button, input, select, textarea, summary):focus-visible { outline: 3px solid #23b791; outline-offset: 4px; }
+:where(a, button, input, select, textarea, summary):focus-visible { outline: 3px solid var(--brand); outline-offset: 4px; }
 :where(input, select, textarea) { scroll-margin-block: 6rem; }
 .care-dock { position: fixed; bottom: 0; inset-inline: 0; z-index: 40; display: grid; grid-template-columns: 1.4fr 1fr 1fr; gap: .35rem; padding: .65rem .75rem calc(.65rem + env(safe-area-inset-bottom)); background: var(--glass-fill); border-top: 1px solid var(--glass-edge); box-shadow: var(--glass-shadow); backdrop-filter: blur(20px); }
 .care-dock a { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: .3rem; min-height: 52px; border-radius: 1rem; color: var(--muted); font-size: .7rem; font-weight: 600; }

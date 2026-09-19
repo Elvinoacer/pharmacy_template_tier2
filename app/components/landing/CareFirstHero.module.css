@@ -142,6 +142,10 @@
   padding: 2px 0;
   outline: none;
 }
+.search input::placeholder {
+  color: var(--muted);
+  opacity: 1;
+}
 .search:focus-within {
   outline: 2px solid var(--brand);
   outline-offset: 4px;
@@ -184,13 +188,13 @@
   display: flex;
   align-items: center;
   gap: 15px;
-  background: #ffffffb3;
+  background: var(--care-glass);
   backdrop-filter: blur(25px);
-  border: 1px solid #ffffffd9;
+  border: 1px solid var(--care-border);
   border-radius: 20px;
-  box-shadow: 0 14px 45px #173c3020;
+  box-shadow: var(--glass-shadow);
   padding: 20px;
-  color: #193c30;
+  color: var(--foreground);
 }
 .floatingNote > div {
   flex: 1;
@@ -200,7 +204,7 @@
   font-size: 8px;
   letter-spacing: 0.1em;
   margin-bottom: 7px;
-  color: #4e6655;
+  color: var(--muted);
 }
 .floatingNote strong {
   font:
@@ -215,7 +219,7 @@
   width: 45px;
   height: 45px;
   border-radius: 50%;
-  background: #ffffffb5;
+  background: var(--brand-soft);
   flex-shrink: 0;
 }
 .credit {
