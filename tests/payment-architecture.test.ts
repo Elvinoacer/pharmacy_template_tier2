@@ -502,19 +502,7 @@ test("Payment Architecture: Pure Platform Billing vs Pure Tenant Commerce", asyn
     });
   });
 
-  // Cleanup test records
-  await withPlatformBypass(async () => {
-    await db.payment.deleteMany({ where: { pharmacyId: { in: [pharmacyA.id, pharmacyB.id, pharmacyUnconfigured.id] } } }).catch(() => {});
-    await db.billingPayment.deleteMany({ where: { pharmacyId: { in: [pharmacyA.id, pharmacyB.id, pharmacyUnconfigured.id] } } }).catch(() => {});
-    await db.invoice.deleteMany({ where: { pharmacyId: { in: [pharmacyA.id, pharmacyB.id, pharmacyUnconfigured.id] } } }).catch(() => {});
-    await db.subscription.deleteMany({ where: { pharmacyId: { in: [pharmacyA.id, pharmacyB.id, pharmacyUnconfigured.id] } } }).catch(() => {});
-    await db.order.deleteMany({ where: { pharmacyId: { in: [pharmacyA.id, pharmacyB.id, pharmacyUnconfigured.id] } } }).catch(() => {});
-    await db.integrationAccount.deleteMany({ where: { pharmacyId: { in: [pharmacyA.id, pharmacyB.id, pharmacyUnconfigured.id] } } }).catch(() => {});
-    await db.pharmacyIntegration.deleteMany({ where: { pharmacyId: { in: [pharmacyA.id, pharmacyB.id, pharmacyUnconfigured.id] } } }).catch(() => {});
-    await db.billingEvent.deleteMany({ where: { pharmacyId: { in: [pharmacyA.id, pharmacyB.id, pharmacyUnconfigured.id] } } }).catch(() => {});
-    await db.outboxEvent.deleteMany({ where: { pharmacyId: { in: [pharmacyA.id, pharmacyB.id, pharmacyUnconfigured.id] } } }).catch(() => {});
-    await db.pharmacyPromotionGrant.deleteMany({ where: { pharmacyId: { in: [pharmacyA.id, pharmacyB.id, pharmacyUnconfigured.id] } } }).catch(() => {});
-    await db.pharmacy.deleteMany({ where: { id: { in: [pharmacyA.id, pharmacyB.id, pharmacyUnconfigured.id] } } }).catch(() => {});
-    await db.user.delete({ where: { id: owner.id } }).catch(() => {});
-  }).catch(() => {});
+  // The CI database is disposable and audit_logs are intentionally append-only.
+  // Keep these randomized fixtures until the database container is destroyed;
+  // deleting their pharmacies would violate the audit log RESTRICT foreign key.
 });
