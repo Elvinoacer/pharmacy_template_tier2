@@ -520,11 +520,11 @@ async function createIntasendBillingCheckoutInPharmacy(
 
   const intasendConfig = getIntasendConfig();
 
-  let defaultRedirect = `${intasendConfig.appBaseUrl}/onboard?stage=payment&status=returned&invoice=${invoice.id}`;
-  if (invoice.subscriptionId || invoice.number.startsWith("SUB-")) {
-    defaultRedirect = `${intasendConfig.appBaseUrl}/onboard?stage=service&status=returned&invoice=${invoice.id}`;
-  }
-
+  // IntaSend's live checkout validator is deliberately strict about redirect_url.
+  // Keep the return URL to one simple query parameter (no chained "&" params).
+  // /onboard can resolve the correct stage from persisted billing/onboarding state,
+  // and both payment steps already recognize payment=returned.
+  const defaultRedirect = `${intasendConfig.appBaseUrl}/onboard?payment=returned`;
   const redirectUrl = opts?.redirectUrl || defaultRedirect;
 
   if (existing?.checkoutUrl) {
