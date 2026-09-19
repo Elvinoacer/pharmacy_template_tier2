@@ -15,8 +15,8 @@ export default function PharmacyRoiCalculator() {
   const roiMultiplier = Math.round(preservedMonthlyRevenue / monthlyAfyviaFee);
 
   return (
-    <section className="mt-6 rounded-2xl border border-[var(--line-2)] bg-gradient-to-br from-[var(--card)] via-[var(--card)] to-[var(--brand-soft)] p-4 sm:p-6 shadow-sm" aria-label="Pharmacy ROI and Retention Calculator">
-      <div className="flex flex-wrap items-center justify-between gap-3 border-b border-[var(--line-2)] pb-3 sm:pb-4">
+    <section className="mt-6 rounded-2xl border border-[color-mix(in_srgb,var(--foreground)_55%,var(--card))] bg-gradient-to-br from-[var(--card)] via-[var(--card)] to-[var(--brand-soft)] p-4 sm:p-6 shadow-sm" aria-label="Pharmacy ROI and Retention Calculator">
+      <div className="flex flex-wrap items-center justify-between gap-3 border-b border-[color-mix(in_srgb,var(--foreground)_55%,var(--card))] pb-3 sm:pb-4">
         <div>
           <span className="inline-flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-[var(--brand)]">
             <Calculator size={14} aria-hidden /> Retention & Revenue Calculator
@@ -57,7 +57,7 @@ export default function PharmacyRoiCalculator() {
               step={5}
               value={patients}
               onChange={(e) => setPatients(Number(e.target.value))}
-              className="mt-2.5 w-full accent-[var(--brand)] cursor-pointer h-2 bg-[var(--line-2)] rounded-lg"
+              className="mt-2.5 w-full accent-[var(--brand)] cursor-pointer h-2 bg-[color-mix(in_srgb,var(--foreground)_55%,var(--card))] rounded-lg"
             />
             <div className="mt-1.5 flex justify-between text-[11px] font-medium text-[var(--muted)]">
               <span>10 (Small chemist)</span>
@@ -76,8 +76,8 @@ export default function PharmacyRoiCalculator() {
                 onClick={() => setPatients(preset)}
                 className={`rounded-lg px-2.5 py-1 text-xs font-semibold transition-all ${
                   patients === preset
-                    ? "bg-[var(--brand)] text-white"
-                    : "bg-[var(--card-elev)] text-[var(--foreground)] border border-[var(--line-2)] hover:border-[var(--brand)]"
+                    ? "bg-[var(--brand)] text-[var(--background)]"
+                    : "bg-[var(--card-elev)] text-[var(--foreground)] border border-[color-mix(in_srgb,var(--foreground)_55%,var(--card))] hover:border-[var(--brand)]"
                 }`}
               >
                 {preset}
@@ -85,14 +85,14 @@ export default function PharmacyRoiCalculator() {
             ))}
           </div>
 
-          <div className="rounded-xl border border-[var(--line-2)] bg-[var(--card)] p-2.5 sm:p-3 text-xs text-[var(--muted)] space-y-1">
+          <div className="rounded-xl border border-[color-mix(in_srgb,var(--foreground)_55%,var(--card))] bg-[var(--card)] p-2.5 sm:p-3 text-xs text-[var(--muted)] space-y-1">
             <div className="flex justify-between">
               <span>Avg chronic spend in Kenya:</span>
               <strong className="text-[var(--foreground)]">KES {avgRefillValue.toLocaleString()} / refill</strong>
             </div>
             <div className="flex justify-between">
               <span>Silent churn without automated reminders:</span>
-              <strong className="text-rose-600">30% drop-off</strong>
+              <strong className="text-rose-700 dark:text-rose-300">30% drop-off</strong>
             </div>
             <div className="flex justify-between">
               <span>Monthly chronic refill pool:</span>
@@ -107,7 +107,7 @@ export default function PharmacyRoiCalculator() {
             <span className="text-xs font-bold uppercase tracking-wider text-[var(--brand)] flex items-center gap-1.5">
               <TrendingUp size={15} /> Projected Return
             </span>
-            <span className="rounded-full bg-emerald-100 px-2.5 py-0.5 text-xs font-bold text-emerald-800">
+            <span className="rounded-full bg-emerald-100 px-2.5 py-0.5 text-xs font-bold text-emerald-800 dark:bg-emerald-950/70 dark:text-emerald-200">
               {roiMultiplier}x ROI on KES 500
             </span>
           </div>
@@ -118,12 +118,12 @@ export default function PharmacyRoiCalculator() {
               KES {preservedMonthlyRevenue.toLocaleString()}
               <span className="text-sm font-sans font-normal text-[var(--muted)]"> / month</span>
             </p>
-            <p className="mt-0.5 text-xs font-medium text-emerald-700">
+            <p className="mt-0.5 text-xs font-medium text-emerald-700 dark:text-emerald-300">
               ~KES {preservedAnnualRevenue.toLocaleString()} in recurring patient loyalty per year
             </p>
           </div>
 
-          <div className="space-y-1.5 border-t border-[var(--line-2)] pt-2.5 text-xs">
+          <div className="space-y-1.5 border-t border-[color-mix(in_srgb,var(--foreground)_55%,var(--card))] pt-2.5 text-xs">
             <div className="flex items-start gap-2 text-[var(--muted)]">
               <CheckCircle2 size={14} className="text-[var(--brand)] shrink-0 mt-0.5" />
               <span>
