@@ -452,14 +452,30 @@ export async function handleBundleSettlement(
 }
 
 export async function createIntasendBillingCheckout(
+  pharmacyId: string,
   invoiceId: string,
   opts?: {
     actorId?: string | null;
     redirectUrl?: string;
   },
 ) {
-  const invoice = await prismaUnscoped.invoice.findUnique({
-    where: { id: invoiceId },
+  // A checkout spans several reads and writes. Re-establish the tenant scope here
+  // rather than relying on a server action to keep its AsyncLocalStorage scope alive.
+  return withPharmacy(pharmacyId, () =>
+    createIntasendBillingCheckoutInPharmacy(pharmacyId, invoiceId, opts),
+  );
+}
+
+async function createIntasendBillingCheckoutInPharmacy(
+  pharmacyId: string,
+  invoiceId: string,
+  opts?: {
+    actorId?: string | null;
+    redirectUrl?: string;
+  },
+) {
+  const invoice = await prismaUnscoped.invoice.findFirst({
+    where: { id: invoiceId, pharmacyId },
     include: {
       pharmacy: {
         include: {
@@ -468,7 +484,13 @@ export async function createIntasendBillingCheckout(
       },
     },
   });
-  if (!invoice) throw new Error("invoice_not_found");
+  if (!invoice) {
+    logIntasend("warn", "billing.checkout.invoice_not_found", {
+      invoiceId,
+      pharmacyId,
+    });
+    throw new Error("invoice_not_found");
+  }
   if (invoice.status === "paid") {
     return { ok: true as const, alreadyPaid: true, invoiceId };
   }

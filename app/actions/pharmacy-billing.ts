@@ -151,7 +151,7 @@ export async function pharmacyBillingAction(_: BillingState, form: FormData): Pr
         };
       }
 
-      const checkout = await createIntasendBillingCheckout(invoice.id, { actorId: user.id });
+      const checkout = await createIntasendBillingCheckout(pharmacyId, invoice.id, { actorId: user.id });
       if (!checkout.ok) throw new Error(checkout.message || "Could not create IntaSend checkout.");
       return {
         success: "Redirecting to IntaSend secure payment...",
@@ -179,7 +179,7 @@ export async function pharmacyBillingAction(_: BillingState, form: FormData): Pr
         };
       }
 
-      const checkout = await createIntasendBillingCheckout(invoice.id, { actorId: user.id });
+      const checkout = await createIntasendBillingCheckout(pharmacyId, invoice.id, { actorId: user.id });
       if (!checkout.ok) throw new Error(checkout.message || "Could not create IntaSend checkout.");
       return {
         success: "Redirecting to IntaSend secure payment...",
@@ -199,7 +199,7 @@ export async function pharmacyBillingAction(_: BillingState, form: FormData): Pr
         };
       }
 
-      const checkout = await createIntasendBillingCheckout(invoice.id, { actorId: user.id });
+      const checkout = await createIntasendBillingCheckout(pharmacyId, invoice.id, { actorId: user.id });
       revalidatePath("/onboard/billing");
       if (!checkout.ok) throw new Error(checkout.message || "Could not create checkout session.");
       return {
@@ -250,7 +250,7 @@ export async function pharmacyBillingAction(_: BillingState, form: FormData): Pr
         };
       }
 
-      const checkout = await createIntasendBillingCheckout(invoice.id, { actorId: user.id });
+      const checkout = await createIntasendBillingCheckout(pharmacyId, invoice.id, { actorId: user.id });
       if (!checkout.ok) throw new Error(checkout.message || "Could not start payment.");
       return {
         success: "Redirecting to IntaSend for first month renewal...",
@@ -272,7 +272,7 @@ export async function pharmacyBillingAction(_: BillingState, form: FormData): Pr
         }),
       );
       if (!invoice) throw new Error("There is no unpaid monthly invoice to collect.");
-      const checkout = await createIntasendBillingCheckout(invoice.id, { actorId: user.id });
+      const checkout = await createIntasendBillingCheckout(pharmacyId, invoice.id, { actorId: user.id });
       revalidatePath("/onboard/billing");
       revalidatePath("/admin/setup");
       if (!checkout.ok) throw new Error(checkout.message || "Could not start payment.");

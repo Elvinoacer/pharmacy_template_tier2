@@ -7,7 +7,7 @@ import { config as loadEnv } from "dotenv";
 loadEnv({ path: path.resolve(process.cwd(), ".env") });
 loadEnv({ path: path.resolve(process.cwd(), ".env.local"), override: true });
 import { prismaUnscoped as db } from "../app/lib/db";
-import { withPlatformBypass } from "../app/lib/tenant-context";
+import { peekTenant, withPlatformBypass } from "../app/lib/tenant-context";
 import {
   ensureVerificationInvoice,
   startPharmacyService,
@@ -36,6 +36,23 @@ import { verifyIntasendWebhookChallenge } from "../app/lib/services/intasend";
 import { decryptSecret } from "../app/lib/platform/secrets";
 
 test("Payment Architecture: Pure Platform Billing vs Pure Tenant Commerce", async (t) => {
+  // Architecture tests must not create a real provider checkout, even when a
+  // developer has live credentials in .env.local.
+  const intasendEnvironment = Object.fromEntries(
+    ["INTASEND_PUBLISHABLE_KEY", "NEXT_PUBLIC_INTASEND_PUBLISHABLE_KEY", "INTASEND_TEST"].map(
+      (key) => [key, process.env[key]],
+    ),
+  );
+  delete process.env.INTASEND_PUBLISHABLE_KEY;
+  delete process.env.NEXT_PUBLIC_INTASEND_PUBLISHABLE_KEY;
+  process.env.INTASEND_TEST = "true";
+  t.after(() => {
+    for (const [key, value] of Object.entries(intasendEnvironment)) {
+      if (value === undefined) delete process.env[key];
+      else process.env[key] = value;
+    }
+  });
+
   // Set up integration secret if not set
   if (!process.env.INTEGRATION_SECRET) {
     process.env.INTEGRATION_SECRET = "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef";
@@ -100,9 +117,10 @@ test("Payment Architecture: Pure Platform Billing vs Pure Tenant Commerce", asyn
       assert.equal(invoice.subscriptionId, null);
     });
 
-    await st.test("creates IntaSend hosted checkout session for verification fee", async () => {
+    await st.test("creates a checkout after the invoice's tenant scope has ended", async () => {
       const invoice = await ensureVerificationInvoice(pharmacyA.id);
-      const checkout = await createIntasendBillingCheckout(invoice.id);
+      assert.equal(peekTenant(), undefined, "the service must not depend on a caller tenant scope");
+      const checkout = await createIntasendBillingCheckout(pharmacyA.id, invoice.id);
       assert.equal(checkout.ok, true);
       assert.ok(checkout.checkoutUrl, "Must return IntaSend hosted checkout URL");
 
