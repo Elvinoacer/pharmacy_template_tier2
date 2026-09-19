@@ -37,8 +37,8 @@ export default function FaqAccordion({
   const filterClass = (active: boolean) =>
     `shrink-0 rounded-full border px-3.5 py-2 text-[11px] font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--brand)] sm:text-xs ${
       active
-        ? "border-[var(--brand)] bg-[var(--brand)] text-white"
-        : "border-[var(--line-2)] bg-[var(--card)] text-[var(--muted)] hover:border-[var(--brand)] hover:bg-[var(--brand-tint)] hover:text-[var(--foreground)]"
+        ? "border-[var(--brand)] bg-[var(--brand)] text-[var(--background)]"
+        : "border-[color-mix(in_srgb,var(--foreground)_55%,var(--card))] bg-[var(--card)] text-[var(--muted)] hover:border-[var(--brand)] hover:bg-[var(--brand-tint)] hover:text-[var(--foreground)]"
     }`;
 
   return (
@@ -63,7 +63,7 @@ export default function FaqAccordion({
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             placeholder="Search questions…"
-            className="h-12 w-full min-w-0 rounded-2xl border border-[var(--line-2)] bg-[var(--card-elev)] pl-10 pr-4 text-base text-[var(--foreground)] shadow-sm outline-none transition-colors placeholder:text-[var(--muted-2)] focus:border-[var(--brand)] focus:bg-[var(--card)] focus:ring-2 focus:ring-[color-mix(in_srgb,var(--brand)_16%,transparent)] sm:text-sm"
+            className="h-12 w-full min-w-0 rounded-2xl border border-[color-mix(in_srgb,var(--foreground)_55%,var(--card-elev))] bg-[var(--card-elev)] pl-10 pr-4 text-base text-[var(--foreground)] shadow-sm outline-none transition-colors placeholder:text-[var(--muted)] focus:border-[var(--brand)] focus:bg-[var(--card)] focus:ring-2 focus:ring-[color-mix(in_srgb,var(--brand)_28%,transparent)] sm:text-sm"
             aria-label="Search FAQs"
           />
         </div>
@@ -90,7 +90,7 @@ export default function FaqAccordion({
 
       <div className="mt-5 space-y-2.5 sm:mt-6 sm:space-y-3" role="list">
         {filtered.length === 0 && (
-          <div className="rounded-2xl border border-dashed border-[var(--line-2)] bg-[var(--card)] px-4 py-8 text-center sm:px-6 sm:py-10">
+          <div className="rounded-2xl border border-dashed border-[color-mix(in_srgb,var(--foreground)_55%,var(--card))] bg-[var(--card)] px-4 py-8 text-center sm:px-6 sm:py-10">
             <p className="text-sm leading-6 text-[var(--muted)]">
               No questions match your search. Try another term or{" "}
               <TenantLink href="/contact" className="font-semibold text-[var(--brand)] underline underline-offset-2">
@@ -109,14 +109,14 @@ export default function FaqAccordion({
               key={`${faq.question}-${i}`}
               className={`overflow-hidden rounded-2xl border transition-colors ${
                 open
-                  ? "border-[color-mix(in_srgb,var(--brand)_34%,var(--line-2))] bg-[var(--card)]"
-                  : "border-[var(--line-2)] bg-[var(--card)]"
+                  ? "border-[var(--brand)] bg-[var(--card)]"
+                  : "border-[color-mix(in_srgb,var(--foreground)_55%,var(--card))] bg-[var(--card)]"
               }`}
               role="listitem"
             >
               <button
                 type="button"
-                className="flex min-h-[68px] w-full min-w-0 items-start justify-between gap-3 px-4 py-4 text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-[var(--brand)] sm:min-h-[76px] sm:gap-4 sm:px-5"
+                className="flex min-h-[68px] w-full min-w-0 items-start justify-between gap-3 px-4 py-4 text-left transition-colors hover:bg-[var(--brand-tint)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-[var(--brand)] sm:min-h-[76px] sm:gap-4 sm:px-5"
                 onClick={() => setOpenId(open ? null : id)}
                 aria-expanded={open}
               >
@@ -129,7 +129,7 @@ export default function FaqAccordion({
                   </span>
                 </span>
                 <span
-                  className={`mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-[var(--line)] bg-[var(--brand-tint)] text-[var(--brand)] transition-transform ${
+                  className={`mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-[color-mix(in_srgb,var(--foreground)_55%,var(--brand-tint))] bg-[var(--brand-tint)] text-[var(--brand)] transition-transform ${
                     open ? "rotate-45" : ""
                   }`}
                   aria-hidden
@@ -141,7 +141,7 @@ export default function FaqAccordion({
               </button>
 
               {open && (
-                <div className="border-t border-[var(--line)] bg-[var(--card-elev)] px-4 pb-4 pt-3 sm:px-5 sm:pb-5">
+                <div className="border-t border-[color-mix(in_srgb,var(--foreground)_55%,var(--card-elev))] bg-[var(--card-elev)] px-4 pb-4 pt-3 sm:px-5 sm:pb-5">
                   <p className="break-words text-[13px] leading-6 text-[var(--muted)] sm:text-sm sm:leading-relaxed">
                     {faq.answer}
                   </p>
