@@ -1,6 +1,7 @@
 import assert from "node:assert/strict";
 import { describe, it } from "node:test";
 import {
+  classifyPrescriptionMatch,
   matchesPrescriptionName,
   prescriptionNames,
 } from "../app/lib/prescription-discovery";
@@ -61,7 +62,6 @@ describe("prescription discovery", () => {
     );
   });
   it("distinguishes exact clinical match vs likely product match", () => {
-    const { classifyPrescriptionMatch } = require("../app/lib/prescription-discovery");
     const exact = classifyPrescriptionMatch("Panadol 500mg", ["Panadol 500mg tablets"]);
     assert.equal(exact.match, true);
     assert.equal(exact.kind, "exact");
