@@ -95,6 +95,12 @@
   border-color: var(--line-2) !important;
 }
 
+/* Auth submit buttons keep a visible disabled boundary in both themes instead
+   of inheriting the lower-contrast generic disabled border. */
+.surface:is([data-flow="login"], [data-flow="register"], [data-flow="forgot-password"], [data-flow="reset-password"]) :global(.btn-primary:disabled) {
+  border-color: color-mix(in srgb, var(--foreground) 55%, var(--card-elev)) !important;
+}
+
 .surface :global(code) {
   max-width: 100%;
   overflow-wrap: anywhere;
