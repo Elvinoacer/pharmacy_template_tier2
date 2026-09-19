@@ -139,8 +139,8 @@ export default function Footer({
             <div className="min-w-0 sm:col-span-2 lg:col-span-4 xl:col-span-3">
               {/* Brand Logo & Title */}
               <Link href={storefront ? `/p/${slug}` : "/"} className="flex min-w-0 items-center gap-3">
-                <span className="relative flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl border border-emerald-400/40 bg-gradient-to-br from-[#0d6e5a] to-[#084c3f] shadow-md shadow-emerald-950/40">
-                  <BrandMark size={22} />
+                <span className="relative flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl border border-white/70 bg-white p-1.5 shadow-[0_8px_22px_rgba(0,0,0,0.28)] sm:h-16 sm:w-16 sm:p-2">
+                  <BrandMark size={50} />
                 </span>
                 <span className="flex min-w-0 flex-col leading-tight">
                   <span

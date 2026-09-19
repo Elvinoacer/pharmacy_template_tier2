@@ -27,6 +27,7 @@ import {
 import { WorkspaceIcon } from "./WorkspaceIcons";
 import { useNavigationProgress } from "./NavigationProgress";
 import { formatBadgeCount } from "@/app/components/shell/useShell";
+import BrandMark from "@/app/components/BrandMark";
 
 export function WorkspaceRail({
   role,
@@ -172,15 +173,6 @@ export function WorkspaceRail({
           ? "/portal"
           : "/caregiver";
 
-  const brandMarkText =
-    role === "admin"
-      ? "Rx"
-      : role === "platform"
-        ? "P"
-        : role === "portal"
-          ? "A"
-          : "C";
-
   return (
     <div
       className="relative flex min-h-screen"
@@ -205,7 +197,7 @@ export function WorkspaceRail({
             aria-label={`${brand?.name || "Afyvia"} workspace home`}
             onClick={() => startNavigation(homeHref, "Dashboard")}
           >
-            {brandMarkText}
+            <BrandMark size={39} />
           </Link>
         </div>
 

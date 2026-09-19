@@ -291,8 +291,8 @@ export default function Navbar({
               className="group flex min-w-0 flex-1 items-center gap-2.5 overflow-hidden sm:gap-3 lg:flex-none"
               aria-label={`${brandLabel} home`}
             >
-              <span className="relative flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-[#0d6e5a] to-[#084c3f] shadow-md shadow-teal-900/20 transition-transform duration-300 group-hover:scale-105 sm:h-10 sm:w-10">
-                <BrandMark size={18} />
+              <span className="relative flex h-11 w-11 shrink-0 items-center justify-center rounded-[15px] border border-white/80 bg-white p-1.5 shadow-[0_5px_16px_rgba(5,55,44,0.18)] transition-transform duration-300 group-hover:scale-105 sm:h-12 sm:w-12 sm:p-1.5">
+                <BrandMark size={39} />
               </span>
               <span className="flex min-w-0 flex-col leading-none">
                 <span

@@ -1,9 +1,28 @@
-export default function BrandMark({ size = 18, className }: { size?: number; className?: string }) {
-  const style = { width: size, height: size, objectFit: "contain" } as React.CSSProperties;
+type BrandMarkProps = {
+  size?: number;
+  className?: string;
+};
+
+/**
+ * The symbol is intentionally served from a tightly cropped asset. The old
+ * source contains a large transparent canvas, which made the mark disappear
+ * when it was rendered in a small navigation tile.
+ */
+export default function BrandMark({ size = 32, className }: BrandMarkProps) {
   return (
-    <picture className={className} aria-hidden>
-      <source srcSet="/afyvia_logo.webp" type="image/webp" />
-      <img src="/afyvia_logo-removebg-preview.png" alt="Afyvia" style={style} />
-    </picture>
+    <span
+      className={className}
+      aria-hidden="true"
+      style={{ width: size, height: size, display: "inline-flex", flexShrink: 0 }}
+    >
+      <img
+        src="/afyvia-symbol.png"
+        alt=""
+        width={size}
+        height={size}
+        decoding="async"
+        style={{ width: "100%", height: "100%", objectFit: "contain" }}
+      />
+    </span>
   );
 }
