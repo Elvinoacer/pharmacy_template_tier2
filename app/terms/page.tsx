@@ -22,7 +22,7 @@ const sections = [
 ] as const;
 
 const sectionClass =
-  "liquid-glass care-glass scroll-mt-28 rounded-2xl border border-[var(--care-border)] bg-[var(--care-glass)] p-4 backdrop-blur-xl shadow-sm transition-colors duration-300 sm:rounded-3xl sm:p-6";
+  "liquid-glass care-glass scroll-mt-28 rounded-2xl border !border-[color-mix(in_srgb,var(--foreground)_55%,var(--card-elev))] bg-[var(--care-glass)] p-4 backdrop-blur-xl shadow-sm transition-colors duration-300 sm:rounded-3xl sm:p-6";
 
 export default function TermsPage() {
   return (
@@ -36,11 +36,11 @@ export default function TermsPage() {
 
       <section className="px-3 pb-16 sm:px-6 sm:pb-20">
         <div className="mx-auto w-full max-w-4xl">
-          <div className="liquid-glass care-glass mb-5 flex flex-col gap-3 rounded-2xl border border-[var(--care-border)] bg-[var(--care-glass)] p-4 backdrop-blur-xl shadow-sm sm:mb-7 sm:flex-row sm:items-center sm:justify-between sm:p-5">
+          <div className="liquid-glass care-glass mb-5 flex flex-col gap-3 rounded-2xl border !border-[color-mix(in_srgb,var(--foreground)_55%,var(--card-elev))] bg-[var(--care-glass)] p-4 backdrop-blur-xl shadow-sm sm:mb-7 sm:flex-row sm:items-center sm:justify-between sm:p-5">
             <p className="text-xs text-[var(--muted-2)]">Last updated: August 24, 2026</p>
             <Link
               href="/privacy"
-              className="glass inline-flex min-h-10 w-full items-center justify-center rounded-full px-4 py-2 text-xs font-semibold text-[var(--brand)] transition hover:border-[var(--brand)] hover:bg-[var(--brand-tint)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--brand)] sm:w-auto"
+              className="glass inline-flex min-h-10 w-full items-center justify-center rounded-full border !border-[color-mix(in_srgb,var(--foreground)_55%,var(--card-elev))] px-4 py-2 text-xs font-semibold text-[var(--brand)] transition hover:border-[var(--brand)] hover:bg-[var(--brand-tint)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--brand)] sm:w-auto"
             >
               View Privacy Policy
             </Link>
@@ -52,7 +52,7 @@ export default function TermsPage() {
                 <a
                   key={section.id}
                   href={`#${section.id}`}
-                  className="glass inline-flex min-h-10 shrink-0 items-center rounded-full px-3.5 py-2 text-xs font-semibold text-[var(--muted)] transition hover:border-[var(--brand)] hover:bg-[var(--brand-tint)] hover:text-[var(--brand)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--brand)]"
+                  className="glass inline-flex min-h-10 shrink-0 items-center rounded-full border !border-[color-mix(in_srgb,var(--foreground)_55%,var(--card-elev))] px-3.5 py-2 text-xs font-semibold text-[var(--muted)] transition hover:border-[var(--brand)] hover:bg-[var(--brand-tint)] hover:text-[var(--brand)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--brand)]"
                 >
                   {index + 1}. {section.label}
                 </a>
@@ -157,7 +157,7 @@ export default function TermsPage() {
               <p className="mt-2">Questions about these terms can be sent to our platform team.</p>
               <a
                 href={`mailto:${platform.email}`}
-                className="mt-4 inline-flex min-h-11 w-full items-center justify-center rounded-full bg-[var(--brand)] px-5 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:opacity-90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--brand)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--background)] sm:w-auto"
+                className="mt-4 inline-flex min-h-11 w-full items-center justify-center rounded-full bg-[var(--brand)] px-5 py-2.5 text-sm font-semibold text-[var(--background)] shadow-sm transition-colors hover:bg-[var(--brand-deep)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--brand)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--background)] sm:w-auto"
               >
                 Email {platform.email}
               </a>
