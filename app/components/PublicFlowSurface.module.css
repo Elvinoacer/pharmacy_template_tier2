@@ -162,16 +162,24 @@
 /* Storefront contains a larger amount of legacy light-first utility styling.
    Keep imagery/brand gradients intact while mapping functional content surfaces
    and copy to theme tokens. */
-.surface[data-flow="storefront"] :global(.glass-tile) {
+.surface[data-flow="storefront"] :global(.glass-tile),
+.surface[data-flow="storefront"] :global(.glass-tile-strong),
+.surface[data-flow="storefront"] :global(.glass-panel),
+.surface[data-flow="storefront"] :global(.glass-panel-strong) {
   color: var(--foreground);
-  border-color: var(--line-2) !important;
-  background: color-mix(in srgb, var(--card) 84%, transparent) !important;
+  border-color: color-mix(in srgb, var(--foreground) 55%, var(--card)) !important;
+  background: color-mix(in srgb, var(--card) 88%, transparent) !important;
+}
+
+.surface[data-flow="storefront"] :global(.hero-badge) {
+  color: var(--brand-deep) !important;
+  border-color: color-mix(in srgb, var(--foreground) 55%, var(--card)) !important;
+  background: color-mix(in srgb, var(--card) 88%, transparent) !important;
 }
 
 :global(html[data-theme="dark"]) .surface[data-flow="storefront"] :global(.hero-badge) {
   color: #99f6e4 !important;
-  border-color: rgba(94, 234, 212, 0.18) !important;
-  background: rgba(8, 34, 28, 0.78) !important;
+  background: rgba(8, 34, 28, 0.88) !important;
 }
 
 :global(html[data-theme="dark"]) .surface[data-flow="storefront"] :global([class~="ring-white/25"]),
