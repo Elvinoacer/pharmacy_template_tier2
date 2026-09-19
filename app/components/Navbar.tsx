@@ -251,30 +251,30 @@ export default function Navbar({
         className={`hidden text-xs transition-all duration-300 sm:block ${
           onDarkHero
             ? "bg-transparent text-teal-50/80"
-            : "bg-gradient-to-r from-[#06332a] via-[#084c3f] to-[#0d6e5a] text-[#e3f2ec]"
+            : "border-b border-[var(--line-2)] bg-[color-mix(in_srgb,var(--background)_78%,var(--brand)_22%)] text-[var(--foreground)]"
         } ${scrolled ? "max-h-0 overflow-hidden py-0 opacity-0" : "max-h-12 py-2 opacity-100"}`}
       >
         <div className="mx-auto flex max-w-7xl items-center justify-between gap-4 px-4 sm:px-6 lg:px-8">
           <div className="flex min-w-0 items-center gap-4 text-[11px] font-medium tracking-wide sm:gap-6">
-            <a href={brand.phoneHref} className="flex shrink-0 items-center gap-1.5 whitespace-nowrap transition hover:text-white">
-              <Phone className="h-3 w-3 shrink-0 text-teal-300" />
+            <a href={brand.phoneHref} className="flex shrink-0 items-center gap-1.5 whitespace-nowrap transition hover:text-[var(--brand-deep)]">
+              <Phone className="h-3 w-3 shrink-0 text-[var(--brand)]" />
               <span>{brand.phone}</span>
             </a>
             <a
               href={`mailto:${brand.email}`}
-              className="hidden shrink-0 items-center gap-1.5 whitespace-nowrap transition hover:text-white md:flex"
+              className="hidden shrink-0 items-center gap-1.5 whitespace-nowrap transition hover:text-[var(--brand-deep)] md:flex"
             >
-              <Mail className="h-3 w-3 shrink-0 text-teal-300" />
+              <Mail className="h-3 w-3 shrink-0 text-[var(--brand)]" />
               <span>{brand.email}</span>
             </a>
-            <div className="hidden shrink-0 items-center gap-1.5 whitespace-nowrap text-teal-100/80 lg:flex">
-              <MapPin className="h-3 w-3 shrink-0 text-teal-300" />
+            <div className="hidden shrink-0 items-center gap-1.5 whitespace-nowrap text-[var(--muted)] lg:flex">
+              <MapPin className="h-3 w-3 shrink-0 text-[var(--brand)]" />
               <span>{shortAddress}</span>
             </div>
           </div>
           {sessionUser?.fullName ? (
-            <p className="hidden truncate text-[11px] text-teal-100/75 xl:block">
-              Signed in as <span className="font-semibold text-white">{sessionUser.fullName}</span>
+            <p className="hidden truncate text-[11px] text-[var(--muted)] xl:block">
+              Signed in as <span className="font-semibold text-[var(--foreground)]">{sessionUser.fullName}</span>
             </p>
           ) : null}
         </div>
@@ -463,17 +463,17 @@ export default function Navbar({
               {isPlatform ? (
                 <Link
                   href="/for-pharmacies"
-                  className="hidden items-center gap-1.5 whitespace-nowrap rounded-full bg-gradient-to-r from-[#0d6e5a] to-[#084c3f] px-3 py-2 text-xs font-bold text-white shadow-md shadow-teal-900/20 transition-all hover:scale-[1.02] sm:inline-flex sm:px-4 sm:py-2.5"
+                  className="hidden items-center gap-1.5 whitespace-nowrap rounded-full bg-gradient-to-r from-[var(--brand)] to-[var(--brand-deep)] px-3 py-2 text-xs font-bold text-[var(--background)] shadow-md shadow-teal-900/20 transition-all hover:scale-[1.02] sm:inline-flex sm:px-4 sm:py-2.5"
                 >
-                  <Building2 className="h-3.5 w-3.5 shrink-0 text-teal-200" />
+                  <Building2 className="h-3.5 w-3.5 shrink-0 text-current opacity-80" />
                   <span>Join as a pharmacy</span>
                 </Link>
               ) : (
                 <Link
                   href={withBase("/refill")}
-                  className="hidden items-center gap-1.5 whitespace-nowrap rounded-full bg-gradient-to-r from-[#0d6e5a] to-[#084c3f] px-3 py-2 text-xs font-bold text-white shadow-md shadow-teal-900/20 transition-all hover:scale-[1.02] sm:inline-flex sm:px-4 sm:py-2.5"
+                  className="hidden items-center gap-1.5 whitespace-nowrap rounded-full bg-gradient-to-r from-[var(--brand)] to-[var(--brand-deep)] px-3 py-2 text-xs font-bold text-[var(--background)] shadow-md shadow-teal-900/20 transition-all hover:scale-[1.02] sm:inline-flex sm:px-4 sm:py-2.5"
                 >
-                  <Pill className="h-3.5 w-3.5 shrink-0 text-teal-200" />
+                  <Pill className="h-3.5 w-3.5 shrink-0 text-current opacity-80" />
                   <span>Request Refill</span>
                 </Link>
               )}
@@ -517,9 +517,9 @@ export default function Navbar({
                   <Link
                     href="/#pharmacies"
                     onClick={() => setMenuOpen(false)}
-                    className="flex min-h-12 items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-[#0d6e5a] to-[#084c3f] px-3 py-3 text-xs font-bold text-white shadow-md"
+                    className="flex min-h-12 items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-[var(--brand)] to-[var(--brand-deep)] px-3 py-3 text-xs font-bold text-[var(--background)] shadow-md"
                   >
-                    <MapPin className="h-4 w-4 shrink-0 text-teal-200" />
+                    <MapPin className="h-4 w-4 shrink-0 text-current opacity-80" />
                     <span>Find a pharmacy</span>
                   </Link>
                   <Link
@@ -536,9 +536,9 @@ export default function Navbar({
                   <Link
                     href={withBase("/refill")}
                     onClick={() => setMenuOpen(false)}
-                    className="flex min-h-12 items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-[#0d6e5a] to-[#084c3f] px-3 py-3 text-xs font-bold text-white shadow-md"
+                    className="flex min-h-12 items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-[var(--brand)] to-[var(--brand-deep)] px-3 py-3 text-xs font-bold text-[var(--background)] shadow-md"
                   >
-                    <Pill className="h-4 w-4 shrink-0 text-teal-200" />
+                    <Pill className="h-4 w-4 shrink-0 text-current opacity-80" />
                     <span>Request Refill</span>
                   </Link>
                   <Link
@@ -639,9 +639,9 @@ export default function Navbar({
               </p>
               <a
                 href={brand.phoneHref}
-                className="mt-2.5 inline-flex items-center gap-2 rounded-full bg-[#0d6e5a] px-5 py-2.5 text-xs font-bold text-white shadow-md"
+                className="mt-2.5 inline-flex items-center gap-2 rounded-full bg-[var(--brand)] px-5 py-2.5 text-xs font-bold text-[var(--background)] shadow-md"
               >
-                <Phone className="h-3.5 w-3.5 text-teal-200" />
+                <Phone className="h-3.5 w-3.5 text-current opacity-80" />
                 <span className="truncate">Call {brand.phone}</span>
               </a>
             </div>

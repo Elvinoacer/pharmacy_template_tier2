@@ -365,7 +365,7 @@ export default function Footer({
                         name="email"
                         required
                         placeholder="Enter your email"
-                        className="w-full rounded-2xl border border-white/10 bg-black/50 px-4 py-3 pr-10 text-xs text-white placeholder:text-slate-500 shadow-inner outline-none transition-colors focus:border-emerald-400"
+                        className="w-full rounded-2xl border border-white/40 bg-black/50 px-4 py-3 pr-10 text-xs text-white placeholder:text-slate-400 shadow-inner outline-none transition-colors focus:border-emerald-400"
                       />
                       <Mail className="pointer-events-none absolute right-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-500" />
                     </div>
@@ -373,7 +373,7 @@ export default function Footer({
                     <button
                       type="submit"
                       disabled={newsPending}
-                      className="flex w-full items-center justify-center gap-2 rounded-full bg-gradient-to-r from-[#d4af37] via-[#c2b036] to-[#22c55e] px-6 py-3.5 text-xs font-bold text-slate-950 shadow-lg shadow-emerald-950/40 transition-all hover:scale-[1.02] hover:brightness-110 active:scale-98 disabled:cursor-not-allowed disabled:saturate-50 disabled:brightness-75"
+                      className="flex w-full items-center justify-center gap-2 rounded-full bg-gradient-to-r from-[#d4af37] via-[#c2b036] to-[#22c55e] px-6 py-3.5 text-xs font-bold text-slate-950 shadow-lg shadow-emerald-950/40 transition-all hover:scale-[1.02] hover:brightness-110 active:scale-98 disabled:cursor-not-allowed disabled:saturate-50"
                     >
                       <span>{newsPending ? "Subscribing…" : "Subscribe"}</span>
                       <ArrowRight className="h-3.5 w-3.5" />
