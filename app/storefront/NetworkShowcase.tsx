@@ -48,7 +48,7 @@ export default function NetworkStorefrontShowcase({
       {/* ── Hero ─────────────────────────────────────────────────────────── */}
       <section className="relative overflow-hidden px-4 pb-16 pt-32 sm:px-6 sm:pb-20 sm:pt-36">
         <div className="relative mx-auto max-w-6xl text-center">
-          <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-[var(--care-border)] bg-[var(--care-glass)] px-4 py-1.5 text-xs font-semibold text-[var(--brand)] shadow-sm backdrop-blur-xl">
+          <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-[color-mix(in_srgb,var(--foreground)_55%,var(--card-elev))] bg-[var(--care-glass)] px-4 py-1.5 text-xs font-semibold text-[var(--brand)] shadow-sm backdrop-blur-xl">
             <span className="relative flex h-2 w-2">
               <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-75" />
               <span className="relative inline-flex h-2 w-2 rounded-full bg-emerald-500" />
@@ -73,21 +73,21 @@ export default function NetworkStorefrontShowcase({
           <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
             <Link
               href="/pharmacies"
-              className="inline-flex min-h-12 items-center justify-center gap-2 rounded-xl bg-[var(--brand)] px-6 text-sm font-semibold text-white shadow-sm transition hover:opacity-95 active:scale-95"
+              className="inline-flex min-h-12 items-center justify-center gap-2 rounded-xl bg-[var(--brand)] px-6 text-sm font-semibold text-[var(--background)] shadow-sm transition-colors hover:bg-[var(--brand-deep)] active:scale-95"
             >
               <Store size={16} />
               Browse All Pharmacies
             </Link>
             <Link
               href="/medicines"
-              className="liquid-glass care-glass inline-flex min-h-12 items-center justify-center gap-2 rounded-xl border border-[var(--care-border)] bg-[var(--card-elev)] px-6 text-sm font-semibold text-[var(--foreground)] shadow-sm transition hover:border-[var(--brand)] active:scale-95"
+              className="liquid-glass care-glass inline-flex min-h-12 items-center justify-center gap-2 rounded-xl border border-[color-mix(in_srgb,var(--foreground)_55%,var(--card-elev))] bg-[var(--card-elev)] px-6 text-sm font-semibold text-[var(--foreground)] shadow-sm transition hover:border-[var(--brand)] active:scale-95"
             >
               <Pill size={16} />
               Search Medicines
             </Link>
             <Link
               href="/refill"
-              className="liquid-glass care-glass inline-flex min-h-12 items-center justify-center gap-2 rounded-xl border border-[var(--care-border)] bg-[var(--card-elev)] px-6 text-sm font-semibold text-[var(--foreground)] shadow-sm transition hover:border-[var(--brand)] active:scale-95"
+              className="liquid-glass care-glass inline-flex min-h-12 items-center justify-center gap-2 rounded-xl border border-[color-mix(in_srgb,var(--foreground)_55%,var(--card-elev))] bg-[var(--card-elev)] px-6 text-sm font-semibold text-[var(--foreground)] shadow-sm transition hover:border-[var(--brand)] active:scale-95"
             >
               <RotateCw size={16} />
               Request Refill
@@ -101,7 +101,7 @@ export default function NetworkStorefrontShowcase({
         <div className="mx-auto grid max-w-6xl gap-4 sm:grid-cols-2 lg:grid-cols-4">
           <Link
             href="/pharmacies"
-            className="liquid-glass care-glass group flex flex-col justify-between rounded-2xl border border-[var(--care-border)] bg-[var(--care-glass)] p-5 shadow-sm backdrop-blur-xl transition hover:border-[var(--brand)] hover:shadow-md"
+            className="liquid-glass care-glass group flex flex-col justify-between rounded-2xl border border-[color-mix(in_srgb,var(--foreground)_55%,var(--card-elev))] bg-[var(--care-glass)] p-5 shadow-sm backdrop-blur-xl transition hover:border-[var(--brand)] hover:shadow-md"
           >
             <div>
               <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-[var(--brand-soft)] text-[var(--brand)]">
@@ -121,7 +121,7 @@ export default function NetworkStorefrontShowcase({
 
           <Link
             href="/medicines"
-            className="liquid-glass care-glass group flex flex-col justify-between rounded-2xl border border-[var(--care-border)] bg-[var(--care-glass)] p-5 shadow-sm backdrop-blur-xl transition hover:border-[var(--brand)] hover:shadow-md"
+            className="liquid-glass care-glass group flex flex-col justify-between rounded-2xl border border-[color-mix(in_srgb,var(--foreground)_55%,var(--card-elev))] bg-[var(--care-glass)] p-5 shadow-sm backdrop-blur-xl transition hover:border-[var(--brand)] hover:shadow-md"
           >
             <div>
               <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-[var(--brand-soft)] text-[var(--brand)]">
@@ -141,7 +141,7 @@ export default function NetworkStorefrontShowcase({
 
           <Link
             href="/screenings"
-            className="liquid-glass care-glass group flex flex-col justify-between rounded-2xl border border-[var(--care-border)] bg-[var(--care-glass)] p-5 shadow-sm backdrop-blur-xl transition hover:border-[var(--brand)] hover:shadow-md"
+            className="liquid-glass care-glass group flex flex-col justify-between rounded-2xl border border-[color-mix(in_srgb,var(--foreground)_55%,var(--card-elev))] bg-[var(--care-glass)] p-5 shadow-sm backdrop-blur-xl transition hover:border-[var(--brand)] hover:shadow-md"
           >
             <div>
               <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-[var(--brand-soft)] text-[var(--brand)]">
@@ -161,7 +161,7 @@ export default function NetworkStorefrontShowcase({
 
           <Link
             href="/vaccinations"
-            className="liquid-glass care-glass group flex flex-col justify-between rounded-2xl border border-[var(--care-border)] bg-[var(--care-glass)] p-5 shadow-sm backdrop-blur-xl transition hover:border-[var(--brand)] hover:shadow-md"
+            className="liquid-glass care-glass group flex flex-col justify-between rounded-2xl border border-[color-mix(in_srgb,var(--foreground)_55%,var(--card-elev))] bg-[var(--care-glass)] p-5 shadow-sm backdrop-blur-xl transition hover:border-[var(--brand)] hover:shadow-md"
           >
             <div>
               <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-[var(--brand-soft)] text-[var(--brand)]">
@@ -218,7 +218,7 @@ export default function NetworkStorefrontShowcase({
               return (
                 <div
                   key={pharmacy.id}
-                  className="liquid-glass care-glass flex flex-col justify-between overflow-hidden rounded-3xl border border-[var(--care-border)] bg-[var(--care-glass)] shadow-sm backdrop-blur-xl transition hover:border-[var(--brand)] hover:shadow-lg"
+                  className="liquid-glass care-glass flex flex-col justify-between overflow-hidden rounded-3xl border border-[color-mix(in_srgb,var(--foreground)_55%,var(--card-elev))] bg-[var(--care-glass)] shadow-sm backdrop-blur-xl transition hover:border-[var(--brand)] hover:shadow-lg"
                 >
                   <div>
                     <div className="relative h-44 w-full overflow-hidden bg-[var(--brand-soft)]">
@@ -259,18 +259,18 @@ export default function NetworkStorefrontShowcase({
                     </div>
                   </div>
 
-                  <div className="border-t border-[var(--care-border)] p-4 pt-3">
+                  <div className="border-t border-[color-mix(in_srgb,var(--foreground)_55%,var(--card-elev))] p-4 pt-3">
                     <div className="grid grid-cols-2 gap-2">
                       <Link
                         href={`/p/${pharmacy.slug}`}
-                        className="inline-flex min-h-10 items-center justify-center gap-1 rounded-xl bg-[var(--brand)] px-3 text-xs font-semibold text-white shadow-sm transition hover:opacity-95"
+                        className="inline-flex min-h-10 items-center justify-center gap-1 rounded-xl bg-[var(--brand)] px-3 text-xs font-semibold text-[var(--background)] shadow-sm transition-colors hover:bg-[var(--brand-deep)]"
                       >
                         <Store size={13} />
                         Storefront
                       </Link>
                       <Link
                         href={`/pharmacies/${pharmacy.slug}`}
-                        className="inline-flex min-h-10 items-center justify-center gap-1 rounded-xl border border-[var(--care-border)] bg-[var(--card-elev)] px-3 text-xs font-semibold text-[var(--foreground)] transition hover:border-[var(--brand)]"
+                        className="inline-flex min-h-10 items-center justify-center gap-1 rounded-xl border border-[color-mix(in_srgb,var(--foreground)_55%,var(--card-elev))] bg-[var(--card-elev)] px-3 text-xs font-semibold text-[var(--foreground)] transition hover:border-[var(--brand)]"
                       >
                         Profile &amp; Map
                       </Link>
@@ -285,7 +285,7 @@ export default function NetworkStorefrontShowcase({
 
       {/* ── Network Trust Facts ─────────────────────────────────────────── */}
       <section className="px-4 py-12 sm:px-6">
-        <div className="liquid-glass care-glass mx-auto max-w-6xl rounded-3xl border border-[var(--care-border)] bg-[var(--care-glass)] p-8 shadow-sm backdrop-blur-xl sm:p-12">
+        <div className="liquid-glass care-glass mx-auto max-w-6xl rounded-3xl border border-[color-mix(in_srgb,var(--foreground)_55%,var(--card-elev))] bg-[var(--care-glass)] p-8 shadow-sm backdrop-blur-xl sm:p-12">
           <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
             <div>
               <p className="text-3xl font-bold text-[var(--brand)] sm:text-4xl">100%</p>
