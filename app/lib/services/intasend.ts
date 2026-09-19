@@ -101,30 +101,53 @@ function logIntasend(
   else console.info(line);
 }
 
+function sanitizeProviderError(value: unknown, depth = 0): unknown {
+  if (depth > 4) return "[truncated]";
+
+  if (typeof value === "string") {
+    return truncate(
+      value
+        .replace(/[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}/gi, "[email]")
+        .replace(/\b(?:\+?254|0)?[17]\d{8}\b/g, "[phone]")
+        .replace(/https?:\/\/\S+/gi, "[url]"),
+      240,
+    );
+  }
+  if (typeof value === "number" || typeof value === "boolean" || value === null) return value;
+  if (Array.isArray(value)) return value.slice(0, 10).map((item) => sanitizeProviderError(item, depth + 1));
+  if (!isRecord(value)) return typeof value;
+
+  const safe: Record<string, unknown> = {};
+  for (const [key, child] of Object.entries(value).slice(0, 20)) {
+    if (/^(?:value|input|received|payload|request|headers|authorization|token|secret|api[_-]?key|publishable[_-]?key)$/i.test(key)) {
+      safe[key] = "[redacted]";
+      continue;
+    }
+    safe[key] = sanitizeProviderError(child, depth + 1);
+  }
+  return safe;
+}
+
 function providerBodySummary(body: string): Record<string, unknown> {
   if (!body.trim()) return {};
 
   try {
     const parsed: unknown = JSON.parse(body);
-    if (!isRecord(parsed)) return { response: truncate(body) };
+    if (!isRecord(parsed)) return { response: sanitizeProviderError(body) };
 
-    const fields = ["code", "detail", "message", "error", "status"];
     const summary: Record<string, unknown> = {};
-    for (const field of fields) {
+    for (const field of ["type", "code", "detail", "message", "error", "status", "errors"]) {
       if (parsed[field] !== undefined) {
-        const value = parsed[field];
-        summary[field] =
-          typeof value === "string" || typeof value === "number" || typeof value === "boolean"
-            ? truncate(String(value))
-            : typeof value;
+        summary[field] = sanitizeProviderError(parsed[field]);
       }
     }
-    return Object.keys(summary).length ? summary : { responseKeys: Object.keys(parsed).slice(0, 20) };
+    return Object.keys(summary).length
+      ? summary
+      : { responseKeys: Object.keys(parsed).slice(0, 20) };
   } catch {
-    return { response: truncate(body.replace(/\s+/g, " ")) };
+    return { response: sanitizeProviderError(body.replace(/\s+/g, " ")) };
   }
 }
-
 function parseJsonRecord(body: string): JsonRecord | null {
   try {
     const parsed: unknown = JSON.parse(body);
@@ -334,37 +357,53 @@ export async function createIntasendCheckout(
     return { ok: true, ...mock };
   }
 
-  const body = {
+  const apiRef = cleanProviderText(input.apiRef, `invoice-${operationId.slice(0, 8)}`);
+  const currency = input.currency || "KES";
+  const minimalBody = {
     amount: amount.toFixed(2),
-    currency: input.currency || "KES",
-    api_ref: cleanProviderText(input.apiRef, `invoice-${operationId.slice(0, 8)}`),
+    currency,
+    api_ref: apiRef,
+    redirect_url: input.redirectUrl,
+  };
+  const body = {
+    ...minimalBody,
     email: validEmail(input.email),
     first_name: cleanProviderText(input.firstName, "Customer"),
     last_name: input.lastName ? cleanProviderText(input.lastName, "Customer") : undefined,
     phone_number: validKenyanPhone(input.phone),
-    country: "KE",
-    host: config.appBaseUrl,
-    redirect_url: input.redirectUrl,
-    comment: input.comment ? cleanProviderText(input.comment, "Payment") : undefined,
-    channel: "WEBSITE",
-    mobile_tarrif: "BUSINESS-PAYS",
-    card_tarrif: "BUSINESS-PAYS",
   };
-
   const { controller, timer } = withTimeout();
-  try {
-    const response = await fetch(`${config.baseUrl}/api/v1/checkout/`, {
+  const requestCheckout = (requestBody: Record<string, unknown>) =>
+    fetch(`${config.baseUrl}/api/v1/checkout/`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
+        "Accept": "application/json",
         // Checkout-link creation is authenticated by the public key. The
         // secret key is deliberately not sent to this endpoint.
         "X-IntaSend-Public-API-Key": config.publishableKey,
       },
-      body: JSON.stringify(body),
+      body: JSON.stringify(requestBody),
       signal: controller.signal,
     });
-    const responseText = await response.text().catch(() => "");
+
+  try {
+    let response = await requestCheckout(body);
+    let responseText = await response.text().catch(() => "");
+
+    // IntaSend returns HTTP 400 for field-level checkout validation failures.
+    // Optional prefill fields can vary by account/environment, so retry once
+    // with the documented minimal checkout payload before surfacing an error.
+    if (!response.ok && response.status === 400) {
+      logIntasend("warn", "checkout.create.retrying_minimal_payload", {
+        operationId,
+        apiRef: input.apiRef,
+        httpStatus: response.status,
+        provider: providerBodySummary(responseText),
+      });
+      response = await requestCheckout(minimalBody);
+      responseText = await response.text().catch(() => "");
+    }
 
     if (!response.ok) {
       logIntasend("error", "checkout.create.provider_rejected", {
