@@ -224,7 +224,11 @@ html[data-theme="dark"] body:has([data-auth-artwork="true"]) {
    instead of leaving white text on unpredictable photograph luminance. */
 html[data-theme="light"] [data-auth-artwork="true"] > aside {
   color: #0c2b1e !important;
-  text-shadow: 0 1px 12px rgba(255, 255, 255, 0.95) !important;
+  border: 1px solid #6b897a !important;
+  border-radius: 1.8rem !important;
+  background: rgba(248, 252, 249, 0.80) !important;
+  padding: 1rem !important;
+  text-shadow: none !important;
 }
 
 html[data-theme="light"] [data-auth-artwork="true"] > aside :is(
