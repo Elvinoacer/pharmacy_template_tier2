@@ -9,6 +9,7 @@ import {
   Sparkles,
 } from "lucide-react";
 import styles from "@/app/components/onboard/OnboardSurface.module.css";
+import polish from "@/app/components/onboard/OnboardFormPolish.module.css";
 
 type PharmacyOnboardingStage =
   | "ACCOUNT"
@@ -129,7 +130,7 @@ export function OnboardingJourneyShell({
       </div>
 
       {/* Persistent Journey Chapter Stepper */}
-      <nav aria-label="Onboarding journey progress" className={`mb-5 ${styles.journeyStepper}`}>
+      <nav aria-label="Onboarding journey progress" className={`mb-5 ${polish.journeyStepper}`}>
         <ol className="grid grid-cols-5 gap-1.5 sm:gap-2 text-center" role="list">
           {JOURNEY_CHAPTERS.map((chapter, idx) => {
             const isCurrent = idx === currentChapterIdx;
@@ -139,24 +140,24 @@ export function OnboardingJourneyShell({
               <li
                 key={chapter.id}
                 aria-current={isCurrent ? "step" : undefined}
-                className={`${styles.journeyChapter} ${
+                className={`${polish.journeyChapter} ${
                   isCurrent
-                    ? styles.journeyChapterCurrent
+                    ? polish.journeyChapterCurrent
                     : isCompleted
-                      ? styles.journeyChapterCompleted
-                      : styles.journeyChapterUpcoming
+                      ? polish.journeyChapterCompleted
+                      : polish.journeyChapterUpcoming
                 }`}
               >
-                <span className={styles.journeyChapterBadge}>
+                <span className={polish.journeyChapterBadge}>
                   {isCompleted ? (
                     <CheckCircle2 className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-emerald-600 dark:text-emerald-400" />
                   ) : isCurrent ? (
                     <span>{idx + 1}</span>
                   ) : (
-                    <span className="opacity-75">{idx + 1}</span>
+                    <span>{idx + 1}</span>
                   )}
                 </span>
-                <span className={styles.journeyChapterLabel}>
+                <span className={polish.journeyChapterLabel}>
                   {chapter.label}
                 </span>
               </li>
