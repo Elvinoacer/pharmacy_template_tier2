@@ -29,14 +29,14 @@ export default async function ResetPasswordPage({
         ]}
         footer={
           <p>
-            <Link href="/login" className="font-semibold text-[#0d6e5a] hover:underline">
+            <Link href="/login" className="rounded-sm font-semibold text-[var(--brand)] underline-offset-2 hover:text-[var(--brand-deep)] hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--brand)]">
               Back to sign in
             </Link>
           </p>
         }
       >
         {!token && (
-          <p className="rounded-2xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-700">
+          <p className="rounded-2xl border border-rose-300 bg-rose-50 px-4 py-3 text-sm font-medium text-rose-800 dark:border-rose-400/60 dark:bg-rose-950/70 dark:text-rose-100">
             Missing reset token. Use the link from your email.
           </p>
         )}
