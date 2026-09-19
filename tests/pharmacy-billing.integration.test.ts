@@ -82,10 +82,11 @@ test("pharmacy billing: capped promotions, settlement, isolation and renewals", 
       assert.equal(Number(paidMonthly.totalKes), 500);
       assert.equal(paidMonthly.status, "open");
     } finally {
-      await db.auditLog.deleteMany({ where: { pharmacyId: { in: [first.id, second.id] } } });
-      await db.pharmacy.deleteMany({ where: { id: { in: [first.id, second.id] } } });
-      await db.pharmacyPromotion.delete({ where: { id: promo.id } });
-      await db.user.delete({ where: { id: owner.id } });
+      // This suite runs only against an explicitly disposable test database.
+      // Audit logs are intentionally append-only and keep a RESTRICT relation
+      // to their pharmacy, so deleting these fixtures would weaken the same
+      // immutability guarantee the test environment is supposed to exercise.
+      // Random UUIDs/emails/slugs make retained fixtures safe across reruns.
     }
   });
   await db.$disconnect();
