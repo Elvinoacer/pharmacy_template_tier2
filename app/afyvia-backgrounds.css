@@ -208,8 +208,9 @@ html[data-theme="dark"] body:has([data-auth-artwork="true"]) {
 
 [data-auth-artwork="true"] > aside > ul > li {
   padding: 0.7rem 0.85rem !important;
-  background: rgba(3, 28, 21, 0.38) !important;
-  border-color: rgba(255, 255, 255, 0.18) !important;
+  background: rgba(3, 28, 21, 0.52) !important;
+  border-color: rgba(255, 255, 255, 0.45) !important;
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.45) !important;
   backdrop-filter: none !important;
   -webkit-backdrop-filter: none !important;
 }
@@ -218,12 +219,42 @@ html[data-theme="dark"] body:has([data-auth-artwork="true"]) {
   margin-top: 1.4rem !important;
 }
 
+/* Forgot/reset share this artwork-backed AuthForm. In light mode the global
+   veil is intentionally bright, so the supporting panel switches to dark copy
+   instead of leaving white text on unpredictable photograph luminance. */
+html[data-theme="light"] [data-auth-artwork="true"] > aside {
+  color: #0c2b1e !important;
+  text-shadow: 0 1px 12px rgba(255, 255, 255, 0.95) !important;
+}
+
+html[data-theme="light"] [data-auth-artwork="true"] > aside :is(
+  [class~="text-white"],
+  [class~="text-teal-50"],
+  [class~="text-teal-50/90"],
+  [class~="text-teal-100"],
+  [class~="text-teal-100/80"],
+  [class~="text-teal-100/70"],
+  [class~="text-teal-200"]
+) {
+  color: #0c2b1e !important;
+}
+
+html[data-theme="light"] [data-auth-artwork="true"] > aside [class~="bg-black/15"] {
+  background-color: rgba(248, 252, 249, 0.86) !important;
+}
+
+html[data-theme="light"] [data-auth-artwork="true"] > aside > ul > li {
+  background: rgba(248, 252, 249, 0.88) !important;
+  border-color: #6b897a !important;
+  box-shadow: inset 0 0 0 1px #6b897a !important;
+}
+
 /* Form side is the only substantial login surface. */
 [data-auth-artwork="true"] > div:last-child {
   padding: clamp(1.6rem, 3vw, 2.25rem) !important;
-  border: 1px solid rgba(180, 235, 211, 0.2) !important;
+  border: 1px solid #6b897a !important;
   border-radius: 1.8rem !important;
-  background: rgba(248, 252, 249, 0.76) !important;
+  background: rgba(248, 252, 249, 0.84) !important;
   box-shadow:
     0 24px 72px rgba(0, 0, 0, 0.24),
     inset 0 1px 0 rgba(255, 255, 255, 0.4) !important;
@@ -232,8 +263,8 @@ html[data-theme="dark"] body:has([data-auth-artwork="true"]) {
 }
 
 html[data-theme="dark"] [data-auth-artwork="true"] > div:last-child {
-  background: rgba(3, 20, 14, 0.64) !important;
-  border-color: rgba(147, 233, 194, 0.18) !important;
+  background: rgba(3, 20, 14, 0.72) !important;
+  border-color: #7fae99 !important;
   box-shadow:
     0 28px 90px rgba(0, 0, 0, 0.34),
     inset 0 1px 0 rgba(255, 255, 255, 0.05) !important;
