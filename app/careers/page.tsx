@@ -59,7 +59,7 @@ export default async function CareersPage() {
               <article
                 key={job.id}
                 id={job.id}
-                className="liquid-glass care-glass min-w-0 scroll-mt-28 rounded-2xl border border-[var(--care-border)] bg-[var(--care-glass)] p-4 shadow-sm backdrop-blur-xl transition-all duration-300 hover:shadow-md sm:rounded-3xl sm:p-6"
+                className="liquid-glass care-glass min-w-0 scroll-mt-28 rounded-2xl border !border-[color-mix(in_srgb,var(--foreground)_55%,var(--card-elev))] bg-[var(--care-glass)] p-4 shadow-sm backdrop-blur-xl transition-all duration-300 hover:shadow-md sm:rounded-3xl sm:p-6"
               >
                 <div className="flex flex-wrap items-center gap-2">
                   <span className="inline-flex min-h-7 items-center rounded-full bg-[var(--brand-soft)] px-2.5 py-1 text-[10px] font-bold uppercase tracking-[0.12em] text-[var(--brand)]">
@@ -86,7 +86,7 @@ export default async function CareersPage() {
                 </p>
 
                 {job.requirements && job.requirements.length > 0 && (
-                  <div className="mt-4 rounded-xl border border-[var(--care-border)] bg-[var(--card-elev)]/60 p-3.5 backdrop-blur-md sm:rounded-2xl sm:p-4">
+                  <div className="mt-4 rounded-xl border border-[color-mix(in_srgb,var(--foreground)_55%,var(--card-elev))] bg-[var(--card-elev)]/60 p-3.5 backdrop-blur-md sm:rounded-2xl sm:p-4">
                     <h3 className="text-xs font-bold uppercase tracking-[0.12em] text-[var(--foreground)] sm:text-sm sm:normal-case sm:tracking-normal">
                       Requirements
                     </h3>
@@ -109,7 +109,7 @@ export default async function CareersPage() {
 
                 <a
                   href="#apply"
-                  className="mt-4 inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-xl border border-[var(--care-border)] bg-[var(--card-elev)] px-4 text-sm font-semibold text-[var(--brand)] shadow-sm transition active:scale-95 hover:border-[var(--brand)] hover:bg-[var(--brand-tint)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--brand)] sm:w-auto"
+                  className="mt-4 inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-xl border border-[color-mix(in_srgb,var(--foreground)_55%,var(--card-elev))] bg-[var(--card-elev)] px-4 text-sm font-semibold text-[var(--brand)] shadow-sm transition active:scale-95 hover:border-[var(--brand)] hover:bg-[var(--brand-tint)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--brand)] sm:w-auto"
                 >
                   Apply for this role
                   <ArrowDownRight className="h-4 w-4" aria-hidden="true" />
@@ -118,7 +118,7 @@ export default async function CareersPage() {
             ))}
 
             {platformJobs.length === 0 && (
-              <div className="liquid-glass care-glass rounded-2xl border border-dashed border-[var(--care-border)] bg-[var(--care-glass)] p-6 text-center backdrop-blur-xl sm:p-8">
+              <div className="liquid-glass care-glass rounded-2xl border border-dashed !border-[color-mix(in_srgb,var(--foreground)_55%,var(--card-elev))] bg-[var(--care-glass)] p-6 text-center backdrop-blur-xl sm:p-8">
                 <BriefcaseBusiness className="mx-auto h-8 w-8 text-[var(--brand)]" aria-hidden="true" />
                 <p className="mt-2 text-sm font-semibold text-[var(--foreground)]">
                   No open roles right now
@@ -132,7 +132,7 @@ export default async function CareersPage() {
 
           <aside
             id="apply"
-            className="liquid-glass care-glass min-w-0 scroll-mt-24 rounded-2xl border border-[var(--care-border)] bg-[var(--care-glass)] p-4 shadow-sm backdrop-blur-xl transition-colors duration-300 sm:rounded-3xl sm:p-6 lg:sticky lg:top-28 lg:p-7 xl:p-8"
+            className="liquid-glass care-glass min-w-0 scroll-mt-24 rounded-2xl border !border-[color-mix(in_srgb,var(--foreground)_55%,var(--card-elev))] bg-[var(--care-glass)] p-4 shadow-sm backdrop-blur-xl transition-colors duration-300 sm:rounded-3xl sm:p-6 lg:sticky lg:top-28 lg:p-7 xl:p-8"
           >
             <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-[var(--brand)] sm:text-xs">
               Application
@@ -149,7 +149,7 @@ export default async function CareersPage() {
             <div className="relative mt-5 min-w-0 sm:mt-6">
               <CareerForm roles={roles} pharmacySlug={pharmacy?.slug ?? undefined} />
             </div>
-            <p className="mt-5 break-words border-t border-[var(--care-border)] pt-4 text-xs leading-5 text-[var(--muted)]">
+            <p className="mt-5 break-words border-t border-[color-mix(in_srgb,var(--foreground)_55%,var(--card-elev))] pt-4 text-xs leading-5 text-[var(--muted)]">
               Prefer email? Send your CV to{" "}
               <a
                 href={`mailto:${contactEmail}?subject=Careers`}
