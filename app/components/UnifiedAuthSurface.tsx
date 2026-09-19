@@ -1120,7 +1120,7 @@ export default function UnifiedAuthSurface({
                         type="checkbox"
                         checked={agreed}
                         onChange={(e) => setAgreed(e.target.checked)}
-                        className="mt-0.5 h-4 w-4 shrink-0 appearance-none rounded border border-white/25 bg-black/25 checked:border-lime-300 checked:bg-lime-400 checked:shadow-[0_0_10px_rgba(163,230,53,0.4)] focus:outline-none focus:ring-2 focus:ring-lime-300/30 cursor-pointer transition-all"
+                        className="mt-0.5 h-4 w-4 shrink-0 appearance-none rounded border border-[#52705f] bg-white checked:border-[#14532d] checked:bg-[#14532d] focus:outline-none focus:ring-2 focus:ring-[#14532d] cursor-pointer transition-all dark:border-white/50 dark:bg-black/25 dark:checked:border-lime-300 dark:checked:bg-lime-400 dark:focus:ring-lime-300"
                       />
                       <span>
                         I agree to the{" "}
