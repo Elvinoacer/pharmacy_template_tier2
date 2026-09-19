@@ -1,6 +1,8 @@
 #!/usr/bin/env node
-const fs = require('fs');
-const path = require('path');
+
+(async () => {
+const fs = await import('node:fs');
+const path = await import('node:path');
 
 const ROOT = path.resolve(__dirname, '..');
 const EXCLUDES = [
@@ -58,13 +60,13 @@ walk(ROOT, (filePath) => {
   const textExt = ['.js', '.ts', '.jsx', '.tsx', '.css', '.md', '.json', '.env', '.html', '.txt', '.py'];
   if (!textExt.includes(path.extname(filePath)) && path.extname(filePath) !== '') return;
   try {
-    let content = fs.readFileSync(filePath, 'utf8');
+    const content = fs.readFileSync(filePath, 'utf8');
     const replaced = replaceText(content);
     if (replaced !== content) {
       fs.writeFileSync(filePath, replaced, 'utf8');
       changedFiles.push(filePath);
     }
-  } catch (err) {
+  } catch {
     // skip binary or unreadable files
   }
 });
@@ -77,7 +79,7 @@ walk(ROOT, (filePath) => {
     try {
       const newPath = renamePath(filePath);
       if (newPath !== filePath) renamed.push({ from: filePath, to: newPath });
-    } catch (err) {
+    } catch {
       // ignore rename errors
     }
   }
@@ -91,3 +93,7 @@ for (const r of renamed.slice(0, 100)) console.log('  ', path.relative(ROOT, r.f
 if (changedFiles.length === 0 && renamed.length === 0) console.log('No changes made.');
 
 process.exit(0);
+})().catch((error) => {
+  console.error('Afyvia replacement script failed:', error);
+  process.exit(1);
+});
