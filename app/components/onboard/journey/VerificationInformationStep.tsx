@@ -232,7 +232,7 @@ export function VerificationInformationStep({
             </div>
 
             {/* Document upload: Licence */}
-            <div className="mt-4 pt-3 border-t border-[var(--line-2)]">
+            <div className="mt-4 pt-3 border-t border-[color-mix(in_srgb,var(--foreground)_55%,var(--card-elev))]">
               <span className="block text-xs font-semibold text-[var(--foreground)] mb-1">
                 Upload PPB Licence Evidence <span>(Optional at intake)</span>
               </span>
@@ -241,8 +241,8 @@ export function VerificationInformationStep({
               </p>
 
               {licenseDocumentUrl ? (
-                <div className="flex items-center gap-3 rounded-xl border border-emerald-500/20 bg-emerald-500/10 p-3">
-                  <div className="relative h-14 w-14 overflow-hidden rounded-lg border border-emerald-500/30 bg-black/5 shrink-0">
+                <div className="flex items-center gap-3 rounded-xl border border-[color-mix(in_srgb,var(--foreground)_55%,var(--card-elev))] bg-emerald-500/10 p-3">
+                  <div className="relative h-14 w-14 overflow-hidden rounded-lg border border-[color-mix(in_srgb,var(--foreground)_55%,var(--card-elev))] bg-black/5 shrink-0">
                     <img
                       src={previewSrc(pharmacy.id, "license", licensePreviewVersion)}
                       alt="Licence preview"
@@ -271,7 +271,7 @@ export function VerificationInformationStep({
                   </label>
                 </div>
               ) : (
-                <label className="flex flex-col items-center justify-center gap-1.5 rounded-2xl border-2 border-dashed border-[var(--line-2)] hover:border-[var(--brand)] p-4 text-center cursor-pointer transition-colors bg-[var(--card-elev)]/50">
+                <label className="flex flex-col items-center justify-center gap-1.5 rounded-2xl border-2 border-dashed border-[color-mix(in_srgb,var(--foreground)_55%,var(--card-elev))] hover:border-[var(--brand)] p-4 text-center cursor-pointer transition-colors bg-[var(--card-elev)]/50">
                   {uploading === "license" ? (
                     <Loader2 className="h-6 w-6 animate-spin text-[var(--brand)]" />
                   ) : (
@@ -370,7 +370,7 @@ export function VerificationInformationStep({
             </div>
 
             {/* Document upload: Business Evidence */}
-            <div className="mt-4 pt-3 border-t border-[var(--line-2)]">
+            <div className="mt-4 pt-3 border-t border-[color-mix(in_srgb,var(--foreground)_55%,var(--card-elev))]">
               <span className="block text-xs font-semibold text-[var(--foreground)] mb-1">
                 Upload Business Registration Evidence <span>(Optional at intake)</span>
               </span>
@@ -379,8 +379,8 @@ export function VerificationInformationStep({
               </p>
 
               {businessDocumentUrl ? (
-                <div className="flex items-center gap-3 rounded-xl border border-emerald-500/20 bg-emerald-500/10 p-3">
-                  <div className="relative h-14 w-14 overflow-hidden rounded-lg border border-emerald-500/30 bg-black/5 shrink-0">
+                <div className="flex items-center gap-3 rounded-xl border border-[color-mix(in_srgb,var(--foreground)_55%,var(--card-elev))] bg-emerald-500/10 p-3">
+                  <div className="relative h-14 w-14 overflow-hidden rounded-lg border border-[color-mix(in_srgb,var(--foreground)_55%,var(--card-elev))] bg-black/5 shrink-0">
                     <img
                       src={previewSrc(pharmacy.id, "business", businessPreviewVersion)}
                       alt="Business doc preview"
@@ -409,7 +409,7 @@ export function VerificationInformationStep({
                   </label>
                 </div>
               ) : (
-                <label className="flex flex-col items-center justify-center gap-1.5 rounded-2xl border-2 border-dashed border-[var(--line-2)] hover:border-[var(--brand)] p-4 text-center cursor-pointer transition-colors bg-[var(--card-elev)]/50">
+                <label className="flex flex-col items-center justify-center gap-1.5 rounded-2xl border-2 border-dashed border-[color-mix(in_srgb,var(--foreground)_55%,var(--card-elev))] hover:border-[var(--brand)] p-4 text-center cursor-pointer transition-colors bg-[var(--card-elev)]/50">
                   {uploading === "business" ? (
                     <Loader2 className="h-6 w-6 animate-spin text-[var(--brand)]" />
                   ) : (
@@ -435,7 +435,7 @@ export function VerificationInformationStep({
           </section>
 
           {/* 4. Mandatory Applicant Authority Declaration */}
-          <section className="rounded-2xl border border-teal-500/30 bg-teal-50/50 dark:bg-teal-950/20 p-4">
+          <section className="rounded-2xl border border-[color-mix(in_srgb,var(--foreground)_55%,var(--card-elev))] bg-teal-50/50 dark:bg-teal-950/20 p-4">
             <label className="flex items-start gap-3 cursor-pointer">
               <input
                 type="checkbox"
@@ -443,7 +443,7 @@ export function VerificationInformationStep({
                 checked={authorityConfirmed}
                 onChange={(e) => setAuthorityConfirmed(e.target.checked)}
                 required
-                className="mt-1 h-4 w-4 rounded border-[var(--line-1)] text-[var(--brand)] focus:ring-[var(--brand)]"
+                className="mt-1 h-4 w-4 rounded border-[color-mix(in_srgb,var(--foreground)_55%,var(--card-elev))] text-[var(--brand)] focus:ring-2 focus:ring-[var(--brand)] focus:ring-offset-2 focus:ring-offset-[var(--card)]"
               />
               <div className="text-xs leading-relaxed text-[var(--foreground)]">
                 <strong className="block text-sm font-bold text-teal-950 dark:text-teal-100">
