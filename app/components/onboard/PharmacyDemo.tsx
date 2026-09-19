@@ -189,7 +189,7 @@ export default function PharmacyDemo() {
               onClick={() => setPanel(tab)}
               className={`min-h-7 rounded-full px-2.5 py-1 text-xs font-semibold transition-all duration-200 active:scale-95 ${
                 isActive
-                  ? "bg-[var(--brand)] text-white shadow-sm ring-2 ring-[var(--brand)] ring-offset-1 ring-offset-[var(--background)]"
+                  ? "bg-[var(--brand)] text-[var(--background)] shadow-sm ring-2 ring-[var(--brand)] ring-offset-1 ring-offset-[var(--background)]"
                   : "bg-[var(--card-elev)] text-[var(--foreground)] hover:bg-[var(--brand-soft)] hover:text-[var(--brand)]"
               }`}
             >
@@ -252,7 +252,7 @@ export default function PharmacyDemo() {
                   placeholder="Search medicines..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-full rounded-lg border border-[var(--line-2)] bg-[var(--card)] py-1 pl-7 pr-2.5 text-xs text-[var(--foreground)]"
+                  className="w-full rounded-lg border border-[color-mix(in_srgb,var(--foreground)_55%,var(--card))] bg-[var(--card)] py-1 pl-7 pr-2.5 text-xs text-[var(--foreground)] placeholder:text-[var(--muted)] focus:border-[var(--brand)] focus:ring-2 focus:ring-[color-mix(in_srgb,var(--brand)_28%,transparent)]"
                 />
               </div>
             </div>
@@ -262,7 +262,7 @@ export default function PharmacyDemo() {
               {filteredStock.map((item) => (
                 <div
                   key={item.id}
-                  className="flex flex-wrap items-center justify-between gap-2 rounded-lg border border-[var(--line-2)] bg-[var(--card)] p-2 sm:p-2.5 shadow-sm transition-all hover:border-[var(--brand)]"
+                  className="flex flex-wrap items-center justify-between gap-2 rounded-lg border border-[color-mix(in_srgb,var(--foreground)_55%,var(--card))] bg-[var(--card)] p-2 sm:p-2.5 shadow-sm transition-all hover:border-[var(--brand)]"
                 >
                   <div className="min-w-0">
                     <div className="flex items-center gap-2">
@@ -273,14 +273,14 @@ export default function PharmacyDemo() {
                     </div>
                     <p className="text-[10px] text-[var(--muted)]">
                       KES {item.price} ·{" "}
-                      <span className={item.stock > 0 ? "text-emerald-700 font-semibold" : "text-rose-600 font-bold"}>
+                      <span className={item.stock > 0 ? "text-emerald-700 dark:text-emerald-300 font-semibold" : "text-rose-700 dark:text-rose-300 font-bold"}>
                         {item.stock > 0 ? `${item.stock} in stock` : "Out of stock"}
                       </span>
                     </p>
                   </div>
 
                   <div className="flex items-center gap-1.5">
-                    <div className="flex items-center gap-0.5 rounded border border-[var(--line-2)] bg-[var(--card-elev)] p-0.5">
+                    <div className="flex items-center gap-0.5 rounded border border-[color-mix(in_srgb,var(--foreground)_55%,var(--card-elev))] bg-[var(--card-elev)] p-0.5">
                       <button
                         type="button"
                         onClick={() => adjustStock(item.id, -1)}
@@ -305,7 +305,7 @@ export default function PharmacyDemo() {
                     <button
                       type="button"
                       onClick={() => toggleAvailability(item.id)}
-                      className="rounded border border-[var(--line-2)] px-2 py-0.5 text-[10px] font-semibold hover:bg-[var(--brand-soft)] hover:text-[var(--brand)] active:scale-95 transition-all"
+                      className="rounded border border-[color-mix(in_srgb,var(--foreground)_55%,var(--card))] px-2 py-0.5 text-[10px] font-semibold hover:bg-[var(--brand-soft)] hover:text-[var(--brand)] active:scale-95 transition-all"
                     >
                       {item.stock > 0 ? "Out" : "Restock"}
                     </button>
@@ -355,7 +355,7 @@ export default function PharmacyDemo() {
               {requests.map((req) => (
                 <div
                   key={req.id}
-                  className="rounded-lg border border-[var(--line-2)] bg-[var(--card)] p-2.5 shadow-sm"
+                  className="rounded-lg border border-[color-mix(in_srgb,var(--foreground)_55%,var(--card))] bg-[var(--card)] p-2.5 shadow-sm"
                 >
                   <div className="flex flex-wrap items-center justify-between gap-1.5">
                     <div className="flex items-center gap-1.5">
@@ -364,10 +364,10 @@ export default function PharmacyDemo() {
                       <span
                         className={`rounded-full px-1.5 py-0.2 text-[8px] font-bold ${
                           req.type === "refill"
-                            ? "bg-emerald-100 text-emerald-800"
+                            ? "bg-emerald-100 text-emerald-800 dark:bg-emerald-950/70 dark:text-emerald-200"
                             : req.type === "urgent"
-                              ? "bg-rose-100 text-rose-800"
-                              : "bg-blue-100 text-blue-800"
+                              ? "bg-rose-100 text-rose-800 dark:bg-rose-950/70 dark:text-rose-200"
+                              : "bg-blue-100 text-blue-800 dark:bg-blue-950/70 dark:text-blue-200"
                         }`}
                       >
                         {req.type.toUpperCase()}
@@ -378,31 +378,31 @@ export default function PharmacyDemo() {
 
                   <p className="mt-0.5 text-xs font-medium text-[var(--foreground)]">{req.medicine}</p>
 
-                  <div className="mt-2 flex flex-wrap items-center justify-between gap-1.5 border-t border-[var(--line-2)] pt-2">
+                  <div className="mt-2 flex flex-wrap items-center justify-between gap-1.5 border-t border-[color-mix(in_srgb,var(--foreground)_55%,var(--card))] pt-2">
                     <div className="flex items-center gap-1 text-[10px]">
                       <span className="text-[var(--muted)]">Status:</span>
                       {req.status === "pending" && (
-                        <span className="inline-flex items-center gap-1 rounded-full bg-amber-100 px-1.5 py-0.5 text-[10px] font-bold text-amber-800">
+                        <span className="inline-flex items-center gap-1 rounded-full bg-amber-100 px-1.5 py-0.5 text-[10px] font-bold text-amber-800 dark:bg-amber-950/70 dark:text-amber-200">
                           <Clock size={10} /> Needs STK Push
                         </span>
                       )}
                       {req.status === "stk_sent" && (
-                        <span className="inline-flex items-center gap-1 rounded-full bg-blue-100 px-1.5 py-0.5 text-[10px] font-bold text-blue-800">
+                        <span className="inline-flex items-center gap-1 rounded-full bg-blue-100 px-1.5 py-0.5 text-[10px] font-bold text-blue-800 dark:bg-blue-950/70 dark:text-blue-200">
                           <Smartphone size={10} /> Prompt Sent
                         </span>
                       )}
                       {req.status === "paid" && (
-                        <span className="inline-flex items-center gap-1 rounded-full bg-emerald-100 px-1.5 py-0.5 text-[10px] font-bold text-emerald-800">
+                        <span className="inline-flex items-center gap-1 rounded-full bg-emerald-100 px-1.5 py-0.5 text-[10px] font-bold text-emerald-800 dark:bg-emerald-950/70 dark:text-emerald-200">
                           <CheckCircle2 size={10} /> KES {req.amount} Paid
                         </span>
                       )}
                       {req.status === "ready" && (
-                        <span className="inline-flex items-center gap-1 rounded-full bg-purple-100 px-2 py-0.5 text-[10px] font-bold text-purple-800">
+                        <span className="inline-flex items-center gap-1 rounded-full bg-purple-100 px-2 py-0.5 text-[10px] font-bold text-purple-800 dark:bg-purple-950/70 dark:text-purple-200">
                           <Package size={10} /> Ready
                         </span>
                       )}
                       {req.status === "dispatched" && (
-                        <span className="inline-flex items-center gap-1 rounded-full bg-teal-100 px-1.5 py-0.5 text-[10px] font-bold text-teal-800">
+                        <span className="inline-flex items-center gap-1 rounded-full bg-teal-100 px-1.5 py-0.5 text-[10px] font-bold text-teal-800 dark:bg-teal-950/70 dark:text-teal-200">
                           <Truck size={10} /> Dispatched ✓
                         </span>
                       )}
@@ -413,7 +413,7 @@ export default function PharmacyDemo() {
                       onClick={() => advanceRequest(req.id)}
                       disabled={req.status === "dispatched"}
                       className={`btn-primary text-xs !min-h-[26px] !py-0.5 px-2.5 active:scale-95 transition-all ${
-                        req.status === "dispatched" ? "opacity-50 cursor-not-allowed" : ""
+                        req.status === "dispatched" ? "cursor-not-allowed" : ""
                       }`}
                     >
                       {req.status === "pending" && (
