@@ -87,11 +87,11 @@ export default function CareerForm({
 
       <div className="min-w-0">
         <label htmlFor="cv" className="mb-1.5 block text-sm font-medium text-[var(--foreground)]">
-          CV / resume <span className="text-rose-600">*</span>
+          CV / resume <span className="text-rose-700 dark:text-rose-300">*</span>
         </label>
         <label
           htmlFor="cv"
-          className="flex min-h-14 min-w-0 cursor-pointer flex-col justify-center rounded-xl border border-dashed border-[var(--line-2)] bg-[var(--card-elev)] px-3.5 py-3 transition hover:border-[var(--brand)] hover:bg-[var(--brand-tint)] focus-within:ring-2 focus-within:ring-[var(--brand)] sm:px-4"
+          className="flex min-h-14 min-w-0 cursor-pointer flex-col justify-center rounded-xl border border-dashed border-[color-mix(in_srgb,var(--foreground)_55%,var(--card-elev))] bg-[var(--card-elev)] px-3.5 py-3 transition hover:border-[var(--brand)] hover:bg-[var(--brand-tint)] focus-within:ring-2 focus-within:ring-[var(--brand)] sm:px-4"
         >
           <span className="text-sm font-semibold text-[var(--foreground)]">
             {fileName || "Choose CV or resume"}
@@ -117,7 +117,7 @@ export default function CareerForm({
       </div>
 
       {status === "error" && (
-        <p className="rounded-xl border border-[var(--line-2)] bg-[var(--card-elev)] px-3.5 py-3 text-sm leading-5 text-rose-600" role="alert">
+        <p className="rounded-xl border border-rose-700 bg-[var(--card-elev)] px-3.5 py-3 text-sm leading-5 text-rose-700 dark:border-rose-300 dark:text-rose-300" role="alert">
           {errorMessage || "Something went wrong. Please try again or email your CV directly."}
         </p>
       )}
