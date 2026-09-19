@@ -1189,3 +1189,12 @@
   background: color-mix(in srgb, var(--foreground) 7%, var(--card-elev)) !important;
   color: var(--muted) !important;
 }
+
+.page :global(.btn-ghost) {
+  border-color: color-mix(in srgb, var(--foreground) 55%, var(--card-elev));
+}
+
+.page :global(.btn-primary:disabled),
+.page :global(.btn-ghost:disabled) {
+  border-color: color-mix(in srgb, var(--foreground) 55%, var(--card-elev)) !important;
+}
