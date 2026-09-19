@@ -146,9 +146,9 @@ export function EmailVerificationStep({
       {verifiedSuccess ? (
         <div
           role="status"
-          className="rounded-2xl border border-emerald-500/30 bg-emerald-500/10 p-5 text-center transition-all animate-in fade-in"
+          className="rounded-2xl border border-[color-mix(in_srgb,var(--foreground)_55%,var(--card-elev))] bg-emerald-500/10 p-5 text-center transition-all animate-in fade-in"
         >
-          <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-emerald-600 text-white mb-2">
+          <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-emerald-700 text-white mb-2">
             <CheckCircle2 className="h-6 w-6" />
           </div>
           <h3 className="text-base font-bold text-emerald-950 dark:text-emerald-100">
@@ -204,7 +204,7 @@ export function EmailVerificationStep({
             </p>
           ) : null}
           {resendState.success ? (
-            <p className="rounded-xl bg-emerald-500/10 border border-emerald-500/20 p-3 text-xs font-semibold text-emerald-800 dark:text-emerald-200">
+            <p className="rounded-xl bg-emerald-500/10 border border-[color-mix(in_srgb,var(--foreground)_55%,var(--card-elev))] p-3 text-xs font-semibold text-emerald-800 dark:text-emerald-200">
               {resendState.success}
             </p>
           ) : null}
@@ -214,13 +214,13 @@ export function EmailVerificationStep({
             </p>
           ) : null}
           {changeState.success ? (
-            <p className="rounded-xl bg-emerald-500/10 border border-emerald-500/20 p-3 text-xs font-semibold text-emerald-800 dark:text-emerald-200">
+            <p className="rounded-xl bg-emerald-500/10 border border-[color-mix(in_srgb,var(--foreground)_55%,var(--card-elev))] p-3 text-xs font-semibold text-emerald-800 dark:text-emerald-200">
               {changeState.success}
             </p>
           ) : null}
 
           {/* Secondary Actions: Resend & Change email */}
-          <div className="rounded-2xl border border-[var(--line-2)] bg-[var(--card-elev)] p-4">
+          <div className="rounded-2xl border border-[color-mix(in_srgb,var(--foreground)_55%,var(--card-elev))] bg-[var(--card-elev)] p-4">
             <p className="text-xs font-semibold text-[var(--muted)] mb-3">
               Didn’t receive the email? Check your spam/junk folder or use the options below:
             </p>
@@ -230,7 +230,7 @@ export function EmailVerificationStep({
                 <button
                   type="submit"
                   disabled={cooldown > 0 || resendPending}
-                  className="btn-ghost text-xs inline-flex items-center gap-1.5 min-h-10 px-3.5 rounded-xl border border-[var(--line-2)] disabled:opacity-50"
+                  className="btn-ghost text-xs inline-flex items-center gap-1.5 min-h-10 px-3.5 rounded-xl border border-[color-mix(in_srgb,var(--foreground)_55%,var(--card-elev))] disabled:opacity-100 disabled:cursor-not-allowed"
                 >
                   {resendPending ? (
                     <Loader2 className="h-3.5 w-3.5 animate-spin" />
@@ -244,7 +244,7 @@ export function EmailVerificationStep({
               <button
                 type="button"
                 onClick={() => setShowChangeEmail(!showChangeEmail)}
-                className="btn-ghost text-xs inline-flex items-center gap-1.5 min-h-10 px-3.5 rounded-xl border border-[var(--line-2)]"
+                className="btn-ghost text-xs inline-flex items-center gap-1.5 min-h-10 px-3.5 rounded-xl border border-[color-mix(in_srgb,var(--foreground)_55%,var(--card-elev))]"
               >
                 <Edit2 className="h-3.5 w-3.5" />
                 {showChangeEmail ? "Cancel change" : "Change email address"}
@@ -252,7 +252,7 @@ export function EmailVerificationStep({
             </div>
 
             {showChangeEmail ? (
-              <form action={changeAction} className="mt-4 pt-3 border-t border-[var(--line-2)]">
+              <form action={changeAction} className="mt-4 pt-3 border-t border-[color-mix(in_srgb,var(--foreground)_55%,var(--card-elev))]">
                 <label className="block text-xs font-semibold text-[var(--foreground)] mb-1">
                   New work email address
                 </label>
