@@ -360,7 +360,7 @@
   align-items: center;
   gap: 1.75rem;
   font-size: 11px;
-  color: rgba(255, 255, 255, 0.68);
+  color: rgba(255, 255, 255, 0.82);
 }
 
 /* ------------------------------------------------------------
@@ -411,8 +411,8 @@
   grid-template-columns: 1fr 1fr;
   padding: 4px;
   border-radius: 16px;
-  background: rgba(2, 18, 10, 0.48);
-  border: 1px solid rgba(255, 255, 255, 0.18);
+  background: rgba(2, 18, 10, 0.62);
+  border: 1px solid rgba(255, 255, 255, 0.38);
   box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.35);
   min-height: 50px;
   user-select: none;
@@ -597,8 +597,8 @@
   height: 52px;
   min-height: 52px;
   border-radius: 14px;
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  background: rgba(2, 20, 11, 0.36);
+  border: 1px solid rgba(255, 255, 255, 0.44);
+  background: rgba(2, 20, 11, 0.62);
   padding: 0 14px 0 46px;
   font-size: 14px;
   color: #ffffff;
@@ -607,7 +607,7 @@
 }
 
 .textInput::placeholder {
-  color: rgba(255, 255, 255, 0.36);
+  color: rgba(255, 255, 255, 0.74);
 }
 
 .textInput:focus {
@@ -633,7 +633,7 @@
   border-radius: 10px;
   border: none;
   background: transparent;
-  color: rgba(255, 255, 255, 0.5);
+  color: rgba(255, 255, 255, 0.76);
   cursor: pointer;
   transition: color 180ms ease, transform 140ms ease;
   -webkit-tap-highlight-color: transparent;
@@ -667,7 +667,7 @@
   gap: 0.75rem;
   border-radius: 14px;
   border: 1px solid rgba(255, 255, 255, 0.32);
-  background: linear-gradient(110deg, #4d7c17 0%, #84cc16 52%, #bef264 100%);
+  background: linear-gradient(110deg, #14532d 0%, #166534 52%, #15803d 100%);
   color: #ffffff;
   font-size: 15px;
   font-weight: 600;
@@ -695,9 +695,14 @@
 }
 
 .submitButton:disabled {
-  opacity: 0.5;
+  opacity: 1;
   cursor: not-allowed;
-  filter: grayscale(0.25);
+  filter: none;
+  border-color: #66756d;
+  background: #33443a;
+  color: #c7d1cb;
+  box-shadow: none;
+  text-shadow: none;
 }
 
 /* ------------------------------------------------------------
@@ -717,8 +722,8 @@
   justify-content: center;
   gap: 0.6rem;
   border-radius: 13px;
-  border: 1px solid rgba(255, 255, 255, 0.18);
-  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.40);
+  background: rgba(255, 255, 255, 0.07);
   color: #ffffff;
   font-size: 13.5px;
   font-weight: 500;
@@ -926,7 +931,7 @@
 }
 
 :global(html[data-theme="light"]) .authCard {
-  border-color: rgba(45, 138, 78, 0.25);
+  border-color: #739280;
   background: linear-gradient(
     145deg,
     rgba(255, 255, 255, 0.94) 0%,
@@ -938,8 +943,8 @@
 }
 
 :global(html[data-theme="light"]) .segmentedControl {
-  background: rgba(225, 240, 230, 0.88);
-  border-color: rgba(45, 138, 78, 0.22);
+  background: rgba(225, 240, 230, 0.94);
+  border-color: #739280;
 }
 
 :global(html[data-theme="light"]) .segmentedIndicator {
@@ -968,13 +973,13 @@
 
 :global(html[data-theme="light"]) .textInput {
   color: #0c2b1e;
-  border-color: rgba(45, 138, 78, 0.28);
+  border-color: #6b897a;
   background: rgba(255, 255, 255, 0.94);
   box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.04);
 }
 
 :global(html[data-theme="light"]) .textInput::placeholder {
-  color: #6b8d7e;
+  color: #4f6f61;
 }
 
 :global(html[data-theme="light"]) .textInput:focus {
@@ -1006,14 +1011,108 @@
 }
 
 :global(html[data-theme="light"]) .socialButton {
-  border-color: rgba(45, 138, 78, 0.22);
+  border-color: #739280;
   background: rgba(255, 255, 255, 0.88);
   color: #0c2b1e;
 }
 
 :global(html[data-theme="light"]) .socialButton:hover {
   background: #ffffff;
-  border-color: rgba(45, 138, 78, 0.38);
+  border-color: #52705f;
+}
+
+.socialButton:focus-visible {
+  outline: 2px solid #bef264;
+  outline-offset: 2px;
+}
+
+.authCard :global([class~="bg-white/12"]),
+.storyColumn :global([class~="bg-white/12"]) {
+  background-color: rgba(255, 255, 255, 0.34) !important;
+}
+
+.authCard :global([class~="border-white/10"]),
+.authCard :global([class~="border-white/20"]),
+.authCard :global([class~="border-white/25"]) {
+  border-color: rgba(255, 255, 255, 0.38) !important;
+}
+
+:global(html[data-theme="light"]) .segmentButton:hover {
+  color: #0c2b1e;
+}
+
+:global(html[data-theme="light"]) .storyColumn :global([class~="text-white"]),
+:global(html[data-theme="light"]) .authCard :global([class~="text-white"]) {
+  color: #0c2b1e !important;
+}
+
+:global(html[data-theme="light"]) .storyColumn :global([class~="text-white/85"]),
+:global(html[data-theme="light"]) .storyColumn :global([class~="text-white/80"]),
+:global(html[data-theme="light"]) .storyColumn :global([class~="text-white/70"]),
+:global(html[data-theme="light"]) .storyColumn :global([class~="text-white/65"]),
+:global(html[data-theme="light"]) .storyColumn :global([class~="text-white/60"]),
+:global(html[data-theme="light"]) .storyColumn :global([class~="text-white/55"]),
+:global(html[data-theme="light"]) .storyColumn :global([class~="text-white/50"]),
+:global(html[data-theme="light"]) .authCard :global([class~="text-white/85"]),
+:global(html[data-theme="light"]) .authCard :global([class~="text-white/80"]),
+:global(html[data-theme="light"]) .authCard :global([class~="text-white/75"]),
+:global(html[data-theme="light"]) .authCard :global([class~="text-white/70"]),
+:global(html[data-theme="light"]) .authCard :global([class~="text-white/60"]),
+:global(html[data-theme="light"]) .authCard :global([class~="text-white/50"]) {
+  color: #3b5c4d !important;
+}
+
+:global(html[data-theme="light"]) .storyColumn :global([class~="text-lime-300"]),
+:global(html[data-theme="light"]) .storyColumn :global([class~="text-lime-200"]),
+:global(html[data-theme="light"]) .storyColumn :global([class~="text-lime-100"]),
+:global(html[data-theme="light"]) .authCard :global([class~="text-lime-300"]),
+:global(html[data-theme="light"]) .authCard :global([class~="text-lime-200"]),
+:global(html[data-theme="light"]) .authCard :global([class~="text-lime-100"]) {
+  color: #1b6335 !important;
+}
+
+:global(html[data-theme="light"]) .authCard :global([class~="text-emerald-100"]),
+:global(html[data-theme="light"]) .authCard :global([class~="text-emerald-200"]),
+:global(html[data-theme="light"]) .authCard :global([class~="text-emerald-300"]) {
+  color: #065f46 !important;
+}
+
+:global(html[data-theme="light"]) .authCard :global([class~="text-rose-100"]),
+:global(html[data-theme="light"]) .authCard :global([class~="text-rose-200"]),
+:global(html[data-theme="light"]) .authCard :global([class~="text-rose-300"]) {
+  color: #a61b43 !important;
+}
+
+:global(html[data-theme="light"]) .authCard :global([class~="border-rose-300/30"]),
+:global(html[data-theme="light"]) .authCard :global([class~="border-rose-400/60"]) {
+  border-color: #b4234d !important;
+}
+
+:global(html[data-theme="light"]) .authCard :global([class~="border-lime-300/20"]),
+:global(html[data-theme="light"]) .authCard :global([class~="border-lime-300/30"]) {
+  border-color: #6b897a !important;
+}
+
+:global(html[data-theme="light"]) .authCard :global([class~="bg-white/12"]),
+:global(html[data-theme="light"]) .storyColumn :global([class~="bg-white/12"]) {
+  background-color: #739280 !important;
+}
+
+:global(html[data-theme="light"]) .authCard :global([class~="border-white/10"]),
+:global(html[data-theme="light"]) .authCard :global([class~="border-white/20"]),
+:global(html[data-theme="light"]) .authCard :global([class~="border-white/25"]) {
+  border-color: #739280 !important;
+}
+
+:global(html[data-theme="light"]) .authCard :global([class~="hover:text-lime-200"]:hover),
+:global(html[data-theme="light"]) .storyColumn :global([class~="hover:text-lime-200"]:hover) {
+  color: #14532d !important;
+}
+
+:global(html[data-theme="light"]) .submitButton:disabled {
+  border-color: #809189;
+  background: #d7dfda;
+  color: #53655b;
 }
 
 :global(html[data-theme="light"]) .mobileTrustBar {
