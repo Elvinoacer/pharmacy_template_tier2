@@ -135,7 +135,7 @@ export async function createPharmacyDraftAction(_prev: OnboardState, formData: F
           recipient: { email: created.email },
           subject: "Verify your email for pharmacy onboarding",
           body: emailVerificationBody(verificationToken),
-        });
+        }, { platformSender: true });
         if (delivery.status === "failed") {
           console.error("[onboard] verification email failed", delivery.error);
         }
@@ -158,7 +158,7 @@ export async function createPharmacyDraftAction(_prev: OnboardState, formData: F
             recipient: { email: user.email },
             subject: "Verify your email for pharmacy onboarding",
             body: emailVerificationBody(verificationToken),
-          });
+          }, { platformSender: true });
           if (delivery.status === "failed") {
             console.error("[onboard] verification email failed", delivery.error);
           }
@@ -436,15 +436,19 @@ export async function changeOwnerEmailAction(
 
     try {
       const verificationToken = await createEmailVerification(user.id);
-      await sendDelivery({
+      const delivery = await sendDelivery({
         channel: "email",
         purpose: "transactional",
         recipient: { email: newEmail },
         subject: "Verify your new email for pharmacy onboarding",
         body: emailVerificationBody(verificationToken),
-      });
+      }, { platformSender: true });
+      if (delivery.status === "failed") {
+        return { error: delivery.error || "We couldn't send the verification email right now. Please try again shortly.", field: "email" };
+      }
     } catch (e) {
       console.error("[onboard] send new verification email error", e);
+      return { error: "We couldn't send the verification email right now. Please try again shortly.", field: "email" };
     }
 
     revalidatePath("/onboard");

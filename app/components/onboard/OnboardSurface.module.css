@@ -1156,3 +1156,21 @@
 .joinNav strong { color: var(--brand); font-size: 1.15rem; letter-spacing: -.04em; }
 @media (max-width: 639px) { .joinNav { margin-bottom: 0.85rem; } .joinNav a > span { display: none; } }
 .tabs [aria-selected="true"] { background: #0d6e5a; color: #fff; }
+
+.kickerPath {
+  color: #486257;
+  font-weight: 500;
+  text-transform: lowercase;
+  letter-spacing: normal;
+}
+
+:global(html[data-theme="dark"]) .joinNav {
+  border-color: rgba(174, 240, 218, .28);
+  background: rgba(3, 16, 12, .36);
+}
+
+:global(html[data-theme="dark"]) .joinNav a,
+:global(html[data-theme="dark"]) .joinNav > span,
+:global(html[data-theme="dark"]) .kickerPath {
+  color: #c6e6d8;
+}

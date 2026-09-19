@@ -46,8 +46,8 @@ function supportPhone() {
   return process.env.SUPPORT_PHONE?.trim() || "0790670542";
 }
 
-async function sender(): Promise<SenderIdentity> {
-  return resolveSenderIdentity(peekTenant()?.pharmacyId ?? null);
+async function sender(platformOnly = false): Promise<SenderIdentity> {
+  return resolveSenderIdentity(platformOnly ? null : peekTenant()?.pharmacyId ?? null);
 }
 
 function escapeHtml(s: string): string {
@@ -212,15 +212,15 @@ function buildEmailHtml(subject: string, bodyText: string, identity: SenderIdent
 </html>`;
 }
 
-async function sendEmail(payload: DeliveryPayload): Promise<DeliveryResult> {
+async function sendEmail(payload: DeliveryPayload, platformOnly = false): Promise<DeliveryResult> {
   if (!payload.recipient.email) return { status: "failed", error: "Customer email is missing" };
 
-  const identity = await sender();
+  const identity = await sender(platformOnly);
   const resendKey = identity.resendApiKey;
   const from = identity.emailFrom;
   if (!resendKey || !from) {
     console.error("[delivery:email] delivery configuration unavailable");
-    return { status: "pending", error: "Email delivery is temporarily unavailable. Please try again later." };
+    return { status: "failed", error: "Email delivery is temporarily unavailable. Please try again later." };
   }
   const subject = payload.subject || identity.name;
 
@@ -247,6 +247,14 @@ async function sendEmail(payload: DeliveryPayload): Promise<DeliveryResult> {
     });
     return { status: "failed", provider: "resend", error: "Email could not be sent. Please try again later." };
   }
+
+  console.info("[delivery:email] provider accepted message", {
+    provider: "resend",
+    providerMessageId: json?.id || null,
+    fromDomain: from.match(/@([^>\s]+)/)?.[1]?.toLowerCase() || "unknown",
+    recipientDomain: payload.recipient.email.split("@")[1]?.toLowerCase() || "unknown",
+    platformSender: platformOnly,
+  });
 
   return { status: "sent", provider: "resend", providerMessageId: json?.id };
 }
@@ -331,6 +339,8 @@ async function sendWhatsapp(payload: DeliveryPayload): Promise<DeliveryResult> {
 
 export type SendDeliveryOptions = {
   persist?: boolean;
+  /** Use Afyvia's verified sender for platform emails, even inside a tenant context. */
+  platformSender?: boolean;
 };
 
 export async function sendDelivery(
@@ -362,7 +372,7 @@ export async function sendDelivery(
     }
 
     let result: DeliveryResult;
-    if (payload.channel === "email") result = await sendEmail(payload);
+    if (payload.channel === "email") result = await sendEmail(payload, opts?.platformSender === true);
     else if (payload.channel === "sms") result = await sendSms(payload);
     else if (payload.channel === "whatsapp") result = await sendWhatsapp(payload);
     else result = { status: "failed", error: "This delivery channel is unavailable." };

@@ -107,7 +107,7 @@ export function OnboardingJourneyShell({
               <ShieldCheck className="h-3.5 w-3.5" aria-hidden />
               {pharmacy.name}
               {pharmacy.slug ? (
-                <span className="text-[var(--muted)] font-normal lowercase tracking-normal">
+                <span className={styles.kickerPath}>
                   · /p/{pharmacy.slug}
                 </span>
               ) : null}
@@ -129,7 +129,7 @@ export function OnboardingJourneyShell({
       </div>
 
       {/* Persistent Journey Chapter Stepper */}
-      <nav aria-label="Onboarding journey progress" className="mb-5">
+      <nav aria-label="Onboarding journey progress" className={`mb-5 ${styles.journeyStepper}`}>
         <ol className="grid grid-cols-5 gap-1.5 sm:gap-2 text-center" role="list">
           {JOURNEY_CHAPTERS.map((chapter, idx) => {
             const isCurrent = idx === currentChapterIdx;
@@ -139,15 +139,15 @@ export function OnboardingJourneyShell({
               <li
                 key={chapter.id}
                 aria-current={isCurrent ? "step" : undefined}
-                className={`relative flex flex-col items-center rounded-xl p-2 transition-all ${
+                className={`${styles.journeyChapter} ${
                   isCurrent
-                    ? "bg-[var(--brand-soft)]/50 ring-2 ring-[var(--brand)]/30 text-[var(--brand)] font-bold shadow-xs"
+                    ? styles.journeyChapterCurrent
                     : isCompleted
-                      ? "text-emerald-700 dark:text-emerald-400 font-medium"
-                      : "text-slate-400 dark:text-slate-500"
+                      ? styles.journeyChapterCompleted
+                      : styles.journeyChapterUpcoming
                 }`}
               >
-                <span className="flex h-5 w-5 sm:h-6 sm:w-6 items-center justify-center rounded-full text-[10px] sm:text-xs font-bold mb-1 bg-white/70 dark:bg-black/20">
+                <span className={styles.journeyChapterBadge}>
                   {isCompleted ? (
                     <CheckCircle2 className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-emerald-600 dark:text-emerald-400" />
                   ) : isCurrent ? (
@@ -156,7 +156,7 @@ export function OnboardingJourneyShell({
                     <span className="opacity-75">{idx + 1}</span>
                   )}
                 </span>
-                <span className="text-[10px] sm:text-xs tracking-tight truncate max-w-full">
+                <span className={styles.journeyChapterLabel}>
                   {chapter.label}
                 </span>
               </li>

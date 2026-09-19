@@ -208,7 +208,7 @@ export async function resendOwnerVerificationEmailAction(
       recipient: { email: user.email },
       subject: "Verify your email for pharmacy onboarding",
       body: emailVerificationBody(token),
-    });
+    }, { platformSender: true });
     if (delivery.status === "failed") {
       console.error("[verification] email delivery failed", delivery.error);
       return { error: "We couldn't send the verification email right now. Please try again shortly." };

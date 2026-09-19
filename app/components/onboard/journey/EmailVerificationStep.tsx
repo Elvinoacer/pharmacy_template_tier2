@@ -170,24 +170,24 @@ export function EmailVerificationStep({
       ) : (
         <div className={polish.contentStack}>
           {/* Waiting card */}
-          <section className="rounded-2xl border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-white/[0.03] p-5">
+          <section className={`${polish.waitingPanel} rounded-2xl border p-5`}>
             <div className="flex items-start gap-4">
               <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-teal-500/10 text-teal-700 dark:text-teal-300">
                 <Clock3 className="h-5 w-5" />
               </span>
               <div className="flex-1 min-w-0">
-                <h3 className="text-sm font-bold text-[var(--foreground)]">
+                <h3 className={`${polish.waitingTitle} text-sm font-bold`}>
                   Waiting for verification
                 </h3>
-                <p className="mt-1 text-xs text-[var(--muted)] leading-relaxed">
-                  Open the verification email sent to <strong>{ownerEmail}</strong> and tap “Verify email address”. Verification is tied to your account, not this tab. This page checks automatically and will advance when you return—even if you verified in another browser or on another device.
+                <p className={`${polish.waitingCopy} mt-1 text-xs leading-relaxed`}>
+                  Open the verification email sent to <strong className={polish.emailAddress}>{ownerEmail}</strong> and tap “Verify email address”. Verification is tied to your account, not this tab. This page checks automatically and will advance when you return—even if you verified in another browser or on another device.
                 </p>
                 <div className="mt-3 flex items-center gap-2">
                   <button
                     type="button"
                     onClick={handleManualCheck}
                     disabled={checking}
-                    className="inline-flex items-center gap-1.5 text-xs font-semibold text-[var(--brand)] hover:underline"
+                    className={`${polish.manualCheck} inline-flex items-center gap-1.5 text-xs font-semibold hover:underline`}
                   >
                     <RefreshCw className={`h-3.5 w-3.5 ${checking ? "animate-spin" : ""}`} />
                     {checking ? "Checking..." : "I've verified my email"}
