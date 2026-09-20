@@ -272,6 +272,11 @@
 }
 
 
+.surface :global(input[type="radio"]),
+.surface :global(input[type="checkbox"]) {
+  accent-color: var(--brand);
+}
+
 .surface :global(input[type="date"]) {
   color-scheme: light;
 }
