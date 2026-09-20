@@ -238,12 +238,12 @@ export default function MedicinesDirectory({
   return (
     <div id="medicines-directory" className="scroll-mt-28 text-[var(--foreground)]">
       {/* Compact search & proximity control toolbar */}
-      <div className="glass-panel rounded-[24px] border border-[var(--line)] p-3 shadow-sm sm:p-4">
+      <div className="glass-panel rounded-[24px] border !border-[color-mix(in_srgb,var(--foreground)_48%,var(--card))] p-3 shadow-sm sm:p-4">
         <div className="flex flex-col gap-2.5 sm:flex-row sm:items-center">
           {/* Live Search Input */}
           <div className="relative min-w-0 flex-1">
             <Search
-              className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-[var(--muted-2)]"
+              className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-[var(--muted)]"
               aria-hidden
             />
             <input
@@ -253,7 +253,7 @@ export default function MedicinesDirectory({
               onChange={(e) => setQuery(e.target.value)}
               placeholder="Search medication name, generic, brand, category…"
               aria-label="Search medicines"
-              className="h-[46px] w-full rounded-2xl border border-[var(--line)] bg-[var(--card-elev)] pl-10 pr-9 text-xs sm:text-sm text-[var(--foreground)] outline-none transition placeholder:text-[var(--muted-2)] focus:border-[var(--brand)] focus:bg-[var(--card)] focus:ring-4 focus:ring-teal-500/10"
+              className="h-[46px] w-full rounded-2xl border border-[color-mix(in_srgb,var(--foreground)_48%,var(--card))] bg-[var(--card-elev)] pl-10 pr-9 text-xs sm:text-sm text-[var(--foreground)] outline-none transition placeholder:text-[var(--muted)] focus:border-[var(--brand)] focus:bg-[var(--card)] focus:ring-4 focus:ring-teal-500/10"
             />
             {query && (
               <button
@@ -273,7 +273,7 @@ export default function MedicinesDirectory({
               type="button"
               onClick={requestLocation}
               disabled={locationState === "loading"}
-              className="inline-flex h-[46px] items-center justify-center gap-1.5 rounded-2xl bg-[var(--brand)] px-3 text-xs font-bold text-[var(--background)] shadow-sm transition hover:brightness-95 disabled:opacity-60"
+              className="inline-flex h-[46px] items-center justify-center gap-1.5 rounded-2xl bg-[var(--brand)] px-3 text-xs font-bold text-[var(--background)] shadow-sm transition hover:brightness-95 disabled:cursor-not-allowed disabled:opacity-100 disabled:border disabled:border-[color-mix(in_srgb,var(--foreground)_48%,var(--card))] disabled:bg-[color-mix(in_srgb,var(--foreground)_10%,var(--card))] disabled:text-[var(--foreground)]"
             >
               <LocateFixed className="h-3.5 w-3.5" aria-hidden />
               <span>
@@ -289,7 +289,7 @@ export default function MedicinesDirectory({
             <button
               type="button"
               onClick={() => setShowMobileFilters((v) => !v)}
-              className="inline-flex h-[46px] items-center justify-center gap-1.5 rounded-2xl border border-[var(--line-2)] bg-[var(--card)] px-2.5 text-xs font-bold text-[var(--brand-deep)] sm:hidden"
+              className="inline-flex h-[46px] items-center justify-center gap-1.5 rounded-2xl border border-[color-mix(in_srgb,var(--foreground)_48%,var(--card))] bg-[var(--card)] px-2.5 text-xs font-bold text-[var(--brand-deep)] sm:hidden"
             >
               <SlidersHorizontal className="h-3.5 w-3.5" />
               <span>Filters</span>
@@ -301,7 +301,7 @@ export default function MedicinesDirectory({
             </button>
 
             {/* View Mode Toggle */}
-            <div className="flex h-[46px] items-center rounded-2xl border border-[var(--line-2)] bg-[var(--card)] p-1">
+            <div className="flex h-[46px] items-center rounded-2xl border border-[color-mix(in_srgb,var(--foreground)_48%,var(--card))] bg-[var(--card)] p-1">
               <button
                 type="button"
                 onClick={() => setViewMode("grid")}
@@ -341,7 +341,7 @@ export default function MedicinesDirectory({
             className={`inline-flex shrink-0 items-center gap-1.5 rounded-full px-3 py-1.5 text-[11px] font-semibold transition border ${
               inStockOnly
                 ? "border-emerald-600 bg-emerald-600 text-white shadow-xs"
-                : "border-[var(--line-2)] bg-[var(--card)] text-[var(--muted)] hover:text-[var(--foreground)]"
+                : "border-[color-mix(in_srgb,var(--foreground)_48%,var(--card))] bg-[var(--card)] text-[var(--muted)] hover:text-[var(--foreground)]"
             }`}
           >
             <PackageCheck className="h-3 w-3" aria-hidden />
@@ -355,7 +355,7 @@ export default function MedicinesDirectory({
             className={`inline-flex shrink-0 items-center gap-1.5 rounded-full px-3 py-1.5 text-[11px] font-semibold transition border ${
               rxRequirement === "otc"
                 ? "border-cyan-600 bg-cyan-600 text-white shadow-xs"
-                : "border-[var(--line-2)] bg-[var(--card)] text-[var(--muted)] hover:text-[var(--foreground)]"
+                : "border-[color-mix(in_srgb,var(--foreground)_48%,var(--card))] bg-[var(--card)] text-[var(--muted)] hover:text-[var(--foreground)]"
             }`}
           >
             <Sparkles className="h-3 w-3" aria-hidden />
@@ -368,7 +368,7 @@ export default function MedicinesDirectory({
             className={`inline-flex shrink-0 items-center gap-1.5 rounded-full px-3 py-1.5 text-[11px] font-semibold transition border ${
               rxRequirement === "rx"
                 ? "border-amber-600 bg-amber-600 text-white shadow-xs"
-                : "border-[var(--line-2)] bg-[var(--card)] text-[var(--muted)] hover:text-[var(--foreground)]"
+                : "border-[color-mix(in_srgb,var(--foreground)_48%,var(--card))] bg-[var(--card)] text-[var(--muted)] hover:text-[var(--foreground)]"
             }`}
           >
             <FileText className="h-3 w-3" aria-hidden />
@@ -384,7 +384,7 @@ export default function MedicinesDirectory({
             className={`shrink-0 rounded-full px-3 py-1.5 text-[11px] font-semibold transition border ${
               !selectedCategory
                 ? "border-[var(--brand)] bg-[var(--brand)] text-[var(--background)] shadow-xs"
-                : "border-[var(--line-2)] bg-[var(--card)] text-[var(--muted)] hover:text-[var(--foreground)]"
+                : "border-[color-mix(in_srgb,var(--foreground)_48%,var(--card))] bg-[var(--card)] text-[var(--muted)] hover:text-[var(--foreground)]"
             }`}
           >
             All Categories
@@ -399,7 +399,7 @@ export default function MedicinesDirectory({
               className={`shrink-0 rounded-full px-3 py-1.5 text-[11px] font-semibold transition border ${
                 selectedCategory === c.slug
                   ? "border-[var(--brand)] bg-[var(--brand)] text-[var(--background)] shadow-xs"
-                  : "border-[var(--line-2)] bg-[var(--card)] text-[var(--muted)] hover:text-[var(--foreground)]"
+                  : "border-[color-mix(in_srgb,var(--foreground)_48%,var(--card))] bg-[var(--card)] text-[var(--muted)] hover:text-[var(--foreground)]"
               }`}
             >
               {c.name}
@@ -409,12 +409,12 @@ export default function MedicinesDirectory({
 
         {/* Mobile Filter Sheet / Dropdown (collapsible) */}
         {showMobileFilters && (
-          <div className="mt-3 border-t border-[var(--line)] pt-3 sm:hidden">
+          <div className="mt-3 border-t border-[color-mix(in_srgb,var(--foreground)_48%,var(--card))] pt-3 sm:hidden">
             <label className="block text-[11px] font-semibold text-[var(--muted)] mb-1">Category</label>
             <select
               value={selectedCategory}
               onChange={(e) => setSelectedCategory(e.target.value)}
-              className="h-10 w-full rounded-xl border border-[var(--line-2)] bg-[var(--card)] px-3 text-xs font-semibold text-[var(--foreground)] outline-none"
+              className="h-10 w-full rounded-xl border border-[color-mix(in_srgb,var(--foreground)_48%,var(--card))] bg-[var(--card)] px-3 text-xs font-semibold text-[var(--foreground)] outline-none"
             >
               <option value="">All Categories</option>
               {categories.map((c) => (
@@ -428,7 +428,7 @@ export default function MedicinesDirectory({
 
         {/* Active Filters Bar */}
         {(query || selectedCategory || !inStockOnly || rxRequirement !== "all" || position) && (
-          <div className="mt-2.5 flex flex-wrap items-center gap-2 border-t border-[var(--line)] pt-2.5">
+          <div className="mt-2.5 flex flex-wrap items-center gap-2 border-t border-[color-mix(in_srgb,var(--foreground)_48%,var(--card))] pt-2.5">
             {position && (
               <span className="inline-flex items-center gap-1 rounded-full bg-[var(--brand-soft)] px-2.5 py-1 text-[10px] font-bold text-[var(--brand-deep)]">
                 <MapPin className="h-3 w-3" aria-hidden /> Distance calibrated
@@ -496,7 +496,7 @@ export default function MedicinesDirectory({
               value={sort}
               onChange={(e) => setSort(e.target.value as typeof sort)}
               aria-label="Sort medications"
-              className="h-9 rounded-xl border border-[var(--line-2)] bg-[var(--card)] px-2.5 text-xs font-semibold text-[var(--foreground)] outline-none focus:border-[var(--brand)]"
+              className="h-9 rounded-xl border border-[color-mix(in_srgb,var(--foreground)_48%,var(--card))] bg-[var(--card)] px-2.5 text-xs font-semibold text-[var(--foreground)] outline-none focus:border-[var(--brand)]"
             >
               <option value="stock">In Stock First</option>
               <option value="near" disabled={!position}>
@@ -524,7 +524,7 @@ export default function MedicinesDirectory({
           />
         </div>
       ) : sorted.length === 0 ? (
-        <div className="care-glass mt-6 rounded-[28px] border-dashed p-8 text-center sm:p-12">
+        <div className="care-glass mt-6 rounded-[28px] border border-dashed !border-[color-mix(in_srgb,var(--foreground)_48%,var(--card))] bg-[var(--card-elev)] p-8 text-center sm:p-12">
           <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-2xl bg-[var(--brand-soft)] text-[var(--brand)]">
             <PackageSearch className="h-6 w-6" aria-hidden />
           </div>
@@ -542,7 +542,7 @@ export default function MedicinesDirectory({
             </button>
             <Link
               href="/prescription"
-              className="inline-flex h-9 items-center justify-center rounded-xl border border-[var(--line-2)] bg-[var(--card)] px-4 text-xs font-bold text-[var(--brand-deep)] hover:bg-[var(--card-elev)]"
+              className="inline-flex h-9 items-center justify-center rounded-xl border border-[color-mix(in_srgb,var(--foreground)_48%,var(--card))] bg-[var(--card)] px-4 text-xs font-bold text-[var(--brand-deep)] hover:bg-[var(--card-elev)]"
             >
               Upload prescription
             </Link>
@@ -569,7 +569,7 @@ function MedicineCard({
   const dist = item.calculatedDistance ?? item.distanceKm;
 
   return (
-    <article className="care-glass group flex flex-col overflow-hidden rounded-[22px] border border-[var(--line)] bg-[var(--card)] transition duration-200 hover:-translate-y-0.5 hover:border-[var(--brand)] shadow-sm">
+    <article className="care-glass group flex flex-col overflow-hidden rounded-[22px] border !border-[color-mix(in_srgb,var(--foreground)_48%,var(--card))] bg-[var(--card-elev)] transition duration-200 hover:-translate-y-0.5 hover:!border-[var(--brand)] shadow-sm">
       {/* Product Image Frame */}
       <Link href={item.href} className="relative block aspect-[4/3] w-full overflow-hidden bg-[var(--card-elev)]">
         <Image
@@ -635,7 +635,7 @@ function MedicineCard({
         </div>
 
         {/* Price & Primary CTA */}
-        <div className="mt-auto pt-3 border-t border-[var(--line)]">
+        <div className="mt-auto pt-3 border-t border-[color-mix(in_srgb,var(--foreground)_48%,var(--card))]">
           <div className="flex items-baseline justify-between gap-1 mb-2">
             <span className="text-xs sm:text-sm font-black text-[var(--foreground)]">
               KES {formatPrice(item.price)}
