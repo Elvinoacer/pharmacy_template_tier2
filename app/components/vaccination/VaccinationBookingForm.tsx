@@ -74,7 +74,7 @@ export function VaccinationBookingForm({
 
   if (bookable.length === 0) {
     return (
-      <div className="liquid-glass care-glass rounded-3xl border border-[var(--care-border)] bg-[var(--care-glass)] p-8 text-center shadow-lg backdrop-blur-xl">
+      <div className="liquid-glass care-glass rounded-3xl border border-[var(--public-health-ui-border)] bg-[var(--care-glass)] p-8 text-center shadow-lg backdrop-blur-xl">
         <p className="text-sm font-semibold text-[var(--foreground)]">Online booking is not open for pharmacy-administered vaccines right now.</p>
         <p className="mt-2 text-sm text-[var(--muted)]">Call us or request preventive counselling and referral.</p>
         <TenantLink href="/preventive" className="btn-primary mt-5 inline-flex text-sm">Preventive services</TenantLink></div>
@@ -83,7 +83,7 @@ export function VaccinationBookingForm({
 
   if (state?.success || state?.appointmentId) {
     return (
-      <div className="liquid-glass care-glass rounded-3xl border border-[var(--care-border)] bg-[var(--care-glass)] p-8 shadow-lg backdrop-blur-xl">
+      <div className="liquid-glass care-glass rounded-3xl border border-[var(--public-health-ui-border)] bg-[var(--care-glass)] p-8 shadow-lg backdrop-blur-xl">
         <CheckCircle2 className="h-10 w-10 text-[var(--brand)]" />
         <h2 className="mt-3 text-2xl font-semibold text-[var(--foreground)]" style={{ fontFamily: "var(--font-display), serif" }}>
           Request received
@@ -97,7 +97,7 @@ export function VaccinationBookingForm({
           </p>
         )}
         <div className="mt-6 flex flex-wrap gap-3">
-          <TenantLink href="/vaccinations" className="btn-primary inline-flex text-sm">Back to vaccines</TenantLink>    <Link href="/portal/vaccinations" className="inline-flex items-center rounded-full border border-[var(--care-border)] bg-[var(--card)] px-5 py-2.5 text-sm font-semibold text-[var(--brand-deep)] transition hover:bg-[var(--card-elev)]">
+          <TenantLink href="/vaccinations" className="btn-primary inline-flex text-sm">Back to vaccines</TenantLink>    <Link href="/portal/vaccinations" className="inline-flex items-center rounded-full border border-[var(--public-health-ui-border)] bg-[var(--card)] px-5 py-2.5 text-sm font-semibold text-[var(--brand-deep)] transition hover:bg-[var(--card-elev)]">
             View my immunisation record
           </Link>
         </div>
@@ -108,7 +108,7 @@ export function VaccinationBookingForm({
   const steps = ["Vaccine", "Your details", "Screening", "Consent"];
 
   return (
-    <form action={formAction} className="liquid-glass care-glass rounded-3xl border border-[var(--care-border)] bg-[var(--care-glass)] p-5 shadow-[0_16px_50px_rgba(8,40,32,0.08)] backdrop-blur-xl sm:p-8">
+    <form action={formAction} className="liquid-glass care-glass rounded-3xl border border-[var(--public-health-ui-border)] bg-[var(--care-glass)] p-5 shadow-[0_16px_50px_rgba(8,40,32,0.08)] backdrop-blur-xl sm:p-8">
       <input type="hidden" name="pharmacySlug" value={pharmacySlug} />
       <input type="hidden" name="vaccineSlug" value={slug} />
       <input type="hidden" name="campaignSlug" value={defaultCampaign || ""} />
@@ -118,7 +118,11 @@ export function VaccinationBookingForm({
           <li
             key={label}
             className={`rounded-full px-3 py-1 text-xs font-semibold ${
-              i === step ? "bg-[#084c3f] text-white" : i < step ? "bg-teal-100 text-teal-900" : "bg-slate-100 text-slate-500"
+              i === step
+                ? "border border-[var(--brand)] bg-[var(--brand)] text-[var(--background)]"
+                : i < step
+                  ? "border border-teal-700/60 bg-teal-100 text-teal-900 dark:border-teal-300/60 dark:text-teal-100"
+                  : "border border-[var(--public-health-ui-border)] bg-[var(--card-elev)] text-[var(--muted)]"
             }`}
           >
             {i + 1}. {label}
@@ -134,7 +138,9 @@ export function VaccinationBookingForm({
               <label
                 key={v.slug}
                 className={`flex cursor-pointer items-start gap-3 rounded-2xl border p-4 ${
-                  slug === v.slug ? "border-teal-700 bg-teal-50/70" : "border-teal-900/10"
+                  slug === v.slug
+                    ? "border-[var(--brand)] bg-[var(--brand-soft)] shadow-sm"
+                    : "border-[var(--public-health-ui-border)] bg-[var(--card)] hover:border-[var(--brand)]"
                 }`}
               >
                 <input
@@ -146,7 +152,7 @@ export function VaccinationBookingForm({
                 />
                 <span>
                   <span className="block text-sm font-semibold text-[#0c1a14]">{v.name}</span>
-                  <span className="mt-0.5 block text-xs text-[#5a6b62]">{v.antigen}</span>
+                  <span className="mt-0.5 block text-xs text-[var(--public-health-editorial-body)]">{v.antigen}</span>
                   {v.priceKes != null && v.priceKes > 0 && (
                     <span className="mt-1 inline-block text-xs font-bold text-teal-800">KES {v.priceKes.toLocaleString()}</span>
                   )}
@@ -165,7 +171,7 @@ export function VaccinationBookingForm({
           <Field label="Date of birth" name="dateOfBirth" type="date" />
           <label className="block text-sm">
             <span className="font-medium text-[#0c1a14]">Gender (optional)</span>
-            <select name="gender" className="mt-1 w-full rounded-xl border border-teal-900/10 bg-[#f7faf8] px-3 py-2.5 text-sm">
+            <select name="gender" className="mt-1 w-full rounded-xl border border-[var(--public-health-ui-border)] bg-[var(--card-elev)] px-3 py-2.5 text-sm text-[var(--foreground)] outline-none focus:border-[var(--brand)] focus:ring-2 focus:ring-[color-mix(in_srgb,var(--brand)_24%,transparent)]">
               <option value="">Prefer not to say</option>
               <option value="female">Female</option>
               <option value="male">Male</option>
@@ -176,18 +182,18 @@ export function VaccinationBookingForm({
           <Field label="Preferred time" name="preferredTime" placeholder="e.g. 10:30" />
           <label className="block text-sm sm:col-span-2">
             <span className="font-medium text-[#0c1a14]">Notes for the pharmacist</span>
-            <textarea name="notes" rows={3} className="mt-1 w-full rounded-xl border border-teal-900/10 bg-[#f7faf8] px-3 py-2.5 text-sm" placeholder="Travel dates, pregnancy, medicines, previous records…" />
+            <textarea name="notes" rows={3} className="mt-1 w-full rounded-xl border border-[var(--public-health-ui-border)] bg-[var(--card-elev)] px-3 py-2.5 text-sm text-[var(--foreground)] outline-none focus:border-[var(--brand)] focus:ring-2 focus:ring-[color-mix(in_srgb,var(--brand)_24%,transparent)]" placeholder="Travel dates, pregnancy, medicines, previous records…" />
           </label>
       </div>
 
       <div className={step === 2 ? "space-y-4" : "hidden"}>
-          <p className="text-sm text-[#5a6b62]">
+          <p className="text-sm text-[var(--public-health-editorial-body)]">
             Answer honestly. This is a safety screen, not a diagnosis. A pharmacist still reviews every questionnaire.
           </p>
           {PRE_VACCINATION_QUESTIONS.map((q) => (
-            <fieldset key={q.id} className="rounded-2xl border border-teal-900/10 p-4">
+            <fieldset key={q.id} className="rounded-2xl border border-[var(--public-health-ui-border)] p-4">
               <legend className="text-sm font-medium text-[#0c1a14]">{q.prompt}</legend>
-              <p className="mt-1 text-xs text-[#5a6b62]">{q.help}</p>
+              <p className="mt-1 text-xs text-[var(--public-health-editorial-body)]">{q.help}</p>
               <div className="mt-3 flex flex-wrap gap-3">
                 {(["no", "yes", "unsure"] as const).map((val) => (
                   <label key={val} className="inline-flex items-center gap-1.5 text-sm">
@@ -208,10 +214,10 @@ export function VaccinationBookingForm({
           <div
             className={`rounded-2xl p-4 text-sm ${
               liveEval.outcome === "eligible"
-                ? "bg-emerald-50 text-emerald-900"
+                ? "border border-emerald-700/60 bg-emerald-50 text-emerald-900 dark:border-emerald-300/60 dark:text-emerald-100"
                 : liveEval.outcome === "defer"
-                  ? "bg-amber-50 text-amber-950"
-                  : "bg-rose-50 text-rose-950"
+                  ? "border border-amber-700/60 bg-amber-50 text-amber-950 dark:border-amber-300/60 dark:text-amber-100"
+                  : "border border-rose-700/60 bg-rose-50 text-rose-950 dark:border-rose-300/60 dark:text-rose-100"
             }`}
           >
             <p className="font-semibold">Provisional screening: {liveEval.outcome}</p>
@@ -220,14 +226,14 @@ export function VaccinationBookingForm({
       </div>
 
       <div className={step === 3 ? "space-y-4" : "hidden"}>
-          <div className="rounded-2xl border border-teal-900/10 bg-[#f4fbf8] p-4">
+          <div className="rounded-2xl border border-[var(--public-health-ui-border)] bg-[#f4fbf8] p-4">
             <p className="flex items-center gap-2 text-sm font-semibold text-[#084c3f]">
               <FileText className="h-4 w-4" /> {selected.visTitle || "Vaccine information"}
               {selected.visVersion ? ` · ${selected.visVersion}` : ""}
             </p>
-            <p className="mt-2 text-sm leading-relaxed text-[#5a6b62]">{selected.visSummary}</p>
+            <p className="mt-2 text-sm leading-relaxed text-[var(--public-health-editorial-body)]">{selected.visSummary}</p>
             {selected.commonSideEffects.length > 0 && (
-              <p className="mt-2 text-xs text-[#5a6b62]">
+              <p className="mt-2 text-xs text-[var(--public-health-editorial-body)]">
                 Common reactions: {selected.commonSideEffects.join(", ")}.
               </p>
             )}
@@ -243,7 +249,7 @@ export function VaccinationBookingForm({
           </label>
           <label className="block text-sm">
             <span className="font-medium text-[#0c1a14]">Who is consenting?</span>
-            <select name="consentType" defaultValue="self" className="mt-1 w-full rounded-xl border border-teal-900/10 bg-[#f7faf8] px-3 py-2.5 text-sm">
+            <select name="consentType" defaultValue="self" className="mt-1 w-full rounded-xl border border-[var(--public-health-ui-border)] bg-[var(--card-elev)] px-3 py-2.5 text-sm text-[var(--foreground)] outline-none focus:border-[var(--brand)] focus:ring-2 focus:ring-[color-mix(in_srgb,var(--brand)_24%,transparent)]">
               <option value="self">I am the patient</option>
               <option value="parent_guardian">Parent / legal guardian</option>
               <option value="caregiver">Authorised caregiver</option>
@@ -251,12 +257,12 @@ export function VaccinationBookingForm({
           </label>
           <Field label="Consenter name" name="consenterName" defaultValue={defaultName} required />
           <Field label="Relationship (if not self)" name="consenterRelationship" placeholder="e.g. mother, father, caregiver" />
-          <div className="rounded-2xl border border-teal-900/10 p-4">
+          <div className="rounded-2xl border border-[var(--public-health-ui-border)] p-4">
             <p className="text-xs font-semibold uppercase tracking-wider text-teal-700">Consent statement</p>
-            <p className="mt-2 whitespace-pre-line text-xs leading-relaxed text-[#5a6b62]">{CONSENT_TEXT}</p>
+            <p className="mt-2 whitespace-pre-line text-xs leading-relaxed text-[var(--public-health-editorial-body)]">{CONSENT_TEXT}</p>
           </div>
           <Field label="Type your full name as a signature" name="signatureName" required />
-          <p className="flex items-start gap-2 text-xs text-[#5a6b62]">
+          <p className="flex items-start gap-2 text-xs text-[var(--public-health-editorial-body)]">
             <ShieldAlert className="mt-0.5 h-4 w-4 shrink-0 text-amber-700" />
             You can withdraw consent before the dose is given. After administration, the clinical record is retained as required by local rules.
           </p>
@@ -267,7 +273,7 @@ export function VaccinationBookingForm({
           type="button"
           onClick={() => setStep((s) => Math.max(0, s - 1))}
           disabled={step === 0 || pending}
-          className="inline-flex items-center gap-1 rounded-full px-4 py-2 text-sm font-semibold text-[#084c3f] disabled:opacity-40"
+          className="inline-flex items-center gap-1 rounded-full border border-transparent px-4 py-2 text-sm font-semibold text-[var(--brand-deep)] transition hover:border-[var(--public-health-ui-border)] hover:bg-[var(--card-elev)] disabled:cursor-not-allowed disabled:border-[var(--public-health-ui-border)] disabled:bg-[var(--card-elev)] disabled:text-[var(--muted)] disabled:opacity-100"
         >
           <ChevronLeft className="h-4 w-4" /> Back
         </button>
@@ -280,7 +286,7 @@ export function VaccinationBookingForm({
             Continue <ChevronRight className="h-4 w-4" />
           </button>
         ) : (
-          <button type="submit" disabled={pending} className="btn-primary inline-flex text-sm">
+          <button type="submit" disabled={pending} className="btn-primary inline-flex text-sm disabled:cursor-not-allowed disabled:opacity-100 disabled:saturate-50">
             {pending ? <Loader2 className="h-4 w-4 animate-spin" /> : <Syringe className="h-4 w-4" />}
             {pending ? "Submitting…" : "Submit booking & consent"}
           </button>
@@ -317,7 +323,7 @@ function Field({
         defaultValue={defaultValue}
         required={required}
         placeholder={placeholder}
-        className="mt-1 w-full rounded-xl border border-teal-900/10 bg-[#f7faf8] px-3 py-2.5 text-sm outline-none focus:border-teal-600/40 focus:ring-2 focus:ring-teal-500/20"
+        className="mt-1 w-full rounded-xl border border-[var(--public-health-ui-border)] bg-[var(--card-elev)] px-3 py-2.5 text-sm text-[var(--foreground)] outline-none placeholder:text-[var(--muted)] focus:border-[var(--brand)] focus:ring-2 focus:ring-[color-mix(in_srgb,var(--brand)_24%,transparent)]"
       />
     </label>
   );
