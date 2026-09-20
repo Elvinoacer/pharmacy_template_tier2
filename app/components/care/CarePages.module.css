@@ -240,7 +240,7 @@
   border-radius: 26px;
   background: var(--care-glass);
   backdrop-filter: blur(22px);
-  border: 1px solid var(--care-border);
+  border: 1px solid color-mix(in srgb, var(--foreground) 60%, var(--card));
   text-align: center;
 }
 .empty > svg {
