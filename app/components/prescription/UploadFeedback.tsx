@@ -13,22 +13,22 @@ const TONE: Record<
   { wrap: string; icon: typeof Info; iconClass: string }
 > = {
   info: {
-    wrap: "border-[var(--line-2)] bg-[var(--brand-soft)] text-[var(--foreground)]",
+    wrap: "border-[color-mix(in_srgb,var(--foreground)_60%,var(--card))] bg-[var(--brand-soft)] text-[var(--foreground)]",
     icon: Info,
     iconClass: "text-[var(--brand)]",
   },
   success: {
-    wrap: "border-emerald-200 bg-emerald-50 text-emerald-950 dark:border-emerald-500/30 dark:bg-emerald-950/30 dark:text-emerald-100",
+    wrap: "border-emerald-700/60 bg-emerald-50 text-emerald-950 dark:border-emerald-300/60 dark:bg-emerald-950/30 dark:text-emerald-100",
     icon: CheckCircle2,
     iconClass: "text-emerald-700 dark:text-emerald-300",
   },
   warning: {
-    wrap: "border-amber-200 bg-amber-50 text-amber-950 dark:border-amber-500/30 dark:bg-amber-950/30 dark:text-amber-100",
+    wrap: "border-amber-700/60 bg-amber-50 text-amber-950 dark:border-amber-300/60 dark:bg-amber-950/30 dark:text-amber-100",
     icon: AlertCircle,
     iconClass: "text-amber-700 dark:text-amber-300",
   },
   error: {
-    wrap: "border-rose-200 bg-rose-50 text-rose-950 dark:border-rose-500/30 dark:bg-rose-950/40 dark:text-rose-100",
+    wrap: "border-rose-700/60 bg-rose-50 text-rose-950 dark:border-rose-300/60 dark:bg-rose-950/40 dark:text-rose-100",
     icon: AlertCircle,
     iconClass: "text-rose-700 dark:text-rose-300",
   },
@@ -38,7 +38,7 @@ const BUTTON: Record<NonNullable<FeedbackAction["variant"]>, string> = {
   primary:
     "bg-[var(--foreground)] text-[var(--background)] hover:opacity-90",
   secondary:
-    "border border-[var(--line-2)] bg-[var(--card)] text-[var(--foreground)] hover:bg-[var(--brand-soft)]",
+    "border border-[color-mix(in_srgb,var(--foreground)_60%,var(--card))] bg-[var(--card)] text-[var(--foreground)] hover:border-[var(--brand)] hover:bg-[var(--brand-soft)]",
   ghost:
     "text-[var(--brand)] underline-offset-2 hover:underline",
 };
@@ -66,7 +66,7 @@ export function UploadFeedback({
         <Icon className={`mt-0.5 h-5 w-5 shrink-0 ${tone.iconClass}`} aria-hidden />
         <div className="min-w-0 flex-1">
           <p className="text-sm font-bold leading-snug">{feedback.title}</p>
-          <p className="mt-1 text-xs leading-6 opacity-90">{feedback.message}</p>
+          <p className="mt-1 text-xs leading-6">{feedback.message}</p>
           {feedback.actions.length > 0 && (
             <div className="mt-3 flex flex-wrap gap-2">
               {feedback.actions.map((action) => {
