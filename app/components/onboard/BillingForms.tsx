@@ -1,11 +1,12 @@
 "use client";
 
-import { useActionState, useEffect, useState, useTransition } from "react";
+import { useActionState, useEffect, useRef, useState, useTransition } from "react";
 import {
   Check,
   CheckCircle2,
   CreditCard,
   ExternalLink,
+  KeyRound,
   Layers,
   Loader2,
   RefreshCw,
@@ -13,12 +14,14 @@ import {
   Smartphone,
   Sparkles,
   Tag,
+  X,
 } from "lucide-react";
 import {
   generatePromotionCodeAction,
   pharmacyBillingAction,
   promotionAction,
 } from "@/app/actions/pharmacy-billing";
+import { verifyStepUpAction, type MfaState } from "@/app/actions/mfa";
 
 const input =
   "mt-1 min-h-12 w-full rounded-xl border border-[color-mix(in_srgb,var(--foreground)_55%,var(--card-elev))] bg-[var(--card-elev)] px-3.5 text-base text-[var(--foreground)] outline-none transition-colors placeholder:text-[var(--muted)] focus:border-[var(--brand)] focus:ring-2 focus:ring-[var(--brand)] focus:ring-offset-2 focus:ring-offset-[var(--card)] disabled:cursor-not-allowed disabled:border-[color-mix(in_srgb,var(--foreground)_42%,var(--card-elev))] disabled:bg-[color-mix(in_srgb,var(--foreground)_7%,var(--card-elev))] disabled:text-[var(--muted)] disabled:opacity-100 sm:text-sm";
@@ -508,11 +511,98 @@ export function RetryOverdueForm({
   );
 }
 
+function PromotionStepUpDialog({
+  onClose,
+  onVerified,
+}: {
+  onClose: () => void;
+  onVerified: () => void;
+}) {
+  const [state, action, pending] = useActionState(verifyStepUpAction, {} as MfaState);
+
+  useEffect(() => {
+    if (state.success) onVerified();
+  }, [state.success, onVerified]);
+
+  return (
+    <div
+      className="fixed inset-0 z-[120] flex items-center justify-center bg-black/60 p-4 backdrop-blur-sm"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="promotion-step-up-title"
+    >
+      <div className="w-full max-w-md overflow-hidden rounded-3xl border border-white/10 bg-[#111a17] shadow-2xl">
+        <div className="flex items-start justify-between gap-4 border-b border-white/10 px-5 py-4">
+          <div>
+            <p className="text-[10px] font-bold uppercase tracking-[0.15em] text-emerald-200/65">Billing security</p>
+            <h2 id="promotion-step-up-title" className="mt-1 text-lg font-semibold text-white">
+              Verify identity to manage promotions
+            </h2>
+          </div>
+          <button
+            type="button"
+            onClick={onClose}
+            disabled={pending}
+            className="flex h-9 w-9 items-center justify-center rounded-xl text-white/55 transition hover:bg-white/10 hover:text-white"
+            aria-label="Close verification dialog"
+          >
+            <X className="h-4 w-4" />
+          </button>
+        </div>
+        <form action={action} className="space-y-4 px-5 py-5">
+          <p className="text-sm leading-6 text-emerald-50/70">
+            Promotions can waive platform fees, so a fresh identity check is required before creating or stopping one.
+          </p>
+          <label className="block text-sm font-semibold text-white">
+            Authenticator or recovery code
+            <input
+              name="code"
+              autoComplete="one-time-code"
+              required
+              pattern="[0-9a-fA-F ]{6,12}"
+              maxLength={12}
+              autoFocus
+              placeholder="Enter code"
+              className="mt-2 min-h-12 w-full rounded-xl border border-white/15 bg-black/25 px-3.5 text-base text-white outline-none placeholder:text-white/30 focus:border-emerald-300/50 focus:ring-2 focus:ring-emerald-300/10"
+            />
+          </label>
+          {state.error ? (
+            <p role="alert" className="rounded-xl border border-rose-400/25 bg-rose-400/10 px-3 py-2.5 text-sm text-rose-100">
+              {state.error}
+            </p>
+          ) : null}
+          <div className="flex flex-col-reverse gap-2 sm:flex-row sm:justify-end">
+            <button type="button" onClick={onClose} disabled={pending} className="min-h-11 rounded-xl border border-white/15 px-4 text-sm font-semibold text-white/75">
+              Cancel
+            </button>
+            <button type="submit" disabled={pending} className="inline-flex min-h-11 items-center justify-center gap-2 rounded-xl bg-emerald-300 px-4 text-sm font-semibold text-emerald-950 disabled:opacity-50">
+              {pending ? <Loader2 className="h-4 w-4 animate-spin" /> : <KeyRound className="h-4 w-4" />}
+              {pending ? "Verifying…" : "Verify identity"}
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  );
+}
+
 export function PromotionForm({ promotionId }: { promotionId?: string }) {
+  const submitRef = useRef<HTMLButtonElement>(null);
   const [state, action, pending] = useActionState(promotionAction, {});
   const [code, setCode] = useState("");
   const [generationError, setGenerationError] = useState<string | null>(null);
+  const [stepUpOpen, setStepUpOpen] = useState(false);
   const [generating, startCodeGeneration] = useTransition();
+
+  useEffect(() => {
+    if (state.error === "STEP_UP_REQUIRED" || state.error === "MFA_REQUIRED") {
+      setStepUpOpen(true);
+    }
+  }, [state.error]);
+
+  useEffect(() => {
+    if (state.generatedCode) setCode(state.generatedCode);
+  }, [state.generatedCode]);
 
   const generateCode = () => {
     setGenerationError(null);
@@ -526,79 +616,104 @@ export function PromotionForm({ promotionId }: { promotionId?: string }) {
     });
   };
 
+  const authRequired = state.error === "STEP_UP_REQUIRED" || state.error === "MFA_REQUIRED";
+
   return (
-    <form action={action} className="space-y-3">
-      <input type="hidden" name="intent" value={promotionId ? "stop" : "create"} />
-      {promotionId ? (
-        <input type="hidden" name="promotionId" value={promotionId} />
-      ) : (
-        <div className="grid gap-3 sm:grid-cols-2">
-          <label className="text-sm font-medium">
-            Promotion Name / Reason
-            <input className={input} name="name" required minLength={5} maxLength={150} placeholder="e.g. Early Partner Chemist" />
-          </label>
-          <div className="text-sm font-medium">
-            <label htmlFor="promotion-code">Promo Code / Coupon (for pharmacies to redeem)</label>
-            <div className="mt-1 flex flex-col gap-2 sm:flex-row">
-              <input
-                id="promotion-code"
-                className={`${input} mt-0 min-w-0 flex-1 uppercase font-mono tracking-wider`}
-                name="code"
-                value={code}
-                onChange={(event) => setCode(event.target.value.toUpperCase())}
-                placeholder="Click Generate Code"
-                autoComplete="off"
-                autoCapitalize="characters"
-                spellCheck={false}
-                disabled={pending || generating}
-              />
-              <button
-                type="button"
-                onClick={generateCode}
-                disabled={pending || generating}
-                className="btn-ghost min-h-12 shrink-0 justify-center gap-2 px-4 sm:w-auto"
-              >
-                <RefreshCw className={`h-4 w-4 ${generating ? "animate-spin" : ""}`} aria-hidden />
-                <span>{generating ? "Generating…" : code ? "New Code" : "Generate Code"}</span>
-              </button>
-            </div>
-            <p className="mt-1.5 text-xs font-normal text-[var(--muted)]">
-              One click creates an Afyvia code and checks it against the live promotion database.
-            </p>
-            {generationError ? (
-              <p role="alert" className="mt-1.5 text-xs font-medium text-rose-700 dark:text-rose-300">
-                {generationError}
+    <>
+      <form action={action} className="space-y-3">
+        <input type="hidden" name="intent" value={promotionId ? "stop" : "create"} />
+        {promotionId ? (
+          <input type="hidden" name="promotionId" value={promotionId} />
+        ) : (
+          <div className="grid gap-3 sm:grid-cols-2">
+            <label className="text-sm font-medium">
+              Promotion Name / Reason
+              <input className={input} name="name" required minLength={5} maxLength={150} placeholder="e.g. Early Partner Chemist" />
+            </label>
+            <div className="text-sm font-medium">
+              <label htmlFor="promotion-code">Promo Code / Coupon</label>
+              <div className="mt-1 flex flex-col gap-2 sm:flex-row">
+                <input
+                  id="promotion-code"
+                  className={`${input} mt-0 min-w-0 flex-1 uppercase font-mono tracking-wider`}
+                  name="code"
+                  value={code}
+                  onChange={(event) => setCode(event.target.value.toUpperCase())}
+                  placeholder="Auto-generated when created"
+                  autoComplete="off"
+                  autoCapitalize="characters"
+                  spellCheck={false}
+                  disabled={pending || generating}
+                />
+                <button
+                  type="button"
+                  onClick={generateCode}
+                  disabled={pending || generating}
+                  className="btn-ghost min-h-12 shrink-0 justify-center gap-2 px-4 sm:w-auto"
+                >
+                  <RefreshCw className={`h-4 w-4 ${generating ? "animate-spin" : ""}`} aria-hidden />
+                  <span>{generating ? "Generating…" : code ? "New Code" : "Generate Code"}</span>
+                </button>
+              </div>
+              <p className="mt-1.5 text-xs font-normal text-[var(--muted)]">
+                A generated value is only a preview until the promotion is created. If left blank, Afyvia generates and saves a unique code automatically.
               </p>
-            ) : null}
+              {generationError ? (
+                <p role="alert" className="mt-1.5 text-xs font-medium text-rose-700 dark:text-rose-300">
+                  {generationError}
+                </p>
+              ) : null}
+            </div>
+            <label className="text-sm font-medium">
+              Redemption Capacity
+              <input className={input} name="capacity" type="number" min={1} max={100000} defaultValue={50} required />
+            </label>
+            <label className="text-sm font-medium">
+              Waive Scope
+              <select className={input} name="scope">
+                <option value="both">Both (Verification KES 100 + Monthly Service)</option>
+                <option value="verification">Verification fee only (KES 100)</option>
+                <option value="recurring">Monthly service only (KES 500/mo)</option>
+              </select>
+            </label>
+            <label className="text-sm font-medium sm:col-span-2">
+              Free Service Months
+              <input className={input} name="months" type="number" min={1} max={120} defaultValue={3} required />
+            </label>
           </div>
-          <label className="text-sm font-medium">
-            Redemption Capacity
-            <input className={input} name="capacity" type="number" min={1} max={100000} defaultValue={50} required />
-          </label>
-          <label className="text-sm font-medium">
-            Waive Scope
-            <select className={input} name="scope">
-              <option value="both">Both (Verification KES 100 + Monthly Service)</option>
-              <option value="verification">Verification fee only (KES 100)</option>
-              <option value="recurring">Monthly service only (KES 500/mo)</option>
-            </select>
-          </label>
-          <label className="text-sm font-medium sm:col-span-2">
-            Free Service Months
-            <input className={input} name="months" type="number" min={1} max={120} defaultValue={3} required />
-          </label>
-        </div>
-      )}
-      <button className="btn-primary min-h-11" disabled={pending || generating}>
-        {pending ? "Saving…" : promotionId ? "Stop new allocations" : "Create Promotional Card / Coupon"}
-      </button>
-      <p
-        role={state.error ? "alert" : "status"}
-        className={state.error ? "text-sm text-rose-700 dark:text-rose-300" : "text-sm text-emerald-700 dark:text-emerald-300"}
-      >
-        {state.error || state.success}
-      </p>
-    </form>
+        )}
+        <button ref={submitRef} className="btn-primary min-h-11" disabled={pending || generating}>
+          {pending
+            ? "Saving…"
+            : promotionId
+              ? "Stop new allocations"
+              : "Create Promotion & Activate Code"}
+        </button>
+
+        {authRequired ? (
+          <p role="status" className="text-sm text-amber-800 dark:text-amber-200">
+            Fresh identity verification is required. Complete the secure prompt and this action will retry automatically.
+          </p>
+        ) : (
+          <p
+            role={state.error ? "alert" : "status"}
+            className={state.error ? "text-sm text-rose-700 dark:text-rose-300" : "text-sm text-emerald-700 dark:text-emerald-300"}
+          >
+            {state.error || state.success}
+          </p>
+        )}
+      </form>
+
+      {stepUpOpen ? (
+        <PromotionStepUpDialog
+          onClose={() => setStepUpOpen(false)}
+          onVerified={() => {
+            setStepUpOpen(false);
+            window.setTimeout(() => submitRef.current?.click(), 0);
+          }}
+        />
+      ) : null}
+    </>
   );
 }
 
