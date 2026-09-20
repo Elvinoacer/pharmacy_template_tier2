@@ -175,7 +175,7 @@ export default async function ServiceDetailPage({ params }: Props) {
               <div className={styles.metaRow} aria-label="Service summary">
                 {userDistance != null && (
                   <span className={styles.metaPill}>
-                    <MapPin className="h-3.5 w-3.5 text-amber-500" aria-hidden="true" />
+                    <MapPin className="h-3.5 w-3.5 text-amber-700 dark:text-amber-200" aria-hidden="true" />
                     {distanceLabel(userDistance)}
                   </span>
                 )}
@@ -212,7 +212,7 @@ export default async function ServiceDetailPage({ params }: Props) {
                     rel="noopener noreferrer"
                     className="inline-flex items-center gap-1 text-xs font-semibold text-[var(--muted)] hover:text-[var(--brand)]"
                   >
-                    <Navigation className="h-3 w-3 text-teal-600" /> Get directions ↗
+                    <Navigation className="h-3 w-3 text-teal-700 dark:text-teal-200" /> Get directions ↗
                   </a>
                 )}
               </div>
