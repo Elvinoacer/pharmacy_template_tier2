@@ -5,6 +5,7 @@ import {
   PharmacyPaymentForm,
   PromoCardForm,
   RetryOverdueForm,
+  WaiverRequestForm,
 } from "@/app/components/onboard/BillingForms";
 import PaymentStatusRefresh from "@/app/components/onboard/PaymentStatusRefresh";
 import styles from "@/app/components/onboard/OnboardSurface.module.css";
@@ -103,7 +104,7 @@ export default async function PharmacyBillingPage(props: PageProps) {
   }
 
   await ensureVerificationInvoice(pharmacy.id);
-  const [invoices, grant, sub, dunning, paymentMethod] = await Promise.all([
+  const [invoices, grant, sub, dunning, paymentMethod, waiverRequest] = await Promise.all([
     withPharmacy(pharmacy.id, () =>
       db.invoice.findMany({
         where: { pharmacyId: pharmacy.id },
@@ -136,6 +137,13 @@ export default async function PharmacyBillingPage(props: PageProps) {
         orderBy: { createdAt: "desc" },
       }),
     ),
+    withPharmacy(pharmacy.id, () =>
+      db.pharmacyWaiverRequest.findFirst({
+        where: { pharmacyId: pharmacy.id },
+        orderBy: { createdAt: "desc" },
+        select: { status: true, requestedAmountKes: true, decisionNote: true },
+      }),
+    ),
   ]);
 
   const readiness = await loadPharmacySetup(pharmacy.id);
@@ -157,7 +165,8 @@ export default async function PharmacyBillingPage(props: PageProps) {
   const verificationInvoice = invoices.find(
     (inv) => inv.number === `KYP-${pharmacy.id}` || inv.number.startsWith("BUNDLE-"),
   );
-  const verificationPaid = verificationInvoice?.status === "paid" || Boolean(grant?.verification);
+  const verificationGrantKes = Number(grant?.verificationDiscountKes ?? 0) || (grant?.verification ? 100 : 0);
+  const verificationPaid = verificationInvoice?.status === "paid" || verificationGrantKes >= 100;
   const subscriptionActive = sub?.status === "active";
   const billingSuspended = dunning?.status === "suspended" || sub?.status === "unpaid";
   const graceRemaining = dunning?.graceUntil
@@ -187,6 +196,16 @@ export default async function PharmacyBillingPage(props: PageProps) {
       <div className="mt-5">
         <PromoCardForm pharmacyId={pharmacy.id} />
       </div>
+      <div className="mt-3">
+        <WaiverRequestForm
+          pharmacyId={pharmacy.id}
+          latestRequest={waiverRequest ? {
+            status: waiverRequest.status,
+            requestedAmountKes: waiverRequest.requestedAmountKes === null ? null : Number(waiverRequest.requestedAmountKes),
+            decisionNote: waiverRequest.decisionNote,
+          } : null}
+        />
+      </div>
 
       {/* ACTIVE PROMOTION BANNER */}
       {grant ? (
@@ -198,9 +217,9 @@ export default async function PharmacyBillingPage(props: PageProps) {
               {grant.promotion?.code ? ` (${grant.promotion.code})` : ""}
             </h2>
             <p>
-              Verification fee: {grant.verification ? "Waived (KES 0)" : "KES 100"}. Monthly service:{" "}
+              Verification fee: KES {Math.max(0, 100 - (Number(grant.verificationDiscountKes) || (grant.verification ? 100 : 0)))}. Monthly service:{" "}
               {grant.recurringMonths
-                ? `${grant.recurringMonths} month${grant.recurringMonths === 1 ? "" : "s"} free, then KES 500/month`
+                ? `KES ${Math.max(0, 500 - (Number(grant.recurringDiscountKes) || 500))} for ${grant.recurringMonths} month${grant.recurringMonths === 1 ? "" : "s"}, then KES 500/month`
                 : "KES 500/month"}
               .
             </p>

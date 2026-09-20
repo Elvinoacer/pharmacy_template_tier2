@@ -16,8 +16,10 @@ import {
   applyPromoCode,
   ensureBundleInvoice,
   ensureVerificationInvoice,
+  grantFeeDiscounts,
   normalizePromotionCode,
   startPharmacyService,
+  syncGrantInvoices,
 } from "@/app/lib/platform/pharmacy-enrolment";
 import { requirePlatformAction } from "@/app/lib/platform/policy";
 import {
@@ -131,18 +133,21 @@ export async function pharmacyBillingAction(
       revalidatePath("/admin/setup");
 
       const promo = result.promotion;
+      const discounts = grantFeeDiscounts(result.grant);
       const benefitParts: string[] = [];
-      if (promo.verification) benefitParts.push("verification fee waived");
+      if (discounts.verificationKes)
+        benefitParts.push(`KES ${discounts.verificationKes} off verification`);
       if (promo.recurring)
         benefitParts.push(
-          `${promo.recurringMonths} free monthly period${promo.recurringMonths === 1 ? "" : "s"}`,
+          `KES ${discounts.monthlyKes} off for ${promo.recurringMonths} monthly period${promo.recurringMonths === 1 ? "" : "s"}`,
         );
       const benefitText = benefitParts.join(" + ");
 
       return {
         success: `Promotional card "${promo.name}" applied successfully! (${benefitText})`,
         discount: benefitText,
-        waived: promo.verification && promo.recurring,
+        waived:
+          discounts.verificationKes === 100 && discounts.monthlyKes === 500,
       };
     }
 
@@ -468,6 +473,10 @@ export async function promotionAction(
     const capacity = Number(form.get("capacity"));
     const recurringMonths = Number(form.get("months"));
     const scope = String(form.get("scope"));
+    const verificationDiscountKes =
+      scope === "recurring" ? 0 : Number(form.get("verificationAmount"));
+    const recurringDiscountKes =
+      scope === "verification" ? 0 : Number(form.get("monthlyAmount"));
 
     if (
       name.length < 5 ||
@@ -478,10 +487,17 @@ export async function promotionAction(
       !Number.isInteger(recurringMonths) ||
       recurringMonths < 1 ||
       recurringMonths > 120 ||
+      !Number.isFinite(verificationDiscountKes) ||
+      verificationDiscountKes < 0 ||
+      verificationDiscountKes > 100 ||
+      !Number.isFinite(recurringDiscountKes) ||
+      recurringDiscountKes < 0 ||
+      recurringDiscountKes > 500 ||
+      verificationDiscountKes + recurringDiscountKes <= 0 ||
       !["verification", "recurring", "both"].includes(scope)
     ) {
       throw new Error(
-        "Enter a name, valid capacity, scope and 1–120 promotional months.",
+        "Enter a name, valid capacity, scope, subsidy amount and 1–120 promotional months.",
       );
     }
 
@@ -525,8 +541,10 @@ export async function promotionAction(
           code: activeCode,
           capacity,
           recurringMonths,
-          verification: scope !== "recurring",
-          recurring: scope !== "verification",
+          verification: verificationDiscountKes > 0,
+          verificationDiscountKes,
+          recurring: recurringDiscountKes > 0,
+          recurringDiscountKes,
           createdBy: actor.id,
         },
       });
@@ -567,5 +585,156 @@ export async function promotionAction(
         "We couldn't save this promotion right now. Review the details and try again.",
       ),
     };
+  }
+}
+
+export async function submitWaiverRequestAction(
+  _: BillingState,
+  form: FormData,
+): Promise<BillingState> {
+  try {
+    const user = await getSessionUser();
+    if (!user) throw new Error("Sign in to request a fee waiver.");
+    const pharmacyId = String(form.get("pharmacyId") || "").trim();
+    const pharmacy = await db.pharmacy.findFirst({
+      where: { id: pharmacyId, ownerUserId: user.id },
+      select: { id: true },
+    });
+    if (!pharmacy) throw new Error("Only the pharmacy owner can request a waiver.");
+
+    const reason = String(form.get("reason") || "").trim();
+    const rawAmount = String(form.get("requestedAmount") || "").trim();
+    const requestedAmountKes = rawAmount ? Number(rawAmount) : null;
+    if (reason.length < 20 || reason.length > 1000) {
+      throw new Error("Briefly explain the need in 20–1,000 characters.");
+    }
+    if (requestedAmountKes !== null && (!Number.isFinite(requestedAmountKes) || requestedAmountKes <= 0 || requestedAmountKes > 60000)) {
+      throw new Error("Enter a requested amount between KES 1 and KES 60,000, or leave it blank for a full waiver request.");
+    }
+
+    await withPharmacy(pharmacyId, async () => {
+      const existing = await db.pharmacyWaiverRequest.findFirst({
+        where: { pharmacyId, status: "pending" },
+        select: { id: true },
+      });
+      if (existing) throw new Error("You already have a waiver request awaiting review.");
+      await db.pharmacyWaiverRequest.create({
+        data: { pharmacyId, reason, requestedAmountKes },
+      });
+    });
+    revalidatePath("/onboard");
+    revalidatePath("/onboard/billing");
+    revalidatePath("/platform/billing");
+    return { success: "Waiver request submitted. A platform billing admin will review it." };
+  } catch (error) {
+    return { error: publicErrorMessage(error, "We couldn't submit the waiver request right now.") };
+  }
+}
+
+export async function waiverDecisionAction(
+  _: BillingState,
+  form: FormData,
+): Promise<BillingState> {
+  try {
+    const actor = await requirePlatformAction(["super_admin", "billing_admin"], { stepUp: true });
+    const requestId = String(form.get("requestId") || "").trim();
+    const intent = String(form.get("intent") || "");
+    const request = await withPlatformTx((tx) => tx.pharmacyWaiverRequest.findUnique({
+      where: { id: requestId },
+      include: { pharmacy: { select: { id: true, name: true } } },
+    }));
+    if (!request || request.status !== "pending") throw new Error("This waiver request has already been decided.");
+    const decisionNote = String(form.get("decisionNote") || "").trim() || null;
+
+    if (intent === "reject") {
+      await withPlatformTx(async (tx) => {
+        await tx.pharmacyWaiverRequest.update({
+          where: { id: request.id },
+          data: { status: "rejected", decisionNote, decidedBy: actor.id, decidedAt: new Date() },
+        });
+        await tx.auditLog.create({
+          data: { actorId: actor.id, pharmacyId: request.pharmacyId, action: "billing.waiver.rejected", entityType: "PharmacyWaiverRequest", entityId: request.id },
+        });
+      });
+      revalidatePath("/platform/billing");
+      revalidatePath("/onboard/billing");
+      return { success: "Waiver request declined." };
+    }
+
+    const verificationKes = Number(form.get("verificationAmount"));
+    const monthlyKes = Number(form.get("monthlyAmount"));
+    const months = monthlyKes > 0 ? Number(form.get("months")) : 0;
+    if (
+      !Number.isFinite(verificationKes) || verificationKes < 0 || verificationKes > 100 ||
+      !Number.isFinite(monthlyKes) || monthlyKes < 0 || monthlyKes > 500 ||
+      !Number.isInteger(months) || months < 0 || months > 120 ||
+      (monthlyKes > 0 && months < 1) || verificationKes + monthlyKes <= 0
+    ) {
+      throw new Error("Enter up to KES 100 verification subsidy and KES 500 monthly subsidy for 1–120 months.");
+    }
+
+    await withPlatformTx(async (tx) => {
+      await tx.$queryRaw`SELECT id FROM pharmacies WHERE id = ${request.pharmacyId}::uuid FOR UPDATE`;
+      const prior = await tx.pharmacyPromotionGrant.findUnique({ where: { pharmacyId: request.pharmacyId } });
+      if (prior) {
+        await tx.pharmacyPromotion.updateMany({ where: { id: prior.promotionId, claimed: { gt: 0 } }, data: { claimed: { decrement: 1 } } });
+      }
+      const promotion = await tx.pharmacyPromotion.create({
+        data: {
+          name: `Approved waiver — ${request.pharmacy.name}`,
+          capacity: 1,
+          claimed: 1,
+          verification: verificationKes > 0,
+          verificationDiscountKes: verificationKes,
+          recurring: monthlyKes > 0,
+          recurringDiscountKes: monthlyKes,
+          recurringMonths: Math.max(1, months),
+          active: false,
+          createdBy: actor.id,
+        },
+      });
+      const grant = await tx.pharmacyPromotionGrant.upsert({
+        where: { pharmacyId: request.pharmacyId },
+        create: {
+          pharmacyId: request.pharmacyId,
+          promotionId: promotion.id,
+          verification: verificationKes > 0,
+          verificationDiscountKes: verificationKes,
+          recurringMonths: months,
+          recurringDiscountKes: monthlyKes,
+        },
+        update: {
+          promotionId: promotion.id,
+          verification: verificationKes > 0,
+          verificationDiscountKes: verificationKes,
+          recurringMonths: months,
+          recurringDiscountKes: monthlyKes,
+        },
+      });
+      await syncGrantInvoices(tx, request.pharmacyId, grant, actor.id);
+      await tx.pharmacyWaiverRequest.update({
+        where: { id: request.id },
+        data: {
+          status: "approved",
+          decisionNote,
+          approvedVerificationKes: verificationKes,
+          approvedMonthlyKes: monthlyKes,
+          approvedMonths: months,
+          decidedBy: actor.id,
+          decidedAt: new Date(),
+        },
+      });
+      await tx.auditLog.create({
+        data: { actorId: actor.id, pharmacyId: request.pharmacyId, action: "billing.waiver.approved", entityType: "PharmacyWaiverRequest", entityId: request.id },
+      });
+    });
+    revalidatePath("/platform/billing");
+    revalidatePath("/onboard");
+    revalidatePath("/onboard/billing");
+    return { success: "Waiver approved and applied to the pharmacy's open invoices." };
+  } catch (error) {
+    const code = error instanceof Error ? error.message : "";
+    if (code === "STEP_UP_REQUIRED" || code === "MFA_REQUIRED") return { error: code };
+    return { error: publicErrorMessage(error, "We couldn't decide this waiver request right now.") };
   }
 }

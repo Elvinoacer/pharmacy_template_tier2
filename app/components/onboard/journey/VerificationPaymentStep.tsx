@@ -14,6 +14,7 @@ import {
   Tag,
 } from "lucide-react";
 import { pharmacyBillingAction } from "@/app/actions/pharmacy-billing";
+import { WaiverRequestForm } from "@/app/components/onboard/BillingForms";
 import PaymentStatusRefresh from "@/app/components/onboard/PaymentStatusRefresh";
 import type { PharmacyOnboardingSnapshot } from "@/app/lib/services/pharmacy-onboarding-journey";
 import styles from "@/app/components/onboard/OnboardSurface.module.css";
@@ -63,8 +64,10 @@ export function VerificationPaymentStep({
   const verificationWaived = Boolean(grant?.verification);
   const recurringWaived = Boolean(grant?.recurringMonths && grant.recurringMonths > 0);
 
-  const verificationCost = verificationWaived ? 0 : 100;
-  const bundleCost = (verificationWaived ? 0 : 100) + (recurringWaived ? 0 : 500);
+  const verificationDiscountKes = grant?.verificationDiscountKes ?? (verificationWaived ? 100 : 0);
+  const monthlyDiscountKes = grant?.recurringDiscountKes ?? (recurringWaived ? 500 : 0);
+  const verificationCost = Math.max(0, 100 - verificationDiscountKes);
+  const bundleCost = verificationCost + Math.max(0, 500 - monthlyDiscountKes);
 
   const currentCost = selectedPlan === "bundle" ? bundleCost : verificationCost;
   const isWaivedZero = currentCost === 0;
@@ -146,13 +149,17 @@ export function VerificationPaymentStep({
             <div>
               <strong>Active benefit: {grant.promotionName || "Promotion"}</strong>
               <p className="text-[11px] mt-0.5">
-                {grant.verification ? "Verification fee waived (KES 0)." : ""}
-                {grant.recurringMonths ? ` ${grant.recurringMonths} free monthly period included.` : ""}
+                {grant.verificationDiscountKes ? `KES ${grant.verificationDiscountKes} off verification. ` : ""}
+                {grant.recurringDiscountKes ? `KES ${grant.recurringDiscountKes} off monthly service for ${grant.recurringMonths} period${grant.recurringMonths === 1 ? "" : "s"}.` : ""}
               </p>
             </div>
           </div>
         ) : null}
       </section>
+
+      <div className="mb-5">
+        <WaiverRequestForm pharmacyId={pharmacy.id} latestRequest={snapshot.waiverRequest} />
+      </div>
 
       {/* Error state */}
       {state.error ? (
@@ -190,7 +197,7 @@ export function VerificationPaymentStep({
             <span className="text-2xl font-bold text-[var(--foreground)]">
               KES {bundleCost}
             </span>
-            {(verificationWaived || recurringWaived) && (
+            {(verificationDiscountKes > 0 || monthlyDiscountKes > 0) && (
               <span className="text-sm text-[var(--muted)] line-through">KES 600</span>
             )}
           </div>
@@ -227,7 +234,7 @@ export function VerificationPaymentStep({
             <span className="text-2xl font-bold text-[var(--foreground)]">
               KES {verificationCost}
             </span>
-            {verificationWaived && (
+            {verificationDiscountKes > 0 && (
               <span className="text-sm text-[var(--muted)] line-through">KES 100</span>
             )}
           </div>

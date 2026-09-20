@@ -458,6 +458,7 @@ enum DataRequestStatus {
 /// A tenant on the Aether network. One row per pharmacy business.
 model Pharmacy {
   promotionGrant PharmacyPromotionGrant?
+  waiverRequests PharmacyWaiverRequest[]
   id                 String         @id @default(uuid()) @db.Uuid
   /// Public URL key: /p/{slug}
   slug               String         @unique
@@ -4380,7 +4381,9 @@ model PharmacyPromotion {
   capacity Int
   claimed Int @default(0)
   verification Boolean @default(false)
+  verificationDiscountKes Decimal @default(0) @map("verification_discount_kes") @db.Decimal(12, 2)
   recurring Boolean @default(false)
+  recurringDiscountKes Decimal @default(0) @map("recurring_discount_kes") @db.Decimal(12, 2)
   recurringMonths Int @default(1) @map("recurring_months")
   active Boolean @default(true)
   createdBy String @map("created_by") @db.Uuid
@@ -4395,9 +4398,34 @@ model PharmacyPromotionGrant {
   pharmacyId String @unique @map("pharmacy_id") @db.Uuid
   promotionId String @map("promotion_id") @db.Uuid
   verification Boolean
+  verificationDiscountKes Decimal @default(0) @map("verification_discount_kes") @db.Decimal(12, 2)
   recurringMonths Int @map("recurring_months")
+  recurringDiscountKes Decimal @default(0) @map("recurring_discount_kes") @db.Decimal(12, 2)
   createdAt DateTime @default(now()) @map("created_at")
   promotion PharmacyPromotion @relation(fields: [promotionId], references: [id], onDelete: Restrict, map: "pharmacy_promotion_grants_promotion_id_fkey")
   pharmacy Pharmacy @relation(fields: [pharmacyId], references: [id], onDelete: Cascade, map: "pharmacy_promotion_grants_pharmacy_id_fkey")
   @@map("pharmacy_promotion_grants")
+}
+
+/// A pharmacy owner's request for platform fee assistance. Decisions are made by platform billing admins.
+model PharmacyWaiverRequest {
+  id String @id @default(uuid()) @db.Uuid
+  pharmacyId String @map("pharmacy_id") @db.Uuid
+  reason String
+  requestedAmountKes Decimal? @map("requested_amount_kes") @db.Decimal(12, 2)
+  status String @default("pending")
+  decisionNote String? @map("decision_note")
+  approvedVerificationKes Decimal @default(0) @map("approved_verification_kes") @db.Decimal(12, 2)
+  approvedMonthlyKes Decimal @default(0) @map("approved_monthly_kes") @db.Decimal(12, 2)
+  approvedMonths Int @default(0) @map("approved_months")
+  decidedBy String? @map("decided_by") @db.Uuid
+  decidedAt DateTime? @map("decided_at")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  pharmacy Pharmacy @relation(fields: [pharmacyId], references: [id], onDelete: Cascade)
+
+  @@index([status, createdAt])
+  @@index([pharmacyId, createdAt(sort: Desc)])
+  @@map("pharmacy_waiver_requests")
 }

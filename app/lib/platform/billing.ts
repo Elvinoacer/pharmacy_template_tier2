@@ -1,5 +1,5 @@
 import "server-only";
-import { MONTHLY_FEE_KES, nextBillingMonth } from "./pricing";
+import { MONTHLY_FEE_KES, VERIFICATION_FEE_KES, nextBillingMonth } from "./pricing";
 
 import type { Prisma } from "@/app/generated/prisma/client";
 import { prismaUnscoped } from "@/app/lib/db";
@@ -107,14 +107,31 @@ export async function issueSubscriptionInvoice(subscriptionId: string, period?: 
     const existing = await tx.invoice.findFirst({ where: { subscriptionId, periodStart, periodEnd } });
     if (existing) return existing;
     if (sub.status === "cancelled") throw new Error("subscription_cancelled");
-    const grant = await tx.pharmacyPromotionGrant.findUnique({ where: { pharmacyId: sub.pharmacyId } });
+    const [grant, priorSubscriptionInvoices, bundleCredit] = await Promise.all([
+      tx.pharmacyPromotionGrant.findUnique({ where: { pharmacyId: sub.pharmacyId } }),
+      tx.invoice.count({ where: { subscriptionId } }),
+      tx.pharmacyOnboardingEvent.findFirst({
+        where: { pharmacyId: sub.pharmacyId, type: "bundle_prepaid_credit_granted" },
+        select: { id: true },
+      }),
+    ]);
     const firstSubscription = grant
       ? await tx.subscription.findFirst({ where: { pharmacyId: sub.pharmacyId }, orderBy: { startedAt: "asc" }, select: { startedAt: true } })
       : null;
     let waiverEnd = new Date(firstSubscription?.startedAt ?? sub.startedAt);
     for (let i = 0; i < (grant?.recurringMonths ?? 0); i++) waiverEnd = nextBillingMonth(waiverEnd);
-    const waived = periodStart < waiverEnd && (grant?.recurringMonths ?? 0) > 0;
+    const grantMonthlyDiscount = Math.min(
+      MONTHLY_FEE_KES,
+      Math.max(0, Number(grant?.recurringDiscountKes ?? 0) || ((grant?.recurringMonths ?? 0) > 0 ? MONTHLY_FEE_KES : 0)),
+    );
     const price = Number(sub.plan.priceKes);
+    const prepaidBundleMonth = priorSubscriptionInvoices === 0 && Boolean(bundleCredit);
+    const recurringDiscountKes = prepaidBundleMonth
+      ? price
+      : periodStart < waiverEnd
+        ? grantMonthlyDiscount
+        : 0;
+    const totalKes = Math.max(0, price - recurringDiscountKes);
     const sequence = await tx.$queryRaw<Array<{ n: bigint }>>`SELECT nextval('invoice_number_seq') AS n`;
     const number = `INV-${new Date().getUTCFullYear()}-${String(sequence[0].n).padStart(8, "0")}`;
     const invoice = await tx.invoice.create({
@@ -126,13 +143,13 @@ export async function issueSubscriptionInvoice(subscriptionId: string, period?: 
         periodEnd,
         subtotalKes: price,
         taxKes: 0,
-        totalKes: waived ? 0 : price,
+        totalKes,
         status: "open",
         dueAt: periodStart,
         items: {
           create: [
             { description: `${sub.plan.name} (monthly)`, quantity: 1, unitKes: price, totalKes: price },
-            ...(waived ? [{ description: "Promotional monthly service waiver", quantity: 1, unitKes: -price, totalKes: -price }] : []),
+            ...(recurringDiscountKes > 0 ? [{ description: prepaidBundleMonth ? "Prepaid bundle credit" : "Fee subsidy / voucher", quantity: 1, unitKes: -recurringDiscountKes, totalKes: -recurringDiscountKes }] : []),
           ],
         },
       },
@@ -159,8 +176,8 @@ export async function issueSubscriptionInvoice(subscriptionId: string, period?: 
             purpose: "transactional",
             recipient: { email },
             subject: `Your Afyvia pharmacy invoice ${number}`,
-            body: waived
-              ? "Your monthly platform service fee has been waived for this period. Review your invoices at /onboard/billing."
+            body: recurringDiscountKes > 0
+              ? `A KES ${recurringDiscountKes} subsidy was applied. Your monthly platform service invoice balance is KES ${totalKes}. Review your invoices at /onboard/billing.`
               : `Your monthly platform service invoice is KES ${price}. If M-PESA Ratiba is authorized, Safaricom will collect it automatically; otherwise open Pricing & billing to pay securely with M-PESA STK Push.`,
             fallback: ["email"],
             attempted: [],
@@ -168,7 +185,7 @@ export async function issueSubscriptionInvoice(subscriptionId: string, period?: 
         },
       });
     }
-    return waived ? settleInvoice(tx, invoice.id) : invoice;
+    return totalKes === 0 ? settleInvoice(tx, invoice.id) : invoice;
   }, { timeout: 30000, maxWait: 15000 });
 }
 
@@ -368,10 +385,17 @@ export async function handleBundleSettlement(
     where: { pharmacyId: invoice.pharmacyId },
   });
   if (priorGrant) {
+    await tx.pharmacyPromotionGrant.update({
+      where: { pharmacyId: invoice.pharmacyId },
+      data: { verification: true, verificationDiscountKes: VERIFICATION_FEE_KES },
+    });
     if ((priorGrant.recurringMonths || 0) < 1) {
       await tx.pharmacyPromotionGrant.update({
         where: { pharmacyId: invoice.pharmacyId },
-        data: { recurringMonths: 1, verification: true },
+        data: {
+          recurringMonths: 1,
+          recurringDiscountKes: MONTHLY_FEE_KES,
+        },
       });
     }
   } else {
@@ -392,6 +416,8 @@ export async function handleBundleSettlement(
             verification: true,
             recurring: true,
             recurringMonths: 1,
+            verificationDiscountKes: VERIFICATION_FEE_KES,
+            recurringDiscountKes: MONTHLY_FEE_KES,
             active: true,
             createdBy: creatorId,
           },
@@ -410,6 +436,8 @@ export async function handleBundleSettlement(
           promotionId: promo.id,
           verification: true,
           recurringMonths: 1,
+          verificationDiscountKes: VERIFICATION_FEE_KES,
+          recurringDiscountKes: MONTHLY_FEE_KES,
         },
       });
     }

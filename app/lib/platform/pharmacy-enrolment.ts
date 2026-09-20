@@ -1,17 +1,103 @@
 import "server-only";
+import type { Prisma } from "@/app/generated/prisma/client";
 import { withPharmacy } from "@/app/lib/tenant-context";
 import { prismaUnscoped as db, withPlatformTx } from "@/app/lib/db";
 import {
   BUNDLE_FEE_KES,
+  clampFeeSubsidy,
   MONTHLY_FEE_KES,
   VERIFICATION_FEE_KES,
   nextBillingMonth,
 } from "./pricing";
 import {
   ensureDefaultPlans,
+  handleBundleSettlement,
   issueSubscriptionInvoice,
+  settleInvoice,
   syncEntitlementsFromPlan,
 } from "./billing";
+
+type FeeGrant = {
+  verification: boolean;
+  verificationDiscountKes?: Prisma.Decimal | number | null;
+  recurringMonths: number;
+  recurringDiscountKes?: Prisma.Decimal | number | null;
+};
+
+export function grantFeeDiscounts(grant?: FeeGrant | null) {
+  const savedVerification = Number(grant?.verificationDiscountKes ?? 0);
+  const savedMonthly = Number(grant?.recurringDiscountKes ?? 0);
+  return clampFeeSubsidy({
+    verificationKes: savedVerification || (grant?.verification ? VERIFICATION_FEE_KES : 0),
+    monthlyKes: savedMonthly || ((grant?.recurringMonths ?? 0) > 0 ? MONTHLY_FEE_KES : 0),
+  });
+}
+
+function promotionFeeDiscounts(promotion: {
+  verification: boolean;
+  verificationDiscountKes: Prisma.Decimal;
+  recurring: boolean;
+  recurringDiscountKes: Prisma.Decimal;
+}) {
+  return clampFeeSubsidy({
+    verificationKes: Number(promotion.verificationDiscountKes) || (promotion.verification ? VERIFICATION_FEE_KES : 0),
+    monthlyKes: Number(promotion.recurringDiscountKes) || (promotion.recurring ? MONTHLY_FEE_KES : 0),
+  });
+}
+
+export async function syncGrantInvoices(
+  tx: Prisma.TransactionClient,
+  pharmacyId: string,
+  grant: FeeGrant,
+  actorId?: string | null,
+) {
+  const discounts = grantFeeDiscounts(grant);
+  const invoices = await tx.invoice.findMany({
+    where: { pharmacyId, status: "open" },
+    include: { payments: { where: { status: { in: ["pending", "processing"] } }, select: { id: true } } },
+  });
+  if (invoices.some((invoice) => invoice.payments.length > 0)) {
+    throw new Error("A payment is already being processed. Wait for its result before applying a voucher or waiver.");
+  }
+
+  const firstSubscription = grant.recurringMonths > 0
+    ? await tx.subscription.findFirst({ where: { pharmacyId }, orderBy: { startedAt: "asc" }, select: { startedAt: true } })
+    : null;
+  let waiverEnd = firstSubscription?.startedAt ? new Date(firstSubscription.startedAt) : null;
+  for (let month = 0; waiverEnd && month < grant.recurringMonths; month += 1) {
+    waiverEnd = nextBillingMonth(waiverEnd);
+  }
+
+  for (const invoice of invoices) {
+    let discountKes = 0;
+    if (invoice.number === `KYP-${pharmacyId}`) discountKes = discounts.verificationKes;
+    else if (invoice.number === `BUNDLE-${pharmacyId}`) discountKes = discounts.verificationKes + discounts.monthlyKes;
+    else if (invoice.subscriptionId && waiverEnd && invoice.periodStart < waiverEnd) discountKes = discounts.monthlyKes;
+    if (discountKes <= 0) continue;
+
+    const totalKes = Math.max(0, Number(invoice.subtotalKes) + Number(invoice.taxKes) - discountKes);
+    await tx.invoiceItem.deleteMany({
+      where: { invoiceId: invoice.id, description: { startsWith: "Fee subsidy" } },
+    });
+    await tx.invoiceItem.create({
+      data: { invoiceId: invoice.id, description: "Fee subsidy / voucher", quantity: 1, unitKes: -discountKes, totalKes: -discountKes },
+    });
+    await tx.invoice.update({ where: { id: invoice.id }, data: { totalKes } });
+    if (totalKes === 0) {
+      await settleInvoice(tx, invoice.id, actorId);
+      if (invoice.number.startsWith("BUNDLE-")) await handleBundleSettlement(tx, invoice, actorId);
+    }
+  }
+}
+
+export async function syncPharmacyGrantInvoices(pharmacyId: string, actorId?: string | null) {
+  return withPlatformTx(async (tx) => {
+    await tx.$queryRaw`SELECT id FROM pharmacies WHERE id = ${pharmacyId}::uuid FOR UPDATE`;
+    const grant = await tx.pharmacyPromotionGrant.findUniqueOrThrow({ where: { pharmacyId } });
+    await syncGrantInvoices(tx, pharmacyId, grant, actorId);
+    return grant;
+  });
+}
 
 export function normalizePromotionCode(rawCode: string) {
   return rawCode
@@ -39,7 +125,7 @@ export async function claimPromotion(
 
     // If a specific promo code was provided, look it up by code
     if (promoCode && promoCode.trim()) {
-      const code = promoCode.trim();
+      const code = normalizePromotionCode(promoCode);
       const promoByCode = await tx.pharmacyPromotion.findFirst({
         where: {
           active: true,
@@ -49,6 +135,7 @@ export async function claimPromotion(
       });
 
       if (promoByCode) {
+        const discounts = promotionFeeDiscounts(promoByCode);
         if (prior) {
           if (prior.promotionId === promoByCode.id) return prior;
           await tx.pharmacyPromotion
@@ -71,6 +158,8 @@ export async function claimPromotion(
             recurringMonths: promoByCode.recurring
               ? promoByCode.recurringMonths
               : 0,
+            verificationDiscountKes: discounts.verificationKes,
+            recurringDiscountKes: discounts.monthlyKes,
           },
           update: {
             promotionId: promoByCode.id,
@@ -78,6 +167,8 @@ export async function claimPromotion(
             recurringMonths: promoByCode.recurring
               ? promoByCode.recurringMonths
               : 0,
+            verificationDiscountKes: discounts.verificationKes,
+            recurringDiscountKes: discounts.monthlyKes,
           },
         });
       }
@@ -98,12 +189,15 @@ export async function claimPromotion(
       where: { id: promotion.id },
       data: { claimed: { increment: 1 } },
     });
+    const discounts = promotionFeeDiscounts(promotion);
     return tx.pharmacyPromotionGrant.create({
       data: {
         pharmacyId,
         promotionId: promotion.id,
         verification: promotion.verification,
         recurringMonths: promotion.recurring ? promotion.recurringMonths : 0,
+        verificationDiscountKes: discounts.verificationKes,
+        recurringDiscountKes: discounts.monthlyKes,
       },
     });
   });
@@ -127,17 +221,17 @@ export async function applyPromoCode(pharmacyId: string, rawCode: string) {
         `Promotional code "${code}" was not found or is no longer active.`,
       );
     }
-    if (promotion.claimed >= promotion.capacity) {
-      throw new Error(
-        `Promotional code "${code}" has reached its maximum redemptions.`,
-      );
-    }
-
     const prior = await tx.pharmacyPromotionGrant.findUnique({
       where: { pharmacyId },
     });
     if (prior && prior.promotionId === promotion.id) {
+      await syncGrantInvoices(tx, pharmacyId, prior);
       return { grant: prior, promotion, alreadyApplied: true };
+    }
+    if (promotion.claimed >= promotion.capacity) {
+      throw new Error(
+        `Promotional code "${code}" has reached its maximum redemptions.`,
+      );
     }
 
     if (prior) {
@@ -155,6 +249,7 @@ export async function applyPromoCode(pharmacyId: string, rawCode: string) {
     });
 
     const recurringMonths = promotion.recurring ? promotion.recurringMonths : 0;
+    const discounts = promotionFeeDiscounts(promotion);
 
     const grant = await tx.pharmacyPromotionGrant.upsert({
       where: { pharmacyId },
@@ -163,21 +258,19 @@ export async function applyPromoCode(pharmacyId: string, rawCode: string) {
         promotionId: promotion.id,
         verification: promotion.verification,
         recurringMonths,
+        verificationDiscountKes: discounts.verificationKes,
+        recurringDiscountKes: discounts.monthlyKes,
       },
       update: {
         promotionId: promotion.id,
         verification: promotion.verification,
         recurringMonths,
+        verificationDiscountKes: discounts.verificationKes,
+        recurringDiscountKes: discounts.monthlyKes,
       },
     });
 
-    // Update any existing open verification invoice
-    if (promotion.verification) {
-      await tx.invoice.updateMany({
-        where: { pharmacyId, number: `KYP-${pharmacyId}`, status: "open" },
-        data: { totalKes: 0, status: "paid", paidAt: new Date() },
-      });
-    }
+    await syncGrantInvoices(tx, pharmacyId, grant);
 
     return { grant, promotion, alreadyApplied: false };
   });
@@ -186,7 +279,9 @@ export async function applyPromoCode(pharmacyId: string, rawCode: string) {
 export async function ensureVerificationInvoice(pharmacyId: string) {
   return withPharmacy(pharmacyId, async () => {
     const grant = await claimPromotion(pharmacyId);
-    const total = grant?.verification ? 0 : VERIFICATION_FEE_KES;
+    const verificationDiscountKes = grantFeeDiscounts(grant).verificationKes;
+    const total = VERIFICATION_FEE_KES - verificationDiscountKes;
+    if (grant) await syncPharmacyGrantInvoices(pharmacyId);
     const pharmacy = await db.pharmacy.findUniqueOrThrow({
       where: { id: pharmacyId },
     });
@@ -217,13 +312,13 @@ export async function ensureVerificationInvoice(pharmacyId: string) {
                   unitKes: VERIFICATION_FEE_KES,
                   totalKes: VERIFICATION_FEE_KES,
                 },
-                ...(total === 0
+                ...(verificationDiscountKes > 0
                   ? [
                       {
-                        description: "Promotional verification waiver",
+                        description: "Fee subsidy / voucher",
                         quantity: 1,
-                        unitKes: -VERIFICATION_FEE_KES,
-                        totalKes: -VERIFICATION_FEE_KES,
+                        unitKes: -verificationDiscountKes,
+                        totalKes: -verificationDiscountKes,
                       },
                     ]
                   : []),
@@ -244,17 +339,16 @@ export async function ensureBundleInvoice(pharmacyId: string) {
       where: { id: pharmacyId },
     });
 
-    const verificationWaived = Boolean(grant?.verification);
-    const recurringWaived = Boolean(
-      grant?.recurringMonths && grant.recurringMonths > 0,
-    );
+    const discounts = grantFeeDiscounts(grant);
+    const verificationWaived = discounts.verificationKes > 0;
+    const recurringWaived = discounts.monthlyKes > 0;
 
     let total = BUNDLE_FEE_KES;
-    if (verificationWaived) total -= VERIFICATION_FEE_KES;
-    if (recurringWaived) total -= MONTHLY_FEE_KES;
+    if (verificationWaived) total -= discounts.verificationKes;
+    if (recurringWaived) total -= discounts.monthlyKes;
     total = Math.max(0, total);
 
-    const isPaid = total === 0;
+    const isFree = total === 0;
 
     return db.$transaction(
       async (tx) => {
@@ -263,8 +357,6 @@ export async function ensureBundleInvoice(pharmacyId: string) {
           where: { number: `BUNDLE-${pharmacyId}` },
           update: {
             totalKes: total,
-            status: isPaid ? "paid" : undefined,
-            paidAt: isPaid ? new Date() : undefined,
           },
           create: {
             pharmacyId,
@@ -274,8 +366,8 @@ export async function ensureBundleInvoice(pharmacyId: string) {
             dueAt: new Date(),
             subtotalKes: BUNDLE_FEE_KES,
             totalKes: total,
-            status: isPaid ? "paid" : "open",
-            paidAt: isPaid ? new Date() : null,
+            status: "open",
+            paidAt: null,
             items: {
               create: [
                 {
@@ -295,20 +387,20 @@ export async function ensureBundleInvoice(pharmacyId: string) {
                 ...(verificationWaived
                   ? [
                       {
-                        description: "Promotional verification waiver",
+                        description: "Fee subsidy / voucher — verification",
                         quantity: 1,
-                        unitKes: -VERIFICATION_FEE_KES,
-                        totalKes: -VERIFICATION_FEE_KES,
+                        unitKes: -discounts.verificationKes,
+                        totalKes: -discounts.verificationKes,
                       },
                     ]
                   : []),
                 ...(recurringWaived
                   ? [
                       {
-                        description: "Promotional monthly subscription waiver",
+                        description: "Fee subsidy / voucher — monthly service",
                         quantity: 1,
-                        unitKes: -MONTHLY_FEE_KES,
-                        totalKes: -MONTHLY_FEE_KES,
+                        unitKes: -discounts.monthlyKes,
+                        totalKes: -discounts.monthlyKes,
                       },
                     ]
                   : []),
@@ -318,7 +410,7 @@ export async function ensureBundleInvoice(pharmacyId: string) {
         });
 
         // If bundle is paid or waived, also mark the verification invoice as satisfied
-        if (isPaid) {
+        if (isFree) {
           await tx.invoice.upsert({
             where: { number: `KYP-${pharmacyId}` },
             update: { status: "paid", paidAt: new Date(), totalKes: 0 },

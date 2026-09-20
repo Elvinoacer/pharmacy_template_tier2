@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { PromotionForm } from "@/app/components/onboard/BillingForms";
+import { PromotionForm, WaiverDecisionForm } from "@/app/components/onboard/BillingForms";
 import { AlertCircle, ArrowRight, FileText, Layers3, ReceiptText, UsersRound } from "lucide-react";
 import { prismaUnscoped } from "@/app/lib/db";
 import { PlatformPage, PlatformTable } from "@/app/platform/_components/PlatformPage";
@@ -39,6 +39,12 @@ export default async function PlatformBillingPage() {
   ]);
 
   const promotions = await prismaUnscoped.pharmacyPromotion.findMany({ orderBy: { createdAt: "desc" }, take: 50 });
+  const waiverRequests = await prismaUnscoped.pharmacyWaiverRequest.findMany({
+    where: { status: "pending" },
+    include: { pharmacy: { select: { name: true, slug: true } } },
+    orderBy: { createdAt: "asc" },
+    take: 50,
+  });
 
   const unresolved = await prismaUnscoped.billingPayment.findMany({ where: { status: { in: ["pending", "processing"] }, createdAt: { lt: new Date(Date.now() - 10 * 60_000) } }, include: { pharmacy: { select: { name: true } }, invoice: { select: { number: true } } }, orderBy: { createdAt: "asc" }, take: 50 });
 
@@ -74,9 +80,25 @@ export default async function PlatformBillingPage() {
                 </span>
               ) : null}
             </div>
-            <p className="my-2 text-sm">Verification {p.verification ? "waived (saves KES 100)" : "payable"} · {p.recurring ? `${p.recurringMonths} free monthly periods (saves KES ${p.recurringMonths * 500})` : "monthly service payable"} · {p.active ? "Open" : "Stopped"}</p>
+            <p className="my-2 text-sm">Verification saves KES {Number(p.verificationDiscountKes) || (p.verification ? 100 : 0)} · Monthly saves KES {Number(p.recurringDiscountKes) || (p.recurring ? 500 : 0)} for {p.recurringMonths} period{p.recurringMonths === 1 ? "" : "s"} · {p.active ? "Open" : "Stopped"}</p>
             {p.active && <PromotionForm promotionId={p.id}/>}
           </div>
+        ))}
+      </section>
+      <section className="mb-6 rounded-2xl border border-amber-500/25 p-5">
+        <h2 className="text-xl font-semibold">Waiver requests</h2>
+        <p className="my-2 text-sm text-[#6a7972] dark:text-teal-100/60">Approve an exact verification or monthly subsidy. Approved amounts are applied immediately to eligible open invoices.</p>
+        {waiverRequests.length === 0 ? (
+          <p className="mt-4 text-sm">No waiver requests are awaiting review.</p>
+        ) : waiverRequests.map((request) => (
+          <article key={request.id} className="mt-4 border-t border-amber-500/20 pt-4">
+            <div className="flex flex-wrap items-baseline justify-between gap-2">
+              <h3 className="font-semibold">{request.pharmacy.name}</h3>
+              <span className="text-xs text-[#6a7972] dark:text-teal-100/60">Requested {request.requestedAmountKes === null ? "full waiver" : `KES ${Number(request.requestedAmountKes).toLocaleString("en-KE")}`} · {request.createdAt.toISOString().slice(0, 10)}</span>
+            </div>
+            <p className="mt-2 whitespace-pre-wrap text-sm">{request.reason}</p>
+            <WaiverDecisionForm requestId={request.id} />
+          </article>
         ))}
       </section>
       {unresolved.length > 0 && <section className="mb-6 rounded-2xl border border-amber-500/30 p-5"><h2 className="font-semibold">Payments needing reconciliation</h2><p className="my-2 text-sm">Check platform M-Pesa merchant records for payments without complete receipt evidence. Do not request a second payment while a result is uncertain.</p><PlatformTable headers={["Pharmacy", "Invoice", "Amount", "Evidence status"]} empty="No unresolved payments" rows={unresolved.map(p => [p.pharmacy.name, p.invoice.number, `KES ${Number(p.amountKes)}`, p.failureReason || "Awaiting provider callback"])} /></section>}

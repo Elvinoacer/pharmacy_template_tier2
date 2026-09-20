@@ -51,7 +51,8 @@ export function ServiceActivationStep({
 
   const hasPrepaidCredit =
     payment.hasPrepaidBundleCredit ||
-    Boolean(grant?.recurringMonths && grant.recurringMonths > 0);
+    Boolean(grant?.recurringMonths && grant.recurringMonths > 0 && (grant.recurringDiscountKes ?? 500) >= 500);
+  const monthlyBalance = Math.max(0, 500 - (grant?.recurringDiscountKes ?? 0));
   const canSubmit = pending || (!paymentAvailable && !hasPrepaidCredit);
 
   return (
@@ -109,7 +110,7 @@ export function ServiceActivationStep({
             </span>
             <div className="mt-1 flex items-baseline gap-2">
               <span className="text-3xl font-bold text-[var(--foreground)]">
-                {hasPrepaidCredit ? "KES 0" : "KES 500"}
+                KES {hasPrepaidCredit ? 0 : monthlyBalance}
               </span>
               <span className="text-xs text-[var(--muted)]">/ month</span>
               {hasPrepaidCredit ? (

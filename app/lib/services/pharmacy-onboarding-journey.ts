@@ -110,9 +110,16 @@ export type PharmacyOnboardingSnapshot = {
   };
   promotionGrant: {
     verification: boolean;
+    verificationDiscountKes?: number;
     recurringMonths: number;
+    recurringDiscountKes?: number;
     promotionName: string | null;
     promotionCode: string | null;
+  } | null;
+  waiverRequest?: {
+    status: string;
+    requestedAmountKes: number | null;
+    decisionNote: string | null;
   } | null;
   readiness: OwnerSubmissionReadiness | null;
   setup: {
@@ -288,6 +295,7 @@ export async function loadPharmacyOnboardingSnapshot(input: {
         isBundlePaid: false,
       },
       promotionGrant: null,
+      waiverRequest: null,
       readiness: null,
       setup: null,
       subscription: null,
@@ -302,6 +310,7 @@ export async function loadPharmacyOnboardingSnapshot(input: {
     kypInvoice,
     bundleInvoice,
     grant,
+    waiverRequest,
     setupData,
     dbSubscription,
     bundleCreditEvent,
@@ -327,6 +336,13 @@ export async function loadPharmacyOnboardingSnapshot(input: {
         include: { promotion: { select: { name: true, code: true } } },
       }),
     ),
+    withPharmacy(pid, () =>
+      prismaUnscoped.pharmacyWaiverRequest.findFirst({
+        where: { pharmacyId: pid },
+        orderBy: { createdAt: "desc" },
+        select: { status: true, requestedAmountKes: true, decisionNote: true },
+      }),
+    ),
     loadPharmacySetup(pid).catch(() => null),
     withPharmacy(pid, () =>
       prismaUnscoped.subscription.findFirst({
@@ -344,13 +360,19 @@ export async function loadPharmacyOnboardingSnapshot(input: {
 
   const isBundlePaid = bundleInvoice?.status === "paid";
   const isKypPaid = kypInvoice?.status === "paid";
-  const isWaived = Boolean(grant?.verification);
+  const isWaived = Boolean(
+    grant && (Number(grant.verificationDiscountKes) >= 100 || (Number(grant.verificationDiscountKes) === 0 && grant.verification)),
+  );
   const feePaid = isKypPaid || isBundlePaid || isWaived;
 
   const hasPrepaidBundleCredit =
     isBundlePaid ||
     Boolean(bundleCreditEvent) ||
-    Boolean(grant?.recurringMonths && grant.recurringMonths > 0);
+    Boolean(
+      grant?.recurringMonths &&
+      grant.recurringMonths > 0 &&
+      (Number(grant.recurringDiscountKes) >= 500 || (Number(grant.recurringDiscountKes) === 0 && grant.recurringMonths > 0)),
+    );
 
   const activeInvoice = isBundlePaid
     ? bundleInvoice
@@ -370,9 +392,19 @@ export async function loadPharmacyOnboardingSnapshot(input: {
   const promotionGrant = grant
     ? {
         verification: grant.verification,
+        verificationDiscountKes: Number(grant.verificationDiscountKes) || (grant.verification ? 100 : 0),
         recurringMonths: grant.recurringMonths,
+        recurringDiscountKes: Number(grant.recurringDiscountKes) || (grant.recurringMonths > 0 ? 500 : 0),
         promotionName: grant.promotion?.name ?? null,
         promotionCode: grant.promotion?.code ?? null,
+      }
+    : null;
+
+  const latestWaiverRequest = waiverRequest
+    ? {
+        status: waiverRequest.status,
+        requestedAmountKes: waiverRequest.requestedAmountKes === null ? null : Number(waiverRequest.requestedAmountKes),
+        decisionNote: waiverRequest.decisionNote,
       }
     : null;
 
@@ -406,6 +438,7 @@ export async function loadPharmacyOnboardingSnapshot(input: {
     documentDrafts,
     verificationPayment,
     promotionGrant,
+    waiverRequest: latestWaiverRequest,
     readiness,
     setup,
     subscription,

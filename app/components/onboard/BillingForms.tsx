@@ -20,6 +20,8 @@ import {
   generatePromotionCodeAction,
   pharmacyBillingAction,
   promotionAction,
+  submitWaiverRequestAction,
+  waiverDecisionAction,
 } from "@/app/actions/pharmacy-billing";
 import { verifyStepUpAction, type MfaState } from "@/app/actions/mfa";
 
@@ -88,6 +90,54 @@ export function PromoCardForm({ pharmacyId }: { pharmacyId: string }) {
   );
 }
 
+export function WaiverRequestForm({
+  pharmacyId,
+  latestRequest,
+}: {
+  pharmacyId: string;
+  latestRequest?: { status: string; requestedAmountKes: number | null; decisionNote?: string | null } | null;
+}) {
+  const [state, action, pending] = useActionState(submitWaiverRequestAction, {});
+  const pendingRequest = latestRequest?.status === "pending";
+
+  return (
+    <section className="rounded-2xl border border-amber-500/25 bg-amber-50/40 p-4 dark:bg-amber-950/15">
+      <h3 className="text-sm font-semibold text-[var(--foreground)]">Need help with the fee?</h3>
+      <p className="mt-1 text-xs leading-relaxed text-[var(--muted)]">
+        Ask the platform billing team for a partial subsidy or a full waiver. Applying does not pause a payment already in progress.
+      </p>
+      {pendingRequest ? (
+        <p className="mt-3 rounded-xl bg-amber-500/10 p-3 text-xs font-semibold text-amber-900 dark:text-amber-100" role="status">
+          Your waiver request is awaiting review{latestRequest.requestedAmountKes ? ` (KES ${latestRequest.requestedAmountKes.toLocaleString("en-KE")})` : " (full waiver requested)"}.
+        </p>
+      ) : (
+        <form action={action} className="mt-3 grid gap-3 sm:grid-cols-2">
+          <input type="hidden" name="pharmacyId" value={pharmacyId} />
+          <label className="text-xs font-semibold text-[var(--foreground)]">
+            Amount requested (optional)
+            <input className={input} name="requestedAmount" type="number" min={1} max={60000} placeholder="Leave blank for full waiver" />
+          </label>
+          <label className="text-xs font-semibold text-[var(--foreground)] sm:col-span-2">
+            Why do you need assistance?
+            <textarea className={`${input} min-h-24 py-3`} name="reason" minLength={20} maxLength={1000} required placeholder="Briefly explain your circumstances and the support that would help." />
+          </label>
+          <button className="btn-primary min-h-11 justify-center sm:w-fit" disabled={pending}>
+            {pending ? "Submitting…" : "Request fee waiver"}
+          </button>
+        </form>
+      )}
+      {latestRequest && latestRequest.status !== "pending" ? (
+        <p className="mt-3 text-xs text-[var(--muted)]">
+          Last request: <strong className="capitalize">{latestRequest.status}</strong>{latestRequest.decisionNote ? ` — ${latestRequest.decisionNote}` : ""}
+        </p>
+      ) : null}
+      <p role={state.error ? "alert" : "status"} className={`mt-2 text-xs font-medium ${state.error ? "text-rose-700 dark:text-rose-300" : "text-emerald-700 dark:text-emerald-300"}`}>
+        {state.error || state.success}
+      </p>
+    </section>
+  );
+}
+
 export function PharmacyEnrolmentPricingSelector({
   pharmacyId,
   grant,
@@ -99,7 +149,9 @@ export function PharmacyEnrolmentPricingSelector({
   pharmacyId: string;
   grant?: {
     verification: boolean;
+    verificationDiscountKes?: number | { toString(): string };
     recurringMonths: number;
+    recurringDiscountKes?: number | { toString(): string };
   } | null;
   verificationPaid?: boolean;
   subscriptionActive?: boolean;
@@ -119,10 +171,12 @@ export function PharmacyEnrolmentPricingSelector({
 
   const verificationWaived = Boolean(grant?.verification);
   const recurringWaived = Boolean(grant?.recurringMonths && grant.recurringMonths > 0);
+  const verificationDiscountKes = Math.min(100, Number(grant?.verificationDiscountKes ?? 0) || (verificationWaived ? 100 : 0));
+  const monthlyDiscountKes = Math.min(500, Number(grant?.recurringDiscountKes ?? 0) || (recurringWaived ? 500 : 0));
 
   // Price calculations
-  const effectiveVerification = verificationPaid || verificationWaived ? 0 : 100;
-  const effectiveMonthly = recurringWaived ? 0 : 500;
+  const effectiveVerification = verificationPaid ? 0 : Math.max(0, 100 - verificationDiscountKes);
+  const effectiveMonthly = Math.max(0, 500 - monthlyDiscountKes);
   const effectiveBundle = effectiveVerification + effectiveMonthly;
 
   const activeCost =
@@ -161,7 +215,7 @@ export function PharmacyEnrolmentPricingSelector({
               <span className="text-2xl font-bold text-[var(--foreground)]">
                 KES {effectiveBundle}
               </span>
-              {(verificationWaived || recurringWaived) && (
+              {(verificationDiscountKes > 0 || monthlyDiscountKes > 0) && (
                 <span className="text-sm text-[var(--muted)] line-through">KES 600</span>
               )}
             </div>
@@ -204,7 +258,7 @@ export function PharmacyEnrolmentPricingSelector({
               <span className="text-2xl font-bold text-[var(--foreground)]">
                 KES {effectiveVerification}
               </span>
-              {verificationWaived && (
+              {verificationDiscountKes > 0 && (
                 <span className="text-sm text-[var(--muted)] line-through">KES 100</span>
               )}
             </div>
@@ -235,7 +289,7 @@ export function PharmacyEnrolmentPricingSelector({
               <span className="text-2xl font-bold text-[var(--foreground)]">
                 KES {effectiveMonthly}
               </span>
-              {recurringWaived && (
+              {monthlyDiscountKes > 0 && (
                 <span className="text-sm text-[var(--muted)] line-through">KES 500</span>
               )}
             </div>
@@ -680,6 +734,14 @@ export function PromotionForm({ promotionId }: { promotionId?: string }) {
               Free Service Months
               <input className={input} name="months" type="number" min={1} max={120} defaultValue={3} required />
             </label>
+            <label className="text-sm font-medium">
+              Verification Subsidy (KES 0–100)
+              <input className={input} name="verificationAmount" type="number" min={0} max={100} defaultValue={100} required />
+            </label>
+            <label className="text-sm font-medium">
+              Monthly Subsidy (KES 0–500)
+              <input className={input} name="monthlyAmount" type="number" min={0} max={500} defaultValue={500} required />
+            </label>
           </div>
         )}
         <button ref={submitRef} className="btn-primary min-h-11" disabled={pending || generating}>
@@ -710,6 +772,42 @@ export function PromotionForm({ promotionId }: { promotionId?: string }) {
           onVerified={() => {
             setStepUpOpen(false);
             window.setTimeout(() => submitRef.current?.click(), 0);
+          }}
+        />
+      ) : null}
+    </>
+  );
+}
+
+export function WaiverDecisionForm({ requestId }: { requestId: string }) {
+  const approveRef = useRef<HTMLButtonElement>(null);
+  const rejectRef = useRef<HTMLButtonElement>(null);
+  const lastIntent = useRef<"approve" | "reject">("approve");
+  const [state, action, pending] = useActionState(waiverDecisionAction, {});
+  const [dismissedAuthError, setDismissedAuthError] = useState<string | null>(null);
+  const authRequired = state.error === "STEP_UP_REQUIRED" || state.error === "MFA_REQUIRED";
+  const stepUpOpen = authRequired && dismissedAuthError !== state.error;
+
+  return (
+    <>
+      <form action={action} className="mt-3 grid gap-2 sm:grid-cols-4">
+        <input type="hidden" name="requestId" value={requestId} />
+        <label className="text-xs font-medium">Verification (KES)<input className={input} name="verificationAmount" type="number" min={0} max={100} defaultValue={100} required /></label>
+        <label className="text-xs font-medium">Monthly (KES)<input className={input} name="monthlyAmount" type="number" min={0} max={500} defaultValue={500} required /></label>
+        <label className="text-xs font-medium">Months<input className={input} name="months" type="number" min={1} max={120} defaultValue={1} required /></label>
+        <label className="text-xs font-medium sm:col-span-4">Decision note<input className={input} name="decisionNote" maxLength={500} placeholder="Optional note shown to the pharmacy" /></label>
+        <div className="flex flex-wrap gap-2 sm:col-span-4">
+          <button ref={approveRef} onClick={() => { lastIntent.current = "approve"; }} className="btn-primary min-h-10" name="intent" value="approve" disabled={pending}>{pending ? "Saving…" : "Approve & apply"}</button>
+          <button ref={rejectRef} onClick={() => { lastIntent.current = "reject"; }} className="btn-ghost min-h-10" name="intent" value="reject" disabled={pending}>Decline</button>
+        </div>
+        {!authRequired ? <p role={state.error ? "alert" : "status"} className={`text-xs sm:col-span-4 ${state.error ? "text-rose-700 dark:text-rose-300" : "text-emerald-700 dark:text-emerald-300"}`}>{state.error || state.success}</p> : null}
+      </form>
+      {stepUpOpen ? (
+        <PromotionStepUpDialog
+          onClose={() => setDismissedAuthError(state.error ?? null)}
+          onVerified={() => {
+            setDismissedAuthError(state.error ?? null);
+            window.setTimeout(() => (lastIntent.current === "reject" ? rejectRef : approveRef).current?.click(), 0);
           }}
         />
       ) : null}

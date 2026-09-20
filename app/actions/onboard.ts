@@ -336,14 +336,16 @@ export async function submitPharmacyApplicationAction(_prev: OnboardState, formD
       }),
       prismaUnscoped.pharmacyPromotionGrant.findUnique({
         where: { pharmacyId },
-        select: { verification: true },
+        select: { verification: true, verificationDiscountKes: true },
       }),
     ]);
 
     const isPaid =
       kypInvoice?.status === "paid" ||
       bundleInvoice?.status === "paid" ||
-      Boolean(grant?.verification);
+      Boolean(
+        grant && (Number(grant.verificationDiscountKes) >= 100 || (Number(grant.verificationDiscountKes) === 0 && grant.verification)),
+      );
 
     if (!isPaid) {
       const invoice = await ensureVerificationInvoice(pharmacyId);
