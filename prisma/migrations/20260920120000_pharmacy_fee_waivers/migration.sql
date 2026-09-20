@@ -18,9 +18,10 @@ UPDATE "pharmacy_promotion_grants"
 SET "verification_discount_kes" = 100
 WHERE "verification" = true AND "verification_discount_kes" = 0;
 
-UPDATE "pharmacy_promotion_grants" AS grant
+UPDATE "pharmacy_promotion_grants" AS promotion_grant
 SET "recurring_discount_kes" = 500
-WHERE grant."recurring_months" > 0 AND grant."recurring_discount_kes" = 0;
+WHERE promotion_grant."recurring_months" > 0
+  AND promotion_grant."recurring_discount_kes" = 0;
 
 CREATE TABLE IF NOT EXISTS "pharmacy_waiver_requests" (
   "id" UUID NOT NULL,
