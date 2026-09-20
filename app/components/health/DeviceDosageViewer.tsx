@@ -72,7 +72,7 @@ export default function DeviceDosageViewer({
   };
 
   return (
-    <div className="overflow-hidden rounded-3xl border border-[#cfe0d8] bg-white shadow-sm">
+    <div className="overflow-hidden rounded-3xl border border-[var(--health-ui-border)] bg-white shadow-sm">
       {/* Category Tabs */}
       <div className="bg-[#0c1a14] p-4 sm:p-6 text-white">
         <div className="flex flex-wrap items-center justify-between gap-3">
@@ -128,8 +128,8 @@ export default function DeviceDosageViewer({
 
       <div className="grid gap-0 lg:grid-cols-12">
         {/* Left Side Selection List */}
-        <div className="border-b lg:border-b-0 lg:border-r border-[#e3ebe6] bg-[#f8faf9] p-4 sm:p-5 lg:col-span-4">
-          <p className="text-[11px] font-bold uppercase tracking-wider text-[#5a6b62] px-2 mb-3">
+        <div className="border-b lg:border-b-0 lg:border-r border-[var(--health-ui-border)] bg-[#f8faf9] p-4 sm:p-5 lg:col-span-4">
+          <p className="text-[11px] font-bold uppercase tracking-wider text-[var(--health-editorial-body)] px-2 mb-3">
             {guideCategory === "dosage_forms" ? "Select Dosage Formulation:" : "Select Medical Device:"}
           </p>
 
@@ -145,18 +145,18 @@ export default function DeviceDosageViewer({
                       className={`w-full text-left rounded-2xl p-3 transition flex items-center justify-between border ${
                         isSelected
                           ? "border-teal-700 bg-teal-50/90 shadow-xs font-bold text-teal-950"
-                          : "border-transparent bg-white hover:border-[#cfe0d8] text-[#2c3e35]"
+                          : "border-transparent bg-white hover:border-[var(--health-ui-border)] text-[#2c3e35]"
                       }`}
                     >
                       <div className="min-w-0 pr-2">
                         <p className="text-xs font-bold truncate">{guide.title}</p>
-                        <p className="text-[10px] text-[#5a6b62] truncate mt-0.5">
+                        <p className="text-[10px] text-[var(--health-editorial-body)] truncate mt-0.5">
                           {guide.steps.length} verified clinical steps
                         </p>
                       </div>
                       <ChevronRight
                         className={`h-4 w-4 shrink-0 transition ${
-                          isSelected ? "text-teal-800 translate-x-0.5" : "text-[#8a9a92]"
+                          isSelected ? "text-teal-800 translate-x-0.5" : "text-[var(--muted)]"
                         }`}
                       />
                     </button>
@@ -172,18 +172,18 @@ export default function DeviceDosageViewer({
                       className={`w-full text-left rounded-2xl p-3 transition flex items-center justify-between border ${
                         isSelected
                           ? "border-teal-700 bg-teal-50/90 shadow-xs font-bold text-teal-950"
-                          : "border-transparent bg-white hover:border-[#cfe0d8] text-[#2c3e35]"
+                          : "border-transparent bg-white hover:border-[var(--health-ui-border)] text-[#2c3e35]"
                       }`}
                     >
                       <div className="min-w-0 pr-2">
                         <p className="text-xs font-bold truncate">{guide.title}</p>
-                        <p className="text-[10px] text-[#5a6b62] truncate mt-0.5">
+                        <p className="text-[10px] text-[var(--health-editorial-body)] truncate mt-0.5">
                           {guide.steps.length} verified clinical steps
                         </p>
                       </div>
                       <ChevronRight
                         className={`h-4 w-4 shrink-0 transition ${
-                          isSelected ? "text-teal-800 translate-x-0.5" : "text-[#8a9a92]"
+                          isSelected ? "text-teal-800 translate-x-0.5" : "text-[var(--muted)]"
                         }`}
                       />
                     </button>
@@ -195,14 +195,14 @@ export default function DeviceDosageViewer({
         {/* Right Side Step-by-Step Viewer */}
         <div className="p-6 sm:p-8 lg:col-span-8 space-y-6">
           {/* Active Guide Title */}
-          <div className="border-b border-[#e3ebe6] pb-4">
+          <div className="border-b border-[var(--health-ui-border)] pb-4">
             <h4
               className="text-xl font-bold text-[#0c1a14]"
               style={{ fontFamily: "var(--font-display), serif" }}
             >
               {activeGuide.title}
             </h4>
-            <p className="mt-1 text-xs text-[#5a6b62] leading-relaxed">
+            <p className="mt-1 text-xs text-[var(--health-editorial-body)] leading-relaxed">
               {activeGuide.shortDescription}
             </p>
           </div>
@@ -213,7 +213,7 @@ export default function DeviceDosageViewer({
               <span className="text-xs font-bold text-[#0c1a14]">
                 Step {activeStepIndex + 1} of {totalSteps}
               </span>
-              <span className="text-xs text-[#5a6b62]">
+              <span className="text-xs text-[var(--health-editorial-body)]">
                 {Object.values(completedSteps).filter(Boolean).length}/{totalSteps} steps completed
               </span>
             </div>
@@ -257,7 +257,7 @@ export default function DeviceDosageViewer({
                   className={`flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-bold transition ${
                     completedSteps[activeStepIndex]
                       ? "bg-emerald-100 text-emerald-900 border border-emerald-300"
-                      : "border border-[#cfe0d8] bg-white text-[#5a6b62] hover:bg-slate-50"
+                      : "border border-[var(--health-ui-border)] bg-white text-[var(--health-editorial-body)] hover:bg-slate-50"
                   }`}
                 >
                   <Check className="h-3.5 w-3.5" />
@@ -311,7 +311,7 @@ export default function DeviceDosageViewer({
                 <ul className="mt-2 space-y-1.5 text-xs text-emerald-900">
                   {(activeGuide as any).crucialDoList.map((d: string, i: number) => (
                     <li key={i} className="flex items-start gap-2">
-                      <span className="mt-1 h-1.5 w-1.5 shrink-0 rounded-full bg-emerald-600" />
+                      <span className="mt-1 h-1.5 w-1.5 shrink-0 rounded-full bg-emerald-700" />
                       <span>{d}</span>
                     </li>
                   ))}
