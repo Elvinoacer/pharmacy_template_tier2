@@ -155,7 +155,7 @@ export function HealthScreeningHub() {
             >
               Health Screenings &amp; Preventive Care
             </h1>
-            <p className="text-sm leading-relaxed text-[#5a6b62] md:text-base">
+            <p className="text-sm leading-relaxed text-[var(--health-editorial-body)] md:text-base">
               Accessible walk-in vital checks, metabolic screening, and authorized point-of-care rapid tests conducted by licensed pharmacists using calibrated medical devices.
             </p>
           </div>
@@ -217,13 +217,13 @@ export function HealthScreeningHub() {
       </div>
 
       {/* Main Navigation Tabs */}
-      <div className="flex flex-wrap items-center justify-center gap-2 border-b border-gray-200 pb-4">
+      <div className="flex flex-wrap items-center justify-center gap-2 border-b border-[var(--health-ui-border)] pb-4">
         <button
           onClick={() => setActiveTab("services")}
           className={`flex items-center gap-2 rounded-2xl px-5 py-2.5 text-xs sm:text-sm font-bold transition ${
             activeTab === "services"
               ? "bg-teal-900 text-white shadow-md"
-              : "bg-white text-gray-600 hover:bg-gray-100 border border-gray-200"
+              : "bg-white text-gray-600 hover:bg-gray-100 border border-[var(--health-ui-border)]"
           }`}
         >
           <Activity className="h-4 w-4" />
@@ -235,10 +235,10 @@ export function HealthScreeningHub() {
           className={`flex items-center gap-2 rounded-2xl px-5 py-2.5 text-xs sm:text-sm font-bold transition ${
             activeTab === "calculator"
               ? "bg-teal-900 text-white shadow-md"
-              : "bg-white text-gray-600 hover:bg-gray-100 border border-gray-200"
+              : "bg-white text-gray-600 hover:bg-gray-100 border border-[var(--health-ui-border)]"
           }`}
         >
-          <Sparkles className="h-4 w-4 text-amber-400" />
+          <Sparkles className="h-4 w-4" />
           <span>Interactive Vitals Screener</span>
         </button>
 
@@ -247,7 +247,7 @@ export function HealthScreeningHub() {
           className={`flex items-center gap-2 rounded-2xl px-5 py-2.5 text-xs sm:text-sm font-bold transition ${
             activeTab === "principles"
               ? "bg-teal-900 text-white shadow-md"
-              : "bg-white text-gray-600 hover:bg-gray-100 border border-gray-200"
+              : "bg-white text-gray-600 hover:bg-gray-100 border border-[var(--health-ui-border)]"
           }`}
         >
           <Info className="h-4 w-4" />
@@ -259,7 +259,7 @@ export function HealthScreeningHub() {
           className={`flex items-center gap-2 rounded-2xl px-5 py-2.5 text-xs sm:text-sm font-bold transition ${
             activeTab === "referrals"
               ? "bg-teal-900 text-white shadow-md"
-              : "bg-white text-gray-600 hover:bg-gray-100 border border-gray-200"
+              : "bg-white text-gray-600 hover:bg-gray-100 border border-[var(--health-ui-border)]"
           }`}
         >
           <Building2 className="h-4 w-4" />
@@ -273,7 +273,7 @@ export function HealthScreeningHub() {
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
             <div>
               <h2 className="text-xl font-bold text-[#0c1a14]">Authorized Pharmacy Screenings</h2>
-              <p className="text-xs text-[#5a6b62] mt-1">
+              <p className="text-xs text-[var(--health-editorial-body)] mt-1">
                 Conducted strictly under Kenyan Pharmacy &amp; Poisons Board (PPB) Good Pharmacy Practice standards.
               </p>
             </div>
@@ -282,7 +282,7 @@ export function HealthScreeningHub() {
               <button
                 onClick={() => setSelectedServiceCategory("all")}
                 className={`px-3 py-1 text-xs font-semibold rounded-lg transition ${
-                  selectedServiceCategory === "all" ? "bg-white shadow-xs text-teal-950 font-bold" : "text-gray-600"
+                  selectedServiceCategory === "all" ? "bg-teal-900 text-white shadow-xs font-bold" : "text-gray-600"
                 }`}
               >
                 All Services
@@ -290,7 +290,7 @@ export function HealthScreeningHub() {
               <button
                 onClick={() => setSelectedServiceCategory("vitals")}
                 className={`px-3 py-1 text-xs font-semibold rounded-lg transition ${
-                  selectedServiceCategory === "vitals" ? "bg-white shadow-xs text-teal-950 font-bold" : "text-gray-600"
+                  selectedServiceCategory === "vitals" ? "bg-teal-900 text-white shadow-xs font-bold" : "text-gray-600"
                 }`}
               >
                 Core Vitals
@@ -298,7 +298,7 @@ export function HealthScreeningHub() {
               <button
                 onClick={() => setSelectedServiceCategory("metabolic")}
                 className={`px-3 py-1 text-xs font-semibold rounded-lg transition ${
-                  selectedServiceCategory === "metabolic" ? "bg-white shadow-xs text-teal-950 font-bold" : "text-gray-600"
+                  selectedServiceCategory === "metabolic" ? "bg-teal-900 text-white shadow-xs font-bold" : "text-gray-600"
                 }`}
               >
                 Metabolic &amp; Lipids
@@ -306,7 +306,7 @@ export function HealthScreeningHub() {
               <button
                 onClick={() => setSelectedServiceCategory("poct")}
                 className={`px-3 py-1 text-xs font-semibold rounded-lg transition ${
-                  selectedServiceCategory === "poct" ? "bg-white shadow-xs text-teal-950 font-bold" : "text-gray-600"
+                  selectedServiceCategory === "poct" ? "bg-teal-900 text-white shadow-xs font-bold" : "text-gray-600"
                 }`}
               >
                 Rapid POCT
@@ -318,7 +318,7 @@ export function HealthScreeningHub() {
             {filteredServices.map((service, idx) => (
               <div
                 key={idx}
-                className="liquid-glass care-glass rounded-3xl border border-[var(--care-border)] bg-[var(--care-glass)] p-6 shadow-xs hover:border-[var(--brand)] hover:shadow-md transition space-y-4 flex flex-col justify-between backdrop-blur-xl"
+                className="liquid-glass care-glass rounded-3xl border border-[var(--health-ui-border)] bg-[var(--care-glass)] p-6 shadow-xs hover:border-[var(--brand)] hover:shadow-md transition space-y-4 flex flex-col justify-between backdrop-blur-xl"
               >
                 <div className="space-y-3">
                   <div className="flex items-center justify-between">
@@ -331,7 +331,7 @@ export function HealthScreeningHub() {
                   </div>
 
                   <h3 className="text-base font-bold text-[#0c1a14]">{service.title}</h3>
-                  <p className="text-xs leading-relaxed text-[#5a6b62]">{service.description}</p>
+                  <p className="text-xs leading-relaxed text-[var(--health-editorial-body)]">{service.description}</p>
 
                   <div className="rounded-2xl bg-gray-50/80 p-3.5 space-y-2 text-xs">
                     <div>
@@ -349,7 +349,7 @@ export function HealthScreeningHub() {
                   </div>
                 </div>
 
-                <div className="pt-3 border-t border-gray-100 flex items-center justify-between">
+                <div className="pt-3 border-t border-[var(--health-ui-border)] flex items-center justify-between">
                   <span className="text-[11px] text-gray-600 italic">Equipment: {service.equipment.split(" ")[0]}...</span>
                   <Link
                     href={screeningHref}
@@ -391,11 +391,11 @@ export function HealthScreeningHub() {
       {/* ── TAB 2: INTERACTIVE VITALS SCREENER & METERS ── */}
       {activeTab === "calculator" && (
         <div className="space-y-8">
-          <div className="liquid-glass care-glass rounded-3xl border border-[var(--care-border)] bg-[var(--care-glass)] p-6 sm:p-8 shadow-sm space-y-6 backdrop-blur-xl">
+          <div className="liquid-glass care-glass rounded-3xl border border-[var(--health-ui-border)] bg-[var(--care-glass)] p-6 sm:p-8 shadow-sm space-y-6 backdrop-blur-xl">
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 border-b pb-4">
               <div>
                 <h2 className="text-xl font-bold text-[#0c1a14]">Interactive Vitals Screener &amp; BMI Monitor</h2>
-                <p className="text-xs text-[#5a6b62] mt-1">
+                <p className="text-xs text-[var(--health-editorial-body)] mt-1">
                   Enter your vital measurements to see real-time clinical classifications, healthy target ranges, and guidance.
                 </p>
               </div>
@@ -431,13 +431,13 @@ export function HealthScreeningHub() {
 
             <div className="grid gap-8 lg:grid-cols-12">
               {/* Input Form Controls */}
-              <div className="lg:col-span-5 space-y-5 bg-gray-50/70 p-5 rounded-2xl border border-gray-100">
+              <div className="lg:col-span-5 space-y-5 bg-gray-50/70 p-5 rounded-2xl border border-[var(--health-ui-border)]">
                 <h3 className="text-xs font-bold uppercase tracking-wider text-gray-500">Input Measurements</h3>
 
                 {/* Blood Pressure Inputs */}
                 <div className="space-y-1.5">
                   <label className="text-xs font-bold text-gray-700 flex items-center gap-1.5">
-                    <Heart className="h-3.5 w-3.5 text-red-500" />
+                    <Heart className="h-3.5 w-3.5 text-red-700 dark:text-red-300" />
                     <span>Blood Pressure (mmHg)</span>
                   </label>
                   <div className="grid grid-cols-2 gap-2">
@@ -447,7 +447,7 @@ export function HealthScreeningHub() {
                         value={systolic}
                         onChange={(e) => setSystolic(e.target.value)}
                         placeholder="Systolic (120)"
-                        className="w-full rounded-xl border border-gray-200 bg-white px-3 py-2 text-xs focus:border-teal-700 focus:outline-none"
+                        className="w-full rounded-xl border border-[var(--health-ui-border)] bg-white px-3 py-2 text-xs focus:border-teal-700 focus:outline-none"
                       />
                       <span className="text-[10px] text-gray-600 block mt-0.5">Systolic (Upper)</span>
                     </div>
@@ -457,7 +457,7 @@ export function HealthScreeningHub() {
                         value={diastolic}
                         onChange={(e) => setDiastolic(e.target.value)}
                         placeholder="Diastolic (80)"
-                        className="w-full rounded-xl border border-gray-200 bg-white px-3 py-2 text-xs focus:border-teal-700 focus:outline-none"
+                        className="w-full rounded-xl border border-[var(--health-ui-border)] bg-white px-3 py-2 text-xs focus:border-teal-700 focus:outline-none"
                       />
                       <span className="text-[10px] text-gray-600 block mt-0.5">Diastolic (Lower)</span>
                     </div>
@@ -467,7 +467,7 @@ export function HealthScreeningHub() {
                 {/* Blood Glucose Inputs */}
                 <div className="space-y-1.5">
                   <label className="text-xs font-bold text-gray-700 flex items-center gap-1.5">
-                    <Activity className="h-3.5 w-3.5 text-teal-600" />
+                    <Activity className="h-3.5 w-3.5 text-teal-700 dark:text-teal-200" />
                     <span>Blood Glucose</span>
                   </label>
                   <div className="grid grid-cols-3 gap-2">
@@ -477,12 +477,12 @@ export function HealthScreeningHub() {
                       value={bloodGlucose}
                       onChange={(e) => setBloodGlucose(e.target.value)}
                       placeholder="Value"
-                      className="rounded-xl border border-gray-200 bg-white px-3 py-2 text-xs focus:border-teal-700 focus:outline-none"
+                      className="rounded-xl border border-[var(--health-ui-border)] bg-white px-3 py-2 text-xs focus:border-teal-700 focus:outline-none"
                     />
                     <select
                       value={glucoseUnit}
                       onChange={(e) => setGlucoseUnit(e.target.value)}
-                      className="rounded-xl border border-gray-200 bg-white px-2 py-2 text-xs focus:border-teal-700 focus:outline-none"
+                      className="rounded-xl border border-[var(--health-ui-border)] bg-white px-2 py-2 text-xs focus:border-teal-700 focus:outline-none"
                     >
                       <option value="mmol/L">mmol/L</option>
                       <option value="mg/dL">mg/dL</option>
@@ -490,7 +490,7 @@ export function HealthScreeningHub() {
                     <select
                       value={fastingStatus}
                       onChange={(e) => setFastingStatus(e.target.value)}
-                      className="rounded-xl border border-gray-200 bg-white px-2 py-2 text-xs focus:border-teal-700 focus:outline-none"
+                      className="rounded-xl border border-[var(--health-ui-border)] bg-white px-2 py-2 text-xs focus:border-teal-700 focus:outline-none"
                     >
                       <option value="fasting">Fasting</option>
                       <option value="random">Random</option>
@@ -501,7 +501,7 @@ export function HealthScreeningHub() {
                 {/* Weight & Height Inputs */}
                 <div className="space-y-1.5">
                   <label className="text-xs font-bold text-gray-700 flex items-center gap-1.5">
-                    <Scale className="h-3.5 w-3.5 text-indigo-500" />
+                    <Scale className="h-3.5 w-3.5 text-indigo-700 dark:text-indigo-300" />
                     <span>Body Metrics (Weight &amp; Height)</span>
                   </label>
                   <div className="grid grid-cols-2 gap-2">
@@ -512,7 +512,7 @@ export function HealthScreeningHub() {
                         value={weightKg}
                         onChange={(e) => setWeightKg(e.target.value)}
                         placeholder="Weight (kg)"
-                        className="w-full rounded-xl border border-gray-200 bg-white px-3 py-2 text-xs focus:border-teal-700 focus:outline-none"
+                        className="w-full rounded-xl border border-[var(--health-ui-border)] bg-white px-3 py-2 text-xs focus:border-teal-700 focus:outline-none"
                       />
                       <span className="text-[10px] text-gray-600 block mt-0.5">Weight (kg)</span>
                     </div>
@@ -522,7 +522,7 @@ export function HealthScreeningHub() {
                         value={heightCm}
                         onChange={(e) => setHeightCm(e.target.value)}
                         placeholder="Height (cm)"
-                        className="w-full rounded-xl border border-gray-200 bg-white px-3 py-2 text-xs focus:border-teal-700 focus:outline-none"
+                        className="w-full rounded-xl border border-[var(--health-ui-border)] bg-white px-3 py-2 text-xs focus:border-teal-700 focus:outline-none"
                       />
                       <span className="text-[10px] text-gray-600 block mt-0.5">Height (cm)</span>
                     </div>
@@ -532,7 +532,7 @@ export function HealthScreeningHub() {
                 {/* Temperature Input */}
                 <div className="space-y-1.5">
                   <label className="text-xs font-bold text-gray-700 flex items-center gap-1.5">
-                    <Thermometer className="h-3.5 w-3.5 text-emerald-500" />
+                    <Thermometer className="h-3.5 w-3.5 text-emerald-700 dark:text-emerald-300" />
                     <span>Body Temperature (°C)</span>
                   </label>
                   <input
@@ -541,7 +541,7 @@ export function HealthScreeningHub() {
                     value={tempC}
                     onChange={(e) => setTempC(e.target.value)}
                     placeholder="36.6"
-                    className="w-full rounded-xl border border-gray-200 bg-white px-3 py-2 text-xs focus:border-teal-700 focus:outline-none"
+                    className="w-full rounded-xl border border-[var(--health-ui-border)] bg-white px-3 py-2 text-xs focus:border-teal-700 focus:outline-none"
                   />
                 </div>
               </div>
@@ -562,7 +562,7 @@ export function HealthScreeningHub() {
                 }`}>
                   <div className="flex items-center justify-between">
                     <span className="text-xs font-bold text-gray-800 flex items-center gap-1.5">
-                      <Heart className="h-3.5 w-3.5 text-red-500" /> Blood Pressure Evaluation
+                      <Heart className="h-3.5 w-3.5 text-red-700 dark:text-red-300" /> Blood Pressure Evaluation
                     </span>
                     <span className={`text-[11px] font-bold px-2.5 py-0.5 rounded-full ${
                       bpResult.severity === "critical"
@@ -589,7 +589,7 @@ export function HealthScreeningHub() {
                 }`}>
                   <div className="flex items-center justify-between">
                     <span className="text-xs font-bold text-gray-800 flex items-center gap-1.5">
-                      <Activity className="h-3.5 w-3.5 text-teal-600" /> Blood Glucose Assessment
+                      <Activity className="h-3.5 w-3.5 text-teal-700 dark:text-teal-200" /> Blood Glucose Assessment
                     </span>
                     <span className={`text-[11px] font-bold px-2.5 py-0.5 rounded-full ${
                       bgResult.severity === "critical" || bgResult.severity === "danger"
@@ -608,7 +608,7 @@ export function HealthScreeningHub() {
                 <div className="rounded-2xl p-4 border border-indigo-100 bg-indigo-50/50 space-y-2">
                   <div className="flex items-center justify-between">
                     <span className="text-xs font-bold text-gray-800 flex items-center gap-1.5">
-                      <Scale className="h-3.5 w-3.5 text-indigo-500" /> Body Mass Index (BMI)
+                      <Scale className="h-3.5 w-3.5 text-indigo-700 dark:text-indigo-300" /> Body Mass Index (BMI)
                     </span>
                     {bmiResult.bmi && (
                       <span className="text-xs font-bold text-indigo-950 bg-indigo-100 px-2.5 py-0.5 rounded-full">
@@ -631,13 +631,13 @@ export function HealthScreeningHub() {
                     ? "bg-orange-50/80 border-orange-200"
                     : tempResult.severity === "warning"
                     ? "bg-amber-50/80 border-amber-200"
-                    : "bg-gray-50 border-gray-200"
+                    : "bg-gray-50 border-[var(--health-ui-border)]"
                 }`}>
                   <div className="flex items-center justify-between">
                     <span className="text-xs font-bold text-gray-800 flex items-center gap-1.5">
-                      <Thermometer className="h-3.5 w-3.5 text-emerald-500" /> Body Temperature
+                      <Thermometer className="h-3.5 w-3.5 text-emerald-700 dark:text-emerald-300" /> Body Temperature
                     </span>
-                    <span className="text-xs font-bold text-gray-900 bg-white px-2.5 py-0.5 rounded-full border border-gray-200">
+                    <span className="text-xs font-bold text-gray-900 bg-white px-2.5 py-0.5 rounded-full border border-[var(--health-ui-border)]">
                       {tempResult.label}
                     </span>
                   </div>
@@ -652,7 +652,7 @@ export function HealthScreeningHub() {
       {/* ── TAB 3: SCREENING VS DIAGNOSIS CLINICAL PRINCIPLES ── */}
       {activeTab === "principles" && (
         <div className="space-y-8">
-          <div className="liquid-glass care-glass rounded-3xl border border-[var(--care-border)] bg-[var(--care-glass)] p-6 sm:p-10 shadow-sm space-y-6 backdrop-blur-xl">
+          <div className="liquid-glass care-glass rounded-3xl border border-[var(--health-ui-border)] bg-[var(--care-glass)] p-6 sm:p-10 shadow-sm space-y-6 backdrop-blur-xl">
             <div className="max-w-3xl space-y-3">
               <div className="inline-flex items-center gap-2 rounded-full bg-amber-100 px-3.5 py-1 text-xs font-bold text-amber-950">
                 <Info className="h-4 w-4 text-amber-800" />
@@ -661,21 +661,21 @@ export function HealthScreeningHub() {
               <h2 className="text-2xl font-bold text-[#0c1a14]">
                 {SCREENING_VS_DIAGNOSIS_PRINCIPLES.coreDistinction}
               </h2>
-              <p className="text-sm leading-relaxed text-[#5a6b62]">
+              <p className="text-sm leading-relaxed text-[var(--health-editorial-body)]">
                 {SCREENING_VS_DIAGNOSIS_PRINCIPLES.explanation}
               </p>
             </div>
 
             {/* Comparison Table */}
-            <div className="overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-2xs">
+            <div className="overflow-hidden rounded-2xl border border-[var(--health-ui-border)] bg-white shadow-2xs">
               <table className="w-full text-left text-xs">
-                <thead className="bg-gray-50 border-b border-gray-200">
+                <thead className="bg-gray-50 border-b border-[var(--health-ui-border)]">
                   <tr>
                     <th className="p-4 font-bold text-teal-950">Pharmacy Health Screening</th>
                     <th className="p-4 font-bold text-teal-950">Definitive Medical Diagnosis</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-gray-100">
+                <tbody className="divide-y divide-[var(--health-ui-border)]">
                   <tr>
                     <td className="p-4 text-gray-700">
                       <span className="font-semibold block text-[#0c1a14]">Preliminary Assessment:</span>
@@ -713,12 +713,12 @@ export function HealthScreeningHub() {
             {/* Key Tenets Grid */}
             <div className="grid gap-4 sm:grid-cols-2 pt-4">
               {SCREENING_VS_DIAGNOSIS_PRINCIPLES.keyTenets.map((tenet, i) => (
-                <div key={i} className="rounded-2xl border border-gray-100 bg-gray-50/60 p-4 space-y-1.5">
+                <div key={i} className="rounded-2xl border border-[var(--health-ui-border)] bg-gray-50/60 p-4 space-y-1.5">
                   <h4 className="text-xs font-bold text-[#0c1a14] flex items-center gap-1.5">
                     <CheckCircle2 className="h-4 w-4 text-teal-700 shrink-0" />
                     <span>{tenet.title}</span>
                   </h4>
-                  <p className="text-xs text-[#5a6b62] leading-relaxed">{tenet.body}</p>
+                  <p className="text-xs text-[var(--health-editorial-body)] leading-relaxed">{tenet.body}</p>
                 </div>
               ))}
             </div>
@@ -763,7 +763,7 @@ export function HealthScreeningHub() {
           </div>
 
           {/* Tertiary & County Referral Hospitals */}
-          <div className="liquid-glass care-glass rounded-3xl border border-[var(--care-border)] bg-[var(--care-glass)] p-6 sm:p-8 shadow-sm space-y-6 backdrop-blur-xl">
+          <div className="liquid-glass care-glass rounded-3xl border border-[var(--health-ui-border)] bg-[var(--care-glass)] p-6 sm:p-8 shadow-sm space-y-6 backdrop-blur-xl">
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
               <div>
                 <h3 className="text-lg font-bold text-[#0c1a14]">Referral Hospitals &amp; Medical Centres</h3>
@@ -776,13 +776,13 @@ export function HealthScreeningHub() {
                 placeholder="Filter hospital or area..."
                 value={referralSearch}
                 onChange={(e) => setReferralSearch(e.target.value)}
-                className="rounded-xl border border-gray-200 px-3 py-1.5 text-xs focus:border-teal-700 focus:outline-none min-w-[200px]"
+                className="rounded-xl border border-[var(--health-ui-border)] px-3 py-1.5 text-xs focus:border-teal-700 focus:outline-none min-w-[200px]"
               />
             </div>
 
             <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
               {filteredHospitals.map((h, i) => (
-                <div key={i} className="rounded-2xl border border-gray-100 p-4 space-y-2 hover:border-teal-700/30 transition">
+                <div key={i} className="rounded-2xl border border-[var(--health-ui-border)] p-4 space-y-2 hover:border-[var(--brand)] transition">
                   <span className="text-[10px] font-bold uppercase tracking-wider text-teal-800 bg-teal-50 px-2 py-0.5 rounded-md">
                     {h.type}
                   </span>
@@ -802,7 +802,7 @@ export function HealthScreeningHub() {
           {/* Laboratories & Specialists Grid */}
           <div className="grid gap-6 md:grid-cols-2">
             {/* Laboratories */}
-            <div className="liquid-glass care-glass rounded-3xl border border-[var(--care-border)] bg-[var(--care-glass)] p-6 shadow-sm space-y-4 backdrop-blur-xl">
+            <div className="liquid-glass care-glass rounded-3xl border border-[var(--health-ui-border)] bg-[var(--care-glass)] p-6 shadow-sm space-y-4 backdrop-blur-xl">
               <div className="flex items-center gap-2">
                 <Microscope className="h-5 w-5 text-teal-800" />
                 <h4 className="font-bold text-sm text-[#0c1a14]">Accredited Diagnostic Laboratories</h4>
@@ -819,7 +819,7 @@ export function HealthScreeningHub() {
             </div>
 
             {/* Specialists */}
-            <div className="liquid-glass care-glass rounded-3xl border border-[var(--care-border)] bg-[var(--care-glass)] p-6 shadow-sm space-y-4 backdrop-blur-xl">
+            <div className="liquid-glass care-glass rounded-3xl border border-[var(--health-ui-border)] bg-[var(--care-glass)] p-6 shadow-sm space-y-4 backdrop-blur-xl">
               <div className="flex items-center gap-2">
                 <Stethoscope className="h-5 w-5 text-teal-800" />
                 <h4 className="font-bold text-sm text-[#0c1a14]">Specialist Referral Disciplines</h4>
