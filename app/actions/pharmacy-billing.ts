@@ -14,6 +14,7 @@ import {
 } from "@/app/lib/platform/billing";
 import {
   applyPromoCode,
+  assertPromotionCodeRedeemable,
   ensureBundleInvoice,
   ensureVerificationInvoice,
   grantFeeDiscounts,
@@ -473,6 +474,8 @@ export async function promotionAction(
 
     let activeCode = submittedCode;
 
+    let createdPromotionId = "";
+
     await withPlatformTx(async (tx) => {
       if (activeCode) {
         const existing = await tx.pharmacyPromotion.findFirst({
@@ -518,6 +521,7 @@ export async function promotionAction(
           createdBy: actor.id,
         },
       });
+      createdPromotionId = promotion.id;
 
       await tx.auditLog.create({
         data: {
@@ -529,9 +533,15 @@ export async function promotionAction(
       });
     });
 
+    // Never display or hand out a voucher merely because the INSERT returned.
+    // Re-read it in a fresh platform transaction through the same lookup path
+    // used by onboarding. This catches persistence/RLS visibility regressions
+    // before an administrator distributes a dead code.
+    await assertPromotionCodeRedeemable(createdPromotionId, activeCode);
+
     revalidatePath("/platform/billing");
     return {
-      success: `Promotion created and code ${activeCode} is now active for redemption.`,
+      success: `Promotion created, verified and code ${activeCode} is active for redemption.`,
       generatedCode: activeCode,
     };
   } catch (error) {
