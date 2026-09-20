@@ -294,11 +294,18 @@
 }
 
 
-.surface:not([data-flow="login"]):not([data-flow="register"]):not([data-flow="forgot-password"]):not([data-flow="reset-password"]) :global(button:disabled),
+.surface:not([data-flow="login"]):not([data-flow="register"]):not([data-flow="forgot-password"]):not([data-flow="reset-password"]) :global(button:disabled) {
+  opacity: 1 !important;
+}
+
 .surface:not([data-flow="login"]):not([data-flow="register"]):not([data-flow="forgot-password"]):not([data-flow="reset-password"]) :global(input:disabled),
 .surface:not([data-flow="login"]):not([data-flow="register"]):not([data-flow="forgot-password"]):not([data-flow="reset-password"]) :global(select:disabled),
 .surface:not([data-flow="login"]):not([data-flow="register"]):not([data-flow="forgot-password"]):not([data-flow="reset-password"]) :global(textarea:disabled) {
   opacity: 1 !important;
+  cursor: not-allowed;
+  border-color: var(--public-flow-ui-border) !important;
+  background: color-mix(in srgb, var(--foreground) 7%, var(--card)) !important;
+  color: var(--muted) !important;
 }
 
 .surface:not([data-flow="login"]):not([data-flow="register"]):not([data-flow="forgot-password"]):not([data-flow="reset-password"]) :global(input[type="checkbox"]),
