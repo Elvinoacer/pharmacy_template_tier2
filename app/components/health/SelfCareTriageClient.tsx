@@ -120,7 +120,7 @@ export default function SelfCareTriageClient() {
         badge: "🟡 Pharmacist / GP Review",
         title: "Consult a Pharmacist or Doctor",
         bg: "border-amber-300 bg-gradient-to-br from-amber-50 via-white to-amber-50/40 text-amber-950",
-        btnColor: "bg-amber-600 hover:bg-amber-700 text-white",
+        btnColor: "bg-amber-700 hover:bg-amber-800 text-white",
         desc: "Symptoms lasting over 7 days, moderate discomfort, or patients with underlying conditions/pregnancy should be evaluated by a healthcare professional before starting or continuing OTC treatments.",
         actionUrl: "/contact",
         actionText: "Talk to a Pharmacist",
@@ -593,7 +593,7 @@ export default function SelfCareTriageClient() {
                   {/* Level 1: 🟢 Appropriate for Self-Care */}
                   <div className="rounded-3xl border-2 border-emerald-200 bg-gradient-to-br from-emerald-50/80 via-white to-emerald-50/30 p-6 shadow-sm">
                     <div className="flex items-center gap-3">
-                      <div className="rounded-2xl bg-emerald-600 p-2.5 text-white shadow-md">
+                      <div className="rounded-2xl bg-emerald-700 p-2.5 text-white shadow-md">
                         <CheckCircle2 className="h-5 w-5" />
                       </div>
                       <div>
@@ -652,7 +652,7 @@ export default function SelfCareTriageClient() {
                   {/* Level 2: 🟡 Consult a Pharmacist or GP Soon */}
                   <div className="rounded-3xl border-2 border-amber-200 bg-gradient-to-br from-amber-50/70 via-white to-amber-50/30 p-6 shadow-sm">
                     <div className="flex items-center gap-3">
-                      <div className="rounded-2xl bg-amber-500 p-2.5 text-white shadow-md">
+                      <div className="rounded-2xl bg-amber-700 p-2.5 text-white shadow-md">
                         <AlertTriangle className="h-5 w-5" />
                       </div>
                       <div>
@@ -686,7 +686,7 @@ export default function SelfCareTriageClient() {
                   {/* Level 3: 🔴 Immediate Medical / Emergency Attention */}
                   <div className="rounded-3xl border-2 border-rose-300 bg-gradient-to-br from-rose-50/90 via-white to-rose-50/40 p-6 shadow-sm">
                     <div className="flex items-center gap-3">
-                      <div className="rounded-2xl bg-rose-600 p-2.5 text-white shadow-md">
+                      <div className="rounded-2xl bg-rose-700 p-2.5 text-white shadow-md">
                         <AlertOctagon className="h-5 w-5" />
                       </div>
                       <div>
