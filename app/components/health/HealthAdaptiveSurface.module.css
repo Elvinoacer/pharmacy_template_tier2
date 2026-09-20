@@ -1,5 +1,6 @@
 .surface {
   --health-ui-border: color-mix(in srgb, var(--foreground) 60%, var(--card));
+  --health-editorial-body: color-mix(in srgb, var(--foreground) 22%, var(--muted));
   position: relative;
   min-width: 0;
   overflow-x: clip;
@@ -34,6 +35,77 @@
   color: var(--muted);
   opacity: 1;
 }
+
+.surface :global([class*="border-[var(--care-border)]"]),
+.surface :global([class*="border-[var(--line-2)]"]),
+.surface :global([class*="border-gray-100"]),
+.surface :global([class*="border-gray-200"]),
+.surface :global([class*="border-[#cfe0d8]"]),
+.surface :global([class*="border-[#d2dfd8]"]),
+.surface :global([class*="border-[#e3ebe6]"]),
+.surface :global([class*="border-teal-900/10"]),
+.surface :global([class*="border-teal-900/15"]) {
+  border-color: var(--health-ui-border) !important;
+}
+
+.surface :global([class~="text-[#5a6b62]"]) {
+  color: var(--health-editorial-body) !important;
+}
+
+.surface :global([class~="text-[#8a9a92]"]) {
+  color: var(--muted) !important;
+}
+
+.surface :global([class*="border-emerald-200"]),
+.surface :global([class*="border-emerald-300"]) {
+  border-color: color-mix(in srgb, #047857 68%, var(--card)) !important;
+}
+
+.surface :global([class*="border-teal-200"]),
+.surface :global([class*="border-teal-300"]) {
+  border-color: color-mix(in srgb, #0f766e 68%, var(--card)) !important;
+}
+
+.surface :global([class*="border-amber-200"]),
+.surface :global([class*="border-amber-300"]) {
+  border-color: color-mix(in srgb, #b45309 70%, var(--card)) !important;
+}
+
+.surface :global([class*="border-orange-200"]),
+.surface :global([class*="border-orange-300"]) {
+  border-color: color-mix(in srgb, #c2410c 68%, var(--card)) !important;
+}
+
+.surface :global([class*="border-red-200"]),
+.surface :global([class*="border-red-300"]),
+.surface :global([class*="border-rose-200"]),
+.surface :global([class*="border-rose-300"]) {
+  border-color: color-mix(in srgb, #be123c 66%, var(--card)) !important;
+}
+
+.surface :global([class*="border-indigo-100"]),
+.surface :global([class*="border-indigo-200"]) {
+  border-color: color-mix(in srgb, #4338ca 62%, var(--card)) !important;
+}
+
+.surface :global(table) {
+  border-color: var(--health-ui-border);
+}
+
+.surface :global(thead) {
+  border-color: var(--health-ui-border) !important;
+  background: var(--card-elev) !important;
+}
+
+.surface :global(tbody) {
+  --tw-divide-opacity: 1;
+  border-color: var(--health-ui-border) !important;
+}
+
+.surface :global(tbody tr:nth-child(even)) {
+  background: color-mix(in srgb, var(--card-elev) 72%, var(--card));
+}
+
 
 .surface :global(button),
 .surface :global(a),
@@ -219,4 +291,37 @@
 .surface :global(textarea:focus-visible) {
   outline: 3px solid var(--brand);
   outline-offset: 3px;
+}
+
+
+:global(html[data-theme="dark"]) .surface :global([class*="border-emerald-200"]),
+:global(html[data-theme="dark"]) .surface :global([class*="border-emerald-300"]) {
+  border-color: color-mix(in srgb, #34d399 62%, var(--card)) !important;
+}
+
+:global(html[data-theme="dark"]) .surface :global([class*="border-teal-200"]),
+:global(html[data-theme="dark"]) .surface :global([class*="border-teal-300"]) {
+  border-color: color-mix(in srgb, #5eead4 62%, var(--card)) !important;
+}
+
+:global(html[data-theme="dark"]) .surface :global([class*="border-amber-200"]),
+:global(html[data-theme="dark"]) .surface :global([class*="border-amber-300"]) {
+  border-color: color-mix(in srgb, #fbbf24 62%, var(--card)) !important;
+}
+
+:global(html[data-theme="dark"]) .surface :global([class*="border-orange-200"]),
+:global(html[data-theme="dark"]) .surface :global([class*="border-orange-300"]) {
+  border-color: color-mix(in srgb, #fb923c 62%, var(--card)) !important;
+}
+
+:global(html[data-theme="dark"]) .surface :global([class*="border-red-200"]),
+:global(html[data-theme="dark"]) .surface :global([class*="border-red-300"]),
+:global(html[data-theme="dark"]) .surface :global([class*="border-rose-200"]),
+:global(html[data-theme="dark"]) .surface :global([class*="border-rose-300"]) {
+  border-color: color-mix(in srgb, #fb7185 62%, var(--card)) !important;
+}
+
+:global(html[data-theme="dark"]) .surface :global([class*="border-indigo-100"]),
+:global(html[data-theme="dark"]) .surface :global([class*="border-indigo-200"]) {
+  border-color: color-mix(in srgb, #a5b4fc 58%, var(--card)) !important;
 }
