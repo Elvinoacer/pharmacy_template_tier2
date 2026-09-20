@@ -159,7 +159,7 @@ export default async function PharmacyProfilePage({
         </Link>
         <Link
           href={`/p/${slug}`}
-          className="inline-flex min-h-11 items-center gap-1.5 rounded-full border border-[var(--care-border)] bg-[var(--card-elev)] px-3.5 py-1.5 text-xs font-semibold text-[var(--brand)] shadow-sm transition hover:border-[var(--brand)]"
+          className="inline-flex min-h-11 items-center gap-1.5 rounded-full border border-[color-mix(in_srgb,var(--foreground)_48%,var(--card))] bg-[var(--card-elev)] px-3.5 py-1.5 text-xs font-semibold text-[var(--brand)] shadow-sm transition hover:border-[var(--brand)]"
         >
           <Store size={14} aria-hidden />
           Open Full Storefront
@@ -213,21 +213,21 @@ export default async function PharmacyProfilePage({
             </Link>
             <Link
               href={`/p/${slug}/services`}
-              className="inline-flex min-h-11 items-center justify-center gap-2 rounded-xl border border-[var(--care-border)] bg-[var(--card-elev)] px-4 py-2 text-xs font-semibold text-[var(--foreground)] shadow-sm transition hover:border-[var(--brand)] active:scale-95"
+              className="inline-flex min-h-11 items-center justify-center gap-2 rounded-xl border border-[color-mix(in_srgb,var(--foreground)_48%,var(--card))] bg-[var(--card-elev)] px-4 py-2 text-xs font-semibold text-[var(--foreground)] shadow-sm transition hover:border-[var(--brand)] active:scale-95"
             >
               <Activity size={15} aria-hidden />
               Care Services
             </Link>
             <Link
               href={`/p/${slug}`}
-              className="inline-flex min-h-11 items-center justify-center gap-2 rounded-xl border border-[var(--care-border)] bg-[var(--card-elev)] px-4 py-2 text-xs font-semibold text-[var(--foreground)] shadow-sm transition hover:border-[var(--brand)] active:scale-95"
+              className="inline-flex min-h-11 items-center justify-center gap-2 rounded-xl border border-[color-mix(in_srgb,var(--foreground)_48%,var(--card))] bg-[var(--card-elev)] px-4 py-2 text-xs font-semibold text-[var(--foreground)] shadow-sm transition hover:border-[var(--brand)] active:scale-95"
             >
               <Store size={15} aria-hidden />
               Full Storefront
             </Link>
             <Link
               href={`/p/${slug}/order`}
-              className="inline-flex min-h-11 items-center justify-center gap-2 rounded-xl border border-[var(--care-border)] bg-[var(--card-elev)] px-4 py-2 text-xs font-semibold text-[var(--foreground)] shadow-sm transition hover:border-[var(--brand)] active:scale-95"
+              className="inline-flex min-h-11 items-center justify-center gap-2 rounded-xl border border-[color-mix(in_srgb,var(--foreground)_48%,var(--card))] bg-[var(--card-elev)] px-4 py-2 text-xs font-semibold text-[var(--foreground)] shadow-sm transition hover:border-[var(--brand)] active:scale-95"
             >
               <ShoppingBag size={15} aria-hidden />
               Order & Refill
