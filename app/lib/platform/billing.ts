@@ -223,7 +223,7 @@ export async function markInvoicePaid(invoiceId: string, actorId?: string | null
     const evidence = await tx.billingPayment.findFirst({ where: { invoiceId, status: "succeeded" } });
     if (!evidence) throw new Error("confirmed_payment_required");
     return settleInvoice(tx, invoiceId, actorId);
-  });
+  }, { timeout: 30000, maxWait: 15000 });
 }
 
 export async function applyDunning(invoiceId: string) {
@@ -533,7 +533,7 @@ async function createIntasendBillingCheckoutInPharmacy(
       if (invoice.number.startsWith("BUNDLE-")) {
         await handleBundleSettlement(tx, invoice, opts?.actorId);
       }
-    });
+    }, { timeout: 30000, maxWait: 15000 });
     return { ok: true as const, alreadyPaid: true, waived: true, invoiceId };
   }
 
@@ -810,7 +810,7 @@ export async function completeBillingPayment(opts: {
       return payment;
     }
     return tx.billingPayment.update({ where: { id: row.id }, data: { status: "failed", failureReason: opts.resultDesc ?? "stk_failed" } });
-  });
+  }, { timeout: 30000, maxWait: 15000 });
 }
 
 export async function reconcileBillingPayments(limit = 50) {

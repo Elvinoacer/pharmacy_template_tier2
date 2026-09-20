@@ -678,6 +678,10 @@ export function PromotionForm({ promotionId }: { promotionId?: string }) {
                 <input className={input} name="name" required minLength={5} maxLength={150} placeholder="e.g. Early Partner Chemist" />
               </label>
               <label className="text-sm font-medium">
+                Custom Voucher Code (Optional)
+                <input className={input} name="code" placeholder="e.g. WELCOME2026 (Leave blank to auto-generate)" />
+              </label>
+              <label className="text-sm font-medium">
                 Redemption Capacity
                 <input className={input} name="capacity" type="number" min={1} max={100000} defaultValue={50} required />
               </label>

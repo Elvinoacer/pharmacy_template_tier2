@@ -10,7 +10,7 @@ import {
 import PaymentStatusRefresh from "@/app/components/onboard/PaymentStatusRefresh";
 import styles from "@/app/components/onboard/OnboardSurface.module.css";
 import { getSessionUser } from "@/app/lib/auth";
-import { prismaUnscoped as db } from "@/app/lib/db";
+import { prismaUnscoped as db, withPlatformTx } from "@/app/lib/db";
 import { publicErrorMessage } from "@/app/lib/public-error";
 import { ensureVerificationInvoice } from "@/app/lib/platform/pharmacy-enrolment";
 import { SUBSCRIPTION_GRACE_DAYS } from "@/app/lib/services/daraja-dunning";
@@ -113,12 +113,12 @@ export default async function PharmacyBillingPage(props: PageProps) {
         take: 50,
       }),
     ),
-    withPharmacy(pharmacy.id, () =>
-      db.pharmacyPromotionGrant.findUnique({
+    withPlatformTx((tx) =>
+      tx.pharmacyPromotionGrant.findUnique({
         where: { pharmacyId: pharmacy.id },
         include: { promotion: { select: { name: true, code: true } } },
       }),
-    ),
+    ).catch(() => null),
     withPharmacy(pharmacy.id, () =>
       db.subscription.findFirst({
         where: { pharmacyId: pharmacy.id, status: { not: "cancelled" } },

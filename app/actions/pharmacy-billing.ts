@@ -129,9 +129,6 @@ export async function pharmacyBillingAction(
       ).trim();
       if (!code) throw new Error("Enter a promotion or coupon code.");
       const result = await applyPromoCode(pharmacyId, code);
-      revalidatePath("/onboard/billing");
-      revalidatePath("/onboard");
-      revalidatePath("/admin/setup");
 
       const promo = result.promotion;
       const discounts = grantFeeDiscounts(result.grant);
@@ -144,11 +141,52 @@ export async function pharmacyBillingAction(
         );
       const benefitText = benefitParts.join(" + ");
 
+      // If verification is fully waived (KES 100), ensure verification invoice is satisfied immediately
+      if (discounts.verificationKes >= 100) {
+        await ensureVerificationInvoice(pharmacyId);
+      }
+
+      // If both verification and monthly are fully waived (KES 600 bundle), ensure bundle invoice is satisfied immediately
+      if (discounts.verificationKes >= 100 && discounts.monthlyKes >= 500) {
+        const bundleInvoice = await ensureBundleInvoice(pharmacyId);
+        if (bundleInvoice.status !== "paid") {
+          await db.$transaction(async (tx) => {
+            await settleInvoice(tx, bundleInvoice.id, user.id);
+            await handleBundleSettlement(tx, bundleInvoice, user.id);
+          });
+        }
+      }
+
+      // If pharmacy is post-approval (Step 9) and monthly service is waived, activate service immediately
+      let serviceActivated = false;
+      if (["approved", "active"].includes(pharmacy.status) && discounts.monthlyKes >= 500) {
+        try {
+          const serviceInvoice = await startPharmacyService(pharmacyId);
+          if (serviceInvoice.subscriptionId) {
+            if (serviceInvoice.status !== "paid") {
+              await db.$transaction(async (tx) => {
+                await settleInvoice(tx, serviceInvoice.id, user.id);
+              });
+            }
+            serviceActivated = true;
+          }
+        } catch {
+          // If setup prerequisites pending, grant is preserved and will apply on activation
+        }
+      }
+
+      revalidatePath("/onboard/billing");
+      revalidatePath("/onboard");
+      revalidatePath("/admin/setup");
+
+      const isVerificationWaived = discounts.verificationKes >= 100;
+      const isBundleWaived = isVerificationWaived && discounts.monthlyKes >= 500;
+
       return {
-        success: `Promotional card "${promo.name}" applied successfully! (${benefitText})`,
+        success: `Promotional voucher "${promo.name}" applied successfully! (${benefitText})`,
         discount: benefitText,
-        waived:
-          discounts.verificationKes === 100 && discounts.monthlyKes === 500,
+        waived: isVerificationWaived,
+        settled: isVerificationWaived || isBundleWaived || serviceActivated,
       };
     }
 

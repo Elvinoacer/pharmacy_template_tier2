@@ -108,28 +108,43 @@ export function normalizePromotionCode(rawCode: string) {
     .toUpperCase();
 }
 
-async function findPromotionByNormalizedCode(
+export async function findPromotionByNormalizedCode(
   tx: Prisma.TransactionClient,
   code: string,
   activeOnly = true,
 ) {
-  // pharmacy_promotions is FORCE-RLS/platform-only. Keep the exact-code lookup
+  // pharmacy_promotions is FORCE-RLS/platform-only. Keep the code lookup
   // inside the explicit platform transaction and resolve the row id with raw SQL.
-  // This avoids relying on Prisma's case-insensitive filter translation at the
-  // security boundary used by tenant onboarding.
+  // We match exact code, stripped hyphens/spaces, and stripped with optional AFY- prefix
+  // so applicants entering "AFY-XXXX-XXXX", "afy-xxxx-xxxx", "AFYXXXXXXXX" or "XXXX-XXXX"
+  // always successfully redeem the administrator's code.
+  const upperCode = code.toUpperCase().trim();
+  const stripped = upperCode.replace(/[-\s]/g, "");
+  const withAfy = stripped.startsWith("AFY") ? stripped : `AFY${stripped}`;
+
   const rows = activeOnly
     ? await tx.$queryRaw<Array<{ id: string }>>`
         SELECT id
         FROM pharmacy_promotions
         WHERE active = true
-          AND upper(code) = ${code}
+          AND (
+            upper(code) = ${upperCode}
+            OR replace(replace(upper(code), '-', ''), ' ', '') = ${stripped}
+            OR replace(replace(upper(code), '-', ''), ' ', '') = ${withAfy}
+          )
+        ORDER BY created_at DESC
         LIMIT 1
         FOR UPDATE
       `
     : await tx.$queryRaw<Array<{ id: string }>>`
         SELECT id
         FROM pharmacy_promotions
-        WHERE upper(code) = ${code}
+        WHERE (
+            upper(code) = ${upperCode}
+            OR replace(replace(upper(code), '-', ''), ' ', '') = ${stripped}
+            OR replace(replace(upper(code), '-', ''), ' ', '') = ${withAfy}
+          )
+        ORDER BY created_at DESC
         LIMIT 1
         FOR UPDATE
       `;
@@ -189,7 +204,7 @@ export async function claimPromotion(
           where: { id: promoByCode.id },
           data: { claimed: { increment: 1 } },
         });
-        return tx.pharmacyPromotionGrant.upsert({
+        const grant = await tx.pharmacyPromotionGrant.upsert({
           where: { pharmacyId },
           create: {
             pharmacyId,
@@ -211,6 +226,8 @@ export async function claimPromotion(
             recurringDiscountKes: discounts.monthlyKes,
           },
         });
+        await syncGrantInvoices(tx, pharmacyId, grant);
+        return grant;
       }
     }
 
@@ -230,7 +247,7 @@ export async function claimPromotion(
       data: { claimed: { increment: 1 } },
     });
     const discounts = promotionFeeDiscounts(promotion);
-    return tx.pharmacyPromotionGrant.create({
+    const grant = await tx.pharmacyPromotionGrant.create({
       data: {
         pharmacyId,
         promotionId: promotion.id,
@@ -240,6 +257,8 @@ export async function claimPromotion(
         recurringDiscountKes: discounts.monthlyKes,
       },
     });
+    await syncGrantInvoices(tx, pharmacyId, grant);
+    return grant;
   });
 }
 
@@ -332,7 +351,30 @@ export async function ensureVerificationInvoice(pharmacyId: string) {
         const existing = await tx.invoice.findFirst({
           where: { number: `KYP-${pharmacyId}` },
         });
-        if (existing) return existing;
+        if (existing) {
+          if (existing.status !== "paid" && total === 0) {
+            await tx.invoice.update({
+              where: { id: existing.id },
+              data: { totalKes: 0, status: "paid", paidAt: new Date() },
+            });
+            await tx.invoiceItem.deleteMany({
+              where: { invoiceId: existing.id, description: { startsWith: "Fee subsidy" } },
+            });
+            if (verificationDiscountKes > 0) {
+              await tx.invoiceItem.create({
+                data: {
+                  invoiceId: existing.id,
+                  description: "Fee subsidy / voucher",
+                  quantity: 1,
+                  unitKes: -verificationDiscountKes,
+                  totalKes: -verificationDiscountKes,
+                },
+              });
+            }
+            return tx.invoice.findUniqueOrThrow({ where: { id: existing.id } });
+          }
+          return existing;
+        }
 
         return tx.invoice.create({
           data: {
@@ -398,6 +440,7 @@ export async function ensureBundleInvoice(pharmacyId: string) {
           where: { number: `BUNDLE-${pharmacyId}` },
           update: {
             totalKes: total,
+            ...(isFree ? { status: "paid", paidAt: new Date() } : {}),
           },
           create: {
             pharmacyId,
@@ -407,8 +450,8 @@ export async function ensureBundleInvoice(pharmacyId: string) {
             dueAt: new Date(),
             subtotalKes: BUNDLE_FEE_KES,
             totalKes: total,
-            status: "open",
-            paidAt: null,
+            status: isFree ? "paid" : "open",
+            paidAt: isFree ? new Date() : null,
             items: {
               create: [
                 {
@@ -450,6 +493,35 @@ export async function ensureBundleInvoice(pharmacyId: string) {
           },
         });
 
+        // Ensure discount items exist on updated bundle invoices
+        if (verificationWaived || recurringWaived) {
+          await tx.invoiceItem.deleteMany({
+            where: { invoiceId: invoice.id, description: { startsWith: "Fee subsidy" } },
+          });
+          if (verificationWaived) {
+            await tx.invoiceItem.create({
+              data: {
+                invoiceId: invoice.id,
+                description: "Fee subsidy / voucher — verification",
+                quantity: 1,
+                unitKes: -discounts.verificationKes,
+                totalKes: -discounts.verificationKes,
+              },
+            });
+          }
+          if (recurringWaived) {
+            await tx.invoiceItem.create({
+              data: {
+                invoiceId: invoice.id,
+                description: "Fee subsidy / voucher — monthly service",
+                quantity: 1,
+                unitKes: -discounts.monthlyKes,
+                totalKes: -discounts.monthlyKes,
+              },
+            });
+          }
+        }
+
         // If bundle is paid or waived, also mark the verification invoice as satisfied
         if (isFree) {
           await tx.invoice.upsert({
@@ -459,3 +531,68 @@ export async function ensureBundleInvoice(pharmacyId: string) {
               pharmacyId,
               number: `KYP-${pharmacyId}`,
               periodStart: pharmacy.createdAt,
+              periodEnd: pharmacy.createdAt,
+              dueAt: new Date(),
+              subtotalKes: VERIFICATION_FEE_KES,
+              totalKes: 0,
+              status: "paid",
+              paidAt: new Date(),
+              items: {
+                create: [
+                  {
+                    description: "One-time pharmacy verification (bundled)",
+                    quantity: 1,
+                    unitKes: VERIFICATION_FEE_KES,
+                    totalKes: VERIFICATION_FEE_KES,
+                  },
+                  {
+                    description: "Bundled verification waiver",
+                    quantity: 1,
+                    unitKes: -VERIFICATION_FEE_KES,
+                    totalKes: -VERIFICATION_FEE_KES,
+                  },
+                ],
+              },
+            },
+          });
+        }
+
+        return invoice;
+      },
+      { timeout: 30000, maxWait: 15000 },
+    );
+  });
+}
+
+export async function startPharmacyService(pharmacyId: string) {
+  return withPharmacy(pharmacyId, async () => {
+    await ensureDefaultPlans();
+    const plan = await db.plan.findUniqueOrThrow({
+      where: { slug: "starter" },
+    });
+    const sub = await db.$transaction(
+      async (tx) => {
+        await tx.$queryRaw`SELECT id FROM pharmacies WHERE id = ${pharmacyId}::uuid FOR UPDATE`;
+        const existing = await tx.subscription.findFirst({
+          where: { pharmacyId, status: { not: "cancelled" } },
+          orderBy: { createdAt: "desc" },
+        });
+        if (existing) return existing;
+        const start = new Date();
+        return tx.subscription.create({
+          data: {
+            pharmacyId,
+            planId: plan.id,
+            status: "past_due",
+            startedAt: start,
+            currentPeriodStart: start,
+            currentPeriodEnd: nextBillingMonth(start),
+          },
+        });
+      },
+      { timeout: 30000, maxWait: 15000 },
+    );
+    await syncEntitlementsFromPlan(pharmacyId, plan.id);
+    return issueSubscriptionInvoice(sub.id);
+  });
+}

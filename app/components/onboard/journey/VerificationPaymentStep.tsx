@@ -51,13 +51,16 @@ export function VerificationPaymentStep({
   // If payment was already completed / settled:
   useEffect(() => {
     if (payment.paid || payment.waived || state.settled) {
-      if (isReviewEdit) {
-        router.push(`/onboard?stage=review&pharmacyId=${pharmacy?.id}`);
-      } else {
-        router.refresh();
-      }
+      router.push(`/onboard?stage=review&pharmacyId=${pharmacy?.id}`);
     }
-  }, [payment.paid, payment.waived, state.settled, isReviewEdit, router, pharmacy?.id]);
+  }, [payment.paid, payment.waived, state.settled, router, pharmacy?.id]);
+
+  // If promo code applied successfully:
+  useEffect(() => {
+    if (state.success) {
+      router.refresh();
+    }
+  }, [state.success, router]);
 
   if (!pharmacy) return null;
 
@@ -147,7 +150,14 @@ export function VerificationPaymentStep({
           <div className="mt-3 flex items-start gap-2 rounded-xl bg-emerald-500/10 p-2.5 text-xs text-emerald-800 dark:text-emerald-200">
             <CheckCircle2 className="h-4 w-4 shrink-0 text-emerald-600 mt-0.5" />
             <div>
-              <strong>Active benefit: {grant.promotionName || "Promotion"}</strong>
+              <div className="flex items-center gap-2">
+                <strong>Active benefit: {grant.promotionName || "Promotion"}</strong>
+                {grant.promotionCode && (
+                  <span className="font-mono bg-emerald-500/20 px-1.5 py-0.5 rounded text-[10px] font-bold">
+                    {grant.promotionCode}
+                  </span>
+                )}
+              </div>
               <p className="text-[11px] mt-0.5">
                 {grant.verificationDiscountKes ? `KES ${grant.verificationDiscountKes} off verification. ` : ""}
                 {grant.recurringDiscountKes ? `KES ${grant.recurringDiscountKes} off monthly service for ${grant.recurringMonths} period${grant.recurringMonths === 1 ? "" : "s"}.` : ""}
@@ -161,7 +171,13 @@ export function VerificationPaymentStep({
         <WaiverRequestForm pharmacyId={pharmacy.id} latestRequest={snapshot.waiverRequest} />
       </div>
 
-      {/* Error state */}
+      {/* Feedback states */}
+      {state.success ? (
+        <p className={`${styles.alert} ${styles.alertOk} mb-4`} role="alert">
+          {state.success}
+        </p>
+      ) : null}
+
       {state.error ? (
         <p className={`${styles.alert} ${styles.alertError} mb-4`} role="alert">
           {state.error}

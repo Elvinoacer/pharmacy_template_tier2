@@ -1,6 +1,6 @@
 "use client";
 
-import { useActionState, useEffect } from "react";
+import { useActionState, useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import {
   ArrowRight,
@@ -8,6 +8,7 @@ import {
   CreditCard,
   Loader2,
   Lock,
+  Tag,
 } from "lucide-react";
 import { pharmacyBillingAction } from "@/app/actions/pharmacy-billing";
 import PaymentStatusRefresh from "@/app/components/onboard/PaymentStatusRefresh";
@@ -31,6 +32,7 @@ export function ServiceActivationStep({
   const grant = snapshot.promotionGrant;
   const subscription = snapshot.subscription;
 
+  const [promoCode, setPromoCode] = useState("");
   const [state, action, pending] = useActionState(pharmacyBillingAction, {});
 
   // Redirect to external IntaSend checkout if needed
@@ -40,19 +42,27 @@ export function ServiceActivationStep({
     }
   }, [state.checkoutUrl]);
 
-  // If service is already active or settled
+  // If service is already active or settled:
   useEffect(() => {
     if (subscription?.active || state.settled) {
+      router.push(`/onboard?stage=launch&pharmacyId=${pharmacy?.id}`);
+    }
+  }, [subscription?.active, state.settled, router, pharmacy?.id]);
+
+  // If promo code applied successfully:
+  useEffect(() => {
+    if (state.success) {
       router.refresh();
     }
-  }, [subscription?.active, state.settled, router]);
+  }, [state.success, router]);
 
   if (!pharmacy) return null;
 
-  const hasPrepaidCredit =
-    payment.hasPrepaidBundleCredit ||
-    Boolean(grant?.recurringMonths && grant.recurringMonths > 0 && (grant.recurringDiscountKes ?? 500) >= 500);
-  const monthlyBalance = Math.max(0, 500 - (grant?.recurringDiscountKes ?? 0));
+  const recurringDiscountKes = grant?.recurringDiscountKes ?? 0;
+  const recurringMonths = grant?.recurringMonths ?? 0;
+  const isPromoFree = Boolean(recurringMonths > 0 && recurringDiscountKes >= 500);
+  const hasPrepaidCredit = payment.hasPrepaidBundleCredit || isPromoFree;
+  const monthlyBalance = Math.max(0, 500 - recurringDiscountKes);
   const canSubmit = pending || (!paymentAvailable && !hasPrepaidCredit);
 
   return (
@@ -89,6 +99,70 @@ export function ServiceActivationStep({
         </div>
       ) : null}
 
+      {/* Promo Code Input */}
+      <section className="mb-5 rounded-2xl border border-[color-mix(in_srgb,var(--foreground)_55%,var(--card-elev))] bg-teal-50/40 dark:bg-teal-950/20 p-4">
+        <form action={action} className="space-y-2">
+          <input type="hidden" name="pharmacyId" value={pharmacy.id} />
+          <input type="hidden" name="intent" value="apply_promo" />
+
+          <div className="flex items-center gap-2">
+            <Tag className="h-4 w-4 text-[var(--brand)]" />
+            <h3 className="text-xs font-bold uppercase tracking-wider text-[var(--foreground)]">
+              Have a promotional card or voucher?
+            </h3>
+          </div>
+          <div className="flex flex-col gap-2 sm:flex-row">
+            <input
+              name="code"
+              type="text"
+              value={promoCode}
+              onChange={(e) => setPromoCode(e.target.value.toUpperCase())}
+              placeholder="e.g. AFYVIA2026"
+              autoComplete="off"
+              autoCapitalize="characters"
+              spellCheck={false}
+              aria-label="Promotional voucher code"
+              className="input-admin min-h-12 w-full min-w-0 flex-1 uppercase font-mono text-base tracking-wider sm:min-h-10 sm:text-sm"
+              disabled={pending}
+            />
+            <button
+              type="submit"
+              disabled={pending || !promoCode.trim()}
+              className="btn-primary min-h-12 w-full shrink-0 justify-center px-4 text-sm font-semibold sm:min-h-10 sm:w-auto sm:text-xs"
+            >
+              {pending ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : "Apply voucher"}
+            </button>
+          </div>
+        </form>
+
+        {grant ? (
+          <div className="mt-3 flex items-start gap-2 rounded-xl bg-emerald-500/10 p-2.5 text-xs text-emerald-800 dark:text-emerald-200">
+            <CheckCircle2 className="h-4 w-4 shrink-0 text-emerald-600 mt-0.5" />
+            <div>
+              <div className="flex items-center gap-2">
+                <strong>Active benefit: {grant.promotionName || "Promotion"}</strong>
+                {grant.promotionCode && (
+                  <span className="font-mono bg-emerald-500/20 px-1.5 py-0.5 rounded text-[10px] font-bold">
+                    {grant.promotionCode}
+                  </span>
+                )}
+              </div>
+              <p className="text-[11px] mt-0.5">
+                {recurringDiscountKes ? `KES ${recurringDiscountKes} off monthly service for ${recurringMonths} period${recurringMonths === 1 ? "" : "s"}.` : ""}
+                {grant.verificationDiscountKes ? ` (Verification subsidized KES ${grant.verificationDiscountKes}).` : ""}
+              </p>
+            </div>
+          </div>
+        ) : null}
+      </section>
+
+      {/* Feedback alerts */}
+      {state.success ? (
+        <p className={`${styles.alert} ${styles.alertOk} mb-4`} role="alert">
+          {state.success}
+        </p>
+      ) : null}
+
       {state.error ? (
         <p className={`${styles.alert} ${styles.alertError} mb-4`} role="alert">
           {state.error}
@@ -112,10 +186,19 @@ export function ServiceActivationStep({
               <span className="text-3xl font-bold text-[var(--foreground)]">
                 KES {hasPrepaidCredit ? 0 : monthlyBalance}
               </span>
+              {!hasPrepaidCredit && recurringDiscountKes > 0 ? (
+                <span className="text-sm text-[var(--muted)] line-through">KES 500</span>
+              ) : null}
               <span className="text-xs text-[var(--muted)]">/ month</span>
               {hasPrepaidCredit ? (
                 <span className="text-xs font-semibold text-emerald-700 dark:text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded-full">
-                  Prepaid in bundle ✓
+                  {isPromoFree
+                    ? `${recurringMonths} Month${recurringMonths === 1 ? "" : "s"} Free Voucher ✓`
+                    : "Prepaid in bundle ✓"}
+                </span>
+              ) : recurringDiscountKes > 0 ? (
+                <span className="text-xs font-semibold text-emerald-700 dark:text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded-full">
+                  KES {recurringDiscountKes} discount ({recurringMonths}mo)
                 </span>
               ) : (
                 <span className="text-xs text-[var(--muted)]">~KES 17 / day</span>
@@ -156,9 +239,11 @@ export function ServiceActivationStep({
             {pending ? (
               "Activating platform service…"
             ) : hasPrepaidCredit ? (
-              "Activate service (Prepaid Credit · KES 0)"
+              isPromoFree
+                ? "Activate service (Promotional Voucher · KES 0)"
+                : "Activate service (Prepaid Credit · KES 0)"
             ) : (
-              "Activate service (KES 500 / month)"
+              `Activate service (KES ${monthlyBalance} / month)`
             )}
             {!pending ? <ArrowRight className="h-4 w-4" aria-hidden /> : null}
           </button>

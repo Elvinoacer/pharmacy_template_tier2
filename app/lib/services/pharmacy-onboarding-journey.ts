@@ -1,6 +1,6 @@
 import "server-only";
 
-import { prismaUnscoped } from "@/app/lib/db";
+import { prismaUnscoped, withPlatformTx } from "@/app/lib/db";
 import { withPharmacy } from "@/app/lib/tenant-context";
 import { validCoordinates } from "@/app/lib/proximity";
 import {
@@ -330,12 +330,12 @@ export async function loadPharmacyOnboardingSnapshot(input: {
         select: { id: true, number: true, status: true, totalKes: true },
       }),
     ),
-    withPharmacy(pid, () =>
-      prismaUnscoped.pharmacyPromotionGrant.findUnique({
+    withPlatformTx((tx) =>
+      tx.pharmacyPromotionGrant.findUnique({
         where: { pharmacyId: pid },
         include: { promotion: { select: { name: true, code: true } } },
       }),
-    ),
+    ).catch(() => null),
     withPharmacy(pid, () =>
       prismaUnscoped.pharmacyWaiverRequest.findFirst({
         where: { pharmacyId: pid },
