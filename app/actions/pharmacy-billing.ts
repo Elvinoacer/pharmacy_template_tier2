@@ -402,36 +402,6 @@ function buildPromotionCode() {
   return `AFY-${token.slice(0, 4)}-${token.slice(4)}`;
 }
 
-export async function generatePromotionCodeAction(): Promise<BillingState> {
-  try {
-    await requirePlatformAction(["super_admin", "billing_admin"]);
-
-    // This only returns a candidate; the promotion is not redeemable until
-    // promotionAction persists it. Check the live inventory before returning it. Creation still
-    // relies on the database unique constraint as the final race-condition guard.
-    for (let attempt = 0; attempt < 12; attempt += 1) {
-      const code = buildPromotionCode();
-      const existing = await db.pharmacyPromotion.findFirst({
-        where: { code: { equals: code, mode: "insensitive" } },
-        select: { id: true },
-      });
-      if (!existing) return { generatedCode: code };
-    }
-
-    throw new Error(
-      "Could not generate a unique promotion code. Please try again.",
-    );
-  } catch (error) {
-    console.error("[billing][promotion-code] generation failed", error);
-    return {
-      error: publicErrorMessage(
-        error,
-        "We couldn't generate a promotion code right now. Please try again.",
-      ),
-    };
-  }
-}
-
 export async function promotionAction(
   _: BillingState,
   form: FormData,
