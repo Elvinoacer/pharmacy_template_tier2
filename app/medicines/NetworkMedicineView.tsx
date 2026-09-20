@@ -41,7 +41,7 @@ export default async function NetworkMedicineView({ slug }: { slug: string }) {
 
       <section className="px-4 pb-10 sm:px-6 sm:pb-14">
         <div className="mx-auto grid max-w-6xl gap-8 lg:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)]">
-          <div className="relative aspect-[4/3] overflow-hidden rounded-3xl border border-[var(--line-2)] bg-[var(--card)]/80">
+          <div className="relative aspect-[4/3] overflow-hidden rounded-3xl border border-[var(--medicine-ui-border)] bg-[var(--card)] shadow-sm">
             {master.imageUrl ? (
               <Image src={master.imageUrl} alt={master.name} fill className="object-contain p-6" sizes="(max-width:1024px) 100vw,40vw" />
             ) : (
@@ -53,18 +53,18 @@ export default async function NetworkMedicineView({ slug }: { slug: string }) {
               This is the network view. Open a pharmacy listing to reserve, request a refill, or read that shop’s price and stock.
             </p>
             <div className="grid grid-cols-2 gap-2">
-              <div className="rounded-2xl border border-[var(--line-2)] bg-[var(--card-elev)] p-3">
-                <span className="text-[10px] font-bold uppercase tracking-wide text-[var(--muted-2)]">Pharmacies</span>
+              <div className="rounded-2xl border border-[var(--medicine-ui-border)] bg-[var(--card-elev)] p-3">
+                <span className="text-[10px] font-bold uppercase tracking-wide text-[var(--muted)]">Pharmacies</span>
                 <p className="mt-1 text-lg font-bold text-[var(--foreground)]">{pharmacies}</p>
               </div>
-              <div className="rounded-2xl border border-[var(--line-2)] bg-[var(--card-elev)] p-3">
-                <span className="text-[10px] font-bold uppercase tracking-wide text-[var(--muted-2)]">Available now</span>
+              <div className="rounded-2xl border border-[var(--medicine-ui-border)] bg-[var(--card-elev)] p-3">
+                <span className="text-[10px] font-bold uppercase tracking-wide text-[var(--muted)]">Available now</span>
                 <p className="mt-1 text-lg font-bold text-[var(--foreground)]">{inStockListings.length}</p>
               </div>
             </div>
             <Link
               href="/pharmacies"
-              className="inline-flex min-h-11 items-center gap-2 rounded-full border border-[var(--line-2)] bg-[var(--card)] px-4 text-sm font-semibold text-[var(--foreground)]"
+              className="inline-flex min-h-11 items-center gap-2 rounded-full border border-[var(--medicine-ui-border)] bg-[var(--card)] px-4 text-sm font-semibold text-[var(--foreground)] transition hover:border-[var(--brand)] hover:bg-[var(--card-elev)]"
             >
               <Store className="h-4 w-4 text-[var(--brand)]" />
               Find a nearby pharmacy
