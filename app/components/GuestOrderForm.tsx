@@ -118,13 +118,13 @@ export function GuestOrderForm({
   if (state?.success && state.orderId) {
     return (
       <div className="space-y-4">
-        <div className="liquid-glass rounded-2xl border border-emerald-500/30 bg-emerald-500/10 p-6 text-center text-[var(--foreground)]">
-          <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-emerald-600 text-white shadow-sm">
+        <div className="liquid-glass rounded-2xl border border-emerald-700/60 bg-emerald-500/10 p-6 text-center text-[var(--foreground)] dark:border-emerald-300/60">
+          <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full border border-emerald-700/60 bg-emerald-700 text-white shadow-sm dark:border-emerald-300/60">
             <Check className="h-6 w-6" />
           </div>
           <h3 className="mt-4 text-lg font-semibold text-[var(--foreground)]">Order reserved</h3>
           <p className="mt-2 text-sm text-[var(--muted)]">{state.success}</p>
-          <p className="mt-3 font-mono text-sm font-bold text-emerald-600 dark:text-emerald-400">
+          <p className="mt-3 font-mono text-sm font-bold text-emerald-800 dark:text-emerald-100">
             Ref: {state.orderId.slice(0, 8).toUpperCase()}
           </p>
           {state.total != null && (
@@ -135,7 +135,7 @@ export function GuestOrderForm({
         </div>
 
         {/* Pay now — no account needed; phone already on the order */}
-        <div className="rounded-2xl border border-[var(--line)] bg-[var(--card)] p-5 text-[var(--foreground)] shadow-sm">
+        <div className="rounded-2xl border border-[var(--public-flow-ui-border)] bg-[var(--card)] p-5 text-[var(--foreground)] shadow-sm">
           <h4 className="flex items-center gap-2 text-sm font-semibold text-[var(--foreground)]">
             <Smartphone className="h-4 w-4 text-[var(--brand)]" />
             Pay with M-Pesa
@@ -155,7 +155,7 @@ export function GuestOrderForm({
 
         {/* Soft account nudge — never blocks purchase */}
         {state.suggestAccount && (
-          <div className="rounded-2xl border border-[var(--line)] bg-[var(--brand-soft)]/20 p-5 text-[var(--foreground)]">
+          <div className="rounded-2xl border border-[var(--public-flow-ui-border)] bg-[var(--brand-soft)]/20 p-5 text-[var(--foreground)]">
             <h4 className="flex items-center gap-2 text-sm font-semibold text-[var(--foreground)]">
               <Bell className="h-4 w-4 text-[var(--brand)]" />
               Want dose reminders later?
@@ -191,7 +191,7 @@ export function GuestOrderForm({
 
   if (medications.length === 0) {
     return (
-      <div className="rounded-xl border border-amber-500/30 bg-amber-500/10 px-4 py-4 text-sm text-amber-800 dark:text-amber-200">
+      <div className="rounded-xl border border-amber-700/60 bg-amber-500/10 px-4 py-4 text-sm text-amber-900 dark:border-amber-300/60 dark:text-amber-100">
         No OTC products are currently available with unreserved stock for online order. Please visit the pharmacy or call us.
       </div>
     );
@@ -203,7 +203,7 @@ export function GuestOrderForm({
       {pharmacySlug ? <input type="hidden" name="pharmacySlug" value={pharmacySlug} /> : null}
       {/* Soft login nudge — dismissible, never blocks checkout */}
       {showLoginNudge && !isLoggedIn && (
-        <div className="relative rounded-xl border border-[var(--line)] bg-[var(--brand-soft)]/20 px-3 py-2.5 pr-9 text-sm text-[var(--foreground)]">
+        <div className="relative rounded-xl border border-[var(--public-flow-ui-border)] bg-[var(--brand-soft)]/20 px-3 py-2.5 pr-9 text-sm text-[var(--foreground)]">
           <button
             type="button"
             onClick={() => setShowLoginNudge(false)}
@@ -224,7 +224,7 @@ export function GuestOrderForm({
       )}
 
       {state?.error && (
-        <div className="flex items-start gap-2 rounded-xl border border-rose-500/30 bg-rose-500/10 px-3 py-2.5 text-sm text-rose-600 dark:text-rose-400">
+        <div className="flex items-start gap-2 rounded-xl border border-rose-700/60 bg-rose-500/10 px-3 py-2.5 text-sm text-rose-700 dark:border-rose-300/60 dark:text-rose-100">
           <AlertCircle className="mt-0.5 h-4 w-4 shrink-0" />
           <span>{state.error}</span>
         </div>
@@ -235,13 +235,13 @@ export function GuestOrderForm({
           <label className="label-premium">Product *</label>
           {(medications.length > 8 || pharmacyId) && (
             <div className="relative mb-1 flex items-center">
-              <Search className="pointer-events-none absolute left-2 h-3 w-3 text-[var(--muted-2)]" />
+              <Search className="pointer-events-none absolute left-2 h-3 w-3 text-[var(--muted)]" />
               <input
                 type="text"
                 value={productSearch}
                 onChange={(e) => setProductSearch(e.target.value)}
                 placeholder="Search products…"
-                className="rounded-lg border border-[var(--line)] bg-[var(--card-elev)]/50 py-0.5 pl-6 pr-2 text-xs text-[var(--foreground)] placeholder:text-[var(--muted-2)] focus:outline-none focus:ring-1 focus:ring-[var(--brand)]"
+                className="rounded-lg border border-[var(--public-flow-ui-border)] bg-[var(--card-elev)]/50 py-0.5 pl-6 pr-2 text-xs text-[var(--foreground)] placeholder:text-[var(--muted)] focus:outline-none focus:ring-1 focus:ring-[var(--brand)]"
               />
             </div>
           )}
@@ -270,7 +270,7 @@ export function GuestOrderForm({
         <div>
           <label className="label-premium">Quantity *</label>
           <div className="relative">
-            <Hash className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[var(--muted-2)]" />
+            <Hash className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[var(--muted)]" />
             <input
               name="quantity"
               type="number"
@@ -294,7 +294,7 @@ export function GuestOrderForm({
           )}
         </div>
         <div className="flex flex-col justify-end">
-          <p className="rounded-xl border border-[var(--line)] bg-[var(--card-elev)] px-4 py-3 text-sm font-semibold text-[var(--foreground)]">
+          <p className="rounded-xl border border-[var(--public-flow-ui-border)] bg-[var(--card-elev)] px-4 py-3 text-sm font-bold text-[var(--foreground)]">
             Est. total: KES {total.toLocaleString()}
           </p>
         </div>
@@ -303,7 +303,7 @@ export function GuestOrderForm({
       <div>
         <label className="label-premium">Full name *</label>
         <div className="relative">
-          <User className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[var(--muted-2)]" />
+          <User className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[var(--muted)]" />
           <input name="fullName" required className="input-premium !pl-10" placeholder="Jane Wanjiku" />
         </div>
       </div>
@@ -312,7 +312,7 @@ export function GuestOrderForm({
         <div>
           <label className="label-premium">Phone (M-Pesa) *</label>
           <div className="relative">
-            <Phone className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[var(--muted-2)]" />
+            <Phone className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[var(--muted)]" />
             <input
               name="phone"
               type="tel"
@@ -325,7 +325,7 @@ export function GuestOrderForm({
         <div>
           <label className="label-premium">Email (optional)</label>
           <div className="relative">
-            <Mail className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[var(--muted-2)]" />
+            <Mail className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[var(--muted)]" />
             <input name="email" type="email" className="input-premium !pl-10" placeholder="you@email.com" />
           </div>
         </div>
@@ -350,7 +350,7 @@ export function GuestOrderForm({
         ) : (
           <div>
             <input type="hidden" name="pickupPreference" value="pickup" />
-            <div className="rounded-xl border border-[var(--line)] bg-[var(--card-elev)]/50 px-3 py-2.5 text-xs text-[var(--muted)]">
+            <div className="rounded-xl border border-[var(--public-flow-ui-border)] bg-[var(--card-elev)]/50 px-3 py-2.5 text-xs text-[var(--muted)]">
               Collect in store (this pharmacy does not offer home delivery).
             </div>
           </div>
@@ -384,14 +384,14 @@ export function GuestOrderForm({
         />
       </div>
 
-      <label className="flex cursor-pointer items-start gap-2 rounded-xl border border-[var(--line)] bg-[var(--card-elev)]/40 px-3 py-2.5 text-sm">
+      <label className="flex cursor-pointer items-start gap-2 rounded-xl border border-[var(--public-flow-ui-border)] bg-[var(--card-elev)]/40 px-3 py-2.5 text-sm">
         <input
           type="checkbox"
           name="payNow"
           value="on"
           checked={payNow}
           onChange={(e) => setPayNow(e.target.checked)}
-          className="mt-0.5 h-4 w-4 rounded border-[var(--line-2)] text-[var(--brand)] focus:ring-[var(--brand)]"
+          className="mt-0.5 h-4 w-4 rounded border-[var(--public-flow-ui-border)] text-[var(--brand)] focus:ring-[var(--brand)]"
         />
         <span>
           <span className="font-semibold text-[var(--foreground)]">Pay with M-Pesa after reserve</span>
@@ -409,7 +409,7 @@ export function GuestOrderForm({
       <button
         type="submit"
         disabled={pending || !selected || selected.stockQty <= 0}
-        className="btn-primary w-full"
+        className="btn-primary w-full disabled:cursor-not-allowed disabled:opacity-100 disabled:saturate-50"
       >
         {pending ? (
           "Reserving…"
