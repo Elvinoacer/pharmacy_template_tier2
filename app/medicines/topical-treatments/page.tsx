@@ -79,14 +79,14 @@ export default async function TopicalTreatmentsPage() {
             </a>
             <a
               href="#topical-overview"
-              className="shrink-0 rounded-full border border-[var(--line-2)] bg-[var(--card)] px-3.5 py-2 text-[var(--brand-deep)]"
+              className="shrink-0 rounded-full border border-[var(--medicine-ui-border)] bg-[var(--card)] px-3.5 py-2 text-[var(--brand-deep)] transition hover:border-[var(--brand)] hover:bg-[var(--card-elev)]"
             >
               Category guide
             </a>
             {otcGuidance && (
               <a
                 href="#topical-safety"
-                className="shrink-0 rounded-full border border-[var(--line-2)] bg-[var(--card)] px-3.5 py-2 text-[var(--brand-deep)]"
+                className="shrink-0 rounded-full border border-[var(--medicine-ui-border)] bg-[var(--card)] px-3.5 py-2 text-[var(--brand-deep)]"
               >
                 Safety first
               </a>
@@ -95,7 +95,7 @@ export default async function TopicalTreatmentsPage() {
 
           <div
             id="topical-overview"
-            className="scroll-mt-32 overflow-hidden rounded-3xl border border-[var(--line-2)] bg-[var(--card)] shadow-sm"
+            className="scroll-mt-32 overflow-hidden rounded-3xl border border-[var(--medicine-ui-border)] bg-[var(--card)] shadow-sm"
           >
             <div className="grid min-w-0 lg:grid-cols-[minmax(0,0.88fr)_minmax(0,1.12fr)]">
               <div className="relative min-h-52 overflow-hidden bg-[var(--card-elev)] sm:min-h-64 lg:min-h-[360px]">
@@ -121,11 +121,11 @@ export default async function TopicalTreatmentsPage() {
 
               <div className="min-w-0 p-4 sm:p-6 lg:p-8">
                 <div className="flex flex-wrap gap-2">
-                  <span className="rounded-full border border-[var(--line-2)] bg-[var(--brand-soft)] px-3 py-1 text-[10px] font-bold uppercase tracking-wide text-[var(--brand-deep)] sm:text-xs">
+                  <span className="rounded-full border border-[var(--medicine-ui-border)] bg-[var(--brand-soft)] px-3 py-1 text-[10px] font-bold uppercase tracking-wide text-[var(--brand-deep)] sm:text-xs">
                     Topical care
                   </span>
                   {otcGuidance && (
-                    <span className="inline-flex items-center gap-1.5 rounded-full border border-[var(--line-2)] bg-[var(--card-elev)] px-3 py-1 text-[10px] font-semibold text-[var(--muted)] sm:text-xs">
+                    <span className="inline-flex items-center gap-1.5 rounded-full border border-[var(--medicine-ui-border)] bg-[var(--card-elev)] px-3 py-1 text-[10px] font-semibold text-[var(--muted)] sm:text-xs">
                       <Clock3 className="h-3.5 w-3.5 text-[var(--brand)]" />
                       Reassess after {otcGuidance.maxSelfCareDuration}
                     </span>
@@ -144,18 +144,18 @@ export default async function TopicalTreatmentsPage() {
                 </p>
 
                 <div className="mt-5 grid grid-cols-2 gap-2 sm:grid-cols-3">
-                  <div className="rounded-2xl border border-[var(--line-2)] bg-[var(--card-elev)] p-3">
-                    <span className="text-[10px] font-bold uppercase tracking-wide text-[var(--muted-2)]">Listed</span>
+                  <div className="rounded-2xl border border-[var(--medicine-ui-border)] bg-[var(--card-elev)] p-3">
+                    <span className="text-[10px] font-bold uppercase tracking-wide text-[var(--muted)]">Listed</span>
                     <p className="mt-1 text-lg font-bold text-[var(--foreground)]">{catalogItems.length}</p>
                     <p className="text-[10px] text-[var(--muted)]">products</p>
                   </div>
-                  <div className="rounded-2xl border border-[var(--line-2)] bg-[var(--card-elev)] p-3">
-                    <span className="text-[10px] font-bold uppercase tracking-wide text-[var(--muted-2)]">Available</span>
+                  <div className="rounded-2xl border border-[var(--medicine-ui-border)] bg-[var(--card-elev)] p-3">
+                    <span className="text-[10px] font-bold uppercase tracking-wide text-[var(--muted)]">Available</span>
                     <p className="mt-1 text-lg font-bold text-[var(--foreground)]">{inStockCount}</p>
                     <p className="text-[10px] text-[var(--muted)]">in stock</p>
                   </div>
-                  <div className="col-span-2 rounded-2xl border border-[var(--line-2)] bg-[var(--card-elev)] p-3 sm:col-span-1">
-                    <span className="text-[10px] font-bold uppercase tracking-wide text-[var(--muted-2)]">Scope</span>
+                  <div className="col-span-2 rounded-2xl border border-[var(--medicine-ui-border)] bg-[var(--card-elev)] p-3 sm:col-span-1">
+                    <span className="text-[10px] font-bold uppercase tracking-wide text-[var(--muted)]">Scope</span>
                     <p className="mt-1 line-clamp-1 text-sm font-bold text-[var(--foreground)]">Afyvia network</p>
                     <p className="text-[10px] text-[var(--muted)]">verified pharmacies</p>
                   </div>
@@ -163,14 +163,14 @@ export default async function TopicalTreatmentsPage() {
 
                 {otcGuidance && otcGuidance.commonActiveIngredients.length > 0 && (
                   <div className="mt-6">
-                    <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-[var(--muted-2)] sm:text-xs">
+                    <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-[var(--muted)] sm:text-xs">
                       Common active ingredients
                     </p>
                     <div className="mt-2 flex flex-wrap gap-2">
                       {otcGuidance.commonActiveIngredients.map((ingredient) => (
                         <span
                           key={ingredient}
-                          className="rounded-full border border-[var(--line-2)] bg-[var(--brand-soft)] px-2.5 py-1 text-[10px] font-semibold text-[var(--brand-deep)] sm:text-xs"
+                          className="rounded-full border border-[var(--medicine-ui-border)] bg-[var(--brand-soft)] px-2.5 py-1 text-[10px] font-semibold text-[var(--brand-deep)] sm:text-xs"
                         >
                           {ingredient}
                         </span>
@@ -181,14 +181,14 @@ export default async function TopicalTreatmentsPage() {
 
                 {cat.brands.length > 0 && (
                   <div className="mt-5">
-                    <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-[var(--muted-2)] sm:text-xs">
+                    <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-[var(--muted)] sm:text-xs">
                       Common brands
                     </p>
                     <div className="mt-2 flex flex-wrap gap-2">
                       {cat.brands.map((brand: string) => (
                         <span
                           key={brand}
-                          className="rounded-full border border-[var(--line-2)] bg-[var(--card)] px-2.5 py-1 text-[10px] font-semibold text-[var(--foreground)] sm:text-xs"
+                          className="rounded-full border border-[var(--medicine-ui-border)] bg-[var(--card)] px-2.5 py-1 text-[10px] font-semibold text-[var(--foreground)] sm:text-xs"
                         >
                           {brand}
                         </span>
@@ -207,7 +207,7 @@ export default async function TopicalTreatmentsPage() {
                   </Link>
                   <Link
                     href="/how-do-you-feel"
-                    className="inline-flex min-h-11 items-center justify-center gap-2 rounded-2xl border border-[var(--line-2)] bg-[var(--card-elev)] px-4 py-2.5 text-xs font-semibold text-[var(--brand-deep)] transition hover:bg-[var(--brand-soft)]"
+                    className="inline-flex min-h-11 items-center justify-center gap-2 rounded-2xl border border-[var(--medicine-ui-border)] bg-[var(--card-elev)] px-4 py-2.5 text-xs font-semibold text-[var(--brand-deep)] transition hover:bg-[var(--brand-soft)]"
                   >
                     <Sparkles className="h-4 w-4" />
                     AI symptom check
@@ -238,7 +238,7 @@ export default async function TopicalTreatmentsPage() {
             </div>
             <Link
               href={`${base}/medicines?category=${CATEGORY_SLUG}`}
-              className="inline-flex min-h-10 w-fit items-center gap-1 rounded-full border border-[var(--line-2)] bg-[var(--card)] px-3.5 text-xs font-semibold text-[var(--brand-deep)] transition hover:bg-[var(--card-elev)]"
+              className="inline-flex min-h-10 w-fit items-center gap-1 rounded-full border border-[var(--medicine-ui-border)] bg-[var(--card)] px-3.5 text-xs font-semibold text-[var(--brand-deep)] transition hover:bg-[var(--card-elev)]"
             >
               Full catalogue <ArrowRight className="h-3.5 w-3.5" />
             </Link>
@@ -247,7 +247,7 @@ export default async function TopicalTreatmentsPage() {
           {catalogItems.length > 0 ? (
             <MedicineCatalogGrid items={catalogItems} />
           ) : (
-            <div className="liquid-glass care-glass rounded-3xl border border-[var(--care-border)] bg-[var(--care-glass)] p-6 text-center shadow-sm backdrop-blur-xl sm:p-8">
+            <div className="liquid-glass care-glass rounded-3xl border border-[var(--medicine-ui-border)] bg-[var(--card-elev)] p-6 text-center shadow-sm backdrop-blur-xl sm:p-8">
               <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-2xl bg-[var(--card)] text-[var(--brand)]">
                 <PackageSearch className="h-5 w-5" />
               </div>
@@ -285,13 +285,13 @@ export default async function TopicalTreatmentsPage() {
             </div>
 
             <div className="grid gap-3 lg:grid-cols-2 lg:gap-4">
-              <article className="rounded-3xl border border-emerald-500/30 bg-[var(--card)] p-4 shadow-sm sm:p-5">
+              <article className="rounded-3xl border border-emerald-700/60 dark:border-emerald-200/50 bg-[var(--card)] p-4 shadow-sm sm:p-5">
                 <div className="flex items-start gap-3">
-                  <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-emerald-600 text-white">
+                  <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-emerald-700 text-white">
                     <CheckCircle2 className="h-5 w-5" />
                   </span>
                   <div className="min-w-0">
-                    <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-emerald-600 sm:text-xs">
+                    <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-emerald-700 dark:text-emerald-200 sm:text-xs">
                       Usually suitable for self-care
                     </p>
                     <h3 className="mt-0.5 text-base font-bold text-[var(--foreground)]">Mild, familiar problems</h3>
@@ -305,18 +305,18 @@ export default async function TopicalTreatmentsPage() {
                     </li>
                   ))}
                 </ul>
-                <div className="mt-4 rounded-2xl border border-[var(--line-2)] bg-[var(--card-elev)] p-3 text-xs leading-relaxed text-[var(--muted)]">
+                <div className="mt-4 rounded-2xl border border-[var(--medicine-ui-border)] bg-[var(--card-elev)] p-3 text-xs leading-relaxed text-[var(--muted)]">
                   <strong className="text-[var(--foreground)]">Reassess:</strong> if symptoms are not improving within {otcGuidance.maxSelfCareDuration}.
                 </div>
               </article>
 
-              <article className="rounded-3xl border border-rose-500/30 bg-[var(--card)] p-4 shadow-sm sm:p-5">
+              <article className="rounded-3xl border border-rose-700/60 dark:border-rose-200/50 bg-[var(--card)] p-4 shadow-sm sm:p-5">
                 <div className="flex items-start gap-3">
-                  <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-rose-600 text-white">
+                  <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-rose-700 text-white">
                     <AlertOctagon className="h-5 w-5" />
                   </span>
                   <div className="min-w-0">
-                    <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-rose-600 sm:text-xs">
+                    <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-rose-700 dark:text-rose-200 sm:text-xs">
                       Seek medical advice
                     </p>
                     <h3 className="mt-0.5 text-base font-bold text-[var(--foreground)]">Red flags and warning signs</h3>
@@ -325,13 +325,13 @@ export default async function TopicalTreatmentsPage() {
                 <ul className="mt-4 space-y-2.5">
                   {otcGuidance.medicalAttentionCriteria.map((item, index) => (
                     <li key={index} className="flex items-start gap-2.5 text-xs font-medium leading-relaxed text-[var(--foreground)] sm:text-sm">
-                      <ShieldAlert className="mt-0.5 h-4 w-4 shrink-0 text-rose-600" />
+                      <ShieldAlert className="mt-0.5 h-4 w-4 shrink-0 text-rose-700 dark:text-rose-200" />
                       <span>{item}</span>
                     </li>
                   ))}
                 </ul>
                 {otcGuidance.emergencyWarning && (
-                  <div className="mt-4 rounded-2xl border border-rose-500/30 bg-[var(--card-elev)] p-3 text-xs font-semibold leading-relaxed text-[var(--foreground)]">
+                  <div className="mt-4 rounded-2xl border border-rose-700/60 dark:border-rose-200/50 bg-[var(--card-elev)] p-3 text-xs font-semibold leading-relaxed text-[var(--foreground)]">
                     {otcGuidance.emergencyWarning}
                   </div>
                 )}
@@ -339,7 +339,7 @@ export default async function TopicalTreatmentsPage() {
             </div>
 
             {otcGuidance.pharmacistTips.length > 0 && (
-              <div className="mt-4 rounded-3xl border border-[var(--line-2)] bg-[var(--card)] p-4 shadow-sm sm:p-5 lg:p-6">
+              <div className="mt-4 rounded-3xl border border-[var(--medicine-ui-border)] bg-[var(--card)] p-4 shadow-sm sm:p-5 lg:p-6">
                 <h3
                   className="text-lg font-semibold text-[var(--foreground)]"
                   style={{ fontFamily: "var(--font-display), serif" }}
@@ -350,7 +350,7 @@ export default async function TopicalTreatmentsPage() {
                   {otcGuidance.pharmacistTips.map((tip, index) => (
                     <div
                       key={index}
-                      className="flex items-start gap-2.5 rounded-2xl border border-[var(--line)] bg-[var(--card-elev)] p-3 text-xs leading-relaxed text-[var(--muted)]"
+                      className="flex items-start gap-2.5 rounded-2xl border border-[var(--medicine-ui-border)] bg-[var(--card-elev)] p-3 text-xs leading-relaxed text-[var(--muted)]"
                     >
                       <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-[var(--brand)]" />
                       <span>{tip}</span>
