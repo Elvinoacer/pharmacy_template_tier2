@@ -212,7 +212,7 @@ export default function MissedDoseCalculator() {
   }, [schedule, hoursAgo, hoursUntilNext]);
 
   return (
-    <div className="overflow-hidden rounded-3xl border border-[#cfe0d8] bg-white shadow-sm">
+    <div className="overflow-hidden rounded-3xl border border-[var(--health-ui-border)] bg-white shadow-sm">
       {/* Header */}
       <div className="bg-gradient-to-r from-[#0c1a14] via-[#1b382b] to-[#0d6e5a] p-6 text-white sm:p-7">
         <div className="flex flex-wrap items-center justify-between gap-3">
@@ -260,14 +260,14 @@ export default function MissedDoseCalculator() {
                   className={`text-left rounded-2xl p-3.5 border transition-all duration-150 ${
                     isSelected
                       ? "border-teal-700 bg-teal-50/80 shadow-xs ring-1 ring-teal-700"
-                      : "border-[#e3ebe6] bg-[#fbfdfb] hover:border-teal-300 hover:bg-white"
+                      : "border-[var(--health-ui-border)] bg-[#fbfdfb] hover:border-teal-300 hover:bg-white"
                   }`}
                 >
                   <div className="flex items-center gap-2">
                     <span className="text-lg">{preset.icon}</span>
                     <p className="font-bold text-xs text-[#0c1a14] truncate">{preset.title}</p>
                   </div>
-                  <p className="mt-1 text-[11px] text-[#5a6b62] leading-tight line-clamp-2">
+                  <p className="mt-1 text-[11px] text-[var(--health-editorial-body)] leading-tight line-clamp-2">
                     {preset.subtitle}
                   </p>
                 </button>
@@ -278,7 +278,7 @@ export default function MissedDoseCalculator() {
 
         {/* Step 2: Time Slider Controls (For Fixed Schedules) */}
         {schedule !== "antibiotic" && schedule !== "oral_contraceptive" && schedule !== "insulin" && schedule !== "prn" && (
-          <div className="rounded-2xl border border-[#d2dfd8] bg-[#f8faf9] p-5 sm:p-6 space-y-6">
+          <div className="rounded-2xl border border-[var(--health-ui-border)] bg-[#f8faf9] p-5 sm:p-6 space-y-6">
             <div>
               <div className="flex items-center justify-between">
                 <label className="text-xs font-bold text-[#0c1a14]">
@@ -296,7 +296,7 @@ export default function MissedDoseCalculator() {
                 onChange={(e) => setHoursAgo(Number(e.target.value))}
                 className="mt-3 w-full accent-teal-800 cursor-pointer"
               />
-              <div className="flex justify-between text-[10px] text-[#8a9a92] font-semibold mt-1">
+              <div className="flex justify-between text-[10px] text-[var(--muted)] font-semibold mt-1">
                 <span>1 hour (Just missed)</span>
                 <span>6 hours</span>
                 <span>12 hours</span>
@@ -304,7 +304,7 @@ export default function MissedDoseCalculator() {
               </div>
             </div>
 
-            <div className="border-t border-[#e3ebe6] pt-4">
+            <div className="border-t border-[var(--health-ui-border)] pt-4">
               <div className="flex items-center justify-between">
                 <label className="text-xs font-bold text-[#0c1a14]">
                   3. In how many hours is your NEXT scheduled dose due?
@@ -321,7 +321,7 @@ export default function MissedDoseCalculator() {
                 onChange={(e) => setHoursUntilNext(Number(e.target.value))}
                 className="mt-3 w-full accent-teal-800 cursor-pointer"
               />
-              <div className="flex justify-between text-[10px] text-[#8a9a92] font-semibold mt-1">
+              <div className="flex justify-between text-[10px] text-[var(--muted)] font-semibold mt-1">
                 <span>1 hour (Imminent next dose)</span>
                 <span>6 hours</span>
                 <span>12 hours</span>
@@ -354,7 +354,7 @@ export default function MissedDoseCalculator() {
               {advice.badge}
             </span>
 
-            <span className="text-xs text-[#5a6b62] font-semibold">
+            <span className="text-xs text-[var(--health-editorial-body)] font-semibold">
               Selected: <strong>{activePreset.title}</strong>
             </span>
           </div>
@@ -398,7 +398,7 @@ export default function MissedDoseCalculator() {
           </div>
 
           {/* Quick Pharmacist Phone Assistance CTA */}
-          <div className="mt-6 flex flex-wrap items-center justify-between gap-3 border-t border-black/5 pt-4 text-xs text-[#5a6b62]">
+          <div className="mt-6 flex flex-wrap items-center justify-between gap-3 border-t border-black/5 pt-4 text-xs text-[var(--health-editorial-body)]">
             <span>Still unsure or experiencing adverse symptoms?</span>
             <a
               href={`tel:${pharmacy.phone}`}
