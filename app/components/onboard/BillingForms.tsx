@@ -41,21 +41,25 @@ export function PromoCardForm({ pharmacyId }: { pharmacyId: string }) {
         Enter your promotional card or coupon code to waive your verification fee, recurring fees, or both.
       </p>
 
-      <div className="flex gap-2">
+      <div className="flex flex-col gap-2 sm:flex-row">
         <input
-          className={`${input} mt-0 flex-1 uppercase tracking-wider font-mono`}
+          className={`${input} mt-0 min-w-0 flex-1 uppercase tracking-wider font-mono`}
           name="code"
           type="text"
           placeholder="e.g. WELCOME2026"
           value={code}
           onChange={(e) => setCode(e.target.value.toUpperCase())}
+          autoComplete="off"
+          autoCapitalize="characters"
+          spellCheck={false}
+          aria-label="Promotional voucher code"
           required
           disabled={pending}
         />
         <button
           type="submit"
           disabled={pending || !code.trim()}
-          className="btn-primary min-h-12 px-5 shrink-0 flex items-center justify-center gap-2"
+          className="btn-primary min-h-12 w-full shrink-0 items-center justify-center gap-2 px-5 sm:w-auto"
         >
           {pending ? <Loader2 className="h-4 w-4 animate-spin" /> : "Apply Code"}
         </button>
