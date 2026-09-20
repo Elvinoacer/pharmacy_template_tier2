@@ -206,7 +206,7 @@ export default function DigitalCounsellingCard({
             onClick={() => setActiveTab("pillars")}
             className={`flex items-center gap-1.5 rounded-xl px-3.5 py-2 font-bold transition ${
               activeTab === "pillars"
-                ? "bg-[var(--brand)] text-white shadow-xs"
+                ? "bg-[var(--brand)] text-[var(--background)] shadow-xs"
                 : "bg-[var(--card)] border border-[var(--health-ui-border)] text-[var(--muted)] hover:bg-[var(--card-elev)] hover:text-[var(--foreground)]"
             }`}
           >
@@ -220,7 +220,7 @@ export default function DigitalCounsellingCard({
               onClick={() => setActiveTab("form")}
               className={`flex items-center gap-1.5 rounded-xl px-3.5 py-2 font-bold transition ${
                 activeTab === "form"
-                  ? "bg-[var(--brand)] text-white shadow-xs"
+                  ? "bg-[var(--brand)] text-[var(--background)] shadow-xs"
                   : "bg-[var(--card)] border border-[var(--health-ui-border)] text-[var(--muted)] hover:bg-[var(--card-elev)] hover:text-[var(--foreground)]"
               }`}
             >
@@ -235,7 +235,7 @@ export default function DigitalCounsellingCard({
               onClick={() => setActiveTab("device")}
               className={`flex items-center gap-1.5 rounded-xl px-3.5 py-2 font-bold transition ${
                 activeTab === "device"
-                  ? "bg-[var(--brand)] text-white shadow-xs"
+                  ? "bg-[var(--brand)] text-[var(--background)] shadow-xs"
                   : "bg-[var(--card)] border border-[var(--health-ui-border)] text-[var(--muted)] hover:bg-[var(--card-elev)] hover:text-[var(--foreground)]"
               }`}
             >
@@ -247,14 +247,14 @@ export default function DigitalCounsellingCard({
 
         {/* View Mode Toggle (Grid vs Leaflet) */}
         {activeTab === "pillars" && (
-          <div className="flex items-center gap-1 rounded-xl bg-[var(--line)] p-1">
+          <div className="flex items-center gap-1 rounded-xl border border-[var(--health-ui-border)] bg-[var(--card-elev)] p-1">
             <button
               type="button"
               onClick={() => setViewMode("grid")}
               className={`flex items-center gap-1 rounded-lg px-2.5 py-1 text-[11px] font-bold transition ${
                 viewMode === "grid"
-                  ? "bg-[var(--card)] text-[var(--foreground)] shadow-xs"
-                  : "text-[var(--muted)] hover:text-[var(--foreground)]"
+                  ? "bg-[var(--brand)] text-[var(--background)] shadow-xs"
+                  : "bg-[var(--card)] text-[var(--muted)] hover:bg-[var(--card-elev)] hover:text-[var(--foreground)]"
               }`}
             >
               <LayoutGrid className="h-3 w-3" />
@@ -265,8 +265,8 @@ export default function DigitalCounsellingCard({
               onClick={() => setViewMode("leaflet")}
               className={`flex items-center gap-1 rounded-lg px-2.5 py-1 text-[11px] font-bold transition ${
                 viewMode === "leaflet"
-                  ? "bg-[var(--card)] text-[var(--foreground)] shadow-xs"
-                  : "text-[var(--muted)] hover:text-[var(--foreground)]"
+                  ? "bg-[var(--brand)] text-[var(--background)] shadow-xs"
+                  : "bg-[var(--card)] text-[var(--muted)] hover:bg-[var(--card-elev)] hover:text-[var(--foreground)]"
               }`}
             >
               <FileText className="h-3 w-3" />
