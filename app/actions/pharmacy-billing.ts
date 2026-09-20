@@ -322,9 +322,10 @@ function buildPromotionCode() {
 
 export async function generatePromotionCodeAction(): Promise<BillingState> {
   try {
-    await requirePlatformAction(["super_admin", "billing_admin"], { stepUp: true });
+    await requirePlatformAction(["super_admin", "billing_admin"]);
 
-    // Check the live promotion inventory before returning a code. Creation still
+    // This only returns a candidate; the promotion is not redeemable until
+    // promotionAction persists it. Check the live inventory before returning it. Creation still
     // relies on the database unique constraint as the final race-condition guard.
     for (let attempt = 0; attempt < 12; attempt += 1) {
       const code = buildPromotionCode();
@@ -350,7 +351,9 @@ export async function generatePromotionCodeAction(): Promise<BillingState> {
 export async function promotionAction(_: BillingState, form: FormData): Promise<BillingState> {
   try {
     const actor = await requirePlatformAction(["super_admin", "billing_admin"], { stepUp: true });
-    if (form.get("intent") === "stop") {
+    const intent = String(form.get("intent") || "");
+
+    if (intent === "stop") {
       await withPlatformTx(async (tx) => {
         const id = String(form.get("promotionId") || "");
         await tx.pharmacyPromotion.update({ where: { id }, data: { active: false } });
@@ -358,66 +361,101 @@ export async function promotionAction(_: BillingState, form: FormData): Promise<
           data: { actorId: actor.id, action: "promotion.stop", entityType: "PharmacyPromotion", entityId: id },
         });
       });
-    } else {
-      const name = String(form.get("name") || "").trim();
-      const code = String(form.get("code") || "").trim().toUpperCase() || null;
-      const capacity = Number(form.get("capacity"));
-      const recurringMonths = Number(form.get("months"));
-      const scope = String(form.get("scope"));
-      if (
-        name.length < 5 ||
-        name.length > 150 ||
-        !Number.isInteger(capacity) ||
-        capacity < 1 ||
-        capacity > 100000 ||
-        !Number.isInteger(recurringMonths) ||
-        recurringMonths < 1 ||
-        recurringMonths > 120 ||
-        !["verification", "recurring", "both"].includes(scope)
-      ) {
-        throw new Error("Enter a name, valid capacity, scope and 1–120 promotional months.");
-      }
-      await withPlatformTx(async (tx) => {
-        // Ensure unique code if provided
-        if (code) {
+      revalidatePath("/platform/billing");
+      return { success: "Promotion stopped. Existing allocated benefits are preserved." };
+    }
+
+    const name = String(form.get("name") || "").trim();
+    const submittedCode = String(form.get("code") || "").trim().toUpperCase();
+    const capacity = Number(form.get("capacity"));
+    const recurringMonths = Number(form.get("months"));
+    const scope = String(form.get("scope"));
+
+    if (
+      name.length < 5 ||
+      name.length > 150 ||
+      !Number.isInteger(capacity) ||
+      capacity < 1 ||
+      capacity > 100000 ||
+      !Number.isInteger(recurringMonths) ||
+      recurringMonths < 1 ||
+      recurringMonths > 120 ||
+      !["verification", "recurring", "both"].includes(scope)
+    ) {
+      throw new Error("Enter a name, valid capacity, scope and 1–120 promotional months.");
+    }
+
+    let activeCode = submittedCode;
+
+    await withPlatformTx(async (tx) => {
+      if (activeCode) {
+        const existing = await tx.pharmacyPromotion.findFirst({
+          where: { code: { equals: activeCode, mode: "insensitive" } },
+          select: { id: true },
+        });
+        if (existing) {
+          throw new Error(`Promotional code "${activeCode}" already exists. Generate a new code.`);
+        }
+      } else {
+        // Generate on the server at the exact moment the promotion is created,
+        // so a promotion can never be saved without a redeemable code.
+        for (let attempt = 0; attempt < 12; attempt += 1) {
+          const candidate = buildPromotionCode();
           const existing = await tx.pharmacyPromotion.findFirst({
-            where: { code: { equals: code, mode: "insensitive" } },
+            where: { code: { equals: candidate, mode: "insensitive" } },
+            select: { id: true },
           });
-          if (existing) {
-            throw new Error(`Promotional code "${code}" already exists. Please choose a different code.`);
+          if (!existing) {
+            activeCode = candidate;
+            break;
           }
         }
+        if (!activeCode) {
+          throw new Error("Could not allocate a unique promotional code. Please try again.");
+        }
+      }
 
-        const promotion = await tx.pharmacyPromotion.create({
-          data: {
-            name,
-            code,
-            capacity,
-            recurringMonths,
-            verification: scope !== "recurring",
-            recurring: scope !== "verification",
-            createdBy: actor.id,
-          },
-        });
-        await tx.auditLog.create({
-          data: {
-            actorId: actor.id,
-            action: "promotion.create",
-            entityType: "PharmacyPromotion",
-            entityId: promotion.id,
-          },
-        });
+      const promotion = await tx.pharmacyPromotion.create({
+        data: {
+          name,
+          code: activeCode,
+          capacity,
+          recurringMonths,
+          verification: scope !== "recurring",
+          recurring: scope !== "verification",
+          createdBy: actor.id,
+        },
       });
-    }
+
+      await tx.auditLog.create({
+        data: {
+          actorId: actor.id,
+          action: "promotion.create",
+          entityType: "PharmacyPromotion",
+          entityId: promotion.id,
+        },
+      });
+    });
+
     revalidatePath("/platform/billing");
-    return { success: "Promotion saved. Existing allocated benefits are preserved." };
+    return {
+      success: `Promotion created and code ${activeCode} is now active for redemption.`,
+      generatedCode: activeCode,
+    };
   } catch (error) {
     console.error("[billing][promotion] action failed", error);
+
+    const authCode = error instanceof Error ? error.message : "";
+    if (authCode === "STEP_UP_REQUIRED" || authCode === "MFA_REQUIRED") {
+      return { error: authCode };
+    }
+
     if ((error as { code?: string }).code === "P2002") {
       return {
         error: "That promotional code was just taken. Generate a new code and try again.",
       };
     }
+
     return {
       error: publicErrorMessage(
         error,
