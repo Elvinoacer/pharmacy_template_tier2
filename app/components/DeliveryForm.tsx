@@ -81,7 +81,7 @@ export default function DeliveryForm({ pharmacySlug: pharmacySlugProp }: { pharm
       </div>
       {status === "error" && (
         <p
-          className="rounded-xl border border-rose-500/25 bg-rose-500/10 px-3.5 py-3 text-sm leading-5 text-rose-600 dark:text-rose-300"
+          className="rounded-xl border border-rose-700/60 bg-rose-500/10 px-3.5 py-3 text-sm leading-5 text-rose-700 dark:border-rose-200/50 dark:text-rose-200"
           role="alert"
         >
           Something went wrong. Please try again or call the pharmacy directly.
@@ -89,12 +89,12 @@ export default function DeliveryForm({ pharmacySlug: pharmacySlugProp }: { pharm
       )}
       <button
         type="submit"
-        className="btn-primary min-h-12 w-full justify-center sm:w-auto"
+        className="btn-primary min-h-12 w-full justify-center disabled:cursor-not-allowed disabled:opacity-100 disabled:saturate-50 sm:w-auto"
         disabled={status === "submitting"}
       >
         {status === "submitting" ? "Sending…" : "Send delivery enquiry"}
       </button>
-      <p className="text-xs leading-5 text-[var(--muted-2)]">
+      <p className="text-xs leading-5 text-[var(--muted)]">
         Sending an enquiry does not place an order. The pharmacy will first confirm availability, delivery coverage, cost, and timing.
       </p>
     </form>
