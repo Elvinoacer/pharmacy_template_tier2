@@ -84,7 +84,7 @@ export default function DirectoryAssistant() {
   return (
     <section
       aria-busy={loading}
-      className="care-glass relative overflow-hidden rounded-[26px] p-4 text-[var(--foreground)] sm:p-5"
+      className="care-glass relative overflow-hidden rounded-[26px] border !border-[color-mix(in_srgb,var(--foreground)_48%,var(--card))] bg-[var(--card-elev)] p-4 text-[var(--foreground)] sm:p-5"
     >
       <div className="pointer-events-none absolute -right-14 -top-16 h-36 w-36 rounded-full bg-[var(--brand-soft)] opacity-70 blur-3xl" aria-hidden />
 
@@ -96,7 +96,7 @@ export default function DirectoryAssistant() {
             </p>
             <h2 className="mt-1 text-lg font-bold tracking-[-0.02em] text-[var(--foreground)] sm:text-xl">Ask Afyvia</h2>
           </div>
-          <span className="inline-flex shrink-0 items-center gap-1.5 rounded-full border border-[var(--line)] bg-[var(--brand-soft)] px-2.5 py-1 text-[9px] font-bold text-[var(--brand-deep)]">
+          <span className="inline-flex shrink-0 items-center gap-1.5 rounded-full border border-[color-mix(in_srgb,var(--foreground)_48%,var(--card))] bg-[var(--brand-soft)] px-2.5 py-1 text-[9px] font-bold text-[var(--brand-deep)]">
             <span className="h-1.5 w-1.5 rounded-full bg-[var(--success)]" aria-hidden /> Live listings
           </span>
         </div>
@@ -124,7 +124,7 @@ export default function DirectoryAssistant() {
             onChange={(event) => setQuery(event.target.value)}
             placeholder="Panadol near Westlands"
             autoComplete="off"
-            className="block min-h-12 w-full appearance-none rounded-xl border border-[var(--line-2)] bg-[var(--background)] py-3 pl-10 pr-10 text-sm text-[var(--foreground)] outline-none transition placeholder:text-[var(--muted-2)] focus:border-[var(--brand)] focus:bg-[var(--card-elev)] focus:ring-2 focus:ring-[var(--brand-soft)]"
+            className="block min-h-12 w-full appearance-none rounded-xl border border-[color-mix(in_srgb,var(--foreground)_48%,var(--card))] bg-[var(--card)] py-3 pl-10 pr-10 text-sm text-[var(--foreground)] outline-none transition placeholder:text-[var(--muted)] focus:border-[var(--brand)] focus:bg-[var(--card-elev)] focus:ring-2 focus:ring-[var(--brand-soft)]"
           />
           {query && !loading && (
             <button
@@ -146,7 +146,7 @@ export default function DirectoryAssistant() {
         <button
           type="submit"
           disabled={loading || query.trim().length < 2}
-          className="mt-2 inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-xl bg-[var(--brand)] px-4 text-sm font-bold text-[var(--background)] shadow-sm transition hover:brightness-95 disabled:cursor-not-allowed disabled:opacity-50"
+          className="mt-2 inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-xl bg-[var(--brand)] px-4 text-sm font-bold text-[var(--background)] shadow-sm transition hover:brightness-95 disabled:cursor-not-allowed disabled:opacity-100 disabled:border disabled:border-[color-mix(in_srgb,var(--foreground)_48%,var(--card))] disabled:bg-[color-mix(in_srgb,var(--foreground)_10%,var(--card))] disabled:text-[var(--foreground)]"
         >
           <Sparkles className={`h-4 w-4 ${loading ? "animate-pulse" : ""}`} aria-hidden />
           {loading ? "Checking the network…" : "Ask Afyvia"}
@@ -155,14 +155,14 @@ export default function DirectoryAssistant() {
 
       {!answer && !loading && (
         <div className="relative mt-4">
-          <p className="text-[9px] font-bold uppercase tracking-[0.12em] text-[var(--muted-2)]">Try asking</p>
+          <p className="text-[9px] font-bold uppercase tracking-[0.12em] text-[var(--muted)]">Try asking</p>
           <div className="mt-2 flex flex-wrap gap-1.5">
             {SUGGESTIONS.map((suggestion) => (
               <button
                 key={suggestion}
                 type="button"
                 onClick={() => void ask(suggestion)}
-                className="rounded-full border border-[var(--line)] bg-[var(--card-elev)] px-2.5 py-1.5 text-left text-[10px] font-medium text-[var(--muted)] transition hover:border-[var(--brand)] hover:bg-[var(--brand-soft)] hover:text-[var(--brand-deep)]"
+                className="rounded-full border border-[color-mix(in_srgb,var(--foreground)_48%,var(--card))] bg-[var(--card-elev)] px-2.5 py-1.5 text-left text-[10px] font-medium text-[var(--muted)] transition hover:border-[var(--brand)] hover:bg-[var(--brand-soft)] hover:text-[var(--brand-deep)]"
               >
                 {suggestion}
               </button>
@@ -172,7 +172,7 @@ export default function DirectoryAssistant() {
       )}
 
       {loading && (
-        <div className="relative mt-4 rounded-2xl border border-[var(--line)] bg-[var(--card-elev)] p-3" aria-live="polite">
+        <div className="relative mt-4 rounded-2xl border border-[color-mix(in_srgb,var(--foreground)_48%,var(--card))] bg-[var(--card-elev)] p-3" aria-live="polite">
           <div className="flex items-center gap-2 text-xs font-semibold text-[var(--foreground)]">
             <span className="h-2 w-2 animate-pulse rounded-full bg-[var(--success)]" aria-hidden />
             Looking across public listings
@@ -199,7 +199,7 @@ export default function DirectoryAssistant() {
       {answer && (
         <div
           aria-live="polite"
-          className="relative mt-4 rounded-2xl border border-[var(--line)] bg-[var(--card-elev)] p-3.5"
+          className="relative mt-4 rounded-2xl border border-[color-mix(in_srgb,var(--foreground)_48%,var(--card))] bg-[var(--card-elev)] p-3.5"
         >
           <p className="text-[10px] font-bold uppercase tracking-[0.12em] text-[var(--brand-deep)]">
             {source === "ai" ? "Afyvia summary" : "Live directory result"}
@@ -215,7 +215,7 @@ export default function DirectoryAssistant() {
               key={result.slug}
               href={`/pharmacies/${result.slug}`}
               role="listitem"
-              className="group flex min-w-0 items-center gap-3 rounded-2xl border border-[var(--line)] bg-[var(--card)] p-3 transition hover:-translate-y-0.5 hover:border-[var(--brand)] hover:bg-[var(--card-elev)] hover:shadow-sm"
+              className="group flex min-w-0 items-center gap-3 rounded-2xl border border-[color-mix(in_srgb,var(--foreground)_48%,var(--card))] bg-[var(--card-elev)] p-3 transition hover:-translate-y-0.5 hover:border-[var(--brand)] hover:bg-[var(--card-elev)] hover:shadow-sm"
             >
               <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-[var(--brand-soft)] text-[var(--brand)]">
                 <MapPin className="h-4 w-4" aria-hidden />
@@ -240,7 +240,7 @@ export default function DirectoryAssistant() {
                   )}
                 </span>
               </span>
-              <ArrowRight className="h-4 w-4 shrink-0 text-[var(--muted-2)] transition group-hover:translate-x-0.5 group-hover:text-[var(--brand)]" aria-hidden />
+              <ArrowRight className="h-4 w-4 shrink-0 text-[var(--muted)] transition group-hover:translate-x-0.5 group-hover:text-[var(--brand)]" aria-hidden />
             </Link>
           ))}
         </div>
