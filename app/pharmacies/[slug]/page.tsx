@@ -381,15 +381,15 @@ export default async function PharmacyProfilePage({
             {inventoryData.items.map((item) => (
               <div
                 key={item.id}
-                className="liquid-glass care-glass flex flex-col justify-between rounded-2xl border border-[var(--care-border)] bg-[var(--care-glass)] p-4 shadow-sm backdrop-blur-xl transition hover:shadow-md sm:p-5"
+                className="liquid-glass care-glass flex flex-col justify-between rounded-2xl border !border-[color-mix(in_srgb,var(--foreground)_48%,var(--card))] bg-[var(--card-elev)] p-4 shadow-sm backdrop-blur-xl transition hover:!border-[var(--brand)] hover:shadow-md sm:p-5"
               >
                 <div>
                   <div className="flex items-start justify-between gap-2">
-                    <span className="rounded-full bg-[var(--brand-soft)] px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-[var(--brand)]">
+                    <span className="rounded-full border border-[color-mix(in_srgb,var(--foreground)_48%,var(--card))] bg-[var(--brand-soft)] px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-[var(--brand-deep)]">
                       {item.medicationMaster.category || "Healthcare"}
                     </span>
                     {item.prescriptionRequired && (
-                      <span className="rounded-full bg-amber-500/10 px-2 py-0.5 text-[10px] font-semibold text-amber-700 dark:text-amber-400">
+                      <span className="rounded-full border border-amber-700/40 bg-amber-500/15 px-2 py-0.5 text-[10px] font-semibold text-amber-800 dark:border-amber-300/50 dark:text-amber-200">
                         Rx Required
                       </span>
                     )}
@@ -402,7 +402,7 @@ export default async function PharmacyProfilePage({
                   )}
                 </div>
 
-                <div className="mt-4 flex items-center justify-between border-t border-[var(--care-border)] pt-3">
+                <div className="mt-4 flex items-center justify-between border-t border-[color-mix(in_srgb,var(--foreground)_48%,var(--card))] pt-3">
                   <span className="text-sm font-bold text-[var(--foreground)]">
                     KES {Math.round(item.price).toLocaleString("en-KE")}
                   </span>
@@ -418,7 +418,7 @@ export default async function PharmacyProfilePage({
             ))}
           </div>
         ) : (
-          <div className="liquid-glass care-glass rounded-2xl border border-dashed border-[var(--care-border)] bg-[var(--care-glass)] p-8 text-center backdrop-blur-xl">
+          <div className="liquid-glass care-glass rounded-2xl border border-dashed !border-[color-mix(in_srgb,var(--foreground)_48%,var(--card))] bg-[var(--card-elev)] p-8 text-center backdrop-blur-xl">
             <Pill className="mx-auto h-8 w-8 text-[var(--brand)]" aria-hidden />
             <p className="mt-2 text-sm font-semibold text-[var(--foreground)]">
               Digital medicine catalog available online
@@ -462,11 +462,11 @@ export default async function PharmacyProfilePage({
             {servicesData.services.slice(0, 6).map((service) => (
               <div
                 key={service.id}
-                className="liquid-glass care-glass flex flex-col justify-between rounded-2xl border border-[var(--care-border)] bg-[var(--care-glass)] p-4 shadow-sm backdrop-blur-xl transition hover:shadow-md sm:p-5"
+                className="liquid-glass care-glass flex flex-col justify-between rounded-2xl border !border-[color-mix(in_srgb,var(--foreground)_48%,var(--card))] bg-[var(--card-elev)] p-4 shadow-sm backdrop-blur-xl transition hover:!border-[var(--brand)] hover:shadow-md sm:p-5"
               >
                 <div>
                   <div className="flex items-center justify-between gap-2">
-                    <span className="rounded-full bg-teal-500/10 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-teal-700 dark:text-teal-300">
+                    <span className="rounded-full border border-teal-800/40 bg-teal-500/15 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-teal-800 dark:border-teal-200/45 dark:text-teal-100">
                       Clinical Care
                     </span>
                     {service.duration && (
@@ -483,7 +483,7 @@ export default async function PharmacyProfilePage({
                   </p>
                 </div>
 
-                <div className="mt-4 flex items-center justify-between border-t border-[var(--care-border)] pt-3">
+                <div className="mt-4 flex items-center justify-between border-t border-[color-mix(in_srgb,var(--foreground)_48%,var(--card))] pt-3">
                   <span className="text-xs font-semibold text-[var(--foreground)]">
                     {service.price ? `KES ${Number(service.price).toLocaleString("en-KE")}` : "Free Consultation"}
                   </span>
@@ -499,7 +499,7 @@ export default async function PharmacyProfilePage({
             ))}
           </div>
         ) : (
-          <div className="liquid-glass care-glass rounded-2xl border border-dashed border-[var(--care-border)] bg-[var(--care-glass)] p-8 text-center backdrop-blur-xl">
+          <div className="liquid-glass care-glass rounded-2xl border border-dashed !border-[color-mix(in_srgb,var(--foreground)_48%,var(--card))] bg-[var(--card-elev)] p-8 text-center backdrop-blur-xl">
             <Activity className="mx-auto h-8 w-8 text-[var(--brand)]" aria-hidden />
             <p className="mt-2 text-sm font-semibold text-[var(--foreground)]">
               Consultations & Clinical Screenings
