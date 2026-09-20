@@ -1004,6 +1004,11 @@ export default function StorefrontCustomizer({
                 </label>
               ))}
             </div>
+            <p className="mt-3 text-xs admin-muted">
+              Your saved hex colours remain unchanged. On the public storefront, Afyvia derives
+              light- and dark-mode text, focus and button shades from them so essential UI keeps
+              WCAG contrast even when the original brand colour is very light or very dark.
+            </p>
           </Section>
 
           <Section title="Social links" description="Blank entries fall back to the network's links.">
