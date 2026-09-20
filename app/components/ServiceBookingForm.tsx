@@ -318,7 +318,7 @@ export function ServiceBookingForm({
         <button
           type="button"
           onClick={enablePush}
-          className="flex min-h-11 w-full items-center justify-center gap-2 rounded-xl border border-dashed border-[var(--line-2)] bg-[var(--card-elev)] px-3 py-2.5 text-xs font-semibold text-[var(--brand)] transition hover:border-[var(--brand)] hover:bg-[var(--brand-tint)]"
+          className="flex min-h-11 w-full items-center justify-center gap-2 rounded-xl border border-dashed border-[color-mix(in_srgb,var(--foreground)_60%,var(--card))] bg-[var(--card-elev)] px-3 py-2.5 text-xs font-semibold text-[var(--brand-deep)] transition hover:border-[var(--brand)] hover:bg-[var(--brand-tint)]"
         >
           <Bell className="h-3.5 w-3.5" aria-hidden="true" />
           {pushStatus === "requesting"
