@@ -36,7 +36,7 @@ type Props = {
 const labelClass =
   "mb-1.5 flex min-w-0 flex-wrap items-center gap-1.5 text-xs font-semibold text-[var(--foreground)]";
 const fieldClass =
-  "w-full min-w-0 rounded-xl border border-[var(--line-2)] bg-[var(--card-elev)] px-3.5 py-3 text-base text-[var(--foreground)] outline-none transition placeholder:text-[var(--muted-2)] focus:border-[var(--brand)] focus:bg-[var(--card)] focus:ring-2 focus:ring-[var(--brand-soft)] sm:text-sm";
+  "w-full min-w-0 rounded-xl border border-[color-mix(in_srgb,var(--foreground)_60%,var(--card))] bg-[var(--card-elev)] px-3.5 py-3 text-base text-[var(--foreground)] outline-none transition placeholder:text-[var(--muted)] focus:border-[var(--brand)] focus:bg-[var(--card)] focus:ring-2 focus:ring-[color-mix(in_srgb,var(--brand)_28%,transparent)] disabled:cursor-not-allowed disabled:bg-[color-mix(in_srgb,var(--foreground)_7%,var(--card))] disabled:text-[var(--muted)] disabled:opacity-100 sm:text-sm";
 
 export function ServiceBookingForm({
   serviceId,
@@ -131,12 +131,14 @@ export function ServiceBookingForm({
       <div className="min-w-0 space-y-4">
         <div
           className={`rounded-2xl border bg-[var(--card-elev)] p-4 text-center sm:p-6 ${
-            state.requiresPayment ? "border-amber-500/35" : "border-emerald-500/35"
+            state.requiresPayment
+              ? "border-amber-700/60 dark:border-amber-200/50"
+              : "border-emerald-700/60 dark:border-emerald-200/50"
           }`}
         >
           <div
             className={`mx-auto flex h-12 w-12 items-center justify-center rounded-full text-white ${
-              state.requiresPayment ? "bg-amber-600" : "bg-emerald-600"
+              state.requiresPayment ? "bg-amber-700" : "bg-emerald-700"
             }`}
           >
             {state.requiresPayment ? (
@@ -160,7 +162,7 @@ export function ServiceBookingForm({
         </div>
 
         {state.requiresPayment && state.orderId && (
-          <div className="rounded-2xl border border-[var(--line-2)] bg-[var(--card)] p-4 sm:p-5">
+          <div className="rounded-2xl border border-[color-mix(in_srgb,var(--foreground)_60%,var(--card))] bg-[var(--card)] p-4 sm:p-5">
             <h4 className="flex items-center gap-2 text-sm font-semibold text-[var(--foreground)]">
               <ShieldCheck className="h-4 w-4 text-[var(--brand)]" aria-hidden="true" />
               Confirm with M-Pesa
@@ -180,7 +182,7 @@ export function ServiceBookingForm({
         )}
 
         {!state.requiresPayment && (
-          <p className="rounded-2xl border border-[var(--line-2)] bg-[var(--brand-tint)] p-4 text-sm leading-6 text-[var(--muted)]">
+          <p className="rounded-2xl border border-[color-mix(in_srgb,var(--foreground)_60%,var(--card))] bg-[var(--brand-tint)] p-4 text-sm leading-6 text-[var(--muted)]">
             No payment is required for this service. Our team will contact you on{" "}
             <strong className="break-words text-[var(--foreground)]">{state.phone || defaultPhone}</strong> to finalise timing.
           </p>
@@ -301,7 +303,7 @@ export function ServiceBookingForm({
         />
       </div>
 
-      <div className="rounded-xl border border-[var(--line-2)] bg-[var(--card-elev)] px-3.5 py-3 text-sm text-[var(--muted)]">
+      <div className="rounded-xl border border-[color-mix(in_srgb,var(--foreground)_60%,var(--card))] bg-[var(--card-elev)] px-3.5 py-3 text-sm text-[var(--muted)]">
         {requiresPayment ? (
           <>
             <span className="font-semibold text-[var(--foreground)]">KES {price!.toLocaleString()}</span>
@@ -333,7 +335,7 @@ export function ServiceBookingForm({
       )}
 
       {state?.error && (
-        <p className="rounded-xl border border-rose-500/30 bg-[var(--card-elev)] px-3 py-2.5 text-sm leading-5 text-rose-500" role="alert">
+        <p className="rounded-xl border border-rose-700/60 bg-rose-500/10 px-3 py-2.5 text-sm leading-5 text-rose-700 dark:border-rose-200/50 dark:text-rose-200" role="alert">
           {state.error}
         </p>
       )}
@@ -341,7 +343,7 @@ export function ServiceBookingForm({
       <button
         type="submit"
         disabled={pending}
-        className="btn-primary flex min-h-12 w-full items-center justify-center gap-2 !py-3 text-sm disabled:opacity-60"
+        className="btn-primary flex min-h-12 w-full items-center justify-center gap-2 !py-3 text-sm disabled:cursor-not-allowed disabled:opacity-100 disabled:saturate-50"
       >
         {pending ? (
           <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" />
