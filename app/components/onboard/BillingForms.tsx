@@ -1,6 +1,6 @@
 "use client";
 
-import { useActionState, useEffect, useState } from "react";
+import { useActionState, useEffect, useState, useTransition } from "react";
 import {
   Check,
   CheckCircle2,
@@ -14,7 +14,11 @@ import {
   Sparkles,
   Tag,
 } from "lucide-react";
-import { pharmacyBillingAction, promotionAction } from "@/app/actions/pharmacy-billing";
+import {
+  generatePromotionCodeAction,
+  pharmacyBillingAction,
+  promotionAction,
+} from "@/app/actions/pharmacy-billing";
 
 const input =
   "mt-1 min-h-12 w-full rounded-xl border border-[color-mix(in_srgb,var(--foreground)_55%,var(--card-elev))] bg-[var(--card-elev)] px-3.5 text-base text-[var(--foreground)] outline-none transition-colors placeholder:text-[var(--muted)] focus:border-[var(--brand)] focus:ring-2 focus:ring-[var(--brand)] focus:ring-offset-2 focus:ring-offset-[var(--card)] disabled:cursor-not-allowed disabled:border-[color-mix(in_srgb,var(--foreground)_42%,var(--card-elev))] disabled:bg-[color-mix(in_srgb,var(--foreground)_7%,var(--card-elev))] disabled:text-[var(--muted)] disabled:opacity-100 sm:text-sm";
@@ -506,6 +510,22 @@ export function RetryOverdueForm({
 
 export function PromotionForm({ promotionId }: { promotionId?: string }) {
   const [state, action, pending] = useActionState(promotionAction, {});
+  const [code, setCode] = useState("");
+  const [generationError, setGenerationError] = useState<string | null>(null);
+  const [generating, startCodeGeneration] = useTransition();
+
+  const generateCode = () => {
+    setGenerationError(null);
+    startCodeGeneration(async () => {
+      const result = await generatePromotionCodeAction();
+      if (result.generatedCode) {
+        setCode(result.generatedCode);
+        return;
+      }
+      setGenerationError(result.error || "Could not generate a unique code. Please try again.");
+    });
+  };
+
   return (
     <form action={action} className="space-y-3">
       <input type="hidden" name="intent" value={promotionId ? "stop" : "create"} />
@@ -517,10 +537,40 @@ export function PromotionForm({ promotionId }: { promotionId?: string }) {
             Promotion Name / Reason
             <input className={input} name="name" required minLength={5} maxLength={150} placeholder="e.g. Early Partner Chemist" />
           </label>
-          <label className="text-sm font-medium">
-            Promo Code / Coupon (for pharmacies to redeem)
-            <input className={`${input} uppercase font-mono tracking-wider`} name="code" placeholder="e.g. PARTNER2026 (optional)" />
-          </label>
+          <div className="text-sm font-medium">
+            <label htmlFor="promotion-code">Promo Code / Coupon (for pharmacies to redeem)</label>
+            <div className="mt-1 flex flex-col gap-2 sm:flex-row">
+              <input
+                id="promotion-code"
+                className={`${input} mt-0 min-w-0 flex-1 uppercase font-mono tracking-wider`}
+                name="code"
+                value={code}
+                onChange={(event) => setCode(event.target.value.toUpperCase())}
+                placeholder="Click Generate Code"
+                autoComplete="off"
+                autoCapitalize="characters"
+                spellCheck={false}
+                disabled={pending || generating}
+              />
+              <button
+                type="button"
+                onClick={generateCode}
+                disabled={pending || generating}
+                className="btn-ghost min-h-12 shrink-0 justify-center gap-2 px-4 sm:w-auto"
+              >
+                <RefreshCw className={`h-4 w-4 ${generating ? "animate-spin" : ""}`} aria-hidden />
+                <span>{generating ? "Generating…" : code ? "New Code" : "Generate Code"}</span>
+              </button>
+            </div>
+            <p className="mt-1.5 text-xs font-normal text-[var(--muted)]">
+              One click creates an Afyvia code and checks it against the live promotion database.
+            </p>
+            {generationError ? (
+              <p role="alert" className="mt-1.5 text-xs font-medium text-rose-700 dark:text-rose-300">
+                {generationError}
+              </p>
+            ) : null}
+          </div>
           <label className="text-sm font-medium">
             Redemption Capacity
             <input className={input} name="capacity" type="number" min={1} max={100000} defaultValue={50} required />
@@ -539,7 +589,7 @@ export function PromotionForm({ promotionId }: { promotionId?: string }) {
           </label>
         </div>
       )}
-      <button className="btn-primary min-h-11" disabled={pending}>
+      <button className="btn-primary min-h-11" disabled={pending || generating}>
         {pending ? "Saving…" : promotionId ? "Stop new allocations" : "Create Promotional Card / Coupon"}
       </button>
       <p
