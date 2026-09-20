@@ -30,7 +30,7 @@ export default function SelfCareGuidePage() {
           <div className="mb-10 grid gap-6 md:grid-cols-3">
             <div className="liquid-glass care-glass rounded-3xl border border-emerald-500/30 bg-emerald-500/10 p-6 shadow-sm backdrop-blur-xl">
               <div className="flex items-center gap-2 text-emerald-800 dark:text-emerald-300">
-                <span className="flex h-6 w-6 items-center justify-center rounded-full bg-emerald-600 text-xs font-bold text-white">1</span>
+                <span className="flex h-6 w-6 items-center justify-center rounded-full bg-emerald-700 text-xs font-bold text-white">1</span>
                 <h3 className="font-bold text-emerald-950 dark:text-emerald-100">Self-Care Appropriate</h3>
               </div>
               <p className="mt-2 text-xs leading-relaxed text-emerald-900 dark:text-emerald-200/80">
@@ -40,7 +40,7 @@ export default function SelfCareGuidePage() {
 
             <div className="liquid-glass care-glass rounded-3xl border border-amber-500/30 bg-amber-500/10 p-6 shadow-sm backdrop-blur-xl">
               <div className="flex items-center gap-2 text-amber-800 dark:text-amber-300">
-                <span className="flex h-6 w-6 items-center justify-center rounded-full bg-amber-500 text-xs font-bold text-white">2</span>
+                <span className="flex h-6 w-6 items-center justify-center rounded-full bg-amber-700 text-xs font-bold text-white">2</span>
                 <h3 className="font-bold text-amber-950 dark:text-amber-100">Pharmacist / GP Review</h3>
               </div>
               <p className="mt-2 text-xs leading-relaxed text-amber-900 dark:text-amber-200/80">
@@ -50,7 +50,7 @@ export default function SelfCareGuidePage() {
 
             <div className="liquid-glass care-glass rounded-3xl border border-rose-500/30 bg-rose-500/10 p-6 shadow-sm backdrop-blur-xl">
               <div className="flex items-center gap-2 text-rose-800 dark:text-rose-300">
-                <span className="flex h-6 w-6 items-center justify-center rounded-full bg-rose-600 text-xs font-bold text-white">3</span>
+                <span className="flex h-6 w-6 items-center justify-center rounded-full bg-rose-700 text-xs font-bold text-white">3</span>
                 <h3 className="font-bold text-rose-950 dark:text-rose-100">Emergency Red Flags</h3>
               </div>
               <p className="mt-2 text-xs leading-relaxed text-rose-900 dark:text-rose-200/80">
@@ -61,19 +61,19 @@ export default function SelfCareGuidePage() {
 
           <SelfCareTriageClient />
 
-          <div className="mt-16 rounded-3xl border border-[#e3ebe6] bg-white p-8 shadow-sm">
-            <h2 className="text-xl font-bold text-[#0c1a14]" style={{ fontFamily: "var(--font-display), serif" }}>
+          <div className="mt-16 rounded-3xl border border-[var(--health-ui-border)] bg-[var(--card)] p-8 shadow-sm">
+            <h2 className="text-xl font-bold text-[var(--foreground)]" style={{ fontFamily: "var(--font-display), serif" }}>
               The 4 Golden Rules of Safe OTC Self-Care
             </h2>
             <div className="mt-6 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
-              <div className="rounded-2xl bg-[#f4f7f4] p-5"><span className="text-2xl">📋</span><h3 className="mt-3 font-semibold text-[#0c1a14]">Always Check Labels</h3><p className="mt-1.5 text-xs leading-relaxed text-[#5a6b62]">Check active ingredients to avoid accidental double-dosing (e.g. taking paracetamol cold sachets alongside paracetamol pain tablets).</p></div>
-              <div className="rounded-2xl bg-[#f4f7f4] p-5"><span className="text-2xl">⏳</span><h3 className="mt-3 font-semibold text-[#0c1a14]">Respect Time Limits</h3><p className="mt-1.5 text-xs leading-relaxed text-[#5a6b62]">OTC products are meant for short-term relief. If symptoms do not improve within 3–7 days, stop and consult our pharmacist or doctor.</p></div>
-              <div className="rounded-2xl bg-[#f4f7f4] p-5"><span className="text-2xl">⚖️</span><h3 className="mt-3 font-semibold text-[#0c1a14]">Weight-Based Pediatric Dosing</h3><p className="mt-1.5 text-xs leading-relaxed text-[#5a6b62]">Always dose children by weight, never by age alone. Use oral measuring syringes, never household tablespoons.</p></div>
-              <div className="rounded-2xl bg-[#f4f7f4] p-5"><span className="text-2xl">💬</span><h3 className="mt-3 font-semibold text-[#0c1a14]">Ask About Interactions</h3><p className="mt-1.5 text-xs leading-relaxed text-[#5a6b62]">Certain OTC medicines interact with blood pressure, diabetes, and blood-thinning prescriptions. Tell us what you take.</p></div>
+              <div className="rounded-2xl bg-[var(--card-elev)] p-5"><span className="text-2xl">📋</span><h3 className="mt-3 font-semibold text-[var(--foreground)]">Always Check Labels</h3><p className="mt-1.5 text-xs leading-relaxed text-[var(--health-editorial-body)]">Check active ingredients to avoid accidental double-dosing (e.g. taking paracetamol cold sachets alongside paracetamol pain tablets).</p></div>
+              <div className="rounded-2xl bg-[var(--card-elev)] p-5"><span className="text-2xl">⏳</span><h3 className="mt-3 font-semibold text-[var(--foreground)]">Respect Time Limits</h3><p className="mt-1.5 text-xs leading-relaxed text-[var(--health-editorial-body)]">OTC products are meant for short-term relief. If symptoms do not improve within 3–7 days, stop and consult our pharmacist or doctor.</p></div>
+              <div className="rounded-2xl bg-[var(--card-elev)] p-5"><span className="text-2xl">⚖️</span><h3 className="mt-3 font-semibold text-[var(--foreground)]">Weight-Based Pediatric Dosing</h3><p className="mt-1.5 text-xs leading-relaxed text-[var(--health-editorial-body)]">Always dose children by weight, never by age alone. Use oral measuring syringes, never household tablespoons.</p></div>
+              <div className="rounded-2xl bg-[var(--card-elev)] p-5"><span className="text-2xl">💬</span><h3 className="mt-3 font-semibold text-[var(--foreground)]">Ask About Interactions</h3><p className="mt-1.5 text-xs leading-relaxed text-[var(--health-editorial-body)]">Certain OTC medicines interact with blood pressure, diabetes, and blood-thinning prescriptions. Tell us what you take.</p></div>
             </div>
 
-            <div className="mt-8 flex flex-wrap items-center justify-between gap-4 border-t border-[#e3ebe6] pt-6">
-              <p className="text-xs text-[#5a6b62]">Need personalised guidance? Our licensed pharmacists are available during open hours.</p>
+            <div className="mt-8 flex flex-wrap items-center justify-between gap-4 border-t border-[var(--health-ui-border)] pt-6">
+              <p className="text-xs text-[var(--health-editorial-body)]">Need personalised guidance? Our licensed pharmacists are available during open hours.</p>
               <div className="flex gap-3">
                 <Link href="/medicines" className="btn-primary !py-2 !px-4 text-xs font-semibold">Browse OTC Catalog</Link>
                 <Link href="/how-do-you-feel" className="btn-ghost !py-2 !px-4 text-xs font-semibold">Try AI Symptom Check</Link>
