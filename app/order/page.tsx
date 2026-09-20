@@ -109,7 +109,7 @@ export default async function GuestOrderPage({
 
       <section className="px-4 pb-20 sm:px-6">
         <div className="mx-auto grid max-w-6xl gap-10 lg:grid-cols-[1fr_0.9fr]">
-          <div className="liquid-glass care-glass rounded-3xl border border-[var(--care-border)] bg-[var(--care-glass)] p-6 shadow-sm backdrop-blur-xl sm:p-8">
+          <div className="liquid-glass care-glass rounded-3xl border border-[var(--public-flow-ui-border)] bg-[var(--care-glass)] p-6 shadow-sm backdrop-blur-xl sm:p-8">
             <div className="mb-6 flex items-start gap-3">
               <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[var(--brand-soft)] text-[var(--brand)]">
                 <ShoppingBag className="h-5 w-5" />
@@ -141,7 +141,7 @@ export default async function GuestOrderPage({
             </div>
 
             {preselected && (
-              <div className="mt-4 rounded-2xl border border-[var(--brand)]/30 bg-[var(--brand-soft)]/50 p-4">
+              <div className="mt-4 rounded-2xl border border-[var(--brand)] bg-[var(--brand-soft)]/50 p-4">
                 <p className="text-xs font-semibold uppercase tracking-wider text-[var(--brand)]">
                   Selected from catalogue
                 </p>
@@ -173,7 +173,7 @@ export default async function GuestOrderPage({
           </div>
 
           <aside className="space-y-5">
-            <div className="liquid-glass care-glass rounded-3xl border border-[var(--care-border)] bg-[var(--care-glass)] p-6 shadow-sm backdrop-blur-xl">
+            <div className="liquid-glass care-glass rounded-3xl border border-[var(--public-flow-ui-border)] bg-[var(--care-glass)] p-6 shadow-sm backdrop-blur-xl">
               <h3
                 className="flex items-center gap-2 text-lg font-semibold text-[var(--foreground)]"
                 style={{ fontFamily: "var(--font-display), serif" }}
@@ -182,7 +182,7 @@ export default async function GuestOrderPage({
               </h3>
               <ol className="mt-4 space-y-3 text-sm text-[var(--muted)]">
                 <li className="flex gap-3">
-                  <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-teal-100 text-xs font-bold text-teal-800 dark:bg-teal-900/40 dark:text-teal-300">
+                  <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full border border-teal-700/60 bg-teal-100 text-xs font-bold text-teal-900 dark:border-teal-300/60 dark:bg-teal-950/50 dark:text-teal-100">
                     1
                   </span>
                   Choose an OTC product — we reserve live stock immediately.
@@ -201,7 +201,7 @@ export default async function GuestOrderPage({
                 </li>
               </ol>
             </div>
-            <div className="liquid-glass care-glass rounded-3xl border border-[var(--care-border)] bg-[var(--care-glass)] p-6 shadow-sm backdrop-blur-xl">
+            <div className="liquid-glass care-glass rounded-3xl border border-[var(--public-flow-ui-border)] bg-[var(--care-glass)] p-6 shadow-sm backdrop-blur-xl">
               <h3
                 className="flex items-center gap-2 text-lg font-semibold text-[var(--foreground)]"
                 style={{ fontFamily: "var(--font-display), serif" }}
