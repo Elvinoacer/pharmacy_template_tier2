@@ -16,7 +16,7 @@ export const metadata: Metadata = {
 };
 
 const panelClass =
-  "liquid-glass care-glass rounded-2xl border border-[var(--care-border)] bg-[var(--care-glass)] backdrop-blur-xl shadow-sm transition-all duration-300 sm:rounded-3xl";
+  "liquid-glass care-glass rounded-2xl border !border-[color-mix(in_srgb,var(--foreground)_60%,var(--card))] bg-[var(--card-elev)] backdrop-blur-xl shadow-sm transition-all duration-300 sm:rounded-3xl";
 
 const DEFAULT_DELIVERY_STEPS = [
   "Select your medication or upload your prescription via our digital dispensary.",
@@ -71,7 +71,7 @@ export default async function DeliveryPage() {
       <section className="px-3 pb-16 sm:px-6 sm:pb-20">
         <div className="mx-auto w-full max-w-6xl">
           {!isTenant && (
-            <div className="mb-6 flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-[var(--care-border)] bg-[var(--care-glass)] p-4 text-xs backdrop-blur-xl sm:text-sm">
+            <div className="mb-6 flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-[color-mix(in_srgb,var(--foreground)_60%,var(--card))] bg-[var(--care-glass)] p-4 text-xs backdrop-blur-xl sm:text-sm">
               <span className="text-[var(--foreground)]">
                 Want delivery from your closest neighbourhood pharmacy?
               </span>
@@ -87,7 +87,7 @@ export default async function DeliveryPage() {
 
           <div className="grid gap-6 lg:grid-cols-[1.02fr_0.98fr] lg:gap-8 xl:gap-10">
             <div className="min-w-0">
-              <div className="relative mb-5 aspect-[16/9] overflow-hidden rounded-2xl border border-[var(--care-border)] bg-[var(--card-elev)] shadow-md sm:mb-7 sm:aspect-[16/10] sm:rounded-[2rem]">
+              <div className="relative mb-5 aspect-[16/9] overflow-hidden rounded-2xl border border-[color-mix(in_srgb,var(--foreground)_60%,var(--card))] bg-[var(--card-elev)] shadow-md sm:mb-7 sm:aspect-[16/10] sm:rounded-[2rem]">
                 <Image
                   src="https://pub-cc07856d657b4a7197710051042b3eda.r2.dev/images/services/delivery-services.webp"
                   alt="Delivery vehicle ready for pharmacy orders"
@@ -97,7 +97,7 @@ export default async function DeliveryPage() {
                   priority
                 />
                 <div className="pointer-events-none absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/60 to-transparent px-4 pb-4 pt-12 sm:px-5 sm:pb-5">
-                  <span className="inline-flex items-center gap-2 rounded-full border border-white/20 bg-black/30 px-3 py-1.5 text-xs font-semibold text-white backdrop-blur-sm">
+                  <span className="inline-flex items-center gap-2 rounded-full border border-white/50 bg-black/55 px-3 py-1.5 text-xs font-semibold text-white backdrop-blur-sm">
                     <Truck className="h-3.5 w-3.5" aria-hidden="true" />
                     Rapid pharmacy delivery
                   </span>
@@ -115,9 +115,9 @@ export default async function DeliveryPage() {
                   {deliverySteps.map((step: string, index: number) => (
                     <li
                       key={step}
-                      className="flex min-w-0 items-start gap-3 rounded-xl border border-[var(--care-border)] bg-[var(--card-elev)]/80 p-3.5 sm:rounded-2xl sm:p-4"
+                      className="flex min-w-0 items-start gap-3 rounded-xl border border-[color-mix(in_srgb,var(--foreground)_60%,var(--card))] bg-[var(--card-elev)]/80 p-3.5 sm:rounded-2xl sm:p-4"
                     >
-                      <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-[var(--brand-soft)] text-xs font-bold text-[var(--brand)]">
+                      <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-[color-mix(in_srgb,var(--foreground)_60%,var(--card))] bg-[var(--brand-soft)] text-xs font-bold text-[var(--brand-deep)]">
                         {index + 1}
                       </span>
                       <p className="min-w-0 pt-1 text-[13px] leading-5 text-[var(--muted)] sm:text-sm sm:leading-6">
@@ -130,7 +130,7 @@ export default async function DeliveryPage() {
 
               <div className={`${panelClass} mt-4 p-4 sm:mt-5 sm:p-5`}>
                 <div className="flex items-start gap-3">
-                  <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-[var(--brand-soft)] text-[var(--brand)]">
+                  <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl border border-[color-mix(in_srgb,var(--foreground)_60%,var(--card))] bg-[var(--brand-soft)] text-[var(--brand-deep)]">
                     <Check className="h-4 w-4" aria-hidden="true" />
                   </span>
                   <div className="min-w-0 flex-1">
@@ -153,7 +153,7 @@ export default async function DeliveryPage() {
 
                 <a
                   href={pharmacy.phoneHref}
-                  className="mt-4 flex min-h-12 w-full items-center justify-center gap-2 rounded-xl border border-[var(--care-border)] bg-[var(--card-elev)] px-4 text-sm font-semibold text-[var(--brand)] transition hover:border-[var(--brand)] hover:bg-[var(--brand-tint)] sm:w-auto"
+                  className="mt-4 flex min-h-12 w-full items-center justify-center gap-2 rounded-xl border border-[color-mix(in_srgb,var(--foreground)_60%,var(--card))] bg-[var(--card-elev)] px-4 text-sm font-semibold text-[var(--brand)] transition hover:border-[var(--brand)] hover:bg-[var(--brand-tint)] sm:w-auto"
                 >
                   <Phone className="h-4 w-4" aria-hidden="true" />
                   Call {pharmacy.phone}
@@ -185,7 +185,7 @@ export default async function DeliveryPage() {
                       <Link
                         key={p.slug}
                         href={`/p/${p.slug}/delivery`}
-                        className="group flex items-center justify-between rounded-xl border border-[var(--care-border)] bg-[var(--card)]/70 p-3.5 transition hover:border-[var(--brand)] hover:bg-[var(--brand-tint)]"
+                        className="group flex items-center justify-between rounded-xl border border-[color-mix(in_srgb,var(--foreground)_60%,var(--card))] bg-[var(--card)]/70 p-3.5 transition hover:border-[var(--brand)] hover:bg-[var(--brand-tint)]"
                       >
                         <div className="min-w-0 pr-2">
                           <p className="truncate text-sm font-semibold text-[var(--foreground)] group-hover:text-[var(--brand)]">
