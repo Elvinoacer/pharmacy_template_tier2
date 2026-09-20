@@ -339,17 +339,19 @@ export default function PrescriptionFinder({
       <NearbyLocation active={nearby} />
       <ol className={styles.steps} aria-label="Your progress">
         {["Your medicines", "Availability", "Review request"].map(
-          (label, i) => (
+          (label, i) => {
+            const currentStep = request ? 2 : results ? 1 : 0;
+            return (
             <li
               key={label}
-              aria-current={
-                (request ? 2 : results ? 1 : 0) === i ? "step" : undefined
-              }
+              aria-current={currentStep === i ? "step" : undefined}
+              data-complete={i < currentStep ? "true" : undefined}
             >
               <span>{i + 1}</span>
               {label}
             </li>
-          ),
+            );
+          },
         )}
       </ol>
       {request ? (
@@ -630,8 +632,8 @@ export default function PrescriptionFinder({
               )}
 
               {splitPlan && splitPlan.offers.length > 1 && (
-                <article className="mt-6 rounded-3xl border border-teal-500/30 bg-teal-500/5 p-5 shadow-xs dark:bg-[#0c1f19]">
-                  <div className="flex flex-wrap items-center justify-between gap-2 border-b border-teal-500/15 pb-3">
+                <article className="mt-6 rounded-3xl border border-[color-mix(in_srgb,var(--foreground)_60%,var(--card))] bg-[var(--card-elev)] p-5 shadow-xs">
+                  <div className="flex flex-wrap items-center justify-between gap-2 border-b border-[color-mix(in_srgb,var(--foreground)_60%,var(--card))] pb-3">
                     <div>
                       <span className="inline-flex items-center gap-1.5 rounded-full bg-teal-600/10 px-2.5 py-1 text-xs font-bold text-teal-700 dark:text-teal-300">
                         <Split className="h-3.5 w-3.5" /> Multi-Pharmacy Split Fulfillment
@@ -649,7 +651,7 @@ export default function PrescriptionFinder({
                   </p>
                   <div className="mt-4 space-y-3">
                     {splitPlan.offers.map((planOffer, idx) => (
-                      <div key={planOffer.pharmacy.id} className="rounded-2xl border border-[var(--line-2)] bg-[var(--card)] p-3.5 shadow-xs">
+                      <div key={planOffer.pharmacy.id} className="rounded-2xl border border-[color-mix(in_srgb,var(--foreground)_60%,var(--card))] bg-[var(--card)] p-3.5 shadow-xs">
                         <div className="flex items-center justify-between">
                           <div>
                             <span className="text-[10px] font-bold uppercase tracking-wider text-[var(--brand)]">Pharmacy #{idx + 1}</span>
@@ -669,7 +671,7 @@ export default function PrescriptionFinder({
                             Request {planOffer.lines.length} med{planOffer.lines.length === 1 ? "" : "s"} <ArrowRight className="h-3.5 w-3.5" />
                           </button>
                         </div>
-                        <ul className="mt-2.5 divide-y divide-[var(--line)] border-t border-[var(--line)] pt-2 text-xs">
+                        <ul className="mt-2.5 divide-y divide-[color-mix(in_srgb,var(--foreground)_60%,var(--card))] border-t border-[color-mix(in_srgb,var(--foreground)_60%,var(--card))] pt-2 text-xs">
                           {planOffer.lines.map((l) => (
                             <li key={l.requested} className="flex items-center justify-between py-1 text-[11px]">
                               <span className="text-[var(--foreground)] font-medium">{l.requested}</span>
@@ -688,10 +690,10 @@ export default function PrescriptionFinder({
           {(showReferral || (results && (!offer || offer.missing.length > 0))) && (
             <article
               ref={referralSection}
-              className="mt-6 rounded-3xl border border-amber-500/25 bg-amber-500/5 p-5 shadow-xs dark:bg-amber-950/10"
+              className="mt-6 rounded-3xl border border-amber-700/60 bg-amber-500/10 p-5 shadow-xs dark:border-amber-300/60 dark:bg-amber-950/20"
             >
               <div className="flex items-start gap-3">
-                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-amber-500/20 text-amber-700 dark:text-amber-400">
+                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl border border-amber-700/60 bg-amber-500/20 text-amber-800 dark:border-amber-300/60 dark:text-amber-100">
                   <Building2 className="h-5 w-5" />
                 </div>
                 <div className="min-w-0 flex-1">
@@ -773,7 +775,7 @@ export default function PrescriptionFinder({
                     <button
                       type="submit"
                       disabled={referralBusy}
-                      className="inline-flex items-center gap-1.5 rounded-xl bg-[var(--brand)] px-4 py-2 text-xs font-bold text-white transition hover:brightness-95 disabled:opacity-60"
+                      className="inline-flex items-center gap-1.5 rounded-xl border border-[var(--brand)] bg-[var(--brand)] px-4 py-2 text-xs font-bold text-[var(--background)] transition hover:brightness-95 disabled:cursor-not-allowed disabled:border-[color-mix(in_srgb,var(--foreground)_60%,var(--card))] disabled:bg-[var(--card-elev)] disabled:text-[var(--muted)] disabled:opacity-100"
                     >
                       {referralBusy ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Send className="h-3.5 w-3.5" />}
                       {referralBusy ? "Submitting referral…" : "Submit prescription to pharmacy"}
