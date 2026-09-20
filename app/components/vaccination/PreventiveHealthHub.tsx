@@ -68,7 +68,7 @@ export function PreventiveHealthHub({
         ].map((c) => {
           const Icon = c.icon;
           return (
-            <div key={c.title} className="liquid-glass care-glass rounded-3xl border border-[var(--care-border)] bg-[var(--care-glass)] p-5 shadow-sm backdrop-blur-xl">
+            <div key={c.title} className="liquid-glass care-glass rounded-3xl border border-[var(--health-ui-border)] bg-[var(--care-glass)] p-5 shadow-sm backdrop-blur-xl">
               <Icon className="h-5 w-5 text-[var(--brand)]" />
               <h3 className="mt-3 text-base font-semibold text-[var(--foreground)]">{c.title}</h3>
               <p className="mt-1.5 text-sm leading-relaxed text-[var(--muted)]">{c.body}</p>
@@ -90,7 +90,7 @@ export function PreventiveHealthHub({
             type="button"
             onClick={() => setTab(id)}
             className={`inline-flex items-center gap-2 rounded-full px-4 py-2 text-sm font-semibold transition ${
-              tab === id ? "bg-[var(--brand)] text-white shadow-sm" : "border border-[var(--care-border)] bg-[var(--card)] text-[var(--foreground)] hover:bg-[var(--card-elev)]"
+              tab === id ? "bg-[var(--brand)] text-[var(--background)] shadow-sm" : "border border-[var(--health-ui-border)] bg-[var(--card)] text-[var(--foreground)] hover:bg-[var(--card-elev)]"
             }`}
           >
             <Icon className="h-4 w-4" /> {label}
@@ -107,7 +107,7 @@ export function PreventiveHealthHub({
                 type="button"
                 onClick={() => setTopic(t.slug)}
                 className={`w-full rounded-2xl border p-4 text-left transition ${
-                  topic === t.slug ? "border-[var(--brand)] bg-[var(--brand-soft)]" : "border-[var(--care-border)] bg-[var(--card)] hover:border-[var(--brand)]"
+                  topic === t.slug ? "border-[var(--brand)] bg-[var(--brand-soft)]" : "border-[var(--health-ui-border)] bg-[var(--card)] hover:border-[var(--brand)]"
                 }`}
               >
                 <p className="text-sm font-semibold text-[var(--foreground)]">{t.title}</p>
@@ -116,7 +116,7 @@ export function PreventiveHealthHub({
               </button>
             ))}
           </div>
-          <div className="liquid-glass care-glass rounded-3xl border border-[var(--care-border)] bg-[var(--care-glass)] p-6 shadow-sm backdrop-blur-xl lg:sticky lg:top-28 h-fit">
+          <div className="liquid-glass care-glass rounded-3xl border border-[var(--health-ui-border)] bg-[var(--care-glass)] p-6 shadow-sm backdrop-blur-xl lg:sticky lg:top-28 h-fit">
             {state?.success ? (
               <div>
                 <CheckCircle2 className="h-8 w-8 text-teal-700" />
@@ -182,7 +182,7 @@ export function PreventiveHealthHub({
                     <span className="font-medium">What would you like to cover?</span>
                     <textarea name="notes" rows={3} className="mt-1 w-full rounded-xl border border-teal-900/10 bg-[#f7faf8] px-3 py-2.5 text-sm" />
                   </label>
-                  <button type="submit" disabled={pending} className="btn-primary inline-flex w-full justify-center text-sm">
+                  <button type="submit" disabled={pending} className="btn-primary inline-flex w-full justify-center text-sm disabled:cursor-not-allowed disabled:opacity-100 disabled:saturate-50">
                     {pending ? <Loader2 className="h-4 w-4 animate-spin" /> : <MessageCircle className="h-4 w-4" />}
                     {pending ? "Sending…" : "Request counselling"}
                   </button>
@@ -199,12 +199,12 @@ export function PreventiveHealthHub({
       {tab === "campaigns" && (
         <div className="space-y-4">
           {campaigns.length === 0 ? (
-            <div className="liquid-glass care-glass rounded-3xl border border-[var(--care-border)] bg-[var(--care-glass)] px-6 py-12 text-center text-sm text-[var(--muted)] backdrop-blur-xl">
+            <div className="liquid-glass care-glass rounded-3xl border border-[var(--health-ui-border)] bg-[var(--care-glass)] px-6 py-12 text-center text-sm text-[var(--muted)] backdrop-blur-xl">
               No active public-health campaigns. Seasonal flu and outbreak drives will appear here.
             </div>
           ) : (
             campaigns.map((c) => (
-              <article key={c.slug} className="liquid-glass care-glass rounded-3xl border border-[var(--care-border)] bg-[var(--care-glass)] p-6 shadow-sm backdrop-blur-xl transition hover:border-[var(--brand)]">
+              <article key={c.slug} className="liquid-glass care-glass rounded-3xl border border-[var(--health-ui-border)] bg-[var(--care-glass)] p-6 shadow-sm backdrop-blur-xl transition hover:border-[var(--brand)]">
                 <p className="text-[10px] font-bold uppercase tracking-wider text-[var(--brand)]">{c.theme} · {c.targetPopulation}</p>
                 <h3 className="mt-1 text-xl font-semibold text-[var(--foreground)]" style={{ fontFamily: "var(--font-display), serif" }}>{c.title}</h3>
                 <p className="mt-2 text-sm text-[var(--muted)]">{c.short}</p>
@@ -225,7 +225,7 @@ export function PreventiveHealthHub({
       {tab === "education" && (
         <div className="grid gap-5 md:grid-cols-2">
           {PUBLIC_HEALTH_EDUCATION.map((a) => (
-            <article key={a.slug} id={a.slug} className="liquid-glass care-glass rounded-3xl border border-[var(--care-border)] bg-[var(--care-glass)] p-6 shadow-sm backdrop-blur-xl transition hover:border-[var(--brand)]">
+            <article key={a.slug} id={a.slug} className="liquid-glass care-glass rounded-3xl border border-[var(--health-ui-border)] bg-[var(--care-glass)] p-6 shadow-sm backdrop-blur-xl transition hover:border-[var(--brand)]">
               <p className="text-[10px] font-bold uppercase tracking-wider text-[var(--brand)]">
                 {a.category} · {a.readTime}
               </p>
