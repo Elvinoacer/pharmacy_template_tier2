@@ -50,14 +50,14 @@ export default async function MedicationCounsellingSlugPage({ params }: Props) {
           <div className="flex flex-col items-start gap-3 sm:flex-row sm:items-center sm:justify-between">
             <Link
               href="/health/counselling"
-              className="inline-flex min-h-10 w-full items-center gap-1.5 rounded-xl border border-teal-900/10 bg-white px-3 py-2 text-xs font-bold text-teal-800 transition hover:bg-teal-50 sm:min-h-0 sm:w-auto sm:border-0 sm:bg-transparent sm:px-0 sm:py-0 sm:hover:bg-transparent sm:hover:underline"
+              className="inline-flex min-h-10 w-full items-center gap-1.5 rounded-xl border border-[var(--health-ui-border)] bg-[var(--card)] px-3 py-2 text-xs font-bold text-[var(--brand-deep)] transition hover:bg-[var(--card-elev)] sm:min-h-0 sm:w-auto sm:border-0 sm:bg-transparent sm:px-0 sm:py-0 sm:hover:bg-transparent sm:hover:underline"
             >
               <ArrowLeft className="h-4 w-4 shrink-0" /> Back to Counselling Hub
             </Link>
 
             <Link
               href={`/medicines/${profile.medicineKey}`}
-              className="inline-flex min-h-10 w-full items-center justify-center rounded-xl border border-teal-900/10 bg-white px-3 py-2 text-center text-xs font-bold text-teal-800 transition hover:bg-teal-50 sm:min-h-0 sm:w-auto sm:border-0 sm:bg-transparent sm:px-0 sm:py-0 sm:text-left sm:hover:bg-transparent sm:hover:underline"
+              className="inline-flex min-h-10 w-full items-center justify-center rounded-xl border border-[var(--health-ui-border)] bg-[var(--card)] px-3 py-2 text-center text-xs font-bold text-[var(--brand-deep)] transition hover:bg-[var(--card-elev)] sm:min-h-0 sm:w-auto sm:border-0 sm:bg-transparent sm:px-0 sm:py-0 sm:text-left sm:hover:bg-transparent sm:hover:underline"
             >
               View Catalogue Stock &amp; Refills →
             </Link>
@@ -70,11 +70,11 @@ export default async function MedicationCounsellingSlugPage({ params }: Props) {
           {(profile.specialDosageForm || profile.device) && (
             <div>
               <div className="mb-4">
-                <span className="text-[11px] font-bold uppercase tracking-wider text-teal-800">
+                <span className="text-[11px] font-bold uppercase tracking-wider text-[var(--brand-deep)]">
                   Technique Demonstration
                 </span>
                 <h3
-                  className="text-xl font-bold text-[#0c1a14]"
+                  className="text-xl font-bold text-[var(--foreground)]"
                   style={{ fontFamily: "var(--font-display), serif" }}
                 >
                   Step-by-Step Technique for this Medication
