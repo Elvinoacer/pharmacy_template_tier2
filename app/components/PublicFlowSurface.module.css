@@ -175,13 +175,13 @@
 .surface[data-flow="storefront"] :global(.glass-panel),
 .surface[data-flow="storefront"] :global(.glass-panel-strong) {
   color: var(--foreground);
-  border-color: color-mix(in srgb, var(--foreground) 55%, var(--card)) !important;
+  border-color: color-mix(in srgb, var(--foreground) 60%, var(--card)) !important;
   background: color-mix(in srgb, var(--card) 88%, transparent) !important;
 }
 
 .surface[data-flow="storefront"] :global(.hero-badge) {
-  color: var(--brand-deep) !important;
-  border-color: color-mix(in srgb, var(--foreground) 55%, var(--card)) !important;
+  color: var(--tenant-brand-text, var(--brand-deep)) !important;
+  border-color: color-mix(in srgb, var(--foreground) 60%, var(--card)) !important;
   background: color-mix(in srgb, var(--card) 88%, transparent) !important;
 }
 
@@ -203,7 +203,7 @@
 }
 
 :global(html[data-theme="dark"]) .surface[data-flow="storefront"] :global(.hero-badge) {
-  color: #99f6e4 !important;
+  color: var(--tenant-brand-text, #99f6e4) !important;
   background: rgba(8, 34, 28, 0.88) !important;
 }
 
