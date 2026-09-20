@@ -362,8 +362,8 @@ export default function SelfCareTriageClient() {
             </div>
 
             {/* Live Triage Outcome Right */}
-            <div className="flex flex-col justify-between rounded-3xl border-2 p-6 shadow-md md:p-8 transition-all duration-300"
-              style={{ borderColor: quizOutcome.tier === 3 ? "#fda4af" : quizOutcome.tier === 2 ? "#fde68a" : "#a7f3d0" }}
+            <div
+              className={`flex flex-col justify-between rounded-3xl border-2 p-6 shadow-md transition-all duration-300 md:p-8 ${quizOutcome.bg}`}
             >
               <div>
                 <span className="inline-block rounded-full px-3 py-1 text-xs font-bold uppercase tracking-wider bg-white shadow-xs border">
@@ -430,7 +430,7 @@ export default function SelfCareTriageClient() {
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
                   placeholder="Search symptom or condition (e.g., headache, fever, dry cough, acid reflux, rash, burn, diarrhea, colic)..."
-                  className="w-full rounded-2xl border border-[#d2dfd8] bg-white py-3.5 pl-12 pr-4 text-sm text-[#0c1a14] placeholder-[#8a9a92] shadow-inner focus:border-teal-600 focus:outline-none focus:ring-2 focus:ring-teal-600/20"
+                  className="w-full rounded-2xl border border-[#d2dfd8] bg-white py-3.5 pl-12 pr-4 text-sm text-[#0c1a14] placeholder:text-[var(--muted)] shadow-inner focus:border-teal-600 focus:outline-none focus:ring-2 focus:ring-teal-600/20"
                 />
               </div>
 
@@ -511,7 +511,7 @@ export default function SelfCareTriageClient() {
                           </div>
                           <ChevronRight
                             className={`h-5 w-5 shrink-0 mt-1 transition ${
-                              isActive ? "text-teal-700 translate-x-1" : "text-[#b0c0b8]"
+                              isActive ? "text-teal-700 translate-x-1" : "text-[var(--muted)]"
                             }`}
                           />
                         </div>
