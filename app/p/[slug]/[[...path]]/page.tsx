@@ -14,7 +14,6 @@ import HealthScreeningsPage from "@/app/screenings/page";
 import PreventivePage from "@/app/preventive/page";
 import HowDoYouFeelPage from "@/app/how-do-you-feel/page";
 import type { Metadata } from "next";
-import type { CSSProperties } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
@@ -137,10 +136,9 @@ export default async function PublicStorefrontPage({ params, searchParams }: Pro
     const url = new URL(p.mapsEmbed);
     if (url.protocol === "https:" && ["www.google.com", "maps.google.com"].includes(url.hostname)) mapsEmbed = url.href;
   } catch {}
-  const brand = /^#(?:[\da-f]{3}|[\da-f]{6})$/i.test(p.brandPrimary || "") ? p.brandPrimary : undefined;
   const pageLink = (next: number) => `${base}/medicines?${new URLSearchParams({ ...(q ? { q } : {}), page: String(next) })}`;
   return (
-    <div className={styles.storefront} style={{ "--shop-accent": brand || "var(--brand)" } as CSSProperties}>
+    <div className={styles.storefront}>
       <header className={styles.header}>
         <Link href={base} className={styles.identity}>
           {p.logoUrl ? <Image src={p.logoUrl} alt="" width={40} height={40} unoptimized /> : <Store size={28} aria-hidden />}
