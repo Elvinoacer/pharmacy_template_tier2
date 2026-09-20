@@ -83,7 +83,7 @@ export function FormSuccess({
   actions?: React.ReactNode;
 }) {
   return (
-    <div className="rounded-2xl border border-[var(--line-2)] bg-[var(--card-elev)] p-5 text-center shadow-sm sm:rounded-3xl sm:p-8">
+    <div className="rounded-2xl border border-[color-mix(in_srgb,var(--foreground)_60%,var(--card))] bg-[var(--card-elev)] p-5 text-center shadow-sm sm:rounded-3xl sm:p-8">
       <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-[var(--brand-soft)] text-[var(--brand)] sm:h-14 sm:w-14">
         <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" aria-hidden="true">
           <path d="M5 12l5 5L20 7" strokeLinecap="round" strokeLinejoin="round" />
