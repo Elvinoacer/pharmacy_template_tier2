@@ -96,3 +96,17 @@
     border-radius: 1.2rem;
   }
 }
+
+
+.surface :global(button:focus-visible),
+.surface :global(a:focus-visible),
+.surface :global(input:focus-visible),
+.surface :global(select:focus-visible),
+.surface :global(textarea:focus-visible) {
+  outline: 3px solid var(--brand);
+  outline-offset: 3px;
+}
+
+.surface :global(button:disabled) {
+  opacity: 1;
+}
