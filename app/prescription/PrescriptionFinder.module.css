@@ -7,7 +7,7 @@
   display: flex;
   list-style: none;
   gap: 24px;
-  border-block: 1px solid var(--line-2);
+  border-block: 1px solid color-mix(in srgb, var(--foreground) 60%, var(--card));
   padding: 18px 0;
   margin: 0 0 28px;
 }
@@ -23,18 +23,29 @@
   width: 25px;
   display: grid;
   place-items: center;
+  border: 1px solid color-mix(in srgb, var(--foreground) 60%, var(--card));
   border-radius: 50%;
   background: var(--card-elev);
   font-size: 10px;
   font-weight: 750;
 }
 .steps [aria-current] {
-  color: var(--brand);
+  color: var(--foreground);
   font-weight: 750;
 }
 .steps [aria-current] > span {
   color: var(--background);
   background: var(--foreground);
+  border-color: var(--foreground);
+}
+.steps [data-complete="true"] {
+  color: var(--brand-deep);
+  font-weight: 700;
+}
+.steps [data-complete="true"] > span {
+  color: var(--background);
+  background: var(--brand);
+  border-color: var(--brand);
 }
 .workspace {
   display: grid;
@@ -48,7 +59,7 @@
   padding: 30px;
   background: var(--care-glass);
   backdrop-filter: blur(25px);
-  border: 1px solid var(--care-border);
+  border: 1px solid color-mix(in srgb, var(--foreground) 60%, var(--card));
   box-shadow: 0 16px 50px #1637250d;
   border-radius: 28px;
 }
@@ -61,7 +72,7 @@
 .uploadIcon {
   height: 61px;
   width: 61px;
-  border: 1px solid var(--care-border);
+  border: 1px solid color-mix(in srgb, var(--foreground) 60%, var(--card));
   border-radius: 19px;
   display: grid;
   place-items: center;
@@ -115,7 +126,7 @@
   max-height: 140px;
   overflow: hidden;
   border-radius: 16px;
-  border: 1px solid var(--line-2);
+  border: 1px solid color-mix(in srgb, var(--foreground) 60%, var(--card));
   background: var(--card-elev);
   margin: 0 0 16px;
 }
@@ -139,7 +150,7 @@
   min-height: 51px;
   padding: 14px 23px;
   border-radius: 13px;
-  border: 1px solid var(--line-2);
+  border: 1px solid color-mix(in srgb, var(--foreground) 60%, var(--card));
   background: var(--care-glass);
   color: var(--foreground);
   font-size: 12px;
@@ -154,7 +165,7 @@
   gap: 10px;
   position: relative;
   overflow: hidden;
-  border: 1px solid var(--line-2);
+  border: 1px solid color-mix(in srgb, var(--foreground) 60%, var(--card));
   border-radius: 13px;
   background: var(--care-glass);
   color: var(--foreground);
@@ -171,8 +182,26 @@
   opacity: 0;
   cursor: pointer;
 }
+.fileLabel:hover:not(:has(input:disabled)),
+.secondaryBtn:hover {
+  border-color: var(--brand);
+  background: var(--card-elev);
+}
+.fileLabel:active:not(:has(input:disabled)),
+.secondaryBtn:active {
+  transform: scale(.99);
+}
+.fileLabel:has(input:disabled) {
+  cursor: wait;
+  background: var(--card-elev);
+  color: var(--muted);
+  border-color: color-mix(in srgb, var(--foreground) 60%, var(--card));
+}
+.fileLabel:has(input:disabled) input {
+  cursor: wait;
+}
 .fileLabel:focus-within {
-  outline: 2px solid var(--brand);
+  outline: 3px solid var(--brand);
   outline-offset: 3px;
 }
 .upload small {
@@ -202,7 +231,7 @@
 .form textarea,
 .location {
   width: 100%;
-  border: 1px solid var(--line-2);
+  border: 1px solid color-mix(in srgb, var(--foreground) 60%, var(--card));
   border-radius: 14px;
   background: var(--card-elev);
   padding: 14px;
@@ -249,9 +278,18 @@
   font-size: 12px;
   font-weight: 650;
 }
+.primary:hover:not(:disabled) {
+  filter: brightness(.92);
+}
+.primary:active:not(:disabled) {
+  transform: scale(.99);
+}
 .primary:disabled {
-  opacity: 0.6;
+  opacity: 1;
   cursor: wait;
+  border: 1px solid color-mix(in srgb, var(--foreground) 60%, var(--card));
+  background: var(--card-elev);
+  color: var(--muted);
 }
 .notice,
 .error {
@@ -261,16 +299,17 @@
   font-size: 12px;
   line-height: 1.9;
   background: var(--brand-soft);
-  border: 1px solid var(--line-2);
+  border: 1px solid color-mix(in srgb, var(--foreground) 60%, var(--card));
 }
 .error {
+  border-color: color-mix(in srgb, #c2410c 68%, var(--card));
   background: color-mix(in srgb, #f97316 10%, var(--card));
   color: color-mix(in srgb, #9a3412 84%, var(--foreground));
 }
 
 :global(html[data-theme="dark"]) .error {
   background: rgba(249, 115, 22, .14);
-  border-color: rgba(251, 146, 60, .34);
+  border-color: color-mix(in srgb, #fb923c 62%, var(--card));
   color: #fed7aa;
 }
 .results {
@@ -297,7 +336,7 @@
   justify-content: space-between;
   gap: 12px;
   padding-bottom: 24px;
-  border-bottom: 1px solid var(--line-2);
+  border-bottom: 1px solid color-mix(in srgb, var(--foreground) 60%, var(--card));
 }
 .offerHead > span {
   display: flex;
@@ -305,8 +344,9 @@
   gap: 7px;
   font-size: 11px;
   font-weight: 650;
+  border: 1px solid color-mix(in srgb, var(--foreground) 60%, var(--card));
   background: var(--brand-soft);
-  color: var(--brand);
+  color: var(--brand-deep);
   border-radius: 25px;
   padding: 9px 13px;
 }
@@ -323,7 +363,7 @@
   justify-content: space-between;
   gap: 16px;
   padding: 24px 0;
-  border-bottom: 1px solid var(--line);
+  border-bottom: 1px solid color-mix(in srgb, var(--foreground) 60%, var(--card));
 }
 .lines li > div > span {
   font-size: 8px;
@@ -346,6 +386,8 @@
 }
 .lines strong {
   font-size: 13px;
+  font-weight: 800;
+  color: var(--foreground);
   white-space: nowrap;
 }
 .supplier {
@@ -354,7 +396,7 @@
   justify-content: space-between;
   gap: 20px;
   background: var(--brand-tint);
-  border: 1px solid var(--line);
+  border: 1px solid color-mix(in srgb, var(--foreground) 60%, var(--card));
   border-radius: 16px;
   padding: 18px;
   margin: 23px 0 10px;
@@ -405,7 +447,7 @@
   flex-wrap: wrap;
   padding: 26px 0;
   margin-top: 40px;
-  border-top: 1px solid var(--line-2);
+  border-top: 1px solid color-mix(in srgb, var(--foreground) 60%, var(--card));
 }
 .footer a {
   display: flex;
@@ -492,3 +534,35 @@
   }
 }
 .upload, .form, .offer, .request, .uploadIcon { position: relative; }
+
+
+.form textarea::placeholder,
+.location input::placeholder {
+  color: var(--muted);
+  opacity: 1;
+}
+
+.offer a,
+.supplier a,
+.footer a,
+.back {
+  text-decoration-thickness: .08em;
+  text-underline-offset: .18em;
+}
+
+.offer a:hover,
+.supplier a:hover,
+.footer a:hover,
+.back:hover {
+  color: var(--foreground);
+  text-decoration: underline;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .primary,
+  .secondaryBtn,
+  .fileLabel {
+    transition: none;
+    transform: none !important;
+  }
+}
