@@ -108,6 +108,52 @@ export function normalizePromotionCode(rawCode: string) {
     .toUpperCase();
 }
 
+async function findPromotionByNormalizedCode(
+  tx: Prisma.TransactionClient,
+  code: string,
+  activeOnly = true,
+) {
+  // pharmacy_promotions is FORCE-RLS/platform-only. Keep the exact-code lookup
+  // inside the explicit platform transaction and resolve the row id with raw SQL.
+  // This avoids relying on Prisma's case-insensitive filter translation at the
+  // security boundary used by tenant onboarding.
+  const rows = activeOnly
+    ? await tx.$queryRaw<Array<{ id: string }>>`
+        SELECT id
+        FROM pharmacy_promotions
+        WHERE active = true
+          AND upper(code) = ${code}
+        LIMIT 1
+        FOR UPDATE
+      `
+    : await tx.$queryRaw<Array<{ id: string }>>`
+        SELECT id
+        FROM pharmacy_promotions
+        WHERE upper(code) = ${code}
+        LIMIT 1
+        FOR UPDATE
+      `;
+
+  if (!rows[0]) return null;
+  return tx.pharmacyPromotion.findUnique({ where: { id: rows[0].id } });
+}
+
+export async function assertPromotionCodeRedeemable(
+  promotionId: string,
+  rawCode: string,
+) {
+  const code = normalizePromotionCode(rawCode);
+  return withPlatformTx(async (tx) => {
+    const promotion = await findPromotionByNormalizedCode(tx, code, true);
+    if (!promotion || promotion.id !== promotionId) {
+      throw new Error(
+        `Promotion code "${code}" was created but could not be read back as active. The promotion was not issued to pharmacies.`,
+      );
+    }
+    return promotion;
+  });
+}
+
 export async function claimPromotion(
   pharmacyId: string,
   promoCode?: string | null,
@@ -126,15 +172,9 @@ export async function claimPromotion(
     // If a specific promo code was provided, look it up by code
     if (promoCode && promoCode.trim()) {
       const code = normalizePromotionCode(promoCode);
-      const promoByCode = await tx.pharmacyPromotion.findFirst({
-        where: {
-          active: true,
-          code: { equals: code, mode: "insensitive" },
-          claimed: { lt: db.pharmacyPromotion.fields.capacity },
-        },
-      });
+      const promoByCode = await findPromotionByNormalizedCode(tx, code, true);
 
-      if (promoByCode) {
+      if (promoByCode && promoByCode.claimed < promoByCode.capacity) {
         const discounts = promotionFeeDiscounts(promoByCode);
         if (prior) {
           if (prior.promotionId === promoByCode.id) return prior;
@@ -209,16 +249,17 @@ export async function applyPromoCode(pharmacyId: string, rawCode: string) {
 
   return withPlatformTx(async (tx) => {
     await tx.$queryRaw`SELECT id FROM pharmacies WHERE id = ${pharmacyId}::uuid FOR UPDATE`;
-    const promotion = await tx.pharmacyPromotion.findFirst({
-      where: {
-        active: true,
-        code: { equals: code, mode: "insensitive" },
-      },
-    });
+    const promotion = await findPromotionByNormalizedCode(tx, code, true);
 
     if (!promotion) {
+      const stoppedPromotion = await findPromotionByNormalizedCode(tx, code, false);
+      if (stoppedPromotion) {
+        throw new Error(
+          `Promotional code "${code}" exists but has been stopped and can no longer be redeemed.`,
+        );
+      }
       throw new Error(
-        `Promotional code "${code}" was not found or is no longer active.`,
+        `Promotional code "${code}" was not found. Ask the platform team to confirm that the code is listed as active before retrying.`,
       );
     }
     const prior = await tx.pharmacyPromotionGrant.findUnique({
@@ -418,68 +459,3 @@ export async function ensureBundleInvoice(pharmacyId: string) {
               pharmacyId,
               number: `KYP-${pharmacyId}`,
               periodStart: pharmacy.createdAt,
-              periodEnd: pharmacy.createdAt,
-              dueAt: new Date(),
-              subtotalKes: VERIFICATION_FEE_KES,
-              totalKes: 0,
-              status: "paid",
-              paidAt: new Date(),
-              items: {
-                create: [
-                  {
-                    description: "One-time pharmacy verification (bundled)",
-                    quantity: 1,
-                    unitKes: VERIFICATION_FEE_KES,
-                    totalKes: VERIFICATION_FEE_KES,
-                  },
-                  {
-                    description: "Bundled verification waiver",
-                    quantity: 1,
-                    unitKes: -VERIFICATION_FEE_KES,
-                    totalKes: -VERIFICATION_FEE_KES,
-                  },
-                ],
-              },
-            },
-          });
-        }
-
-        return invoice;
-      },
-      { timeout: 30000, maxWait: 15000 },
-    );
-  });
-}
-
-export async function startPharmacyService(pharmacyId: string) {
-  return withPharmacy(pharmacyId, async () => {
-    await ensureDefaultPlans();
-    const plan = await db.plan.findUniqueOrThrow({
-      where: { slug: "starter" },
-    });
-    const sub = await db.$transaction(
-      async (tx) => {
-        await tx.$queryRaw`SELECT id FROM pharmacies WHERE id = ${pharmacyId}::uuid FOR UPDATE`;
-        const existing = await tx.subscription.findFirst({
-          where: { pharmacyId, status: { not: "cancelled" } },
-          orderBy: { createdAt: "desc" },
-        });
-        if (existing) return existing;
-        const start = new Date();
-        return tx.subscription.create({
-          data: {
-            pharmacyId,
-            planId: plan.id,
-            status: "past_due",
-            startedAt: start,
-            currentPeriodStart: start,
-            currentPeriodEnd: nextBillingMonth(start),
-          },
-        });
-      },
-      { timeout: 30000, maxWait: 15000 },
-    );
-    await syncEntitlementsFromPlan(pharmacyId, plan.id);
-    return issueSubscriptionInvoice(sub.id);
-  });
-}
