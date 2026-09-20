@@ -1,5 +1,5 @@
 .surface {
-  --medicine-ui-border: color-mix(in srgb, var(--foreground) 55%, var(--card));
+  --medicine-ui-border: color-mix(in srgb, var(--foreground) 60%, var(--card));
   width: 100%;
   min-width: 0;
   min-height: 100%;
