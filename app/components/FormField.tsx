@@ -2,7 +2,7 @@ import type { InputHTMLAttributes, SelectHTMLAttributes, TextareaHTMLAttributes 
 
 const labelClass = "mb-1.5 block text-sm font-medium text-[var(--foreground)]";
 const inputClass =
-  "w-full min-w-0 rounded-xl border border-[color-mix(in_srgb,var(--foreground)_55%,var(--card-elev))] bg-[var(--card-elev)] px-3.5 py-3 text-base text-[var(--foreground)] shadow-sm outline-none transition-colors placeholder:text-[var(--muted)] focus:border-[var(--brand)] focus:bg-[var(--card)] focus:ring-2 focus:ring-[color-mix(in_srgb,var(--brand)_28%,transparent)] disabled:cursor-not-allowed disabled:border-[color-mix(in_srgb,var(--foreground)_30%,var(--card-elev))] disabled:bg-[color-mix(in_srgb,var(--foreground)_7%,var(--card-elev))] disabled:text-[var(--muted)] disabled:opacity-100 sm:px-4 sm:text-sm";
+  "w-full min-w-0 rounded-xl border border-[color-mix(in_srgb,var(--foreground)_60%,var(--card-elev))] bg-[var(--card-elev)] px-3.5 py-3 text-base text-[var(--foreground)] shadow-sm outline-none transition-colors placeholder:text-[var(--muted)] focus:border-[var(--brand)] focus:bg-[var(--card)] focus:ring-2 focus:ring-[color-mix(in_srgb,var(--brand)_28%,transparent)] disabled:cursor-not-allowed disabled:border-[color-mix(in_srgb,var(--foreground)_48%,var(--card-elev))] disabled:bg-[color-mix(in_srgb,var(--foreground)_7%,var(--card-elev))] disabled:text-[var(--muted)] disabled:opacity-100 sm:px-4 sm:text-sm";
 
 export function FieldLabel({
   htmlFor,
