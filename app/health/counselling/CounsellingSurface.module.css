@@ -1,4 +1,6 @@
 .surface {
+  --health-ui-border: color-mix(in srgb, var(--foreground) 60%, var(--card));
+  --health-editorial-body: color-mix(in srgb, var(--foreground) 22%, var(--muted));
   min-width: 0;
   overflow-x: clip;
   color: var(--foreground);
@@ -24,14 +26,79 @@
 .surface :global(select),
 .surface :global(textarea) {
   max-width: 100%;
-  border-color: var(--line-2) !important;
+  border-color: var(--health-ui-border) !important;
   background: var(--card) !important;
   color: var(--foreground) !important;
 }
 
 .surface :global(input::placeholder),
 .surface :global(textarea::placeholder) {
-  color: var(--muted-2);
+  color: var(--muted);
+}
+
+
+.surface :global([class~="bg-white"]),
+.surface :global([class*="bg-white/"]) {
+  background-color: var(--card) !important;
+}
+
+.surface :global([class~="bg-[#fbfdfb]"]),
+.surface :global([class~="bg-[#f8faf9]"]),
+.surface :global([class~="bg-[#eef5f1]"]) {
+  background-color: var(--card-elev) !important;
+}
+
+.surface :global([class~="text-[#0c1a14]"]),
+.surface :global([class~="text-[#2c3e35]"]),
+.surface :global([class~="text-[#4a5b52]"]) {
+  color: var(--foreground) !important;
+}
+
+.surface :global([class~="text-[#5a6b62]"]) {
+  color: var(--health-editorial-body) !important;
+}
+
+.surface :global([class~="text-[#8a9a92]"]) {
+  color: var(--muted) !important;
+}
+
+.surface :global([class~="border-[#cfe0d8]"]),
+.surface :global([class~="border-[#d2dfd8]"]),
+.surface :global([class~="border-[#e3ebe6]"]),
+.surface :global([class*="border-teal-900/"]) {
+  border-color: var(--health-ui-border) !important;
+}
+
+.surface :global([class*="border-[var(--line-2)]"]),
+.surface :global([class*="border-[var(--care-border)]"]) {
+  border-color: var(--health-ui-border) !important;
+}
+
+.surface :global([class*="border-emerald-200"]),
+.surface :global([class*="border-emerald-300"]) {
+  border-color: color-mix(in srgb, #047857 68%, var(--card)) !important;
+}
+
+.surface :global([class*="border-purple-200"]),
+.surface :global([class*="border-purple-300"]) {
+  border-color: color-mix(in srgb, #7e22ce 68%, var(--card)) !important;
+}
+
+.surface :global(a:focus-visible),
+.surface :global(button:focus-visible),
+.surface :global(input:focus-visible),
+.surface :global(select:focus-visible),
+.surface :global(textarea:focus-visible) {
+  outline: 3px solid var(--brand);
+  outline-offset: 3px;
+}
+
+.surface :global(p a) {
+  color: var(--brand-deep);
+  font-weight: 700;
+  text-decoration: underline;
+  text-decoration-thickness: .08em;
+  text-underline-offset: .18em;
 }
 
 :global(html[data-theme="dark"]) .surface :global(.bg-white),
@@ -45,7 +112,7 @@
 }
 
 :global(html[data-theme="dark"]) .surface :global([class~="text-[#5a6b62]"]) {
-  color: var(--muted) !important;
+  color: var(--health-editorial-body) !important;
 }
 
 :global(html[data-theme="dark"]) .surface :global([class*="from-purple-50"]) {
@@ -73,17 +140,17 @@
 
 :global(html[data-theme="dark"]) .surface :global(.border-purple-200),
 :global(html[data-theme="dark"]) .surface :global(.border-purple-300) {
-  border-color: rgba(216, 180, 254, .34) !important;
+  border-color: color-mix(in srgb, #d8b4fe 62%, var(--card)) !important;
 }
 
 :global(html[data-theme="dark"]) .surface :global(.border-emerald-200),
 :global(html[data-theme="dark"]) .surface :global(.border-emerald-300) {
-  border-color: rgba(52, 211, 153, .34) !important;
+  border-color: color-mix(in srgb, #34d399 62%, var(--card)) !important;
 }
 
 :global(html[data-theme="dark"]) .surface :global(.border-teal-200),
 :global(html[data-theme="dark"]) .surface :global([class*="border-teal-900/"]) {
-  border-color: rgba(45, 212, 191, .34) !important;
+  border-color: var(--health-ui-border) !important;
 }
 
 :global(html[data-theme="dark"]) .surface :global([class*="bg-purple-50/"]),
