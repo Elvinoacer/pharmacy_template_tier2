@@ -375,7 +375,7 @@ export default function MedicinesDirectory({
             <span>Prescription Required</span>
           </button>
 
-          <div className="h-4 w-px bg-[var(--line-2)] shrink-0 mx-1" />
+          <div className="h-4 w-px bg-[color-mix(in_srgb,var(--foreground)_48%,var(--card))] shrink-0 mx-1" />
 
           {/* All Categories Chip */}
           <button
