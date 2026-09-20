@@ -149,14 +149,14 @@ export default function NetworkMedicineComparison({
   return (
     <div className="mt-6">
       {/* Toolbar controls */}
-      <div className="flex flex-wrap items-center justify-between gap-3 border-b border-[var(--line-2)] pb-4">
+      <div className="flex flex-wrap items-center justify-between gap-3 border-b border-[var(--medicine-ui-border)] pb-4">
         <div className="flex flex-wrap items-center gap-2">
           {/* Near me button */}
           <button
             type="button"
             onClick={requestLocation}
             disabled={locationState === "loading"}
-            className="inline-flex h-9 items-center justify-center gap-1.5 rounded-xl bg-[var(--brand)] px-3 text-xs font-bold text-[var(--background)] shadow-sm transition hover:brightness-95 disabled:opacity-60"
+            className="inline-flex h-9 items-center justify-center gap-1.5 rounded-xl bg-[var(--brand)] px-3 text-xs font-bold text-[var(--background)] shadow-sm transition hover:brightness-95 disabled:cursor-not-allowed disabled:opacity-100 disabled:border disabled:border-[var(--medicine-ui-border)] disabled:bg-[color-mix(in_srgb,var(--foreground)_10%,var(--card))] disabled:text-[var(--foreground)]"
           >
             <LocateFixed className="h-3.5 w-3.5" aria-hidden />
             <span>
@@ -174,8 +174,8 @@ export default function NetworkMedicineComparison({
             onClick={() => setFilterInStock((v) => !v)}
             className={`inline-flex h-9 items-center gap-1.5 rounded-xl px-3 text-xs font-semibold transition border ${
               filterInStock
-                ? "border-emerald-600 bg-emerald-600 text-white shadow-xs"
-                : "border-[var(--line-2)] bg-[var(--card)] text-[var(--muted)] hover:text-[var(--foreground)]"
+                ? "border-emerald-700 bg-emerald-700 text-white shadow-xs"
+                : "border-[var(--medicine-ui-border)] bg-[var(--card)] text-[var(--muted)] hover:text-[var(--foreground)]"
             }`}
           >
             <PackageCheck className="h-3.5 w-3.5" />
@@ -189,7 +189,7 @@ export default function NetworkMedicineComparison({
             value={sort}
             onChange={(e) => setSort(e.target.value as typeof sort)}
             aria-label="Sort pharmacy listings"
-            className="h-9 rounded-xl border border-[var(--line-2)] bg-[var(--card)] px-2.5 text-xs font-semibold text-[var(--foreground)] outline-none focus:border-[var(--brand)]"
+            className="h-9 rounded-xl border border-[var(--medicine-ui-border)] bg-[var(--card)] px-2.5 text-xs font-semibold text-[var(--foreground)] outline-none focus:border-[var(--brand)]"
           >
             <option value="stock">In Stock First</option>
             <option value="near" disabled={!position}>
@@ -201,7 +201,7 @@ export default function NetworkMedicineComparison({
           </select>
 
           {/* View Mode Switcher */}
-          <div className="flex h-9 items-center rounded-xl border border-[var(--line-2)] bg-[var(--card)] p-0.5">
+          <div className="flex h-9 items-center rounded-xl border border-[var(--medicine-ui-border)] bg-[var(--card)] p-0.5">
             <button
               type="button"
               onClick={() => setViewMode("list")}
@@ -243,7 +243,7 @@ export default function NetworkMedicineComparison({
           />
         </div>
       ) : filteredListings.length === 0 ? (
-        <div className="mt-5 rounded-3xl border border-[var(--line-2)] bg-[var(--card)] p-8 text-center">
+        <div className="mt-5 rounded-3xl border border-[var(--medicine-ui-border)] bg-[var(--card)] p-8 text-center">
           <PackageSearch className="mx-auto h-6 w-6 text-[var(--brand)]" />
           <p className="mt-2 text-sm font-semibold text-[var(--foreground)]">No available listings match your filter</p>
           <button
@@ -267,29 +267,29 @@ export default function NetworkMedicineComparison({
             return (
               <li
                 key={item.id}
-                className="care-glass relative flex flex-col gap-3 rounded-3xl border border-[var(--line-2)] bg-[var(--card)]/90 p-4 sm:p-5 transition hover:border-[var(--brand)]"
+                className="care-glass relative flex flex-col gap-3 rounded-3xl border !border-[var(--medicine-ui-border)] bg-[var(--card-elev)] p-4 shadow-sm transition hover:!border-[var(--brand)] sm:p-5"
               >
                 <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                   <div className="min-w-0">
                     <div className="flex flex-wrap items-center gap-2">
                       <p className="font-bold text-base text-[var(--foreground)]">{item.pharmacy.name}</p>
                       {isNearest && (
-                        <span className="rounded-full bg-teal-500/15 border border-teal-500/30 px-2 py-0.5 text-[9px] font-bold uppercase tracking-wider text-teal-700 dark:text-teal-300">
+                        <span className="rounded-full bg-teal-500/15 border border-teal-700/60 px-2 py-0.5 text-[9px] font-bold uppercase tracking-wider text-teal-800 dark:border-teal-200/50 dark:text-teal-100">
                           Nearest
                         </span>
                       )}
                       {isLowestPrice && (
-                        <span className="rounded-full bg-cyan-500/15 border border-cyan-500/30 px-2 py-0.5 text-[9px] font-bold uppercase tracking-wider text-cyan-700 dark:text-cyan-300">
+                        <span className="rounded-full bg-cyan-500/15 border border-cyan-700/60 px-2 py-0.5 text-[9px] font-bold uppercase tracking-wider text-cyan-800 dark:border-cyan-200/50 dark:text-cyan-100">
                           Best Price
                         </span>
                       )}
                     </div>
 
                     <p className="mt-1 flex items-center gap-1.5 text-xs text-[var(--muted)]">
-                      <MapPin className="h-3.5 w-3.5 text-amber-500 shrink-0" />
+                      <MapPin className="h-3.5 w-3.5 text-amber-700 dark:text-amber-200 shrink-0" />
                       <span>{location || "Kenya"}</span>
                       {item.calculatedDistance != null && (
-                        <span className="font-semibold text-teal-600 dark:text-teal-400">
+                        <span className="font-semibold text-teal-700 dark:text-teal-200">
                           · {distanceLabel(item.calculatedDistance)}
                         </span>
                       )}
@@ -301,7 +301,7 @@ export default function NetworkMedicineComparison({
                       </span>
                       <span
                         className={`text-xs font-semibold ${
-                          available ? "text-emerald-700 dark:text-emerald-300" : "text-rose-700 dark:text-rose-300"
+                          available ? "text-emerald-800 dark:text-emerald-200" : "text-rose-700 dark:text-rose-200"
                         }`}
                       >
                         {available ? `${item.availableStock} in stock` : "Currently unavailable"}
@@ -315,7 +315,7 @@ export default function NetworkMedicineComparison({
                         href={`https://www.google.com/maps/dir/?api=1&destination=${item.pharmacy.latitude},${item.pharmacy.longitude}`}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="inline-flex h-10 w-10 items-center justify-center rounded-2xl border border-[var(--line-2)] text-[var(--muted)] hover:text-[var(--brand)] hover:bg-[var(--brand-soft)] transition"
+                        className="inline-flex h-10 w-10 items-center justify-center rounded-2xl border border-[var(--medicine-ui-border)] text-[var(--muted)] hover:text-[var(--brand)] hover:bg-[var(--brand-soft)] transition"
                         title="Get directions"
                         aria-label="Get directions"
                       >
@@ -326,7 +326,7 @@ export default function NetworkMedicineComparison({
                     {phoneHref && (
                       <a
                         href={phoneHref}
-                        className="inline-flex h-10 w-10 items-center justify-center rounded-2xl border border-[var(--line-2)] text-[var(--muted)] hover:text-[var(--brand)] hover:bg-[var(--brand-soft)] transition"
+                        className="inline-flex h-10 w-10 items-center justify-center rounded-2xl border border-[var(--medicine-ui-border)] text-[var(--muted)] hover:text-[var(--brand)] hover:bg-[var(--brand-soft)] transition"
                         title="Call pharmacy"
                         aria-label="Call pharmacy"
                       >
@@ -339,7 +339,7 @@ export default function NetworkMedicineComparison({
                         href={whatsappHref}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="inline-flex h-10 w-10 items-center justify-center rounded-2xl border border-[var(--line-2)] text-[var(--muted)] hover:text-[var(--brand)] hover:bg-[var(--brand-soft)] transition"
+                        className="inline-flex h-10 w-10 items-center justify-center rounded-2xl border border-[var(--medicine-ui-border)] text-[var(--muted)] hover:text-[var(--brand)] hover:bg-[var(--brand-soft)] transition"
                         title="WhatsApp pharmacy"
                         aria-label="WhatsApp pharmacy"
                       >
@@ -349,7 +349,7 @@ export default function NetworkMedicineComparison({
 
                     <Link
                       href={`/pharmacies/${item.pharmacy.slug}`}
-                      className="inline-flex h-10 items-center gap-1 rounded-2xl border border-[var(--line-2)] px-3 text-xs font-semibold text-[var(--foreground)] hover:bg-[var(--card-elev)] transition"
+                      className="inline-flex h-10 items-center gap-1 rounded-2xl border border-[var(--medicine-ui-border)] px-3 text-xs font-semibold text-[var(--foreground)] hover:bg-[var(--card-elev)] transition"
                     >
                       <Store className="h-3.5 w-3.5" />
                       <span>Pharmacy Profile</span>
@@ -376,7 +376,7 @@ export default function NetworkMedicineComparison({
                 </div>
 
                 {item.overTheCounter && (
-                  <p className="text-[11px] font-semibold text-emerald-800 dark:text-emerald-300 flex items-center gap-1">
+                  <p className="text-[11px] font-semibold text-emerald-800 dark:text-emerald-200 flex items-center gap-1">
                     <CheckCircle2 className="h-3 w-3" /> Over-The-Counter · No prescription needed
                   </p>
                 )}
