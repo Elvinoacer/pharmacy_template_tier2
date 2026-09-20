@@ -1,4 +1,5 @@
 .healthSurface {
+  --health-ui-border: color-mix(in srgb, var(--foreground) 60%, var(--card));
   position: relative;
   isolation: isolate;
   overflow: clip;
@@ -53,7 +54,7 @@
 }
 
 .heroWrap :global(.page-hero-glass) {
-  border: 1px solid var(--line-2);
+  border: 1px solid var(--health-ui-border);
   background:
     linear-gradient(135deg, color-mix(in srgb, var(--glass-fill) 92%, transparent), color-mix(in srgb, var(--card) 88%, transparent));
   box-shadow: var(--shadow-lg);
@@ -66,7 +67,7 @@
     radial-gradient(circle at 8% 12%, rgba(52, 211, 153, .12), transparent 31%),
     radial-gradient(circle at 92% 18%, rgba(56, 189, 248, .075), transparent 28%),
     linear-gradient(135deg, rgba(15, 39, 30, .84), rgba(8, 24, 18, .82));
-  border-color: rgba(133, 230, 186, .15);
+  border-color: var(--health-ui-border);
   box-shadow:
     0 22px 70px rgba(0, 0, 0, .24),
     0 0 42px rgba(16, 185, 129, .055),
@@ -109,7 +110,7 @@
 .categoryChip {
   flex: 0 0 auto;
   scroll-snap-align: start;
-  border: 1px solid var(--line-2);
+  border: 1px solid var(--health-ui-border);
   border-radius: 9999px;
   background: color-mix(in srgb, var(--glass-fill) 92%, transparent);
   padding: .42rem .72rem;
@@ -124,7 +125,7 @@
 
 :global(html[data-theme="dark"]) .categoryChip {
   color: #b8f3d4;
-  border-color: rgba(110, 231, 183, .18);
+  border-color: var(--health-ui-border);
   background: linear-gradient(135deg, rgba(18, 49, 37, .8), rgba(11, 33, 26, .7));
 }
 
@@ -144,7 +145,7 @@
   grid-template-columns: 6.75rem minmax(0, 1fr);
   min-height: 8.25rem;
   overflow: hidden;
-  border: 1px solid var(--line-2);
+  border: 1px solid var(--health-ui-border);
   border-radius: 1.15rem;
   background: color-mix(in srgb, var(--glass-fill) 94%, transparent);
   color: var(--foreground);
@@ -156,7 +157,7 @@
 
 .articleCard:hover {
   transform: translateY(-2px);
-  border-color: color-mix(in srgb, var(--brand) 38%, var(--line-2));
+  border-color: var(--brand);
   box-shadow: var(--shadow-md);
 }
 
@@ -164,7 +165,7 @@
   background:
     radial-gradient(circle at 12% 8%, rgba(52, 211, 153, .085), transparent 34%),
     linear-gradient(145deg, rgba(15, 42, 31, .82), rgba(8, 27, 21, .76));
-  border-color: rgba(128, 220, 176, .14);
+  border-color: var(--health-ui-border);
   box-shadow:
     0 14px 36px rgba(0, 0, 0, .16),
     inset 0 1px 0 rgba(255, 255, 255, .035);
@@ -253,7 +254,7 @@
   max-width: 48rem;
   margin: 0 auto;
   padding: .75rem;
-  border: 1px solid var(--line-2);
+  border: 1px solid var(--health-ui-border);
   border-radius: 1.35rem;
   background: color-mix(in srgb, var(--glass-fill) 88%, transparent);
   box-shadow: var(--shadow-md);
@@ -265,7 +266,7 @@
   background:
     radial-gradient(circle at 8% 0%, rgba(16, 185, 129, .075), transparent 26%),
     linear-gradient(155deg, rgba(14, 38, 29, .78), rgba(8, 26, 20, .70));
-  border-color: rgba(126, 224, 178, .13);
+  border-color: var(--health-ui-border);
   box-shadow:
     0 24px 64px rgba(0, 0, 0, .22),
     inset 0 1px 0 rgba(255, 255, 255, .035);
@@ -275,7 +276,7 @@
   position: relative;
   aspect-ratio: 16 / 10;
   overflow: hidden;
-  border: 1px solid var(--line-2);
+  border: 1px solid var(--health-ui-border);
   border-radius: 1rem;
   box-shadow: var(--shadow-sm);
 }
@@ -287,7 +288,7 @@
   gap: .38rem .55rem;
   margin-top: .8rem;
   padding: .55rem .65rem;
-  border: 1px solid var(--line);
+  border: 1px solid var(--health-ui-border);
   border-radius: .8rem;
   background: color-mix(in srgb, var(--card) 72%, transparent);
   color: var(--muted);
@@ -305,7 +306,7 @@
 }
 
 .articleCopy p {
-  color: color-mix(in srgb, var(--foreground) 78%, var(--muted) 22%);
+  color: var(--foreground);
   font-size: .86rem;
   line-height: 1.72;
 }
@@ -316,7 +317,7 @@
 
 .disclaimer {
   margin-top: 1.15rem;
-  border: 1px solid color-mix(in srgb, #f59e0b 34%, var(--line-2));
+  border: 1px solid color-mix(in srgb, #b45309 62%, var(--card));
   border-radius: .95rem;
   background: color-mix(in srgb, #f59e0b 9%, var(--card) 91%);
   padding: .85rem;
@@ -326,7 +327,7 @@
 }
 
 :global(html[data-theme="dark"]) .disclaimer {
-  border-color: rgba(251, 191, 36, .21);
+  border-color: color-mix(in srgb, #fbbf24 58%, var(--card));
   background: linear-gradient(135deg, rgba(120, 73, 8, .16), rgba(39, 31, 15, .35));
   color: #f8e7b0;
 }
@@ -372,7 +373,7 @@
 
 .moreCard {
   display: block;
-  border: 1px solid var(--line-2);
+  border: 1px solid var(--health-ui-border);
   border-radius: 1rem;
   background: color-mix(in srgb, var(--glass-fill) 90%, transparent);
   padding: .85rem;
@@ -382,13 +383,13 @@
 
 .moreCard:hover {
   transform: translateY(-2px);
-  border-color: color-mix(in srgb, var(--brand) 35%, var(--line-2));
+  border-color: var(--brand);
   box-shadow: var(--shadow-md);
 }
 
 :global(html[data-theme="dark"]) .moreCard {
   background: linear-gradient(145deg, rgba(17, 43, 33, .76), rgba(8, 27, 20, .7));
-  border-color: rgba(130, 226, 182, .13);
+  border-color: var(--health-ui-border);
 }
 
 .moreCardTitle {
@@ -609,5 +610,37 @@
   .articleImage img,
   .leadImage img {
     transition: none !important;
+  }
+}
+
+
+.healthSurface a:focus-visible,
+.healthSurface button:focus-visible {
+  outline: 3px solid var(--brand);
+  outline-offset: 3px;
+}
+
+.articleCard:focus-visible,
+.moreCard:focus-visible,
+.backLink:focus-visible {
+  border-color: var(--brand);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--brand) 24%, transparent), var(--shadow-md);
+}
+
+.backLink {
+  text-decoration: underline;
+  text-decoration-thickness: .08em;
+  text-underline-offset: .18em;
+}
+
+.disclaimer strong {
+  color: var(--foreground);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .backLink:active,
+  .articleCard:active,
+  .moreCard:active {
+    transform: translateY(0);
   }
 }
