@@ -116,20 +116,24 @@ export function VerificationPaymentStep({
               Have a promotional card or voucher?
             </h3>
           </div>
-          <div className="flex gap-2">
+          <div className="flex flex-col gap-2 sm:flex-row">
             <input
               name="code"
               type="text"
               value={promoCode}
               onChange={(e) => setPromoCode(e.target.value.toUpperCase())}
               placeholder="e.g. AFYVIA2026"
-              className="input-admin uppercase font-mono text-sm flex-1 min-h-10"
+              autoComplete="off"
+              autoCapitalize="characters"
+              spellCheck={false}
+              aria-label="Promotional voucher code"
+              className="input-admin min-h-12 w-full min-w-0 flex-1 uppercase font-mono text-base tracking-wider sm:min-h-10 sm:text-sm"
               disabled={pending}
             />
             <button
               type="submit"
               disabled={pending || !promoCode.trim()}
-              className="btn-primary min-h-10 px-4 text-xs font-semibold shrink-0"
+              className="btn-primary min-h-12 w-full shrink-0 justify-center px-4 text-sm font-semibold sm:min-h-10 sm:w-auto sm:text-xs"
             >
               {pending ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : "Apply voucher"}
             </button>
