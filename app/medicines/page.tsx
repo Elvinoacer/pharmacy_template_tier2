@@ -105,7 +105,7 @@ export default async function MedicinesPage({
           />
 
           {/* Quick Prescription Help Banner */}
-          <div className="care-glass mt-10 rounded-3xl p-4 sm:p-6 text-xs text-[var(--muted)]">
+          <div className="care-glass mt-10 rounded-3xl border !border-[var(--medicine-ui-border)] bg-[var(--card-elev)] p-4 text-xs text-[var(--muted)] sm:p-6">
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
               <div>
                 <p className="font-bold text-[var(--foreground)] text-sm">Have a doctor’s prescription slip?</p>
@@ -116,14 +116,14 @@ export default async function MedicinesPage({
               <div className="flex gap-2 shrink-0">
                 <Link
                   href="/prescription"
-                  className="inline-flex min-h-11 items-center gap-1.5 rounded-xl bg-[var(--brand-soft)] px-3.5 text-xs font-bold text-[var(--brand-deep)] hover:bg-[var(--brand-tint)] transition"
+                  className="inline-flex min-h-11 items-center gap-1.5 rounded-xl border border-[var(--medicine-ui-border)] bg-[var(--brand-soft)] px-3.5 text-xs font-bold text-[var(--brand-deep)] transition hover:border-[var(--brand)] hover:bg-[var(--brand-tint)]"
                 >
                   <FileUp className="h-3.5 w-3.5" />
                   Upload prescription
                 </Link>
                 <Link
                   href="/refill"
-                  className="inline-flex min-h-11 items-center gap-1.5 rounded-xl border border-[var(--line-2)] px-3 text-xs font-semibold text-[var(--foreground)] hover:bg-[var(--card-elev)] transition"
+                  className="inline-flex min-h-11 items-center gap-1.5 rounded-xl border border-[var(--medicine-ui-border)] px-3 text-xs font-semibold text-[var(--foreground)] transition hover:border-[var(--brand)] hover:bg-[var(--card-elev)]"
                 >
                   Request refill
                 </Link>
