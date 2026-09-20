@@ -1,4 +1,5 @@
 .surface {
+  --service-ui-border: color-mix(in srgb, var(--foreground) 60%, var(--card));
   min-width: 0;
   overflow-x: clip;
   background: var(--background);
@@ -19,14 +20,14 @@
 .surface :global(select),
 .surface :global(textarea) {
   max-width: 100%;
-  border-color: var(--line-2) !important;
+  border-color: var(--service-ui-border) !important;
   background-color: var(--card) !important;
   color: var(--foreground) !important;
 }
 
 .surface :global(input::placeholder),
 .surface :global(textarea::placeholder) {
-  color: var(--muted-2);
+  color: var(--muted);
 }
 
 :global(html[data-theme="dark"]) .surface :global(.bg-white),
