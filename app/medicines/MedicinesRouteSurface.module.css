@@ -1,4 +1,5 @@
 .surface {
+  --medicine-ui-border: color-mix(in srgb, var(--foreground) 55%, var(--card));
   width: 100%;
   min-width: 0;
   min-height: 100%;
@@ -70,23 +71,23 @@
 .surface :global([class~="border-[#f0f4f1]"]),
 .surface :global([class~="border-[#d5e3dc]"]),
 .surface :global([class~="border-[#d2dfd8]"]) {
-  border-color: var(--line-2) !important;
+  border-color: var(--medicine-ui-border) !important;
 }
 
 .surface :global(.card-lift) {
-  border-color: var(--line-2) !important;
+  border-color: var(--medicine-ui-border) !important;
   background: var(--card) !important;
   color: var(--foreground);
   box-shadow: var(--shadow-sm);
 }
 
 .surface :global(.card-lift:hover) {
-  border-color: color-mix(in srgb, var(--brand) 42%, var(--line-2)) !important;
+  border-color: color-mix(in srgb, var(--brand) 72%, var(--medicine-ui-border)) !important;
   box-shadow: var(--shadow-md);
 }
 
 .surface :global(.card-lift > div:last-child) {
-  border-color: var(--line) !important;
+  border-color: var(--medicine-ui-border) !important;
   background: var(--card-elev) !important;
 }
 
@@ -96,7 +97,7 @@
   width: 100%;
   max-width: 100%;
   min-width: 0;
-  border-color: var(--line-2) !important;
+  border-color: var(--medicine-ui-border) !important;
   background: var(--card) !important;
   color: var(--foreground) !important;
   color-scheme: light dark;
@@ -104,14 +105,14 @@
 
 .surface :global(input::placeholder),
 .surface :global(textarea::placeholder) {
-  color: var(--muted-2) !important;
+  color: var(--muted) !important;
   opacity: 1;
 }
 
 .surface :global(input:focus),
 .surface :global(select:focus),
 .surface :global(textarea:focus) {
-  border-color: color-mix(in srgb, var(--brand) 58%, var(--line-2)) !important;
+  border-color: var(--brand) !important;
   box-shadow: 0 0 0 3px color-mix(in srgb, var(--brand) 13%, transparent) !important;
 }
 
@@ -124,7 +125,7 @@
 }
 
 .surface :global(.btn-ghost) {
-  border-color: var(--line-2) !important;
+  border-color: var(--medicine-ui-border) !important;
   background: color-mix(in srgb, var(--card) 92%, transparent) !important;
   color: var(--brand-deep) !important;
 }
@@ -141,7 +142,7 @@
    Advisory and search controls
    -------------------------------------------------------------------------- */
 .surface :global(section > .mx-auto.max-w-6xl.space-y-4 > div:first-child) {
-  border-color: color-mix(in srgb, var(--brand) 20%, var(--line-2)) !important;
+  border-color: var(--medicine-ui-border) !important;
   background:
     linear-gradient(
       110deg,
