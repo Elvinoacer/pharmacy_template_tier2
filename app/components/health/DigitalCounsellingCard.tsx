@@ -605,7 +605,7 @@ export default function DigitalCounsellingCard({
                 </p>
               </div>
 
-              <div className="space-y-4 divide-y divide-[var(--line-2)]">
+              <div className="space-y-4 divide-y divide-[var(--health-ui-border)]">
                 <LeafletRow title="1. How to take" content={counselling.howToTake.technique} />
                 <LeafletRow title="2. When to take" content={`${counselling.whenToTake.bestTimeOfDay} — ${counselling.whenToTake.circadianRationale}`} />
                 <LeafletRow title="3. Frequency" content={`${counselling.howOftenToTake.frequencySchedule}. Maximum daily cap: ${counselling.howOftenToTake.maxDailyDose}`} />
@@ -771,7 +771,7 @@ function PillarCard({
           </span>
           <h3 className="font-bold text-[var(--foreground)] text-xs sm:text-sm">{title}</h3>
         </div>
-        <span className="text-[var(--muted-2)] group-hover:scale-110 transition">{icon}</span>
+        <span className="text-[var(--muted)] group-hover:scale-110 transition">{icon}</span>
       </div>
       <div className="mt-3 text-[var(--muted)]">{children}</div>
     </div>
