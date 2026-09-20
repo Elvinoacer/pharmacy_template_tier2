@@ -49,7 +49,7 @@ export default async function VaccineInfoPage({ params }: Props) {
       />
       <section className="px-4 pb-16 sm:px-6">
         <div className="mx-auto grid max-w-6xl gap-8 lg:grid-cols-[1.2fr_0.8fr]">
-          <article className="liquid-glass care-glass space-y-6 rounded-3xl border border-[var(--care-border)] bg-[var(--care-glass)] p-6 shadow-sm backdrop-blur-xl sm:p-8">
+          <article className="liquid-glass care-glass space-y-6 rounded-3xl border border-[var(--public-health-ui-border)] bg-[var(--care-glass)] p-6 shadow-sm backdrop-blur-xl sm:p-8">
             <p className="text-[10px] font-bold uppercase tracking-wider text-[var(--brand)]">
               {VACCINE_CATEGORY_LABELS[v.category as VaccineCategory] || v.category}
               {v.travelRelated ? " · Travel" : ""}
@@ -67,13 +67,13 @@ export default async function VaccineInfoPage({ params }: Props) {
               <p className="mt-2 text-sm leading-relaxed text-[var(--muted)]">{v.indications}</p>
             </div>
             {v.regulatoryNotes && (
-              <div className="rounded-2xl border border-amber-500/20 bg-amber-500/10 p-4 text-sm text-[var(--foreground)]">
-                <p className="font-semibold text-amber-600 dark:text-amber-400">Regulatory note</p>
+              <div className="rounded-2xl border border-amber-700/60 bg-amber-500/10 p-4 text-sm text-[var(--foreground)] dark:border-amber-300/60">
+                <p className="font-semibold text-amber-800 dark:text-amber-200">Regulatory note</p>
                 <p className="mt-1 text-xs leading-relaxed text-[var(--muted)]">{v.regulatoryNotes}</p>
               </div>
             )}
           </article>
-          <aside className="liquid-glass care-glass h-fit space-y-4 rounded-3xl border border-[var(--care-border)] bg-[var(--care-glass)] p-6 shadow-sm backdrop-blur-xl lg:sticky lg:top-28">
+          <aside className="liquid-glass care-glass h-fit space-y-4 rounded-3xl border border-[var(--public-health-ui-border)] bg-[var(--care-glass)] p-6 shadow-sm backdrop-blur-xl lg:sticky lg:top-28">
             <dl className="space-y-3 text-sm">
               <Row k="Antigen" val={v.antigen} />
               <Row k="Route" val={v.route} />
