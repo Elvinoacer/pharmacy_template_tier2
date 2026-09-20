@@ -117,7 +117,7 @@ export default async function RootLayout({ children }: Readonly<{ children: Reac
     : {};
   const tenantStyle: CSSProperties | undefined =
     Object.keys(tenantBrandVars).length > 0
-      ? (tenantBrandVars as CSSProperties)
+      ? (tenantBrandVars as unknown as CSSProperties)
       : undefined;
 
   const storefrontBrand: PublicBrand | null = resolved
