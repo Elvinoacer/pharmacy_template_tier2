@@ -114,7 +114,7 @@ export default function SearchPanel({
           e.preventDefault();
           setTouched(true);
         }}
-        className="liquid-glass care-glass rounded-2xl border border-[var(--care-border)] bg-[var(--care-glass)] p-3 shadow-sm backdrop-blur-xl sm:rounded-3xl sm:p-4"
+        className="liquid-glass care-glass rounded-2xl border !border-[color-mix(in_srgb,var(--foreground)_48%,var(--card))] bg-[var(--card-elev)] p-3 shadow-sm backdrop-blur-xl sm:rounded-3xl sm:p-4"
       >
         <div className="flex min-w-0 flex-col gap-2.5 sm:flex-row sm:items-center">
           <div className="relative min-w-0 flex-1">
@@ -140,7 +140,7 @@ export default function SearchPanel({
                 setTouched(true);
               }}
               placeholder="Search medicines, services, vaccines…"
-              className="min-h-12 w-full min-w-0 rounded-xl border border-[var(--care-border)] bg-[var(--card)] py-3 pl-10 pr-3 text-base text-[var(--foreground)] outline-none transition placeholder:text-[var(--muted-2)] focus:border-[var(--brand)] focus:bg-[var(--card)] focus:ring-2 focus:ring-[color-mix(in_srgb,var(--brand)_16%,transparent)] sm:text-sm"
+              className="min-h-12 w-full min-w-0 rounded-xl border border-[color-mix(in_srgb,var(--foreground)_48%,var(--card))] bg-[var(--card)] py-3 pl-10 pr-3 text-base text-[var(--foreground)] outline-none transition placeholder:text-[var(--muted)] focus:border-[var(--brand)] focus:bg-[var(--card)] focus:ring-2 focus:ring-[color-mix(in_srgb,var(--brand)_16%,transparent)] sm:text-sm"
               aria-label={base ? "Search this pharmacy" : "Search medicines, services, and vaccines"}
             />
           </div>
@@ -165,20 +165,20 @@ export default function SearchPanel({
                   setQuery(suggestion);
                   setTouched(true);
                 }}
-                className="min-h-11 shrink-0 rounded-full border border-[var(--care-border)] bg-[var(--care-glass)] px-3.5 text-xs font-semibold capitalize text-[var(--foreground)] backdrop-blur-md transition hover:border-[var(--brand)] hover:bg-[var(--brand-tint)]"
+                className="min-h-11 shrink-0 rounded-full border border-[color-mix(in_srgb,var(--foreground)_48%,var(--card))] bg-[var(--card-elev)] px-3.5 text-xs font-semibold capitalize text-[var(--foreground)] backdrop-blur-md transition hover:border-[var(--brand)] hover:bg-[var(--brand-tint)]"
               >
                 {suggestion}
               </button>
             ))}
           </div>
-          <p className="mt-3 text-xs leading-5 text-[var(--muted-2)]">
+          <p className="mt-3 text-xs leading-5 text-[var(--muted)]">
             Results come from this pharmacy&apos;s live catalogue plus network health information.
           </p>
         </div>
       )}
 
       {query.trim() && (
-        <div className="mt-5 flex min-w-0 items-center justify-between gap-3 rounded-xl border border-[var(--line)] bg-[var(--card-elev)] px-3.5 py-3 sm:mt-6 sm:px-4">
+        <div className="mt-5 flex min-w-0 items-center justify-between gap-3 rounded-xl border border-[color-mix(in_srgb,var(--foreground)_48%,var(--card))] bg-[var(--card-elev)] px-3.5 py-3 sm:mt-6 sm:px-4">
           <p className="min-w-0 text-sm text-[var(--muted)]" role="status" aria-live="polite">
             {total === 0 ? "No results for" : `${total} result${total === 1 ? "" : "s"} for`}{" "}
             <span className="break-words font-semibold text-[var(--foreground)]">“{query}”</span>
@@ -271,7 +271,7 @@ function ResultGroup({ title, count, children }: { title: string; count: number;
         <h2 className="text-[11px] font-bold uppercase tracking-[0.16em] text-[var(--brand)] sm:text-xs sm:tracking-[0.18em]">
           {title}
         </h2>
-        <span className="rounded-full bg-[var(--brand-soft)] px-2.5 py-1 text-[10px] font-bold text-[var(--brand)]">
+        <span className="rounded-full border border-[color-mix(in_srgb,var(--foreground)_48%,var(--card))] bg-[var(--brand-soft)] px-2.5 py-1 text-[10px] font-bold text-[var(--brand-deep)]">
           {count}
         </span>
       </div>
@@ -294,7 +294,7 @@ function ResultCard({
   return (
     <Link
       href={href}
-      className="liquid-glass care-glass group block min-w-0 rounded-2xl border border-[var(--care-border)] bg-[var(--care-glass)] p-4 shadow-sm backdrop-blur-xl transition hover:border-[var(--brand)] hover:shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--brand)] sm:p-5"
+      className="liquid-glass care-glass group block min-w-0 rounded-2xl border !border-[color-mix(in_srgb,var(--foreground)_48%,var(--card))] bg-[var(--card-elev)] p-4 shadow-sm backdrop-blur-xl transition hover:border-[var(--brand)] hover:shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--brand)] sm:p-5"
     >
       <div className="flex min-w-0 items-start justify-between gap-3">
         <div className="min-w-0 flex-1">
@@ -307,7 +307,7 @@ function ResultCard({
           </p>
           {body && <p className="mt-1.5 line-clamp-2 text-[13px] leading-5 text-[var(--muted)] sm:text-sm sm:leading-relaxed">{body}</p>}
         </div>
-        <span className="mt-1 shrink-0 text-lg leading-none text-[var(--muted-2)] transition group-hover:translate-x-0.5 group-hover:text-[var(--brand)]" aria-hidden>
+        <span className="mt-1 shrink-0 text-lg leading-none text-[var(--muted)] transition group-hover:translate-x-0.5 group-hover:text-[var(--brand)]" aria-hidden>
           →
         </span>
       </div>
