@@ -17,6 +17,7 @@ import "./performance-overrides.css";
 import "./afyvia-backgrounds.css";
 import { themeBootstrap } from "./lib/theme-bootstrap";
 import { ThemeProvider } from "./components/ThemeProvider";
+import { tenantBrandCssVars } from "./lib/accessibility/tenant-brand-contrast";
 
 ensureEnvConfigured();
 
@@ -95,11 +96,6 @@ export const metadata: Metadata = {
   // inherited by routes that forget to override it.
 };
 
-function safeHex(value: string | null | undefined): string | null {
-  if (!value) return null;
-  return /^#[0-9a-fA-F]{3,8}$/.test(value.trim()) ? value.trim() : null;
-}
-
 export default async function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   // The proxy supplies the storefront slug in a trusted internal header. Do
   // not resolve a generic tenant or a DB-backed session in the root layout:
@@ -116,15 +112,13 @@ export default async function RootLayout({ children }: Readonly<{ children: Reac
     ? await getResolvedPharmacyOrNull().catch(() => null)
     : null;
 
-  const brandPrimary = safeHex(resolved?.brandPrimary);
-  const brandAccent = safeHex(resolved?.brandAccent);
-  let tenantStyle: CSSProperties | undefined;
-  if (onStorefrontRewrite && (brandPrimary || brandAccent)) {
-    tenantStyle = {
-      ...(brandPrimary ? { "--tenant-brand-primary": brandPrimary } : {}),
-      ...(brandAccent ? { "--tenant-brand-accent": brandAccent } : {}),
-    } as CSSProperties;
-  }
+  const tenantBrandVars = onStorefrontRewrite
+    ? tenantBrandCssVars(resolved?.brandPrimary, resolved?.brandAccent)
+    : {};
+  const tenantStyle: CSSProperties | undefined =
+    Object.keys(tenantBrandVars).length > 0
+      ? (tenantBrandVars as CSSProperties)
+      : undefined;
 
   const storefrontBrand: PublicBrand | null = resolved
     ? {
