@@ -45,7 +45,7 @@ export default async function HowDoYouFeelPage(props?: {
 
         <section className="px-3 pb-16 sm:px-6 sm:pb-24">
           <div className="mx-auto max-w-6xl">
-            <div className="liquid-glass care-glass rounded-[1.75rem] border border-[var(--care-border)] bg-[var(--care-glass)] p-2 shadow-xl backdrop-blur-xl sm:rounded-[2rem] sm:p-3">
+            <div className="liquid-glass care-glass rounded-[1.75rem] border border-[var(--feel-border)] bg-[var(--feel-panel)] p-2 shadow-xl backdrop-blur-xl sm:rounded-[2rem] sm:p-3">
               <HowDoYouFeelStableClient
                 mode="public"
                 pharmacySlug={initialSlug}
