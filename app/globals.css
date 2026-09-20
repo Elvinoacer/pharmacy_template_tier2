@@ -2326,35 +2326,49 @@ textarea.input-admin, textarea.input-premium { padding-top: 0.75rem; }
 }
 
 /* Tenant accent tints — opt-in when a pharmacy saves a brand colour in the
-   Storefront Studio. Vars are injected on <body data-tenant-theme> by
-   app/layout.tsx; defaults keep the network teal when absent. */
+   Storefront Studio. app/layout.tsx injects both the raw colour and
+   contrast-safe derivatives. The semantic variables below switch with the
+   Afyvia theme so tenant identity never depends on a light-only colour. */
+body[data-tenant-theme="true"] {
+  --tenant-brand-text: var(--tenant-brand-primary-text-light, #084c3f);
+  --tenant-brand-accent-text: var(--tenant-brand-accent-text-light, #785f0d);
+  --tenant-brand-focus: var(--tenant-brand-primary-focus-light, #0d6e5a);
+}
+
+html[data-theme="dark"] body[data-tenant-theme="true"] {
+  --tenant-brand-text: var(--tenant-brand-primary-text-dark, #9bead5);
+  --tenant-brand-accent-text: var(--tenant-brand-accent-text-dark, #f4d86d);
+  --tenant-brand-focus: var(--tenant-brand-primary-focus-dark, #6cdec0);
+}
+
 [data-tenant-theme="true"] .btn-primary {
   background: linear-gradient(
     135deg,
-    var(--tenant-brand-primary, #0d6e5a) 0%,
-    color-mix(in srgb, var(--tenant-brand-primary, #0d6e5a) 70%, #041f19) 100%
+    var(--tenant-brand-button-bg, #0d6e5a) 0%,
+    var(--tenant-brand-button-bg-hover, #084c3f) 100%
   );
+  color: #ffffff;
 }
 
 [data-tenant-theme="true"] .btn-ghost {
-  border-color: color-mix(in srgb, var(--tenant-brand-primary, #0d6e5a) 30%, transparent);
+  border-color: var(--tenant-brand-focus);
 }
 
 [data-tenant-theme="true"] .gradient-text {
   background-image: linear-gradient(
     120deg,
-    var(--tenant-brand-accent, #c9a227) 0%,
-    var(--tenant-brand-primary, #0d6e5a) 45%,
-    color-mix(in srgb, var(--tenant-brand-primary, #0d6e5a) 60%, #ffffff) 100%
+    var(--tenant-brand-accent-text) 0%,
+    var(--tenant-brand-text) 55%,
+    var(--tenant-brand-text) 100%
   );
 }
 
 [data-tenant-theme="true"] .tenant-trust-band {
   background: linear-gradient(
     135deg,
-    color-mix(in srgb, var(--tenant-brand-primary, #084c3f) 82%, #041f19) 0%,
-    var(--tenant-brand-primary, #0d6e5a) 55%,
-    color-mix(in srgb, var(--tenant-brand-accent, #0f766e) 70%, #0f766e) 100%
+    color-mix(in srgb, var(--tenant-brand-button-bg, #084c3f) 88%, #041f19) 0%,
+    var(--tenant-brand-button-bg, #0d6e5a) 58%,
+    color-mix(in srgb, var(--tenant-brand-accent-surface, #0f766e) 78%, #041f19) 100%
   );
 }
 
