@@ -101,10 +101,12 @@
   bottom: 8px;
   right: 20px;
   font-size: 8px;
-  color: #25422f;
-  background: #ffffffb8;
-  padding: 1px 5px;
-  border-radius: 5px;
+  font-weight: 650;
+  color: var(--foreground);
+  background: color-mix(in srgb, var(--card) 92%, transparent);
+  border: 1px solid var(--medicine-ui-border, color-mix(in srgb, var(--foreground) 55%, var(--card)));
+  padding: 2px 6px;
+  border-radius: 6px;
 }
 .tabs {
   display: flex;
@@ -269,8 +271,8 @@
 .serviceCard {
   border-radius: 25px;
   overflow: hidden;
-  border: 1px solid var(--care-border);
-  background: var(--care-glass);
+  border: 1px solid var(--medicine-ui-border, color-mix(in srgb, var(--foreground) 55%, var(--card)));
+  background: var(--card-elev);
   backdrop-filter: blur(20px);
   box-shadow: 0 12px 32px #183c320a;
   display: flex;
@@ -299,14 +301,14 @@
   position: absolute;
   left: 15px;
   bottom: 15px;
-  border: 1px solid #ffffff99;
-  background: #ffffffe3;
+  border: 1px solid var(--medicine-ui-border, color-mix(in srgb, var(--foreground) 55%, var(--card)));
+  background: color-mix(in srgb, var(--card) 92%, transparent);
   backdrop-filter: blur(16px);
   border-radius: 25px;
   font-size: 10px;
   font-weight: 650;
   padding: 8px 12px;
-  color: #234532;
+  color: var(--foreground);
   display: flex;
   gap: 6px;
   align-items: center;
@@ -343,13 +345,14 @@
   align-items: center;
   justify-content: space-between;
   gap: 15px;
-  border-top: 1px solid var(--line);
+  border-top: 1px solid var(--medicine-ui-border, color-mix(in srgb, var(--foreground) 55%, var(--card)));
   padding-top: 16px;
   margin-top: 16px;
   font-size: 12px;
 }
 .serviceFoot strong {
-  font-weight: 650;
+  font-weight: 750;
+  color: var(--foreground);
 }
 .serviceFoot > span {
   display: flex;
@@ -493,7 +496,8 @@
   position: relative;
   display: block;
   overflow: hidden;
-  background: var(--brand-soft);
+  background: var(--card);
+  border-bottom: 1px solid var(--medicine-ui-border, color-mix(in srgb, var(--foreground) 55%, var(--card)));
 }
 .medicineImage img {
   transition: transform 0.7s;
@@ -525,13 +529,22 @@
   color: var(--muted);
 }
 .medicineStock {
+  display: inline-flex;
+  width: fit-content;
+  align-items: center;
+  border: 1px solid var(--medicine-ui-border, color-mix(in srgb, var(--foreground) 55%, var(--card)));
+  border-radius: 999px;
+  background: var(--card);
+  padding: 4px 8px;
   font-size: 10px;
-  font-weight: 650;
-  color: var(--muted);
+  font-weight: 700;
+  color: var(--foreground);
   margin: 3px 0 10px;
 }
 .medicineStock[data-stock="true"] {
-  color: var(--brand);
+  border-color: color-mix(in srgb, var(--brand) 68%, var(--card));
+  background: var(--brand-soft);
+  color: var(--brand-deep);
 }
 .medicineStock:before {
   content: "";
