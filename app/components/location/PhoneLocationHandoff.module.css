@@ -280,7 +280,7 @@
   display: inline-flex;
   align-items: center;
   gap: .3rem;
-  border: 1px solid color-mix(in srgb, var(--brand) 18%, var(--line-2));
+  border: 1px solid color-mix(in srgb, var(--foreground) 55%, var(--card-elev));
   border-radius: 999px;
   background: color-mix(in srgb, var(--card) 76%, transparent);
   padding: .34rem .52rem;
@@ -322,7 +322,7 @@
 }
 
 .mobileCard {
-  border: 1px solid color-mix(in srgb, var(--brand) 18%, var(--line-2));
+  border: 1px solid color-mix(in srgb, var(--foreground) 55%, var(--card-elev));
   border-radius: 1.4rem;
   background:
     linear-gradient(145deg, color-mix(in srgb, var(--card) 94%, transparent), color-mix(in srgb, var(--brand-soft) 22%, var(--card)));
@@ -371,7 +371,7 @@
   align-items: center;
   gap: .75rem;
   margin-top: .9rem;
-  border: 1px solid color-mix(in srgb, var(--brand) 14%, var(--line-2));
+  border: 1px solid color-mix(in srgb, var(--foreground) 55%, var(--card-elev));
   border-radius: 1rem;
   background: color-mix(in srgb, var(--brand-soft) 28%, var(--card));
   padding: .78rem;
@@ -399,6 +399,7 @@
   justify-content: center;
   gap: .48rem;
   margin-top: .9rem;
+  border: 1px solid transparent;
   border-radius: 1rem;
   background: var(--brand);
   padding: .85rem 1rem;
@@ -406,9 +407,23 @@
   font-size: .82rem;
   font-weight: 760;
   box-shadow: 0 14px 32px color-mix(in srgb, var(--brand) 26%, transparent);
+  transition: background-color 160ms ease, border-color 160ms ease, box-shadow 160ms ease, transform 160ms ease;
 }
 
-.mobileButton:disabled { cursor: wait; opacity: .65; }
+.mobileButton:hover:not(:disabled) {
+  filter: brightness(.92);
+  box-shadow: 0 16px 36px color-mix(in srgb, var(--brand) 30%, transparent);
+}
+
+.mobileButton:active:not(:disabled) { transform: scale(.985); }
+
+.mobileButton:disabled {
+  cursor: wait;
+  opacity: 1;
+  background: #245d4f;
+  color: #fff;
+  box-shadow: none;
+}
 
 .mobileStatus {
   margin-top: .75rem;
@@ -469,7 +484,7 @@
 }
 
 .mobileResultItem {
-  border: 1px solid color-mix(in srgb, var(--brand) 14%, var(--line-2));
+  border: 1px solid color-mix(in srgb, var(--foreground) 55%, var(--card-elev));
   border-radius: .82rem;
   background: color-mix(in srgb, var(--card) 78%, transparent);
   padding: .62rem .65rem;
@@ -509,7 +524,31 @@
 
 @media (prefers-reduced-motion: reduce) {
   .captureChoice,
-  .waitingDot { transition: none; animation: none; }
+  .handoffQuietButton,
+  .mobileButton,
+  .waitingDot { transition: none; animation: none; transform: none !important; }
+}
+
+.captureChoice:focus-visible,
+.handoffQuietButton:focus-visible,
+.mobileButton:focus-visible {
+  outline: 3px solid var(--brand);
+  outline-offset: 3px;
+}
+
+.handoffQuietButton:hover:not(:disabled) {
+  border-color: var(--brand);
+  background: color-mix(in srgb, var(--brand-soft) 55%, var(--card-elev));
+}
+
+.handoffQuietButton:active:not(:disabled) { transform: scale(.985); }
+
+.handoffQuietButton:disabled {
+  cursor: not-allowed;
+  opacity: 1;
+  border-color: color-mix(in srgb, var(--foreground) 42%, var(--card-elev));
+  background: color-mix(in srgb, var(--foreground) 7%, var(--card-elev));
+  color: var(--muted);
 }
 
 @keyframes handoff-pulse {
@@ -518,5 +557,38 @@
   100% { box-shadow: 0 0 0 0 color-mix(in srgb, var(--brand) 0%, transparent); }
 }
 
+:global(html[data-theme="dark"]) .mobilePage {
+  --background: #07110e;
+  --foreground: #edf8f3;
+  --muted: #a7b8b0;
+  --card: #0f1c18;
+  --card-elev: #14251f;
+  --brand: #5ee0ba;
+  --brand-deep: #d8fff2;
+  --brand-soft: #12382d;
+  --line-2: rgba(167, 184, 176, .42);
+  color-scheme: dark;
+}
+
+:global(html[data-theme="dark"]) .mobileBrandIcon,
+:global(html[data-theme="dark"]) .mobileButton {
+  background: #0f766e;
+  color: #fff;
+}
+
+:global(html[data-theme="dark"]) .mobileButton {
+  border-color: #5ee0ba;
+}
+
+:global(html[data-theme="dark"]) .mobileButton:disabled {
+  border-color: #53776d;
+  background: #315d52;
+  color: #f8fffb;
+}
+
 :global(html[data-theme="dark"]) .handoffError,
-:global(html[data-theme="dark"]) .mobileError { color: #fecdd3; }
+:global(html[data-theme="dark"]) .mobileError {
+  border-color: rgba(251, 113, 133, .55);
+  background: rgba(190, 24, 93, .18);
+  color: #fecdd3;
+}
