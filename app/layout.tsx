@@ -16,7 +16,7 @@ import "./accessibility-overrides.css";
 import "./performance-overrides.css";
 import "./afyvia-backgrounds.css";
 import { themeBootstrap } from "./lib/theme-bootstrap";
-import ThemeToggle, { ThemeProvider } from "./components/ThemeProvider";
+import { ThemeProvider } from "./components/ThemeProvider";
 
 ensureEnvConfigured();
 
@@ -75,9 +75,8 @@ export const metadata: Metadata = {
     description: platform.description,
     images: [
       {
-        // Host the social preview on the public R2 origin so external
-        // crawlers can fetch it directly and independently of app assets.
-        url: "https://pub-cc07856d657b4a7197710051042b3eda.r2.dev/images/banner_og.png",
+        // Same-origin static image: no storage permissions or image optimizer required.
+        url: "/opengraph-image.png",
         width: 1731,
         height: 909,
         type: "image/png",
@@ -89,7 +88,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: `${platform.name} — ${platform.tagline}`,
     description: platform.description,
-    images: ["https://pub-cc07856d657b4a7197710051042b3eda.r2.dev/images/banner_og.png"],
+    images: ["/opengraph-image.png"],
   },
   robots: { index: true, follow: true },
   // Nested indexable pages own their canonical URL. A root canonical would be

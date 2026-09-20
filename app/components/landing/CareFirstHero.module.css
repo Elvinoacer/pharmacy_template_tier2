@@ -141,14 +141,25 @@
   color: var(--foreground);
   padding: 2px 0;
   outline: none;
+  border: 0;
+  box-shadow: none;
+  border-radius: 0;
+  -webkit-appearance: none;
+}
+.search input:focus,
+.search input:focus-visible {
+  outline: none;
+  box-shadow: none;
+  background: transparent;
 }
 .search input::placeholder {
   color: var(--muted);
   opacity: 1;
 }
 .search:focus-within {
-  outline: 2px solid var(--brand);
-  outline-offset: 4px;
+  outline: none;
+  border-color: var(--brand);
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--brand) 24%, transparent), 0 14px 45px #16372516;
 }
 .search button {
   width: 48px;

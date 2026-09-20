@@ -1,8 +1,9 @@
 "use client";
 
 import Link from "next/link";
+import { createPortal } from "react-dom";
 import { useCallback, useEffect, useId, useRef, useState } from "react";
-import { ArrowRight, LifeBuoy, MapPin, Search, X } from "lucide-react";
+import { ArrowRight, Bot, MapPin, Search, X } from "lucide-react";
 import { useTenantSlug } from "@/app/components/TenantLink";
 import styles from "./QuickPageAssist.module.css";
 
@@ -76,6 +77,7 @@ export default function QuickPageAssist() {
 
   const close = useCallback(() => {
     abortRef.current?.abort();
+    setLoading(false);
     setOpen(false);
     window.setTimeout(() => triggerRef.current?.focus(), 0);
   }, []);
@@ -92,7 +94,10 @@ export default function QuickPageAssist() {
     const previousActive = document.activeElement as HTMLElement | null;
     const previousOverflow = document.body.style.overflow;
     document.body.style.overflow = "hidden";
-    const focusTimer = window.setTimeout(() => inputRef.current?.focus(), 60);
+    const focusTimer = window.setTimeout(() => {
+      // Avoid opening the mobile keyboard before someone chooses to type.
+      (window.matchMedia("(max-width: 639px)").matches ? closeButtonRef.current : inputRef.current)?.focus();
+    }, 60);
 
     const onKeyDown = (e: globalThis.KeyboardEvent) => {
       if (e.key === "Escape") {
@@ -165,12 +170,12 @@ export default function QuickPageAssist() {
       });
       const payload: unknown = await response.json();
       if (!response.ok || !isAssistResult(payload)) throw new Error("Assistant unavailable");
-      setResult(payload);
+      if (abortRef.current === controller && !controller.signal.aborted) setResult(payload);
     } catch (err) {
       if (err instanceof Error && err.name === "AbortError") return;
       setError("I couldn’t check the network right now. Try the pharmacy directory instead.");
     } finally {
-      setLoading(false);
+      if (abortRef.current === controller) setLoading(false);
     }
   }, [base, loading]);
 
@@ -191,58 +196,11 @@ export default function QuickPageAssist() {
         data-state={open ? "open" : loading ? "thinking" : "idle"}
         className={styles.robotLauncher}
       >
-        <span className={styles.ambientRing} aria-hidden="true" />
-        <span className={styles.greeting} aria-hidden="true">
-          <span>Need help?</span>
-        </span>
-        <span className={styles.robot} aria-hidden="true">
-          <span className={`${styles.arm} ${styles.leftArm}`}>
-            <span className={styles.upperArm} />
-            <span className={styles.forearm} />
-            <span className={styles.hand}>
-              <span className={styles.palm} />
-              <span className={`${styles.finger} ${styles.fingerOne}`} />
-              <span className={`${styles.finger} ${styles.fingerTwo}`} />
-            </span>
-          </span>
-          <span className={`${styles.arm} ${styles.rightArm}`}>
-            <span className={styles.upperArm} />
-            <span className={styles.forearm} />
-            <span className={styles.hand}>
-              <span className={styles.palm} />
-              <span className={`${styles.finger} ${styles.fingerOne}`} />
-              <span className={`${styles.finger} ${styles.fingerTwo}`} />
-            </span>
-          </span>
-
-          <span className={styles.antenna}>
-            <span className={styles.antennaTip} />
-          </span>
-          <span className={styles.robotHead}>
-            <span className={`${styles.ear} ${styles.leftEar}`} />
-            <span className={`${styles.ear} ${styles.rightEar}`} />
-            <span className={styles.faceGlow} />
-            <span className={`${styles.eye} ${styles.leftEye}`}>
-              <span className={styles.pupil} />
-            </span>
-            <span className={`${styles.eye} ${styles.rightEye}`}>
-              <span className={styles.pupil} />
-            </span>
-            <span className={styles.nose} />
-            <span className={styles.mouth}>
-              <span className={styles.mouthLight} />
-            </span>
-          </span>
-          <span className={styles.neck} />
-          <span className={styles.robotBody}>
-            <span className={styles.core} />
-            <span className={styles.bodyLine} />
-          </span>
-        </span>
-        <span className={styles.statusBadge} aria-hidden="true">AI</span>
+        <span className={styles.launcherIcon} aria-hidden="true"><Bot size={22} strokeWidth={1.7} /></span>
+        <span className={styles.launcherLabel}>Ask Afyvia</span>
       </button>
 
-      {open && (
+      {open && createPortal(
         <div
           className={`${styles.modalBackdrop} fixed inset-0 z-[150] flex items-end justify-center p-2 sm:items-center sm:p-6`}
           onMouseDown={(e) => {
@@ -255,7 +213,7 @@ export default function QuickPageAssist() {
             aria-modal="true"
             aria-labelledby={titleId}
             aria-describedby={descriptionId}
-            className={`${styles.assistDialog} relative flex max-h-[88dvh] w-full max-w-[36rem] flex-col overflow-hidden text-[var(--foreground)] sm:max-h-[78dvh]`}
+            className={`${styles.assistDialog} relative flex max-h-[88dvh] w-full max-w-[36rem] flex-col overflow-hidden sm:max-h-[78dvh]`}
             onMouseDown={(e) => e.stopPropagation()}
           >
             <div className="pointer-events-none absolute -left-20 -top-24 h-52 w-52 rounded-full bg-[var(--brand-soft)] opacity-70 blur-3xl" />
@@ -268,7 +226,7 @@ export default function QuickPageAssist() {
               <div className="flex items-start justify-between gap-3 sm:gap-4">
                 <div className="flex min-w-0 items-start gap-3 sm:gap-3.5">
                   <div className={`${styles.dialogAvatar} relative mt-0.5 flex h-10 w-10 shrink-0 items-center justify-center sm:h-11 sm:w-11`}>
-                    <LifeBuoy className="h-5 w-5" aria-hidden="true" />
+                    <Bot className="h-6 w-6" aria-hidden="true" />
                     <span className="absolute -bottom-1 -right-1 h-2.5 w-2.5 rounded-full border-2 border-[var(--card)] bg-[var(--success)]" />
                   </div>
                   <div className="min-w-0 pt-0.5">
@@ -276,7 +234,7 @@ export default function QuickPageAssist() {
                       Afyvia care assistant
                     </p>
                     <h2 id={titleId} className="mt-1 text-[1.2rem] font-semibold leading-tight tracking-[-0.025em] text-[var(--foreground)] sm:text-2xl">
-                      How can we help?
+                      A little guidance. A clearer next step.
                     </h2>
                   </div>
                 </div>
@@ -318,7 +276,7 @@ export default function QuickPageAssist() {
                         setResult(null);
                         setError(null);
                       }}
-                      placeholder="e.g. Panadol near Westlands"
+                      placeholder="Medicine or pharmacy…"
                       autoComplete="off"
                       className={`${styles.searchInput} min-h-12 w-full py-3 pl-10 pr-3 text-[var(--foreground)] outline-none placeholder:text-[var(--muted-2)] sm:text-sm`}
                     />
@@ -471,12 +429,12 @@ export default function QuickPageAssist() {
                 </span>
                 <span className="inline-flex items-center gap-1.5">
                   <span className="h-1.5 w-1.5 rounded-full bg-[var(--success)]" aria-hidden="true" />
-                  live public network data
+                  Find care across Afyvia
                 </span>
               </p>
             </div>
           </section>
-        </div>
+        </div>, document.body
       )}
     </>
   );

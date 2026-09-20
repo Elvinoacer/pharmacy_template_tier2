@@ -6,6 +6,7 @@ import CareFirstHero from "./components/landing/CareFirstHero";
 export const metadata = {
   title: `${platform.name} — Your care, connected`,
   description: platform.description,
+  alternates: { canonical: "/" },
 };
 export default function MarketplacePage() {
   return (
