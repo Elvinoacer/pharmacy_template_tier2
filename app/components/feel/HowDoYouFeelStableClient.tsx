@@ -363,7 +363,7 @@ export default function HowDoYouFeelStableClient({
               type="button"
               disabled={busy}
               onClick={() => void startSession(category.id)}
-              className="group min-h-36 rounded-2xl border border-slate-200/90 bg-white/90 p-5 text-left shadow-sm transition duration-200 hover:-translate-y-0.5 hover:border-emerald-300 hover:shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 disabled:cursor-wait disabled:opacity-60 dark:border-slate-800 dark:bg-slate-900/80 dark:hover:border-emerald-700"
+              className="group min-h-36 rounded-2xl border border-slate-200/90 bg-white/90 p-5 text-left shadow-sm transition duration-200 hover:-translate-y-0.5 hover:border-emerald-700 hover:shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 disabled:cursor-wait disabled:opacity-100 dark:border-slate-800 dark:bg-slate-900/80 dark:hover:border-emerald-300"
             >
               <div className="mb-4 flex h-9 w-9 items-center justify-center rounded-xl bg-emerald-100 text-emerald-700 transition group-hover:bg-emerald-600 group-hover:text-white dark:bg-emerald-950 dark:text-emerald-300">
                 <Sparkles className="h-4 w-4" />
@@ -472,9 +472,9 @@ export default function HowDoYouFeelStableClient({
               rows={1}
               disabled={busy || session.status === "closed"}
               placeholder={escalated ? "Add details for the pharmacist…" : "Describe how you feel…"}
-              className="max-h-32 min-h-11 flex-1 resize-none rounded-xl border border-slate-300 bg-slate-50 px-3 py-2.5 text-sm text-slate-900 outline-none placeholder:text-slate-400 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 disabled:opacity-60 dark:border-slate-700 dark:bg-slate-900 dark:text-white dark:placeholder:text-slate-500"
+              className="max-h-32 min-h-11 flex-1 resize-none rounded-xl border border-slate-300 bg-slate-50 px-3 py-2.5 text-sm text-slate-900 outline-none placeholder:text-[var(--muted)] focus:border-emerald-700 focus:ring-2 focus:ring-emerald-700/20 disabled:opacity-100 dark:border-slate-700 dark:bg-slate-900 dark:text-white dark:placeholder:text-[var(--muted)]"
             />
-            <button type="submit" disabled={busy || !input.trim() || session.status === "closed"} className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-emerald-700 text-white shadow-sm transition hover:bg-emerald-800 disabled:cursor-not-allowed disabled:opacity-40" aria-label="Send message"><Send className="h-4 w-4" /></button>
+            <button type="submit" disabled={busy || !input.trim() || session.status === "closed"} className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-emerald-700 text-white shadow-sm transition hover:bg-emerald-800 disabled:cursor-not-allowed disabled:opacity-100" aria-label="Send message"><Send className="h-4 w-4" /></button>
           </div>
         </form>
       </section>
@@ -483,7 +483,7 @@ export default function HowDoYouFeelStableClient({
         <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm dark:border-slate-800 dark:bg-slate-900">
           <p className="text-xs font-bold uppercase tracking-wider text-emerald-700 dark:text-emerald-400">Current status</p>
           <p className="mt-2 inline-flex items-center gap-2 text-sm font-semibold text-slate-800 dark:text-slate-100"><CheckCircle2 className="h-4 w-4 text-emerald-600" /> {STATUS_LABEL[session.status] || session.status}</p>
-          {!escalated && session.status !== "closed" && <button type="button" disabled={busy} onClick={() => void escalate()} className="mt-4 inline-flex w-full items-center justify-center gap-2 rounded-xl border border-amber-300 bg-amber-50 px-3 py-2 text-sm font-semibold text-amber-900 transition hover:bg-amber-100 disabled:opacity-50 dark:border-amber-800 dark:bg-amber-950/30 dark:text-amber-200"><Stethoscope className="h-4 w-4" /> Talk to a pharmacist</button>}
+          {!escalated && session.status !== "closed" && <button type="button" disabled={busy} onClick={() => void escalate()} className="mt-4 inline-flex w-full items-center justify-center gap-2 rounded-xl border border-amber-300 bg-amber-50 px-3 py-2 text-sm font-semibold text-amber-900 transition hover:bg-amber-100 disabled:opacity-100 dark:border-amber-800 dark:bg-amber-950/30 dark:text-amber-200"><Stethoscope className="h-4 w-4" /> Talk to a pharmacist</button>}
         </div>
         <div className="rounded-2xl border border-slate-200 bg-white p-4 text-sm text-slate-600 shadow-sm dark:border-slate-800 dark:bg-slate-900 dark:text-slate-300">
           <p className="flex items-center gap-2 font-semibold text-slate-900 dark:text-white"><MessageCircle className="h-4 w-4 text-emerald-600" /> How this works</p>
@@ -534,7 +534,7 @@ export default function HowDoYouFeelStableClient({
                 type="button"
                 disabled={busy || !modalChoice}
                 onClick={() => void escalate(modalChoice)}
-                className="rounded-xl bg-emerald-700 px-4 py-2 text-xs font-semibold text-white shadow-sm hover:bg-emerald-800 disabled:opacity-50"
+                className="rounded-xl bg-emerald-700 px-4 py-2 text-xs font-semibold text-white shadow-sm hover:bg-emerald-800 disabled:opacity-100"
               >
                 Connect with pharmacist
               </button>
