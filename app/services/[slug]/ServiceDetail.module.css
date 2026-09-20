@@ -65,7 +65,7 @@
   align-items: center;
   gap: .45rem;
   min-height: 2rem;
-  border: 1px solid var(--line-2);
+  border: 1px solid var(--service-ui-border, color-mix(in srgb, var(--foreground) 60%, var(--card)));
   border-radius: 999px;
   padding: .35rem .7rem;
   background: color-mix(in srgb, var(--card) 86%, transparent);
@@ -109,7 +109,7 @@
   align-items: center;
   gap: .42rem;
   min-height: 2.25rem;
-  border: 1px solid var(--line);
+  border: 1px solid var(--service-ui-border, color-mix(in srgb, var(--foreground) 60%, var(--card)));
   border-radius: 999px;
   padding: .45rem .75rem;
   background: var(--card);
@@ -151,7 +151,7 @@
 }
 
 .secondaryAction {
-  border: 1px solid var(--line-2);
+  border: 1px solid var(--service-ui-border, color-mix(in srgb, var(--foreground) 60%, var(--card)));
   background: var(--card);
   color: var(--brand-deep);
 }
@@ -162,7 +162,7 @@
 }
 
 .secondaryAction:hover {
-  border-color: color-mix(in srgb, var(--brand) 48%, var(--line-2));
+  border-color: var(--brand);
   background: var(--card-elev);
 }
 
@@ -171,7 +171,7 @@
   min-width: 0;
   overflow: hidden;
   aspect-ratio: 16 / 11;
-  border: 1px solid var(--line);
+  border: 1px solid var(--service-ui-border, color-mix(in srgb, var(--foreground) 60%, var(--card)));
   border-radius: 1.55rem;
   background: var(--card-elev);
   box-shadow: var(--shadow-lg);
@@ -230,8 +230,8 @@
 .detailCard,
 .relatedCard,
 .talkCard {
-  border: 1px solid var(--line);
-  background: color-mix(in srgb, var(--card) 96%, transparent);
+  border: 1px solid var(--service-ui-border, color-mix(in srgb, var(--foreground) 60%, var(--card)));
+  background: var(--card-elev);
   box-shadow: var(--shadow-sm);
 }
 
@@ -278,7 +278,7 @@
   min-width: 0;
   align-items: flex-start;
   gap: .65rem;
-  border: 1px solid var(--line);
+  border: 1px solid var(--service-ui-border, color-mix(in srgb, var(--foreground) 60%, var(--card)));
   border-radius: .95rem;
   padding: .78rem;
   background: var(--card-elev);
@@ -376,6 +376,7 @@
   flex: 0 0 auto;
   align-items: center;
   gap: .35rem;
+  border: 1px solid var(--service-ui-border, color-mix(in srgb, var(--foreground) 60%, var(--card)));
   border-radius: 999px;
   padding: .38rem .6rem;
   background: var(--brand-soft);
@@ -401,7 +402,7 @@
   min-height: 3rem;
   align-items: center;
   gap: .7rem;
-  border: 1px solid var(--line);
+  border: 1px solid var(--service-ui-border, color-mix(in srgb, var(--foreground) 60%, var(--card)));
   border-radius: .9rem;
   padding: .7rem .8rem;
   background: var(--card-elev);
@@ -486,7 +487,7 @@
 
 .relatedCard:hover {
   transform: translateY(-1px);
-  border-color: color-mix(in srgb, var(--brand) 45%, var(--line));
+  border-color: var(--brand);
   background: var(--card-elev);
   box-shadow: var(--shadow);
 }
