@@ -107,6 +107,24 @@
   border-color: color-mix(in srgb, #be123c 68%, var(--card)) !important;
 }
 
+
+.surface :global([class~="text-[#084c3f]"]) {
+  color: var(--brand-deep) !important;
+}
+
+.surface :global([class*="border-[#0d6e5a]/"]),
+.surface :global([class~="border-black/10"]) {
+  border-color: var(--health-ui-border) !important;
+}
+
+.surface :global([class~="border-purple-200"]) {
+  border-color: color-mix(in srgb, #7e22ce 68%, var(--card)) !important;
+}
+
+.surface :global([class~="bg-[#0d6e5a]/10"]) {
+  background-color: var(--brand-soft) !important;
+}
+
 :global(html[data-theme="dark"]) .surface :global([class~="text-[#0c1a14]"]),
 :global(html[data-theme="dark"]) .surface :global([class~="text-[#2c3e35]"]) {
   color: var(--foreground) !important;
@@ -257,4 +275,30 @@
 
 :global(html[data-theme="dark"]) .surface :global([class~="border-black/10"]) {
   border-color: var(--health-ui-border) !important;
+}
+
+
+:global(html[data-theme="dark"]) .surface :global(.bg-teal-50),
+:global(html[data-theme="dark"]) .surface :global(.bg-teal-100),
+:global(html[data-theme="dark"]) .surface :global([class*="bg-teal-50/"]) {
+  background-color: rgba(45, 212, 191, .14) !important;
+}
+
+:global(html[data-theme="dark"]) .surface :global(.bg-slate-50),
+:global(html[data-theme="dark"]) .surface :global([class~="bg-[#fbfdfc]"]) {
+  background-color: var(--card-elev) !important;
+}
+
+:global(html[data-theme="dark"]) .surface :global([class*="from-purple-50"]) {
+  background-image: linear-gradient(135deg, rgba(168, 85, 247, .16), var(--card), rgba(168, 85, 247, .07)) !important;
+}
+
+:global(html[data-theme="dark"]) .surface :global(.text-purple-800),
+:global(html[data-theme="dark"]) .surface :global(.text-purple-900),
+:global(html[data-theme="dark"]) .surface :global(.text-purple-950) {
+  color: #e9d5ff !important;
+}
+
+:global(html[data-theme="dark"]) .surface :global(.border-purple-200) {
+  border-color: color-mix(in srgb, #c084fc 62%, var(--card)) !important;
 }
