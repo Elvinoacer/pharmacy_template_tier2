@@ -675,7 +675,7 @@ export default function PrescriptionFinder({
                           {planOffer.lines.map((l) => (
                             <li key={l.requested} className="flex items-center justify-between py-1 text-[11px]">
                               <span className="text-[var(--foreground)] font-medium">{l.requested}</span>
-                              <span className="font-semibold text-[var(--muted)]">KES {l.match.price.toLocaleString("en-KE")}</span>
+                              <span className="font-bold text-[var(--foreground)]">KES {l.match.price.toLocaleString("en-KE")}</span>
                             </li>
                           ))}
                         </ul>
