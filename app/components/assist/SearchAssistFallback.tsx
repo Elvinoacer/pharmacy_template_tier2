@@ -59,7 +59,7 @@ export default function SearchAssistFallback({
   }, [query, askAssist]);
 
   return (
-    <div className="mt-6 min-w-0 rounded-2xl border border-[var(--line-2)] bg-[var(--card)] p-4 shadow-sm sm:mt-8 sm:rounded-3xl sm:p-6">
+    <div className="mt-6 min-w-0 rounded-2xl border border-[color-mix(in_srgb,var(--foreground)_48%,var(--card))] bg-[var(--card-elev)] p-4 shadow-sm sm:mt-8 sm:rounded-3xl sm:p-6">
       <div className="flex min-w-0 items-start gap-3">
         <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-[var(--brand)] text-white shadow-sm">
           <Sparkles className="h-4 w-4" aria-hidden />
@@ -80,7 +80,7 @@ export default function SearchAssistFallback({
           <AssistResultCards result={result} theme="adaptive" onFollowup={(q) => void askAssist(q)} />
         )}
         {!loading && !result && failed && (
-          <p className="rounded-xl border border-[var(--line-2)] bg-[var(--card-elev)] px-3 py-2.5 text-xs font-medium leading-5 text-[var(--muted)]" role="alert">
+          <p className="rounded-xl border border-[color-mix(in_srgb,var(--foreground)_48%,var(--card))] bg-[var(--card-elev)] px-3 py-2.5 text-xs font-medium leading-5 text-[var(--muted)]" role="alert">
             Quick assist is unavailable right now. Try the medicines catalogue or pharmacy directory instead.
           </p>
         )}
@@ -103,12 +103,12 @@ export default function SearchAssistFallback({
             onChange={(e) => setRephrase(e.target.value)}
             placeholder="Describe what you need differently…"
             aria-label="Describe what you need"
-            className="min-h-12 min-w-0 flex-1 rounded-xl border border-[var(--line-2)] bg-[var(--card-elev)] px-3.5 py-3 text-base text-[var(--foreground)] outline-none placeholder:text-[var(--muted-2)] focus:border-[var(--brand)] focus:bg-[var(--card)] focus:ring-2 focus:ring-[color-mix(in_srgb,var(--brand)_16%,transparent)] sm:text-sm"
+            className="min-h-12 min-w-0 flex-1 rounded-xl border border-[color-mix(in_srgb,var(--foreground)_48%,var(--card))] bg-[var(--card)] px-3.5 py-3 text-base text-[var(--foreground)] outline-none placeholder:text-[var(--muted)] focus:border-[var(--brand)] focus:bg-[var(--card)] focus:ring-2 focus:ring-[color-mix(in_srgb,var(--brand)_16%,transparent)] sm:text-sm"
           />
           <button
             type="submit"
             disabled={rephrase.trim().length < 2}
-            className="min-h-12 w-full shrink-0 rounded-xl bg-[var(--brand)] px-4 py-3 text-sm font-semibold text-white shadow-sm transition enabled:hover:opacity-90 disabled:opacity-40 sm:w-auto"
+            className="min-h-12 w-full shrink-0 rounded-xl bg-[var(--brand)] px-4 py-3 text-sm font-semibold text-white shadow-sm transition enabled:hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-100 disabled:border disabled:border-[color-mix(in_srgb,var(--foreground)_48%,var(--card))] disabled:bg-[color-mix(in_srgb,var(--foreground)_10%,var(--card))] disabled:text-[var(--foreground)] sm:w-auto"
           >
             Try again
           </button>
