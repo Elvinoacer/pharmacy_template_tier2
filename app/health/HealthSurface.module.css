@@ -644,3 +644,23 @@
     transform: translateY(0);
   }
 }
+
+
+.articleCopy a {
+  color: var(--brand-deep);
+  font-weight: 700;
+  text-decoration: underline;
+  text-decoration-thickness: .08em;
+  text-underline-offset: .2em;
+}
+
+.articleCopy a:hover {
+  color: var(--foreground);
+  text-decoration-thickness: .12em;
+}
+
+.articleCopy a:focus-visible {
+  border-radius: .2rem;
+  outline: 3px solid var(--brand);
+  outline-offset: 3px;
+}
