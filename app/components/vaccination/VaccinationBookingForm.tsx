@@ -83,8 +83,10 @@ export function VaccinationBookingForm({
 
   if (state?.success || state?.appointmentId) {
     return (
-      <div className="liquid-glass care-glass rounded-3xl border border-[var(--public-health-ui-border)] bg-[var(--care-glass)] p-8 shadow-lg backdrop-blur-xl">
-        <CheckCircle2 className="h-10 w-10 text-[var(--brand)]" />
+      <div className="liquid-glass care-glass rounded-3xl border border-emerald-700/60 bg-[var(--care-glass)] p-8 shadow-lg backdrop-blur-xl dark:border-emerald-300/60">
+        <span className="inline-flex h-12 w-12 items-center justify-center rounded-2xl border border-emerald-700/60 bg-emerald-100 text-emerald-800 dark:border-emerald-300/60 dark:bg-emerald-950/50 dark:text-emerald-100">
+          <CheckCircle2 className="h-7 w-7" />
+        </span>
         <h2 className="mt-3 text-2xl font-semibold text-[var(--foreground)]" style={{ fontFamily: "var(--font-display), serif" }}>
           Request received
         </h2>
