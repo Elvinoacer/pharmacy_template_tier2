@@ -66,7 +66,7 @@ export default async function DigitalCounsellingHubPage() {
               >
                 The 12 Essential Medication Counselling Pillars
               </h2>
-              <p className="mt-1 text-xs sm:text-sm text-[#5a6b62]">
+              <p className="mt-1 text-xs sm:text-sm text-[var(--health-editorial-body)]">
                 Our digital platform ensures you understand every critical aspect of your medication therapy:
               </p>
             </div>
@@ -159,7 +159,7 @@ export default async function DigitalCounsellingHubPage() {
               >
                 Search &amp; Access Digital Medication Counselling
               </h2>
-              <p className="mt-1 text-xs text-[#5a6b62]">
+              <p className="mt-1 text-xs text-[var(--health-editorial-body)]">
                 Select any medication below to instantly render its complete 12-pillar clinical counselling guide, printable summary, and sharing leaflet.
               </p>
             </div>
@@ -179,7 +179,7 @@ export default async function DigitalCounsellingHubPage() {
               >
                 Missed Dose Decision Engine
               </h2>
-              <p className="mt-1 text-xs text-[#5a6b62]">
+              <p className="mt-1 text-xs text-[var(--health-editorial-body)]">
                 Forgot a dose? Use our pharmacist-designed decision tool to determine whether you should take it now or skip and wait.
               </p>
             </div>
@@ -199,7 +199,7 @@ export default async function DigitalCounsellingHubPage() {
               >
                 Special Dosage Forms &amp; Medical Devices Mastery
               </h2>
-              <p className="mt-1 text-xs text-[#5a6b62]">
+              <p className="mt-1 text-xs text-[var(--health-editorial-body)]">
                 Up to 70% of medication administration errors occur due to incorrect device or special formulation technique. Review our step-by-step clinical guides:
               </p>
             </div>
@@ -346,9 +346,9 @@ function PillarSummaryCard({
   icon: React.ReactNode;
 }) {
   return (
-    <div className="liquid-glass care-glass rounded-2xl border border-[var(--care-border)] bg-[var(--care-glass)] p-4 shadow-sm backdrop-blur-xl hover:border-[var(--brand)] transition">
+    <div className="liquid-glass care-glass rounded-2xl border border-[var(--health-ui-border)] bg-[var(--care-glass)] p-4 shadow-sm backdrop-blur-xl hover:border-[var(--brand)] transition">
       <div className="flex items-center gap-2">
-        <span className="flex h-6 w-6 items-center justify-center rounded-lg bg-[var(--brand-soft)] text-[11px] font-extrabold text-[var(--brand)] border border-[var(--care-border)]">
+        <span className="flex h-6 w-6 items-center justify-center rounded-lg bg-[var(--brand-soft)] text-[11px] font-extrabold text-[var(--brand)] border border-[var(--health-ui-border)]">
           {number}
         </span>
         <h4 className="font-bold text-[var(--foreground)] text-xs">{title}</h4>
