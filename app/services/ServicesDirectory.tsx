@@ -234,12 +234,12 @@ export default function ServicesDirectory({
   return (
     <div id="services-directory" className="scroll-mt-28 text-[var(--foreground)]">
       {/* Compact search & proximity control toolbar */}
-      <div className="glass-panel rounded-[24px] border border-[var(--line)] p-3 shadow-sm sm:p-4">
+      <div className="glass-panel rounded-[24px] border !border-[color-mix(in_srgb,var(--foreground)_48%,var(--card))] p-3 shadow-sm sm:p-4">
         <div className="flex flex-col gap-2.5 sm:flex-row sm:items-center">
           {/* Live Search Input */}
           <div className="relative min-w-0 flex-1">
             <Search
-              className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-[var(--muted-2)]"
+              className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-[var(--muted)]"
               aria-hidden
             />
             <input
@@ -249,7 +249,7 @@ export default function ServicesDirectory({
               onChange={(e) => setQuery(e.target.value)}
               placeholder="Search screenings, vaccinations, consultations or area…"
               aria-label="Search clinical services"
-              className="h-[46px] w-full rounded-2xl border border-[var(--line)] bg-[var(--card-elev)] pl-10 pr-9 text-xs sm:text-sm text-[var(--foreground)] outline-none transition placeholder:text-[var(--muted-2)] focus:border-[var(--brand)] focus:bg-[var(--card)] focus:ring-4 focus:ring-teal-500/10"
+              className="h-[46px] w-full rounded-2xl border border-[color-mix(in_srgb,var(--foreground)_48%,var(--card))] bg-[var(--card-elev)] pl-10 pr-9 text-xs sm:text-sm text-[var(--foreground)] outline-none transition placeholder:text-[var(--muted)] focus:border-[var(--brand)] focus:bg-[var(--card)] focus:ring-4 focus:ring-teal-500/10"
             />
             {query && (
               <button
@@ -269,7 +269,7 @@ export default function ServicesDirectory({
               type="button"
               onClick={requestLocation}
               disabled={locationState === "loading"}
-              className="inline-flex h-[46px] items-center justify-center gap-1.5 rounded-2xl bg-[var(--brand)] px-3 text-xs font-bold text-[var(--background)] shadow-sm transition hover:brightness-95 disabled:opacity-60"
+              className="inline-flex h-[46px] items-center justify-center gap-1.5 rounded-2xl bg-[var(--brand)] px-3 text-xs font-bold text-[var(--background)] shadow-sm transition hover:brightness-95 disabled:cursor-not-allowed disabled:opacity-100 disabled:border disabled:border-[color-mix(in_srgb,var(--foreground)_48%,var(--card))] disabled:bg-[color-mix(in_srgb,var(--foreground)_10%,var(--card))] disabled:text-[var(--foreground)]"
             >
               <LocateFixed className="h-3.5 w-3.5" aria-hidden />
               <span>
@@ -282,7 +282,7 @@ export default function ServicesDirectory({
             </button>
 
             {/* View Mode Toggle */}
-            <div className="flex h-[46px] items-center rounded-2xl border border-[var(--line-2)] bg-[var(--card)] p-1">
+            <div className="flex h-[46px] items-center rounded-2xl border border-[color-mix(in_srgb,var(--foreground)_48%,var(--card))] bg-[var(--card)] p-1">
               <button
                 type="button"
                 onClick={() => setViewMode("grid")}
@@ -322,7 +322,7 @@ export default function ServicesDirectory({
             className={`inline-flex shrink-0 items-center gap-1.5 rounded-full px-3 py-1.5 text-[11px] font-semibold transition border ${
               bookableOnly
                 ? "border-emerald-600 bg-emerald-600 text-white shadow-xs"
-                : "border-[var(--line-2)] bg-[var(--card)] text-[var(--muted)] hover:text-[var(--foreground)]"
+                : "border-[color-mix(in_srgb,var(--foreground)_48%,var(--card))] bg-[var(--card)] text-[var(--muted)] hover:text-[var(--foreground)]"
             }`}
           >
             <CalendarCheck2 className="h-3 w-3" aria-hidden />
@@ -342,7 +342,7 @@ export default function ServicesDirectory({
                 className={`inline-flex shrink-0 items-center gap-1.5 rounded-full px-3 py-1.5 text-[11px] font-semibold transition border ${
                   isSelected
                     ? "border-[var(--brand)] bg-[var(--brand)] text-[var(--background)] shadow-xs"
-                    : "border-[var(--line-2)] bg-[var(--card)] text-[var(--muted)] hover:text-[var(--foreground)]"
+                    : "border-[color-mix(in_srgb,var(--foreground)_48%,var(--card))] bg-[var(--card)] text-[var(--muted)] hover:text-[var(--foreground)]"
                 }`}
               >
                 <Icon className="h-3 w-3" aria-hidden />
@@ -354,7 +354,7 @@ export default function ServicesDirectory({
 
         {/* Active filter badges & Location status */}
         {(query || selectedCategory !== "all" || bookableOnly || position) && (
-          <div className="mt-2.5 flex flex-wrap items-center gap-2 border-t border-[var(--line)] pt-2.5">
+          <div className="mt-2.5 flex flex-wrap items-center gap-2 border-t border-[color-mix(in_srgb,var(--foreground)_48%,var(--card))] pt-2.5">
             {position && (
               <span className="inline-flex items-center gap-1 rounded-full bg-[var(--brand-soft)] px-2.5 py-1 text-[10px] font-bold text-[var(--brand-deep)]">
                 <MapPin className="h-3 w-3" aria-hidden /> Distances live
@@ -426,7 +426,7 @@ export default function ServicesDirectory({
               value={sort}
               onChange={(e) => setSort(e.target.value as typeof sort)}
               aria-label="Sort services"
-              className="h-9 rounded-xl border border-[var(--line-2)] bg-[var(--card)] px-2.5 text-xs font-semibold text-[var(--foreground)] outline-none focus:border-[var(--brand)]"
+              className="h-9 rounded-xl border border-[color-mix(in_srgb,var(--foreground)_48%,var(--card))] bg-[var(--card)] px-2.5 text-xs font-semibold text-[var(--foreground)] outline-none focus:border-[var(--brand)]"
             >
               <option value="bookable">Bookable First</option>
               <option value="near" disabled={!position}>
@@ -454,7 +454,7 @@ export default function ServicesDirectory({
           />
         </div>
       ) : sorted.length === 0 ? (
-        <div className="care-glass mt-6 rounded-[28px] border-dashed p-8 text-center sm:p-12">
+        <div className="care-glass mt-6 rounded-[28px] border border-dashed !border-[color-mix(in_srgb,var(--foreground)_48%,var(--card))] bg-[var(--card-elev)] p-8 text-center sm:p-12">
           <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-2xl bg-[var(--brand-soft)] text-[var(--brand)]">
             <HeartPulse className="h-6 w-6" aria-hidden />
           </div>
@@ -489,7 +489,7 @@ function ServiceCard({
   const dist = service.calculatedDistance ?? service.distanceKm;
 
   return (
-    <article className="care-glass group flex flex-col overflow-hidden rounded-[24px] border border-[var(--line)] bg-[var(--card)] transition duration-200 hover:-translate-y-0.5 hover:border-[var(--brand)] shadow-sm">
+    <article className="care-glass group flex flex-col overflow-hidden rounded-[24px] border !border-[color-mix(in_srgb,var(--foreground)_48%,var(--card))] bg-[var(--card-elev)] transition duration-200 hover:-translate-y-0.5 hover:!border-[var(--brand)] shadow-sm">
       {/* Visual Header */}
       <Link href={service.href} className="relative block h-36 w-full overflow-hidden bg-[#07241e] sm:h-40">
         <Image
@@ -552,17 +552,17 @@ function ServiceCard({
         )}
 
         {/* Footer Actions */}
-        <div className="mt-auto pt-3.5 border-t border-[var(--line)]">
+        <div className="mt-auto pt-3.5 border-t border-[color-mix(in_srgb,var(--foreground)_48%,var(--card))]">
           <div className="flex items-center justify-between gap-2 mb-2.5">
             <div>
-              <span className="text-[9px] uppercase tracking-wider text-[var(--muted-2)] font-semibold">Pricing</span>
+              <span className="text-[9px] uppercase tracking-wider text-[var(--muted)] font-semibold">Pricing</span>
               <p className="text-sm font-bold text-[var(--foreground)]">
                 {service.price != null ? `KES ${formatPrice(service.price)}` : "Ask pharmacy"}
               </p>
             </div>
             {service.duration && (
               <div className="text-right">
-                <span className="text-[9px] uppercase tracking-wider text-[var(--muted-2)] font-semibold">Duration</span>
+                <span className="text-[9px] uppercase tracking-wider text-[var(--muted)] font-semibold">Duration</span>
                 <p className="flex items-center gap-1 text-[11px] font-semibold text-[var(--muted)]">
                   <Clock3 className="h-3 w-3" aria-hidden />
                   <span>{service.duration}</span>
@@ -582,7 +582,7 @@ function ServiceCard({
             <Link
               href={`/pharmacies/${service.pharmacy.slug}`}
               aria-label={`View ${service.pharmacy.name}`}
-              className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-xl border border-[var(--line-2)] text-[var(--brand-deep)] hover:bg-[var(--brand-tint)]"
+              className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-xl border border-[color-mix(in_srgb,var(--foreground)_48%,var(--card))] text-[var(--brand-deep)] hover:bg-[var(--brand-tint)]"
             >
               <ArrowUpRight className="h-4 w-4" aria-hidden />
             </Link>
