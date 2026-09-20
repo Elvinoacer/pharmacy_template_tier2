@@ -55,6 +55,16 @@ export const metadata: Metadata = {
     template: `%s · ${platform.name}`,
   },
   description: platform.description,
+  icons: {
+    icon: [
+      {
+        url: "/afyvia-symbol.png?v=2",
+        type: "image/png",
+      },
+    ],
+    shortcut: "/afyvia-symbol.png?v=2",
+    apple: "/afyvia-symbol.png?v=2",
+  },
   keywords: [
     "pharmacy Kenya",
     "Afyvia pharmacy network",
