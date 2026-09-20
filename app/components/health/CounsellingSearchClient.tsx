@@ -61,17 +61,17 @@ export default function CounsellingSearchClient({
   return (
     <div className="space-y-8">
       {/* Search & Filter Bar */}
-      <div className="rounded-3xl border border-[#d2dfd8] bg-white p-5 sm:p-6 shadow-sm">
+      <div className="rounded-3xl border border-[var(--health-ui-border)] bg-white p-5 sm:p-6 shadow-sm">
         <div className="grid gap-4 md:grid-cols-12">
           {/* Search text input */}
           <div className="relative md:col-span-8">
-            <Search className="absolute left-3.5 top-3.5 h-4 w-4 text-[#8a9a92]" />
+            <Search className="absolute left-3.5 top-3.5 h-4 w-4 text-[var(--muted)]" />
             <input
               type="text"
               placeholder="Search medication name, active generic ingredient, or condition…"
               value={query}
               onChange={(e) => setQuery(e.target.value)}
-              className="w-full rounded-2xl border border-[#cfe0d8] bg-[#fbfdfb] py-3 pl-10 pr-4 text-xs text-[#0c1a14] focus:border-teal-700 focus:outline-hidden"
+              className="w-full rounded-2xl border border-[var(--health-ui-border)] bg-[#fbfdfb] py-3 pl-10 pr-4 text-xs text-[#0c1a14] focus:border-teal-700 focus:outline-hidden"
             />
           </div>
 
@@ -80,7 +80,7 @@ export default function CounsellingSearchClient({
             <select
               value={selectedCategory}
               onChange={(e) => setSelectedCategory(e.target.value)}
-              className="w-full rounded-2xl border border-[#cfe0d8] bg-[#fbfdfb] py-3 px-3.5 text-xs font-semibold capitalize text-[#0c1a14] focus:border-teal-700 focus:outline-hidden"
+              className="w-full rounded-2xl border border-[var(--health-ui-border)] bg-[#fbfdfb] py-3 px-3.5 text-xs font-semibold capitalize text-[#0c1a14] focus:border-teal-700 focus:outline-hidden"
             >
               {categories.map((cat) => (
                 <option key={cat} value={cat}>
@@ -92,8 +92,8 @@ export default function CounsellingSearchClient({
         </div>
 
         {/* Quick Click Badges for Top Medications */}
-        <div className="mt-4 flex flex-wrap items-center gap-2 border-t border-[#e3ebe6] pt-4">
-          <span className="text-[11px] font-bold text-[#5a6b62]">Featured Curated Guides:</span>
+        <div className="mt-4 flex flex-wrap items-center gap-2 border-t border-[var(--health-ui-border)] pt-4">
+          <span className="text-[11px] font-bold text-[var(--health-editorial-body)]">Featured Curated Guides:</span>
           {Object.entries(CURATED_COUNSELLING_PROFILES).map(([slug, profile]) => {
             const isSelected = selectedMedSlug === slug;
             return (
@@ -104,7 +104,7 @@ export default function CounsellingSearchClient({
                 className={`rounded-full px-3.5 py-1 text-xs font-semibold transition ${
                   isSelected
                     ? "bg-teal-800 text-white shadow-xs font-bold"
-                    : "border border-[#cfe0d8] bg-white text-[#2c3e35] hover:bg-teal-50"
+                    : "border border-[var(--health-ui-border)] bg-white text-[#2c3e35] hover:bg-teal-50"
                 }`}
               >
                 {profile.brandNames[0]} ({profile.genericName})
@@ -122,7 +122,7 @@ export default function CounsellingSearchClient({
             <p className="text-xs font-bold text-[#0c1a14]">
               Select Medication ({filteredMeds.length})
             </p>
-            <span className="text-[11px] text-[#5a6b62]">Click to view 12-pillar guide</span>
+            <span className="text-[11px] text-[var(--health-editorial-body)]">Click to view 12-pillar guide</span>
           </div>
 
           <div className="max-h-[640px] space-y-2 overflow-y-auto pr-1">
@@ -136,7 +136,7 @@ export default function CounsellingSearchClient({
                   className={`w-full text-left rounded-2xl p-4 transition flex items-center justify-between border ${
                     isSelected
                       ? "border-teal-700 bg-teal-50/90 shadow-xs ring-1 ring-teal-700"
-                      : "border-[#e3ebe6] bg-white hover:border-teal-300 hover:bg-[#f8faf9]"
+                      : "border-[var(--health-ui-border)] bg-white hover:border-teal-300 hover:bg-[#f8faf9]"
                   }`}
                 >
                   <div className="min-w-0 pr-2">
@@ -148,7 +148,7 @@ export default function CounsellingSearchClient({
                         </span>
                       )}
                     </div>
-                    <p className="mt-0.5 truncate text-[11px] text-[#5a6b62]">
+                    <p className="mt-0.5 truncate text-[11px] text-[var(--health-editorial-body)]">
                       Generic: <span className="font-semibold">{med.genericName}</span>
                     </p>
                     <span className="mt-1 inline-block rounded-full bg-[#eef5f1] px-2 py-0.5 text-[9px] font-semibold capitalize text-teal-800">
@@ -158,7 +158,7 @@ export default function CounsellingSearchClient({
 
                   <ChevronRight
                     className={`h-4 w-4 shrink-0 transition ${
-                      isSelected ? "text-teal-800 translate-x-0.5" : "text-[#8a9a92]"
+                      isSelected ? "text-teal-800 translate-x-0.5" : "text-[var(--muted)]"
                     }`}
                   />
                 </button>
@@ -166,7 +166,7 @@ export default function CounsellingSearchClient({
             })}
 
             {filteredMeds.length === 0 && (
-              <div className="rounded-2xl border border-[#e3ebe6] bg-white p-6 text-center text-xs text-[#5a6b62]">
+              <div className="rounded-2xl border border-[var(--health-ui-border)] bg-white p-6 text-center text-xs text-[var(--health-editorial-body)]">
                 No medication found matching &quot;{query}&quot;. Try a generic name or speak with our pharmacist.
               </div>
             )}
