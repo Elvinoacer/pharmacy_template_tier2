@@ -260,7 +260,7 @@ export function GuestOrderForm({
           ))}
         </select>
         {selected && selected.stockQty <= 0 && (
-          <p className="mt-1 text-xs text-rose-500">
+          <p className="mt-1 text-xs font-medium text-rose-700 dark:text-rose-200">
             All units for this product are currently reserved or out of stock. Please select another product or check back soon.
           </p>
         )}
