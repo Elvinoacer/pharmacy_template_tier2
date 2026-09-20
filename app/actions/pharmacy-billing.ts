@@ -16,6 +16,7 @@ import {
   applyPromoCode,
   ensureBundleInvoice,
   ensureVerificationInvoice,
+  normalizePromotionCode,
   startPharmacyService,
 } from "@/app/lib/platform/pharmacy-enrolment";
 import { requirePlatformAction } from "@/app/lib/platform/policy";
@@ -52,12 +53,16 @@ async function resolveOwnedBillingInvoice(pharmacyId: string, form: FormData) {
   if (exact) return exact;
 
   const bundle = await withPharmacy(pharmacyId, () =>
-    db.invoice.findFirst({ where: { pharmacyId, number: `BUNDLE-${pharmacyId}`, status: "open" } }),
+    db.invoice.findFirst({
+      where: { pharmacyId, number: `BUNDLE-${pharmacyId}`, status: "open" },
+    }),
   );
   if (bundle) return bundle;
 
   const verification = await withPharmacy(pharmacyId, () =>
-    db.invoice.findFirst({ where: { pharmacyId, number: `KYP-${pharmacyId}`, status: "open" } }),
+    db.invoice.findFirst({
+      where: { pharmacyId, number: `KYP-${pharmacyId}`, status: "open" },
+    }),
   );
   if (verification) return verification;
 
@@ -96,13 +101,18 @@ async function collectWithMpesa(input: {
   );
 }
 
-export async function pharmacyBillingAction(_: BillingState, form: FormData): Promise<BillingState> {
+export async function pharmacyBillingAction(
+  _: BillingState,
+  form: FormData,
+): Promise<BillingState> {
   try {
     const user = await getSessionUser();
     if (!user) throw new Error("Sign in to continue.");
 
     const pharmacyId = String(form.get("pharmacyId") || "").trim();
-    const pharmacy = await db.pharmacy.findUnique({ where: { id: pharmacyId } });
+    const pharmacy = await db.pharmacy.findUnique({
+      where: { id: pharmacyId },
+    });
     if (!pharmacy || pharmacy.ownerUserId !== user.id) {
       throw new Error("Only the pharmacy owner can manage billing.");
     }
@@ -111,7 +121,9 @@ export async function pharmacyBillingAction(_: BillingState, form: FormData): Pr
 
     // 1. APPLY PROMO CARD / COUPON
     if (intent === "apply_promo") {
-      const code = String(form.get("code") || form.get("promoCode") || "").trim();
+      const code = String(
+        form.get("code") || form.get("promoCode") || "",
+      ).trim();
       if (!code) throw new Error("Enter a promotion or coupon code.");
       const result = await applyPromoCode(pharmacyId, code);
       revalidatePath("/onboard/billing");
@@ -121,7 +133,10 @@ export async function pharmacyBillingAction(_: BillingState, form: FormData): Pr
       const promo = result.promotion;
       const benefitParts: string[] = [];
       if (promo.verification) benefitParts.push("verification fee waived");
-      if (promo.recurring) benefitParts.push(`${promo.recurringMonths} free monthly period${promo.recurringMonths === 1 ? "" : "s"}`);
+      if (promo.recurring)
+        benefitParts.push(
+          `${promo.recurringMonths} free monthly period${promo.recurringMonths === 1 ? "" : "s"}`,
+        );
       const benefitText = benefitParts.join(" + ");
 
       return {
@@ -146,14 +161,22 @@ export async function pharmacyBillingAction(_: BillingState, form: FormData): Pr
           revalidatePath("/onboard");
         }
         return {
-          success: "All fees waived by promotion! Your pharmacy verification and first month are active.",
+          success:
+            "All fees waived by promotion! Your pharmacy verification and first month are active.",
           settled: true,
           waived: true,
         };
       }
 
-      const checkout = await createIntasendBillingCheckout(pharmacyId, invoice.id, { actorId: user.id });
-      if (!checkout.ok) throw new Error(checkout.message || "Could not create IntaSend checkout.");
+      const checkout = await createIntasendBillingCheckout(
+        pharmacyId,
+        invoice.id,
+        { actorId: user.id },
+      );
+      if (!checkout.ok)
+        throw new Error(
+          checkout.message || "Could not create IntaSend checkout.",
+        );
       return {
         success: "Redirecting to IntaSend secure payment...",
         checkoutUrl: checkout.checkoutUrl,
@@ -180,8 +203,15 @@ export async function pharmacyBillingAction(_: BillingState, form: FormData): Pr
         };
       }
 
-      const checkout = await createIntasendBillingCheckout(pharmacyId, invoice.id, { actorId: user.id });
-      if (!checkout.ok) throw new Error(checkout.message || "Could not create IntaSend checkout.");
+      const checkout = await createIntasendBillingCheckout(
+        pharmacyId,
+        invoice.id,
+        { actorId: user.id },
+      );
+      if (!checkout.ok)
+        throw new Error(
+          checkout.message || "Could not create IntaSend checkout.",
+        );
       return {
         success: "Redirecting to IntaSend secure payment...",
         checkoutUrl: checkout.checkoutUrl,
@@ -191,7 +221,10 @@ export async function pharmacyBillingAction(_: BillingState, form: FormData): Pr
     // 4. GENERAL INTASEND CHECKOUT FOR AN INVOICE
     if (intent === "intasend_checkout" || intent === "checkout") {
       const invoice = await resolveOwnedBillingInvoice(pharmacyId, form);
-      if (!invoice) throw new Error("This invoice is no longer available. Refresh the page and try again.");
+      if (!invoice)
+        throw new Error(
+          "This invoice is no longer available. Refresh the page and try again.",
+        );
 
       if (Number(invoice.totalKes) === 0 || invoice.status === "paid") {
         return {
@@ -200,9 +233,16 @@ export async function pharmacyBillingAction(_: BillingState, form: FormData): Pr
         };
       }
 
-      const checkout = await createIntasendBillingCheckout(pharmacyId, invoice.id, { actorId: user.id });
+      const checkout = await createIntasendBillingCheckout(
+        pharmacyId,
+        invoice.id,
+        { actorId: user.id },
+      );
       revalidatePath("/onboard/billing");
-      if (!checkout.ok) throw new Error(checkout.message || "Could not create checkout session.");
+      if (!checkout.ok)
+        throw new Error(
+          checkout.message || "Could not create checkout session.",
+        );
       return {
         success: "Redirecting to IntaSend...",
         checkoutUrl: checkout.checkoutUrl,
@@ -214,23 +254,34 @@ export async function pharmacyBillingAction(_: BillingState, form: FormData): Pr
       const subscription = await ownedSubscription(pharmacyId);
       if (!subscription) throw new Error("No current subscription was found.");
       if (subscription.externalSubscriptionId?.startsWith("daraja_ratiba:")) {
-        await cancelDarajaSubscriptionStandingOrder(subscription.externalSubscriptionId, user.id);
+        await cancelDarajaSubscriptionStandingOrder(
+          subscription.externalSubscriptionId,
+          user.id,
+        );
       }
-      await withPharmacy(pharmacyId, () => cancelSubscription(subscription.id, true, user.id));
+      await withPharmacy(pharmacyId, () =>
+        cancelSubscription(subscription.id, true, user.id),
+      );
       revalidatePath("/onboard/billing");
       revalidatePath("/admin/setup");
       return {
-        success: "Auto-renewal cancellation requested. Your current paid period remains available until its end date.",
+        success:
+          "Auto-renewal cancellation requested. Your current paid period remains available until its end date.",
       };
     }
 
     // 6. ACTIVATE SERVICE
     if (intent === "activate") {
       if (!(await loadPharmacySetup(pharmacyId)).profileReady) {
-        throw new Error("Complete verification and your pharmacy profile before starting monthly billing.");
+        throw new Error(
+          "Complete verification and your pharmacy profile before starting monthly billing.",
+        );
       }
       const invoice = await startPharmacyService(pharmacyId);
-      if (!invoice.subscriptionId) throw new Error("Monthly billing could not be started. Please try again.");
+      if (!invoice.subscriptionId)
+        throw new Error(
+          "Monthly billing could not be started. Please try again.",
+        );
       revalidatePath("/onboard");
       revalidatePath("/onboard/billing");
       revalidatePath("/admin/setup");
@@ -245,14 +296,20 @@ export async function pharmacyBillingAction(_: BillingState, form: FormData): Pr
           revalidatePath("/admin/setup");
         }
         return {
-          success: "Your promotional service period is active! No payment required.",
+          success:
+            "Your promotional service period is active! No payment required.",
           settled: true,
           waived: true,
         };
       }
 
-      const checkout = await createIntasendBillingCheckout(pharmacyId, invoice.id, { actorId: user.id });
-      if (!checkout.ok) throw new Error(checkout.message || "Could not start payment.");
+      const checkout = await createIntasendBillingCheckout(
+        pharmacyId,
+        invoice.id,
+        { actorId: user.id },
+      );
+      if (!checkout.ok)
+        throw new Error(checkout.message || "Could not start payment.");
       return {
         success: "Redirecting to IntaSend for first month renewal...",
         checkoutUrl: checkout.checkoutUrl,
@@ -272,11 +329,17 @@ export async function pharmacyBillingAction(_: BillingState, form: FormData): Pr
           orderBy: { dueAt: "asc" },
         }),
       );
-      if (!invoice) throw new Error("There is no unpaid monthly invoice to collect.");
-      const checkout = await createIntasendBillingCheckout(pharmacyId, invoice.id, { actorId: user.id });
+      if (!invoice)
+        throw new Error("There is no unpaid monthly invoice to collect.");
+      const checkout = await createIntasendBillingCheckout(
+        pharmacyId,
+        invoice.id,
+        { actorId: user.id },
+      );
       revalidatePath("/onboard/billing");
       revalidatePath("/admin/setup");
-      if (!checkout.ok) throw new Error(checkout.message || "Could not start payment.");
+      if (!checkout.ok)
+        throw new Error(checkout.message || "Could not start payment.");
       return {
         success: "Redirecting to IntaSend to settle overdue invoice...",
         checkoutUrl: checkout.checkoutUrl,
@@ -288,15 +351,29 @@ export async function pharmacyBillingAction(_: BillingState, form: FormData): Pr
     if (phone) {
       const invoice = await resolveOwnedBillingInvoice(pharmacyId, form);
       if (invoice) {
-        const result = await collectWithMpesa({ pharmacyId, invoiceId: invoice.id, phone, actorId: user.id });
+        const result = await collectWithMpesa({
+          pharmacyId,
+          invoiceId: invoice.id,
+          phone,
+          actorId: user.id,
+        });
         revalidatePath("/onboard/billing");
-        if (!result.ok) throw new Error("Could not start payment. Confirm the number and try again.");
-        if (result.alreadyPaid) return { success: "This invoice is already paid." };
-        return { success: "Payment prompt sent. Complete it on the phone; confirmation updates automatically." };
+        if (!result.ok)
+          throw new Error(
+            "Could not start payment. Confirm the number and try again.",
+          );
+        if (result.alreadyPaid)
+          return { success: "This invoice is already paid." };
+        return {
+          success:
+            "Payment prompt sent. Complete it on the phone; confirmation updates automatically.",
+        };
       }
     }
 
-    throw new Error("That billing action is not available. Refresh the page and try again.");
+    throw new Error(
+      "That billing action is not available. Refresh the page and try again.",
+    );
   } catch (error) {
     console.error("[billing][onboard] action failed", error);
     return {
@@ -336,7 +413,9 @@ export async function generatePromotionCodeAction(): Promise<BillingState> {
       if (!existing) return { generatedCode: code };
     }
 
-    throw new Error("Could not generate a unique promotion code. Please try again.");
+    throw new Error(
+      "Could not generate a unique promotion code. Please try again.",
+    );
   } catch (error) {
     console.error("[billing][promotion-code] generation failed", error);
     return {
@@ -348,25 +427,44 @@ export async function generatePromotionCodeAction(): Promise<BillingState> {
   }
 }
 
-export async function promotionAction(_: BillingState, form: FormData): Promise<BillingState> {
+export async function promotionAction(
+  _: BillingState,
+  form: FormData,
+): Promise<BillingState> {
   try {
-    const actor = await requirePlatformAction(["super_admin", "billing_admin"], { stepUp: true });
+    const actor = await requirePlatformAction(
+      ["super_admin", "billing_admin"],
+      { stepUp: true },
+    );
     const intent = String(form.get("intent") || "");
 
     if (intent === "stop") {
       await withPlatformTx(async (tx) => {
         const id = String(form.get("promotionId") || "");
-        await tx.pharmacyPromotion.update({ where: { id }, data: { active: false } });
+        await tx.pharmacyPromotion.update({
+          where: { id },
+          data: { active: false },
+        });
         await tx.auditLog.create({
-          data: { actorId: actor.id, action: "promotion.stop", entityType: "PharmacyPromotion", entityId: id },
+          data: {
+            actorId: actor.id,
+            action: "promotion.stop",
+            entityType: "PharmacyPromotion",
+            entityId: id,
+          },
         });
       });
       revalidatePath("/platform/billing");
-      return { success: "Promotion stopped. Existing allocated benefits are preserved." };
+      return {
+        success:
+          "Promotion stopped. Existing allocated benefits are preserved.",
+      };
     }
 
     const name = String(form.get("name") || "").trim();
-    const submittedCode = String(form.get("code") || "").trim().toUpperCase();
+    const submittedCode = normalizePromotionCode(
+      String(form.get("code") || ""),
+    );
     const capacity = Number(form.get("capacity"));
     const recurringMonths = Number(form.get("months"));
     const scope = String(form.get("scope"));
@@ -382,7 +480,9 @@ export async function promotionAction(_: BillingState, form: FormData): Promise<
       recurringMonths > 120 ||
       !["verification", "recurring", "both"].includes(scope)
     ) {
-      throw new Error("Enter a name, valid capacity, scope and 1–120 promotional months.");
+      throw new Error(
+        "Enter a name, valid capacity, scope and 1–120 promotional months.",
+      );
     }
 
     let activeCode = submittedCode;
@@ -394,7 +494,9 @@ export async function promotionAction(_: BillingState, form: FormData): Promise<
           select: { id: true },
         });
         if (existing) {
-          throw new Error(`Promotional code "${activeCode}" already exists. Generate a new code.`);
+          throw new Error(
+            `Promotional code "${activeCode}" already exists. Generate a new code.`,
+          );
         }
       } else {
         // Generate on the server at the exact moment the promotion is created,
@@ -411,7 +513,9 @@ export async function promotionAction(_: BillingState, form: FormData): Promise<
           }
         }
         if (!activeCode) {
-          throw new Error("Could not allocate a unique promotional code. Please try again.");
+          throw new Error(
+            "Could not allocate a unique promotional code. Please try again.",
+          );
         }
       }
 
@@ -452,7 +556,8 @@ export async function promotionAction(_: BillingState, form: FormData): Promise<
 
     if ((error as { code?: string }).code === "P2002") {
       return {
-        error: "That promotional code was just taken. Generate a new code and try again.",
+        error:
+          "That promotional code was just taken. Generate a new code and try again.",
       };
     }
 
