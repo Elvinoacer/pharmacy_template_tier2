@@ -358,3 +358,44 @@
 :global(html[data-theme="dark"]) .surface :global([class*="border-indigo-200"]) {
   border-color: color-mix(in srgb, #a5b4fc 58%, var(--card)) !important;
 }
+
+
+:global(html[data-theme="dark"]) .surface :global([class*="bg-teal-100"]),
+:global(html[data-theme="dark"]) .surface :global([class*="bg-teal-200"]) {
+  background-color: rgba(20, 184, 166, .18) !important;
+}
+
+:global(html[data-theme="dark"]) .surface :global([class*="bg-emerald-100"]),
+:global(html[data-theme="dark"]) .surface :global([class*="bg-emerald-200"]) {
+  background-color: rgba(16, 185, 129, .18) !important;
+}
+
+:global(html[data-theme="dark"]) .surface :global([class*="bg-amber-100"]),
+:global(html[data-theme="dark"]) .surface :global([class*="bg-amber-200"]) {
+  background-color: rgba(245, 158, 11, .18) !important;
+}
+
+:global(html[data-theme="dark"]) .surface :global([class*="bg-orange-100"]),
+:global(html[data-theme="dark"]) .surface :global([class*="bg-orange-200"]) {
+  background-color: rgba(249, 115, 22, .18) !important;
+}
+
+:global(html[data-theme="dark"]) .surface :global([class*="bg-red-100"]),
+:global(html[data-theme="dark"]) .surface :global([class*="bg-red-200"]) {
+  background-color: rgba(239, 68, 68, .18) !important;
+}
+
+:global(html[data-theme="dark"]) .surface :global([class*="bg-rose-100"]),
+:global(html[data-theme="dark"]) .surface :global([class*="bg-rose-200"]) {
+  background-color: rgba(244, 63, 94, .18) !important;
+}
+
+:global(html[data-theme="dark"]) .surface :global([class*="bg-indigo-100"]),
+:global(html[data-theme="dark"]) .surface :global([class*="bg-indigo-200"]) {
+  background-color: rgba(99, 102, 241, .18) !important;
+}
+
+:global(html[data-theme="dark"]) .surface :global([class*="bg-purple-100"]),
+:global(html[data-theme="dark"]) .surface :global([class*="bg-purple-200"]) {
+  background-color: rgba(168, 85, 247, .18) !important;
+}
