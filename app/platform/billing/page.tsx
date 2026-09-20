@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { PromotionForm, WaiverDecisionForm } from "@/app/components/onboard/BillingForms";
 import { AlertCircle, ArrowRight, FileText, Layers3, ReceiptText, UsersRound } from "lucide-react";
-import { prismaUnscoped } from "@/app/lib/db";
+import { prismaUnscoped, withPlatformTx } from "@/app/lib/db";
 import { PlatformPage, PlatformTable } from "@/app/platform/_components/PlatformPage";
 import { ensureDefaultPlans } from "@/app/lib/platform/billing";
 
@@ -38,7 +38,12 @@ export default async function PlatformBillingPage() {
       .catch(() => 0),
   ]);
 
-  const promotions = await prismaUnscoped.pharmacyPromotion.findMany({ orderBy: { createdAt: "desc" }, take: 50 });
+  const promotions = await withPlatformTx((tx) =>
+    tx.pharmacyPromotion.findMany({
+      orderBy: { createdAt: "desc" },
+      take: 50,
+    }),
+  );
   const waiverRequests = await prismaUnscoped.pharmacyWaiverRequest.findMany({
     where: { status: "pending" },
     include: { pharmacy: { select: { name: true, slug: true } } },
