@@ -59,7 +59,8 @@ const CATEGORIES: OtcCategorySeed[] = [
     name: "Pain Relief",
     description:
       "Non-prescription analgesics, anti-inflammatories, and topical rubs for mild-to-moderate headaches, muscle aches, joint stiffness, and fever.",
-    imageUrl: "https://pub-cc07856d657b4a7197710051042b3eda.r2.dev/images/otc/pain-relief.webp",
+    imageUrl:
+      "https://pub-cc07856d657b4a7197710051042b3eda.r2.dev/images/otc/pain-relief.webp",
     brands: ["Panadol", "Brufen", "Voltaren", "Deep Heat", "Disprin", "Advil"],
     tips: [
       "Do not combine multiple medicines containing paracetamol (acetaminophen) — max 4,000 mg daily for adults.",
@@ -74,7 +75,8 @@ const CATEGORIES: OtcCategorySeed[] = [
     name: "Cold & Flu",
     description:
       "Symptom relief for coughs, congestion, sore throats, and seasonal illness — with clear guidance on what actually helps.",
-    imageUrl: "https://pub-cc07856d657b4a7197710051042b3eda.r2.dev/images/otc/cold-flu.webp",
+    imageUrl:
+      "https://pub-cc07856d657b4a7197710051042b3eda.r2.dev/images/otc/cold-flu.webp",
     brands: ["Benylin", "Otrivin", "Strepsils", "Vicks", "Actifed", "Mucinex"],
     tips: [
       "Limit decongestant nasal sprays to 3–5 consecutive days to avoid rebound congestion.",
@@ -89,7 +91,8 @@ const CATEGORIES: OtcCategorySeed[] = [
     name: "Allergy Treatments",
     description:
       "Non-drowsy antihistamines, corticosteroid nasal sprays, and eye drops for seasonal hay fever, pet dander, and allergic skin reactions.",
-    imageUrl: "https://pub-cc07856d657b4a7197710051042b3eda.r2.dev/images/articles/seasonal-allergy-guide.webp",
+    imageUrl:
+      "https://pub-cc07856d657b4a7197710051042b3eda.r2.dev/images/articles/seasonal-allergy-guide.webp",
     brands: ["Zyrtec", "Clarityn", "Telfast", "Flixonase", "Optrex", "Allegra"],
     tips: [
       "Second-generation antihistamines (cetirizine, loratadine) relieve allergies with minimal drowsiness.",
@@ -103,7 +106,8 @@ const CATEGORIES: OtcCategorySeed[] = [
     slug: "allergy",
     name: "Allergy",
     description: "Allergy and hay fever treatments catalogue alias.",
-    imageUrl: "https://pub-cc07856d657b4a7197710051042b3eda.r2.dev/images/articles/seasonal-allergy-guide.webp",
+    imageUrl:
+      "https://pub-cc07856d657b4a7197710051042b3eda.r2.dev/images/articles/seasonal-allergy-guide.webp",
     brands: ["Zyrtec", "Clarityn", "Telfast"],
     tips: ["Second-generation antihistamines cause less drowsiness."],
     sortOrder: 35,
@@ -113,8 +117,16 @@ const CATEGORIES: OtcCategorySeed[] = [
     name: "Digestive Health",
     description:
       "Antacids, acid reducers, oral rehydration salts, anti-diarrheals, laxatives, and daily probiotics for digestive comfort.",
-    imageUrl: "https://pub-cc07856d657b4a7197710051042b3eda.r2.dev/images/services/medication-counselling.webp",
-    brands: ["Gaviscon", "Imodium", "Dioralyte", "Dulcolax", "Bio-Kult", "Prilosec"],
+    imageUrl:
+      "https://pub-cc07856d657b4a7197710051042b3eda.r2.dev/images/services/medication-counselling.webp",
+    brands: [
+      "Gaviscon",
+      "Imodium",
+      "Dioralyte",
+      "Dulcolax",
+      "Bio-Kult",
+      "Prilosec",
+    ],
     tips: [
       "Oral rehydration salts (ORS) are the first priority during diarrhea to replace lost electrolytes.",
       "Short-course acid reducers (omeprazole) take 1–4 days for full 24-hour symptom control.",
@@ -126,7 +138,8 @@ const CATEGORIES: OtcCategorySeed[] = [
     slug: "digestive",
     name: "Digestive",
     description: "Digestive health catalogue alias.",
-    imageUrl: "https://pub-cc07856d657b4a7197710051042b3eda.r2.dev/images/services/medication-counselling.webp",
+    imageUrl:
+      "https://pub-cc07856d657b4a7197710051042b3eda.r2.dev/images/services/medication-counselling.webp",
     brands: ["Gaviscon", "Imodium", "Dioralyte"],
     tips: ["Oral rehydration is critical during acute diarrhea."],
     sortOrder: 45,
@@ -136,7 +149,8 @@ const CATEGORIES: OtcCategorySeed[] = [
     name: "First Aid",
     description:
       "Emergency first aid kits, sterile bandages, tapes, burn dressings, and cold compresses for home, workplace, and travel preparedness.",
-    imageUrl: "https://pub-cc07856d657b4a7197710051042b3eda.r2.dev/images/otc/first-aid.webp",
+    imageUrl:
+      "https://pub-cc07856d657b4a7197710051042b3eda.r2.dev/images/otc/first-aid.webp",
     brands: ["Band-Aid", "Burnshield", "3M Nexcare", "Elastoplast", "Curad"],
     tips: [
       "Clean fresh wounds gently with clean water or sterile saline; avoid harsh alcohol directly on open cuts.",
@@ -150,7 +164,8 @@ const CATEGORIES: OtcCategorySeed[] = [
     name: "Topical Treatments",
     description:
       "Targeted hydrocortisone anti-itch creams, antifungal treatments, soothing calamine, and hemorrhoidal comfort ointments.",
-    imageUrl: "https://pub-cc07856d657b4a7197710051042b3eda.r2.dev/images/otc/skin-care.webp",
+    imageUrl:
+      "https://pub-cc07856d657b4a7197710051042b3eda.r2.dev/images/otc/skin-care.webp",
     brands: ["Canesten", "Neosporin", "Anusol", "Cortizone", "Calamine"],
     tips: [
       "Apply hydrocortisone 1% thinly for a maximum of 7 consecutive days; never apply to viral sores.",
@@ -164,8 +179,16 @@ const CATEGORIES: OtcCategorySeed[] = [
     name: "Skin Care",
     description:
       "Dermatologist-tested barrier repair creams, medical emollients, broad-spectrum sunscreens, and OTC acne therapies.",
-    imageUrl: "https://pub-cc07856d657b4a7197710051042b3eda.r2.dev/images/otc/skin-care.webp",
-    brands: ["CeraVe", "La Roche-Posay", "Epimax", "Cetaphil", "PanOxyl", "Eucerin"],
+    imageUrl:
+      "https://pub-cc07856d657b4a7197710051042b3eda.r2.dev/images/otc/skin-care.webp",
+    brands: [
+      "CeraVe",
+      "La Roche-Posay",
+      "Epimax",
+      "Cetaphil",
+      "PanOxyl",
+      "Eucerin",
+    ],
     tips: [
       "Apply thick ceramide creams immediately after bathing while skin is still slightly damp.",
       "Daily broad-spectrum SPF 30+ or SPF 50+ is essential for skin cancer protection.",
@@ -178,7 +201,8 @@ const CATEGORIES: OtcCategorySeed[] = [
     name: "Antiseptics",
     description:
       "Medical-grade antimicrobial skin cleansers, povidone-iodine solutions, hydrogen peroxide, and alcohol swabs for disinfecting skin.",
-    imageUrl: "https://pub-cc07856d657b4a7197710051042b3eda.r2.dev/images/gallery/careful_dispensing.webp",
+    imageUrl:
+      "https://pub-cc07856d657b4a7197710051042b3eda.r2.dev/images/gallery/careful_dispensing.webp",
     brands: ["Betadine", "Dettol", "Savlon", "Hibiclens", "Medi-Swab"],
     tips: [
       "Povidone-iodine provides broad antibacterial, antifungal, and antiviral coverage without stinging.",
@@ -192,7 +216,8 @@ const CATEGORIES: OtcCategorySeed[] = [
     name: "Wound Care",
     description:
       "Advanced hydrocolloid dressings, non-stick sterile pads, wound irrigation saline, and silicone scar reduction gels.",
-    imageUrl: "https://pub-cc07856d657b4a7197710051042b3eda.r2.dev/images/otc/first-aid.webp",
+    imageUrl:
+      "https://pub-cc07856d657b4a7197710051042b3eda.r2.dev/images/otc/first-aid.webp",
     brands: ["DuoDERM", "Melolin", "Kelo-Cote", "Steri-Strip", "Opsite"],
     tips: [
       "Moist wound healing under hydrocolloid dressings prevents scabs and reduces scarring by up to 40%.",
@@ -206,8 +231,16 @@ const CATEGORIES: OtcCategorySeed[] = [
     name: "Oral Care",
     description:
       "Medicated antiseptic mouthwashes, mouth ulcer gels, emergency toothache analgesics, dry mouth hydrating rinses, and desensitizing toothpastes.",
-    imageUrl: "https://pub-cc07856d657b4a7197710051042b3eda.r2.dev/images/gallery/welcoming_retail_floor.webp",
-    brands: ["Corsodyl", "Bonjela", "Orajel", "Biotène", "Sensodyne", "Colgate"],
+    imageUrl:
+      "https://pub-cc07856d657b4a7197710051042b3eda.r2.dev/images/gallery/welcoming_retail_floor.webp",
+    brands: [
+      "Corsodyl",
+      "Bonjela",
+      "Orajel",
+      "Biotène",
+      "Sensodyne",
+      "Colgate",
+    ],
     tips: [
       "Use chlorhexidine mouthwash 30 minutes after brushing to avoid toothpaste interference.",
       "Apply protective ulcer gels before meals to shield exposed nerve endings.",
@@ -220,8 +253,16 @@ const CATEGORIES: OtcCategorySeed[] = [
     name: "Feminine Hygiene",
     description:
       "pH-balanced intimate washes, organic sanitary protection, single-dose thrush treatments, and period pain heat therapies.",
-    imageUrl: "https://pub-cc07856d657b4a7197710051042b3eda.r2.dev/images/otc/womens-health.webp",
-    brands: ["Always", "Tampax", "Femfresh", "Canesten", "Cura-Heat", "Clearblue"],
+    imageUrl:
+      "https://pub-cc07856d657b4a7197710051042b3eda.r2.dev/images/otc/womens-health.webp",
+    brands: [
+      "Always",
+      "Tampax",
+      "Femfresh",
+      "Canesten",
+      "Cura-Heat",
+      "Clearblue",
+    ],
     tips: [
       "Vaginal pessaries should be inserted at bedtime using the applicator for optimal retention.",
       "Only use gentle cleansers externally; the internal vaginal canal is self-cleansing.",
@@ -234,7 +275,8 @@ const CATEGORIES: OtcCategorySeed[] = [
     name: "Women's Health",
     description:
       "Reproductive health, prenatal vitamins, menopause support, and everyday wellness products.",
-    imageUrl: "https://pub-cc07856d657b4a7197710051042b3eda.r2.dev/images/otc/womens-health.webp",
+    imageUrl:
+      "https://pub-cc07856d657b4a7197710051042b3eda.r2.dev/images/otc/womens-health.webp",
     brands: ["Always", "Summer's Eve", "Pregnacare", "Clearblue"],
     tips: ["Prenatal vitamins ideally start before conception."],
     sortOrder: 115,
@@ -244,8 +286,16 @@ const CATEGORIES: OtcCategorySeed[] = [
     name: "Baby Care",
     description:
       "Gentle pediatric fever drops with dosing syringes, zinc barrier diaper creams, simethicone infant colic drops, and sterile saline nasal mists.",
-    imageUrl: "https://pub-cc07856d657b4a7197710051042b3eda.r2.dev/images/otc/baby-care.webp",
-    brands: ["Calpol", "Infacol", "Sudocrem", "Little Remedies", "Ashton & Parsons", "Aveeno Baby"],
+    imageUrl:
+      "https://pub-cc07856d657b4a7197710051042b3eda.r2.dev/images/otc/baby-care.webp",
+    brands: [
+      "Calpol",
+      "Infacol",
+      "Sudocrem",
+      "Little Remedies",
+      "Ashton & Parsons",
+      "Aveeno Baby",
+    ],
     tips: [
       "Always dose infant liquid medicines by exact weight using the included oral syringe.",
       "NEVER give aspirin or products containing salicylates to children or teens (Reye's syndrome risk).",
@@ -258,7 +308,8 @@ const CATEGORIES: OtcCategorySeed[] = [
     name: "Medical Consumables",
     description:
       "Clinically calibrated blood pressure monitors, pulse oximeters, digital thermometers, blood glucose test strips, sterile gloves, and surgical masks.",
-    imageUrl: "https://pub-cc07856d657b4a7197710051042b3eda.r2.dev/images/gallery/modern_care_tools.webp",
+    imageUrl:
+      "https://pub-cc07856d657b4a7197710051042b3eda.r2.dev/images/gallery/modern_care_tools.webp",
     brands: ["Omron", "OneTouch", "Accu-Chek", "Contec", "Beurer", "3M"],
     tips: [
       "Rest 5 minutes quietly before taking resting blood pressure readings.",
@@ -272,7 +323,8 @@ const CATEGORIES: OtcCategorySeed[] = [
     name: "Diabetes Care",
     description:
       "Meters, strips, lancets, glucose tablets, and supportive OTC products for everyday diabetes self-management.",
-    imageUrl: "https://pub-cc07856d657b4a7197710051042b3eda.r2.dev/images/articles/diabetes-everyday-tips.webp",
+    imageUrl:
+      "https://pub-cc07856d657b4a7197710051042b3eda.r2.dev/images/articles/diabetes-everyday-tips.webp",
     brands: ["OneTouch", "Contour", "FreeStyle", "Dex4"],
     tips: ["Match strips to your exact meter model."],
     sortOrder: 135,
@@ -282,8 +334,17 @@ const CATEGORIES: OtcCategorySeed[] = [
     name: "Nutritional Products",
     description:
       "Complete daily multivitamins, effervescent vitamin C + zinc, oral electrolyte hydration, gentle iron tonics, and balanced meal replacement shakes.",
-    imageUrl: "https://pub-cc07856d657b4a7197710051042b3eda.r2.dev/images/otc/vitamins-supplements.webp",
-    brands: ["Wellman", "Wellwoman", "Berocca", "Hydralyte", "Feroglobin", "Ensure", "Centrum"],
+    imageUrl:
+      "https://pub-cc07856d657b4a7197710051042b3eda.r2.dev/images/otc/vitamins-supplements.webp",
+    brands: [
+      "Wellman",
+      "Wellwoman",
+      "Berocca",
+      "Hydralyte",
+      "Feroglobin",
+      "Ensure",
+      "Centrum",
+    ],
     tips: [
       "Take iron supplements with vitamin C for enhanced absorption; avoid dairy or tea within 2 hours.",
       "Do not exceed daily upper limits for fat-soluble vitamins (A, D, E, K).",
@@ -294,8 +355,10 @@ const CATEGORIES: OtcCategorySeed[] = [
   {
     slug: "vitamins-supplements",
     name: "Vitamins & Supplements",
-    description: "Evidence-minded vitamins, minerals, and wellness supplements catalogue alias.",
-    imageUrl: "https://pub-cc07856d657b4a7197710051042b3eda.r2.dev/images/otc/vitamins-supplements.webp",
+    description:
+      "Evidence-minded vitamins, minerals, and wellness supplements catalogue alias.",
+    imageUrl:
+      "https://pub-cc07856d657b4a7197710051042b3eda.r2.dev/images/otc/vitamins-supplements.webp",
     brands: ["Nature Made", "Centrum", "Garden of Life", "Nordic Naturals"],
     tips: ["Tell us about all supplements; some interact with prescriptions."],
     sortOrder: 145,
@@ -311,11 +374,16 @@ const PRODUCTS: OtcProductSeed[] = [
     brandName: "Panadol",
     packSize: "Pack of 20 Tablets",
     category: "pain-relief",
-    description: "Fast, powerful relief from tough headaches, migraines, muscle aches, backaches, toothache, and fever.",
-    indications: "Indicated for the relief of headache, migraine, backache, musculoskeletal pain, toothache, and feverish conditions.",
-    dosage: "Adults and children 12 years and older: 1 to 2 tablets every 4 to 6 hours as needed. Do not exceed 8 tablets in 24 hours.",
-    sideEffects: "Rare: skin rash, minor stomach upset. High doses cause severe liver damage.",
-    contraindications: "Severe liver or kidney impairment. Hypersensitivity to paracetamol or caffeine.",
+    description:
+      "Fast, powerful relief from tough headaches, migraines, muscle aches, backaches, toothache, and fever.",
+    indications:
+      "Indicated for the relief of headache, migraine, backache, musculoskeletal pain, toothache, and feverish conditions.",
+    dosage:
+      "Adults and children 12 years and older: 1 to 2 tablets every 4 to 6 hours as needed. Do not exceed 8 tablets in 24 hours.",
+    sideEffects:
+      "Rare: skin rash, minor stomach upset. High doses cause severe liver damage.",
+    contraindications:
+      "Severe liver or kidney impairment. Hypersensitivity to paracetamol or caffeine.",
     storage: "Store below 30°C in a dry place protected from light.",
     price: 150,
     currentStock: 45,
@@ -330,11 +398,16 @@ const PRODUCTS: OtcProductSeed[] = [
     brandName: "Brufen",
     packSize: "Pack of 30 Tablets",
     category: "pain-relief",
-    description: "Anti-inflammatory pain reliever targeting joint aches, muscular strains, back pain, dental pain, and menstrual cramps.",
-    indications: "Relief of mild to moderate pain, inflammation, swelling, and fever associated with arthritis, strains, and dysmenorrhea.",
-    dosage: "Adults: 1 tablet (400mg) three times daily after meals with water. Maximum 1,200mg daily OTC.",
-    sideEffects: "Nausea, dyspepsia, heartburn, mild dizziness. Take with food.",
-    contraindications: "Active peptic ulcer, severe heart failure, third trimester of pregnancy, aspirin allergy.",
+    description:
+      "Anti-inflammatory pain reliever targeting joint aches, muscular strains, back pain, dental pain, and menstrual cramps.",
+    indications:
+      "Relief of mild to moderate pain, inflammation, swelling, and fever associated with arthritis, strains, and dysmenorrhea.",
+    dosage:
+      "Adults: 1 tablet (400mg) three times daily after meals with water. Maximum 1,200mg daily OTC.",
+    sideEffects:
+      "Nausea, dyspepsia, heartburn, mild dizziness. Take with food.",
+    contraindications:
+      "Active peptic ulcer, severe heart failure, third trimester of pregnancy, aspirin allergy.",
     storage: "Store in original pack below 25°C.",
     price: 220,
     currentStock: 38,
@@ -349,11 +422,15 @@ const PRODUCTS: OtcProductSeed[] = [
     brandName: "Voltaren",
     packSize: "50g Tube",
     category: "pain-relief",
-    description: "Non-greasy topical gel that penetrates deep into joints and muscles to relieve localized inflammation and pain.",
-    indications: "Local symptomatic relief of pain and inflammation in trauma of tendons, ligaments, muscles, and localized osteoarthritis.",
-    dosage: "Apply a small cherry-sized amount (2–4g) to the affected area 3–4 times daily and rub in gently.",
+    description:
+      "Non-greasy topical gel that penetrates deep into joints and muscles to relieve localized inflammation and pain.",
+    indications:
+      "Local symptomatic relief of pain and inflammation in trauma of tendons, ligaments, muscles, and localized osteoarthritis.",
+    dosage:
+      "Apply a small cherry-sized amount (2–4g) to the affected area 3–4 times daily and rub in gently.",
     sideEffects: "Mild skin rash, redness, or dryness at application site.",
-    contraindications: "Open wounds, broken skin, eczema, or known allergy to NSAIDs.",
+    contraindications:
+      "Open wounds, broken skin, eczema, or known allergy to NSAIDs.",
     storage: "Store below 30°C.",
     price: 680,
     currentStock: 25,
@@ -368,11 +445,15 @@ const PRODUCTS: OtcProductSeed[] = [
     brandName: "Deep Heat",
     packSize: "67g Tube",
     category: "pain-relief",
-    description: "Fast-acting warming rub for relief of muscular aches, stiff neck, lumbago, fibrositis, and rheumatic pain.",
-    indications: "Symptomatic relief of muscular pain and stiffness including backache, sciatica, sprains, and bruises.",
-    dosage: "Apply thinly to affected area and massage gently until thoroughly absorbed, 2–3 times daily.",
+    description:
+      "Fast-acting warming rub for relief of muscular aches, stiff neck, lumbago, fibrositis, and rheumatic pain.",
+    indications:
+      "Symptomatic relief of muscular pain and stiffness including backache, sciatica, sprains, and bruises.",
+    dosage:
+      "Apply thinly to affected area and massage gently until thoroughly absorbed, 2–3 times daily.",
     sideEffects: "Transient skin warmth, mild redness, tingling sensation.",
-    contraindications: "Do not use on broken skin, near eyes, on children under 5 years, or with heating pads.",
+    contraindications:
+      "Do not use on broken skin, near eyes, on children under 5 years, or with heating pads.",
     storage: "Store below 25°C.",
     price: 450,
     currentStock: 30,
@@ -389,11 +470,15 @@ const PRODUCTS: OtcProductSeed[] = [
     brandName: "Benylin",
     packSize: "100ml Bottle",
     category: "cold-flu",
-    description: "Multi-action liquid for fever, body aches, runny nose, congestion, and dry irritating coughs.",
-    indications: "Relief of cold and flu symptoms including cough, fever, headache, sore throat, and nasal congestion.",
-    dosage: "Adults: 20ml (4 x 5ml spoonfuls) every 4–6 hours. Do not exceed 4 doses in 24 hours.",
+    description:
+      "Multi-action liquid for fever, body aches, runny nose, congestion, and dry irritating coughs.",
+    indications:
+      "Relief of cold and flu symptoms including cough, fever, headache, sore throat, and nasal congestion.",
+    dosage:
+      "Adults: 20ml (4 x 5ml spoonfuls) every 4–6 hours. Do not exceed 4 doses in 24 hours.",
     sideEffects: "Drowsiness, dry mouth, mild nausea. May cause sleepiness.",
-    contraindications: "Concomitant use of other paracetamol products or MAOIs.",
+    contraindications:
+      "Concomitant use of other paracetamol products or MAOIs.",
     storage: "Store below 25°C. Keep out of reach of children.",
     price: 480,
     currentStock: 32,
@@ -408,11 +493,16 @@ const PRODUCTS: OtcProductSeed[] = [
     brandName: "Otrivin",
     packSize: "10ml Metered Spray",
     category: "cold-flu",
-    description: "Fast-acting nasal decongestant spray clearing blocked sinuses and nasal passages within 2 minutes for up to 12 hours.",
-    indications: "Nasal congestion due to colds, hay fever, sinusitis, and upper respiratory allergies.",
-    dosage: "Adults: 1 spray into each nostril 2–3 times daily as needed. Max 3 times daily for a MAXIMUM of 5 consecutive days.",
-    sideEffects: "Temporary nasal stinging, dryness, sneezing. Rebound congestion if overused.",
-    contraindications: "Glaucoma, recent trans-nasal surgery, children under 12 years.",
+    description:
+      "Fast-acting nasal decongestant spray clearing blocked sinuses and nasal passages within 2 minutes for up to 12 hours.",
+    indications:
+      "Nasal congestion due to colds, hay fever, sinusitis, and upper respiratory allergies.",
+    dosage:
+      "Adults: 1 spray into each nostril 2–3 times daily as needed. Max 3 times daily for a MAXIMUM of 5 consecutive days.",
+    sideEffects:
+      "Temporary nasal stinging, dryness, sneezing. Rebound congestion if overused.",
+    contraindications:
+      "Glaucoma, recent trans-nasal surgery, children under 12 years.",
     storage: "Store below 30°C.",
     price: 550,
     currentStock: 40,
@@ -427,11 +517,15 @@ const PRODUCTS: OtcProductSeed[] = [
     brandName: "Strepsils",
     packSize: "Pack of 24 Lozenges",
     category: "cold-flu",
-    description: "Dual antibacterial and soothing throat lozenges fighting throat infections and relieving painful swallowing.",
-    indications: "Symptomatic relief of mouth and throat infections, painful dry cough irritation, and pharyngitis.",
-    dosage: "Adults and children over 6: Dissolve 1 lozenge slowly in the mouth every 2 to 3 hours. Max 12 lozenges in 24 hours.",
+    description:
+      "Dual antibacterial and soothing throat lozenges fighting throat infections and relieving painful swallowing.",
+    indications:
+      "Symptomatic relief of mouth and throat infections, painful dry cough irritation, and pharyngitis.",
+    dosage:
+      "Adults and children over 6: Dissolve 1 lozenge slowly in the mouth every 2 to 3 hours. Max 12 lozenges in 24 hours.",
     sideEffects: "Rare: mild oral tingling or tongue discomfort.",
-    contraindications: "Children under 6 years. Hypersensitivity to ingredients.",
+    contraindications:
+      "Children under 6 years. Hypersensitivity to ingredients.",
     storage: "Store below 25°C in a dry place.",
     price: 350,
     currentStock: 50,
@@ -446,11 +540,15 @@ const PRODUCTS: OtcProductSeed[] = [
     brandName: "Vicks",
     packSize: "50g Jar",
     category: "cold-flu",
-    description: "Aromatic topical vapour ointment releasing medicated vapours for up to 8 hours to clear breathing passages.",
-    indications: "Relief of nasal catarrh, congestion, sore throat, and coughs due to colds.",
-    dosage: "Rub generously on chest, throat, and back 2–3 times daily, or melt 2 teaspoons into hot water for steam inhalation.",
+    description:
+      "Aromatic topical vapour ointment releasing medicated vapours for up to 8 hours to clear breathing passages.",
+    indications:
+      "Relief of nasal catarrh, congestion, sore throat, and coughs due to colds.",
+    dosage:
+      "Rub generously on chest, throat, and back 2–3 times daily, or melt 2 teaspoons into hot water for steam inhalation.",
     sideEffects: "Mild skin redness or warmth.",
-    contraindications: "Never ingest or apply inside nostrils. Not for infants under 2 years.",
+    contraindications:
+      "Never ingest or apply inside nostrils. Not for infants under 2 years.",
     storage: "Store below 25°C with lid tightly closed.",
     price: 320,
     currentStock: 45,
@@ -467,10 +565,14 @@ const PRODUCTS: OtcProductSeed[] = [
     brandName: "Zyrtec",
     packSize: "Pack of 10 Film-Coated Tablets",
     category: "allergy-treatments",
-    description: "24-hour non-drowsy relief from allergic rhinitis, itchy eyes, sneezing, runny nose, and itchy skin hives.",
-    indications: "Seasonal and perennial allergic rhinitis, allergic conjunctivitis, and chronic idiopathic urticaria.",
-    dosage: "Adults and children over 12: 1 tablet (10mg) once daily with water.",
-    sideEffects: "Mild headache, dry mouth, mild fatigue in sensitive individuals.",
+    description:
+      "24-hour non-drowsy relief from allergic rhinitis, itchy eyes, sneezing, runny nose, and itchy skin hives.",
+    indications:
+      "Seasonal and perennial allergic rhinitis, allergic conjunctivitis, and chronic idiopathic urticaria.",
+    dosage:
+      "Adults and children over 12: 1 tablet (10mg) once daily with water.",
+    sideEffects:
+      "Mild headache, dry mouth, mild fatigue in sensitive individuals.",
     contraindications: "Severe renal failure (eGFR < 10 ml/min).",
     storage: "Store below 25°C.",
     price: 300,
@@ -486,9 +588,12 @@ const PRODUCTS: OtcProductSeed[] = [
     brandName: "Flixonase",
     packSize: "120 Metered Sprays Bottle",
     category: "allergy-treatments",
-    description: "Direct-action corticosteroid nasal spray relieving 6 major allergy symptoms: nasal congestion, sneezing, itchy nose, runny nose, itchy eyes, and sinus pressure.",
-    indications: "Prevention and treatment of seasonal allergic rhinitis (hay fever) and perennial rhinitis in adults.",
-    dosage: "Adults: 2 sprays into each nostril once daily, preferably in the morning. Once controlled, reduce to 1 spray per nostril.",
+    description:
+      "Direct-action corticosteroid nasal spray relieving 6 major allergy symptoms: nasal congestion, sneezing, itchy nose, runny nose, itchy eyes, and sinus pressure.",
+    indications:
+      "Prevention and treatment of seasonal allergic rhinitis (hay fever) and perennial rhinitis in adults.",
+    dosage:
+      "Adults: 2 sprays into each nostril once daily, preferably in the morning. Once controlled, reduce to 1 spray per nostril.",
     sideEffects: "Minor nosebleed, nasal irritation, dry throat.",
     contraindications: "Untreated localized nasal fungal or viral infections.",
     storage: "Store below 30°C. Do not refrigerate.",
@@ -505,11 +610,15 @@ const PRODUCTS: OtcProductSeed[] = [
     brandName: "Optrex",
     packSize: "10ml Dropper Bottle",
     category: "allergy-treatments",
-    description: "Soothing medicated eye drops treating and preventing itchy, red, watery allergic eyes caused by pollen, pet dander, and dust.",
+    description:
+      "Soothing medicated eye drops treating and preventing itchy, red, watery allergic eyes caused by pollen, pet dander, and dust.",
     indications: "Acute and chronic allergic conjunctivitis.",
-    dosage: "1 to 2 drops into each eye 4 times daily, or as advised by pharmacist.",
-    sideEffects: "Transient mild stinging or blurred vision immediately after instillation.",
-    contraindications: "Remove soft contact lenses before use; wait 15 minutes before reinserting.",
+    dosage:
+      "1 to 2 drops into each eye 4 times daily, or as advised by pharmacist.",
+    sideEffects:
+      "Transient mild stinging or blurred vision immediately after instillation.",
+    contraindications:
+      "Remove soft contact lenses before use; wait 15 minutes before reinserting.",
     storage: "Store below 25°C. Discard 4 weeks after opening.",
     price: 580,
     currentStock: 25,
@@ -526,11 +635,15 @@ const PRODUCTS: OtcProductSeed[] = [
     brandName: "Gaviscon",
     packSize: "200ml Bottle",
     category: "digestive-health",
-    description: "Fast-acting double relief: forms a protective raft over stomach contents to soothe heartburn and neutralizes excess acid to relieve indigestion.",
-    indications: "Treatment of gastroesophageal reflux symptoms such as acid regurgitation, heartburn, and post-meal indigestion.",
-    dosage: "Adults and children over 12: 10–20ml after meals and at bedtime (up to 4 times daily). Shake well.",
+    description:
+      "Fast-acting double relief: forms a protective raft over stomach contents to soothe heartburn and neutralizes excess acid to relieve indigestion.",
+    indications:
+      "Treatment of gastroesophageal reflux symptoms such as acid regurgitation, heartburn, and post-meal indigestion.",
+    dosage:
+      "Adults and children over 12: 10–20ml after meals and at bedtime (up to 4 times daily). Shake well.",
     sideEffects: "Mild constipation or flatulence in rare cases.",
-    contraindications: "Severe renal impairment. Patients on strictly low-sodium diets.",
+    contraindications:
+      "Severe renal impairment. Patients on strictly low-sodium diets.",
     storage: "Store below 30°C. Do not freeze.",
     price: 780,
     currentStock: 35,
@@ -545,11 +658,15 @@ const PRODUCTS: OtcProductSeed[] = [
     brandName: "Afyvia Gastro",
     packSize: "Pack of 14 Gastro-Resistant Capsules",
     category: "digestive-health",
-    description: "Proton pump inhibitor providing 24-hour protection from frequent heartburn and acid reflux with a simple once-daily dose.",
-    indications: "Short-term treatment of frequent heartburn symptoms (two or more days per week) in adults.",
-    dosage: "Adults: 1 capsule (20mg) daily in the morning before breakfast for 14 days. Swallow whole with water.",
+    description:
+      "Proton pump inhibitor providing 24-hour protection from frequent heartburn and acid reflux with a simple once-daily dose.",
+    indications:
+      "Short-term treatment of frequent heartburn symptoms (two or more days per week) in adults.",
+    dosage:
+      "Adults: 1 capsule (20mg) daily in the morning before breakfast for 14 days. Swallow whole with water.",
     sideEffects: "Mild headache, abdominal discomfort, nausea, diarrhea.",
-    contraindications: "Hypersensitivity to omeprazole. Warning signs (unintended weight loss, difficulty swallowing).",
+    contraindications:
+      "Hypersensitivity to omeprazole. Warning signs (unintended weight loss, difficulty swallowing).",
     storage: "Store in blister pack below 25°C protected from moisture.",
     price: 280,
     currentStock: 40,
@@ -564,12 +681,17 @@ const PRODUCTS: OtcProductSeed[] = [
     brandName: "Dioralyte",
     packSize: "Pack of 6 Sachets",
     category: "digestive-health",
-    description: "Scientifically balanced glucose-electrolyte formula replacing lost fluids and essential minerals during acute diarrhea and vomiting.",
-    indications: "Correction of fluid and electrolyte depletion in diarrhea, vomiting, travel gastroenteritis, and heat dehydration.",
-    dosage: "Dissolve 1 sachet in exactly 200ml of drinking water. Drink 1–2 reconstituted sachets after every loose stool.",
-    sideEffects: "None when reconstituted correctly in the precise volume of clean water.",
+    description:
+      "Scientifically balanced glucose-electrolyte formula replacing lost fluids and essential minerals during acute diarrhea and vomiting.",
+    indications:
+      "Correction of fluid and electrolyte depletion in diarrhea, vomiting, travel gastroenteritis, and heat dehydration.",
+    dosage:
+      "Dissolve 1 sachet in exactly 200ml of drinking water. Drink 1–2 reconstituted sachets after every loose stool.",
+    sideEffects:
+      "None when reconstituted correctly in the precise volume of clean water.",
     contraindications: "Intestinal obstruction, severe kidney failure.",
-    storage: "Store dry powder below 25°C. Use prepared solution within 24h (refrigerated).",
+    storage:
+      "Store dry powder below 25°C. Use prepared solution within 24h (refrigerated).",
     price: 420,
     currentStock: 50,
     shelfLocation: "Aisle 4 - Rehydration",
@@ -583,11 +705,15 @@ const PRODUCTS: OtcProductSeed[] = [
     brandName: "Imodium",
     packSize: "Pack of 6 Capsules",
     category: "digestive-health",
-    description: "Fast relief from acute diarrhea by slowing intestinal motility and reducing watery stool frequency.",
-    indications: "Symptomatic control of acute uncomplicated diarrhea in adults and adolescents over 12.",
-    dosage: "Initial dose: 2 capsules (4mg), followed by 1 capsule (2mg) after each loose stool. Max 6 capsules daily for max 48 hours.",
+    description:
+      "Fast relief from acute diarrhea by slowing intestinal motility and reducing watery stool frequency.",
+    indications:
+      "Symptomatic control of acute uncomplicated diarrhea in adults and adolescents over 12.",
+    dosage:
+      "Initial dose: 2 capsules (4mg), followed by 1 capsule (2mg) after each loose stool. Max 6 capsules daily for max 48 hours.",
     sideEffects: "Constipation, dizziness, abdominal cramps.",
-    contraindications: "Dysentery (blood in stool, high fever), active ulcerative colitis, children under 12.",
+    contraindications:
+      "Dysentery (blood in stool, high fever), active ulcerative colitis, children under 12.",
     storage: "Store below 30°C.",
     price: 250,
     currentStock: 40,
@@ -604,9 +730,12 @@ const PRODUCTS: OtcProductSeed[] = [
     brandName: "Afyvia Shield",
     packSize: "Complete Hard-Shell Kit",
     category: "first-aid",
-    description: "Fully equipped travel, home, and vehicle emergency kit containing sterile dressings, antiseptic wipes, burn gel, bandages, scissors, and CPR shield.",
-    indications: "Home and travel emergency management of cuts, scrapes, minor burns, sprains, and field trauma.",
-    dosage: "Use components as indicated in the included step-by-step first aid manual.",
+    description:
+      "Fully equipped travel, home, and vehicle emergency kit containing sterile dressings, antiseptic wipes, burn gel, bandages, scissors, and CPR shield.",
+    indications:
+      "Home and travel emergency management of cuts, scrapes, minor burns, sprains, and field trauma.",
+    dosage:
+      "Use components as indicated in the included step-by-step first aid manual.",
     sideEffects: "None.",
     contraindications: "None.",
     storage: "Store in a cool, accessible location away from direct sunlight.",
@@ -623,9 +752,12 @@ const PRODUCTS: OtcProductSeed[] = [
     brandName: "Burnshield",
     packSize: "50ml Spray Bottle",
     category: "first-aid",
-    description: "Sterile cooling burn hydrogel absorbing heat, minimizing skin damage, and relieving acute burn pain immediately.",
-    indications: "First-aid treatment for 1st and minor 2nd degree heat, steam, hot oil, and sunburns.",
-    dosage: "Apply liberally over burned area immediately after initial cold water cooling. Do not rub in.",
+    description:
+      "Sterile cooling burn hydrogel absorbing heat, minimizing skin damage, and relieving acute burn pain immediately.",
+    indications:
+      "First-aid treatment for 1st and minor 2nd degree heat, steam, hot oil, and sunburns.",
+    dosage:
+      "Apply liberally over burned area immediately after initial cold water cooling. Do not rub in.",
     sideEffects: "None.",
     contraindications: "Do not use on open, infected wounds.",
     storage: "Store below 30°C.",
@@ -642,11 +774,15 @@ const PRODUCTS: OtcProductSeed[] = [
     brandName: "Afyvia Medical",
     packSize: "Pack of 10 Swabs",
     category: "first-aid",
-    description: "High-absorbency 8-ply sterile cotton gauze swabs for wound cleansing, dressing, and exudate absorption.",
-    indications: "Wound cleaning, cushioning, and exudate management for cuts, lacerations, and minor abrasions.",
-    dosage: "Apply sterile swab directly over cleansed wound; secure with microporous tape or crepe bandage.",
+    description:
+      "High-absorbency 8-ply sterile cotton gauze swabs for wound cleansing, dressing, and exudate absorption.",
+    indications:
+      "Wound cleaning, cushioning, and exudate management for cuts, lacerations, and minor abrasions.",
+    dosage:
+      "Apply sterile swab directly over cleansed wound; secure with microporous tape or crepe bandage.",
     sideEffects: "None.",
-    contraindications: "Single use only. Do not use if sterile pouch is opened or damaged.",
+    contraindications:
+      "Single use only. Do not use if sterile pouch is opened or damaged.",
     storage: "Store in dry sterile conditions.",
     price: 150,
     currentStock: 60,
@@ -663,11 +799,16 @@ const PRODUCTS: OtcProductSeed[] = [
     brandName: "Cortizone Relief",
     packSize: "30g Tube",
     category: "topical-treatments",
-    description: "Mild topical corticosteroid cream calming skin inflammation, severe itching, eczema flares, contact dermatitis, and insect bite reactions.",
-    indications: "Temporary relief of itching associated with minor skin irritations, inflammation, rashes from poison ivy, detergents, and eczema.",
-    dosage: "Adults and children over 10: Apply thinly to affected skin 1–2 times daily for a maximum of 7 days.",
-    sideEffects: "Mild burning or skin dryness. Long-term overuse can cause skin thinning.",
-    contraindications: "Do not use on broken skin, facial acne, cold sores, fungal infections, or on children under 10 without prescription.",
+    description:
+      "Mild topical corticosteroid cream calming skin inflammation, severe itching, eczema flares, contact dermatitis, and insect bite reactions.",
+    indications:
+      "Temporary relief of itching associated with minor skin irritations, inflammation, rashes from poison ivy, detergents, and eczema.",
+    dosage:
+      "Adults and children over 10: Apply thinly to affected skin 1–2 times daily for a maximum of 7 days.",
+    sideEffects:
+      "Mild burning or skin dryness. Long-term overuse can cause skin thinning.",
+    contraindications:
+      "Do not use on broken skin, facial acne, cold sores, fungal infections, or on children under 10 without prescription.",
     storage: "Store below 25°C.",
     price: 320,
     currentStock: 40,
@@ -682,11 +823,15 @@ const PRODUCTS: OtcProductSeed[] = [
     brandName: "Canesten",
     packSize: "20g Tube",
     category: "topical-treatments",
-    description: "Broad-spectrum antifungal cream treating athlete's foot, jock itch, fungal sweat rashes, and ringworm effectively.",
-    indications: "Dermatophyte fungal skin infections including tinea pedis (athlete's foot), tinea cruris (jock itch), and tinea corporis.",
-    dosage: "Apply thinly and rub in gently to affected areas 2–3 times daily. Continue for 2 weeks after symptoms disappear.",
+    description:
+      "Broad-spectrum antifungal cream treating athlete's foot, jock itch, fungal sweat rashes, and ringworm effectively.",
+    indications:
+      "Dermatophyte fungal skin infections including tinea pedis (athlete's foot), tinea cruris (jock itch), and tinea corporis.",
+    dosage:
+      "Apply thinly and rub in gently to affected areas 2–3 times daily. Continue for 2 weeks after symptoms disappear.",
     sideEffects: "Mild local redness or stinging.",
-    contraindications: "Hypersensitivity to clotrimazole or cetostearyl alcohol.",
+    contraindications:
+      "Hypersensitivity to clotrimazole or cetostearyl alcohol.",
     storage: "Store below 25°C.",
     price: 450,
     currentStock: 35,
@@ -701,11 +846,15 @@ const PRODUCTS: OtcProductSeed[] = [
     brandName: "Afyvia Care",
     packSize: "100ml Bottle",
     category: "topical-treatments",
-    description: "Gentle cooling and soothing astringent lotion for sunburn relief, insect bites, prickly heat, and chickenpox itching.",
-    indications: "Symptomatic relief of mild skin irritations, sunburn, prickly heat, and itchy rashes.",
-    dosage: "Shake well. Apply freely to affected skin using clean cotton wool 3–4 times daily as needed.",
+    description:
+      "Gentle cooling and soothing astringent lotion for sunburn relief, insect bites, prickly heat, and chickenpox itching.",
+    indications:
+      "Symptomatic relief of mild skin irritations, sunburn, prickly heat, and itchy rashes.",
+    dosage:
+      "Shake well. Apply freely to affected skin using clean cotton wool 3–4 times daily as needed.",
     sideEffects: "Mild drying of skin.",
-    contraindications: "Hypersensitivity to zinc oxide. Do not apply prior to X-ray examination.",
+    contraindications:
+      "Hypersensitivity to zinc oxide. Do not apply prior to X-ray examination.",
     storage: "Store below 30°C with bottle tightly capped.",
     price: 220,
     currentStock: 45,
@@ -722,9 +871,12 @@ const PRODUCTS: OtcProductSeed[] = [
     brandName: "CeraVe",
     packSize: "340g Tub",
     category: "skin-care",
-    description: "Dermatologist-developed barrier repair cream delivering 24-hour hydration with MVE technology for dry and eczema-prone skin.",
-    indications: "Dry, very dry, irritated, and sensitive skin on face and body; atopic eczema maintenance.",
-    dosage: "Apply liberally as often as needed, particularly immediately after bathing.",
+    description:
+      "Dermatologist-developed barrier repair cream delivering 24-hour hydration with MVE technology for dry and eczema-prone skin.",
+    indications:
+      "Dry, very dry, irritated, and sensitive skin on face and body; atopic eczema maintenance.",
+    dosage:
+      "Apply liberally as often as needed, particularly immediately after bathing.",
     sideEffects: "None reported. Non-comedogenic and fragrance-free.",
     contraindications: "None.",
     storage: "Store in a cool dry place below 30°C.",
@@ -741,9 +893,12 @@ const PRODUCTS: OtcProductSeed[] = [
     brandName: "La Roche-Posay",
     packSize: "50ml Bottle",
     category: "skin-care",
-    description: "Ultra-high broad-spectrum daily facial sunscreen protecting against ultra-long UVA rays with an invisible, non-greasy finish.",
-    indications: "Daily photo-protection for sensitive, sun-allergic, and hyperpigmentation-prone skin.",
-    dosage: "Apply generously to face and neck 20 minutes before sun exposure. Reapply every 2 hours and after swimming.",
+    description:
+      "Ultra-high broad-spectrum daily facial sunscreen protecting against ultra-long UVA rays with an invisible, non-greasy finish.",
+    indications:
+      "Daily photo-protection for sensitive, sun-allergic, and hyperpigmentation-prone skin.",
+    dosage:
+      "Apply generously to face and neck 20 minutes before sun exposure. Reapply every 2 hours and after swimming.",
     sideEffects: "None. Tested under dermatological control.",
     contraindications: "Avoid direct contact with eyes.",
     storage: "Store below 30°C.",
@@ -760,10 +915,14 @@ const PRODUCTS: OtcProductSeed[] = [
     brandName: "PanOxyl",
     packSize: "156g Tube",
     category: "skin-care",
-    description: "Antimicrobial acne cleanser clearing existing breakouts and preventing new blemishes on face and body without over-drying.",
-    indications: "Treatment of mild to moderate inflammatory acne vulgaris on face, chest, and back.",
-    dosage: "Wet area, apply wash, and massage gently for 1–2 minutes before rinsing thoroughly. Start with once daily.",
-    sideEffects: "Mild skin peeling, dryness, or redness during initial 1–2 weeks.",
+    description:
+      "Antimicrobial acne cleanser clearing existing breakouts and preventing new blemishes on face and body without over-drying.",
+    indications:
+      "Treatment of mild to moderate inflammatory acne vulgaris on face, chest, and back.",
+    dosage:
+      "Wet area, apply wash, and massage gently for 1–2 minutes before rinsing thoroughly. Start with once daily.",
+    sideEffects:
+      "Mild skin peeling, dryness, or redness during initial 1–2 weeks.",
     contraindications: "Known allergy to benzoyl peroxide. May bleach fabrics.",
     storage: "Store below 25°C.",
     price: 1650,
@@ -781,11 +940,16 @@ const PRODUCTS: OtcProductSeed[] = [
     brandName: "Betadine",
     packSize: "100ml Bottle",
     category: "antiseptics",
-    description: "Gold-standard broad-spectrum antiseptic solution killing bacteria, fungi, viruses, and spores without stinging.",
-    indications: "Disinfection of minor wounds, cuts, burns, scrapes, and pre-procedure skin preparation.",
-    dosage: "Apply undiluted directly to the affected skin using sterile cotton swab 1–2 times daily.",
-    sideEffects: "Rare: localized skin sensitivity. Stains skin temporarily (washes off with water).",
-    contraindications: "Iodine hypersensitivity, thyroid disorders, or on premature infants.",
+    description:
+      "Gold-standard broad-spectrum antiseptic solution killing bacteria, fungi, viruses, and spores without stinging.",
+    indications:
+      "Disinfection of minor wounds, cuts, burns, scrapes, and pre-procedure skin preparation.",
+    dosage:
+      "Apply undiluted directly to the affected skin using sterile cotton swab 1–2 times daily.",
+    sideEffects:
+      "Rare: localized skin sensitivity. Stains skin temporarily (washes off with water).",
+    contraindications:
+      "Iodine hypersensitivity, thyroid disorders, or on premature infants.",
     storage: "Store below 25°C protected from light.",
     price: 420,
     currentStock: 35,
@@ -800,11 +964,15 @@ const PRODUCTS: OtcProductSeed[] = [
     brandName: "Afyvia Medi-Swab",
     packSize: "Box of 100 Individually Foil-Wrapped Swabs",
     category: "antiseptics",
-    description: "Sterile individually sealed 70% alcohol pads for rapid pre-injection, fingerstick blood glucose, and skin cleansing.",
-    indications: "Topical skin antisepsis prior to blood glucose fingersticks, insulin injections, or minor splinter removal.",
-    dosage: "Wipe target area firmly; allow to air dry completely for 30 seconds before piercing skin.",
+    description:
+      "Sterile individually sealed 70% alcohol pads for rapid pre-injection, fingerstick blood glucose, and skin cleansing.",
+    indications:
+      "Topical skin antisepsis prior to blood glucose fingersticks, insulin injections, or minor splinter removal.",
+    dosage:
+      "Wipe target area firmly; allow to air dry completely for 30 seconds before piercing skin.",
     sideEffects: "Temporary skin cooling and drying.",
-    contraindications: "Flammable. Do not use near open flame or on deep puncture wounds.",
+    contraindications:
+      "Flammable. Do not use near open flame or on deep puncture wounds.",
     storage: "Store below 30°C in a cool, ventilated place.",
     price: 380,
     currentStock: 50,
@@ -819,9 +987,12 @@ const PRODUCTS: OtcProductSeed[] = [
     brandName: "Afyvia Antiseptics",
     packSize: "200ml Amber Bottle",
     category: "antiseptics",
-    description: "Mild effervescent antimicrobial solution for mechanical debridement of superficial dirty cuts and mouth gargle.",
-    indications: "Cleansing superficial scrapes, softening dried blood or crusts, and mild oral antiseptic rinse.",
-    dosage: "Dilute with equal parts clean water for mouth gargle. Apply undiluted for initial wound bubbling cleanse.",
+    description:
+      "Mild effervescent antimicrobial solution for mechanical debridement of superficial dirty cuts and mouth gargle.",
+    indications:
+      "Cleansing superficial scrapes, softening dried blood or crusts, and mild oral antiseptic rinse.",
+    dosage:
+      "Dilute with equal parts clean water for mouth gargle. Apply undiluted for initial wound bubbling cleanse.",
     sideEffects: "Temporary skin blanching or bubbling.",
     contraindications: "Do not inject or use in closed body cavities.",
     storage: "Store in original dark bottle below 25°C.",
@@ -840,11 +1011,16 @@ const PRODUCTS: OtcProductSeed[] = [
     brandName: "DuoDERM",
     packSize: "Pack of 5 Sterile Dressings",
     category: "wound-care",
-    description: "Advanced moist wound healing dressings forming an insulating gel to accelerate tissue repair and prevent scarring.",
-    indications: "Management of minor burns, donor sites, post-op incisions, friction blisters, and shallow abrasions.",
-    dosage: "Clean wound, apply dressing with 2cm margin over healthy skin. Leave in place up to 5–7 days or until gel bubble reaches edge.",
-    sideEffects: "Characteristic gel odor upon removal is normal and washes away.",
-    contraindications: "Third-degree burns or actively infected wounds with spreading cellulitis.",
+    description:
+      "Advanced moist wound healing dressings forming an insulating gel to accelerate tissue repair and prevent scarring.",
+    indications:
+      "Management of minor burns, donor sites, post-op incisions, friction blisters, and shallow abrasions.",
+    dosage:
+      "Clean wound, apply dressing with 2cm margin over healthy skin. Leave in place up to 5–7 days or until gel bubble reaches edge.",
+    sideEffects:
+      "Characteristic gel odor upon removal is normal and washes away.",
+    contraindications:
+      "Third-degree burns or actively infected wounds with spreading cellulitis.",
     storage: "Store flat below 25°C.",
     price: 1850,
     currentStock: 15,
@@ -859,9 +1035,12 @@ const PRODUCTS: OtcProductSeed[] = [
     brandName: "Kelo-Cote",
     packSize: "15g Tube",
     category: "wound-care",
-    description: "Clinically proven self-drying silicone gel softening, flattening, and reducing redness of surgical and traumatic scars.",
-    indications: "Prevention and management of hypertrophic and keloid scars resulting from surgeries, burns, and wounds.",
-    dosage: "Ensure wound is fully closed and sutures removed. Apply ultra-thin layer twice daily for 60–90 days.",
+    description:
+      "Clinically proven self-drying silicone gel softening, flattening, and reducing redness of surgical and traumatic scars.",
+    indications:
+      "Prevention and management of hypertrophic and keloid scars resulting from surgeries, burns, and wounds.",
+    dosage:
+      "Ensure wound is fully closed and sutures removed. Apply ultra-thin layer twice daily for 60–90 days.",
     sideEffects: "Rare: localized skin redness if applied too thickly.",
     contraindications: "Do not use on open, weeping wounds.",
     storage: "Store below 25°C.",
@@ -878,12 +1057,16 @@ const PRODUCTS: OtcProductSeed[] = [
     brandName: "Stericlens",
     packSize: "240ml Aerosol Can",
     category: "wound-care",
-    description: "Aerosolized sterile isotonic saline spray providing gentle, precise irrigation pressure to remove dirt and debris without trauma.",
-    indications: "Wound and burn cleansing, eyewash, and catheter site irrigation.",
-    dosage: "Spray directly onto wound from a distance of 10–12cm until all loose debris is cleared.",
+    description:
+      "Aerosolized sterile isotonic saline spray providing gentle, precise irrigation pressure to remove dirt and debris without trauma.",
+    indications:
+      "Wound and burn cleansing, eyewash, and catheter site irrigation.",
+    dosage:
+      "Spray directly onto wound from a distance of 10–12cm until all loose debris is cleared.",
     sideEffects: "None. Non-irritating and non-stinging.",
     contraindications: "Do not use for injection.",
-    storage: "Pressurized container. Store below 50°C away from direct sunlight.",
+    storage:
+      "Pressurized container. Store below 50°C away from direct sunlight.",
     price: 720,
     currentStock: 25,
     shelfLocation: "Aisle 9 - Wound Cleansers",
@@ -899,10 +1082,14 @@ const PRODUCTS: OtcProductSeed[] = [
     brandName: "Corsodyl",
     packSize: "300ml Bottle",
     category: "oral-care",
-    description: "Intensive antimicrobial mouthwash treating gingivitis, gum bleeding, mouth ulcers, and post-dental surgery infections.",
-    indications: "Treatment and prevention of gingivitis, maintenance of oral hygiene following periodontal surgery, and mouth ulcer recovery.",
-    dosage: "Rinse mouth thoroughly with 10ml for 1 minute twice daily. Use 30 minutes after brushing teeth.",
-    sideEffects: "Temporary brownish staining of teeth and tongue (removable by dental polish), transient taste alteration.",
+    description:
+      "Intensive antimicrobial mouthwash treating gingivitis, gum bleeding, mouth ulcers, and post-dental surgery infections.",
+    indications:
+      "Treatment and prevention of gingivitis, maintenance of oral hygiene following periodontal surgery, and mouth ulcer recovery.",
+    dosage:
+      "Rinse mouth thoroughly with 10ml for 1 minute twice daily. Use 30 minutes after brushing teeth.",
+    sideEffects:
+      "Temporary brownish staining of teeth and tongue (removable by dental polish), transient taste alteration.",
     contraindications: "Hypersensitivity to chlorhexidine.",
     storage: "Store below 25°C.",
     price: 680,
@@ -918,11 +1105,15 @@ const PRODUCTS: OtcProductSeed[] = [
     brandName: "Bonjela",
     packSize: "15g Tube",
     category: "oral-care",
-    description: "Fast-acting analgesic and antiseptic oral gel soothing sore mouth ulcers, denture sores, and brace chafing.",
-    indications: "Pain relief and infection prevention in mouth ulcers, cold sores, denture irritation, and orthodontic rubs.",
-    dosage: "Adults: Massage a pea-sized amount onto the sore area every 3 hours as needed. Leave at least 30 min before eating.",
+    description:
+      "Fast-acting analgesic and antiseptic oral gel soothing sore mouth ulcers, denture sores, and brace chafing.",
+    indications:
+      "Pain relief and infection prevention in mouth ulcers, cold sores, denture irritation, and orthodontic rubs.",
+    dosage:
+      "Adults: Massage a pea-sized amount onto the sore area every 3 hours as needed. Leave at least 30 min before eating.",
     sideEffects: "Transient mild tingling upon application.",
-    contraindications: "Children and adolescents under 16 (due to salicylate content).",
+    contraindications:
+      "Children and adolescents under 16 (due to salicylate content).",
     storage: "Store below 25°C.",
     price: 450,
     currentStock: 35,
@@ -937,11 +1128,15 @@ const PRODUCTS: OtcProductSeed[] = [
     brandName: "Orajel",
     packSize: "9.5g Tube",
     category: "oral-care",
-    description: "Maximum strength 20% benzocaine topical gel numbing severe, throbbing toothache and gum pain instantly.",
-    indications: "Temporary fast relief of severe toothache pain while awaiting dental treatment.",
-    dosage: "Apply a small amount directly to cavity or around aching tooth up to 4 times daily.",
+    description:
+      "Maximum strength 20% benzocaine topical gel numbing severe, throbbing toothache and gum pain instantly.",
+    indications:
+      "Temporary fast relief of severe toothache pain while awaiting dental treatment.",
+    dosage:
+      "Apply a small amount directly to cavity or around aching tooth up to 4 times daily.",
     sideEffects: "Local numbness.",
-    contraindications: "Do not use for more than 4 consecutive days without dental consultation.",
+    contraindications:
+      "Do not use for more than 4 consecutive days without dental consultation.",
     storage: "Store below 25°C.",
     price: 580,
     currentStock: 25,
@@ -958,11 +1153,15 @@ const PRODUCTS: OtcProductSeed[] = [
     brandName: "Canesten",
     packSize: "1 Pessary with Ergonomic Applicator",
     category: "feminine-hygiene",
-    description: "Single-dose intensive treatment for vaginal candidiasis (thrush) clearing internal infection at the source.",
-    indications: "Treatment of candidal vaginitis (vaginal thrush) with classic itching, soreness, and white cottage-cheese discharge.",
-    dosage: "Insert the single pessary deeply into the vagina at bedtime using the applicator.",
+    description:
+      "Single-dose intensive treatment for vaginal candidiasis (thrush) clearing internal infection at the source.",
+    indications:
+      "Treatment of candidal vaginitis (vaginal thrush) with classic itching, soreness, and white cottage-cheese discharge.",
+    dosage:
+      "Insert the single pessary deeply into the vagina at bedtime using the applicator.",
     sideEffects: "Mild local burning or vaginal irritation.",
-    contraindications: "First trimester of pregnancy (consult doctor), abnormal or irregular vaginal bleeding, under 16 years.",
+    contraindications:
+      "First trimester of pregnancy (consult doctor), abnormal or irregular vaginal bleeding, under 16 years.",
     storage: "Store below 25°C.",
     price: 950,
     currentStock: 28,
@@ -977,9 +1176,12 @@ const PRODUCTS: OtcProductSeed[] = [
     brandName: "Femfresh",
     packSize: "250ml Bottle",
     category: "feminine-hygiene",
-    description: "Specially formulated soap-free, hypoallergenic wash with natural aloe vera matching the natural intimate microbiome pH.",
-    indications: "Everyday external intimate hygiene, freshness during menstruation, and odor protection.",
-    dosage: "Lather and apply externally to the vulva; rinse thoroughly with warm water.",
+    description:
+      "Specially formulated soap-free, hypoallergenic wash with natural aloe vera matching the natural intimate microbiome pH.",
+    indications:
+      "Everyday external intimate hygiene, freshness during menstruation, and odor protection.",
+    dosage:
+      "Lather and apply externally to the vulva; rinse thoroughly with warm water.",
     sideEffects: "None. Gynaecologist and dermatologist tested.",
     contraindications: "For external use only. Never douche internally.",
     storage: "Store below 30°C.",
@@ -996,9 +1198,11 @@ const PRODUCTS: OtcProductSeed[] = [
     brandName: "Always",
     packSize: "Pack of 16 Individually Wrapped Pads",
     category: "feminine-hygiene",
-    description: "Ultra-thin, dermatologically approved sanitary protection with instant absorption core and secure side wings for leak-free confidence.",
+    description:
+      "Ultra-thin, dermatologically approved sanitary protection with instant absorption core and secure side wings for leak-free confidence.",
     indications: "Menstrual flow absorption and everyday postpartum hygiene.",
-    dosage: "Change every 4–6 hours as needed for optimal hygiene and freshness.",
+    dosage:
+      "Change every 4–6 hours as needed for optimal hygiene and freshness.",
     sideEffects: "None.",
     contraindications: "None.",
     storage: "Store in a clean, dry place.",
@@ -1017,11 +1221,15 @@ const PRODUCTS: OtcProductSeed[] = [
     brandName: "Calpol",
     packSize: "100ml Bottle + Easy-Dose Syringe",
     category: "baby-care",
-    description: "Strawberry flavored pediatric paracetamol elixir relieving fever, post-immunization temperature, teething ache, and earache in infants.",
-    indications: "Relief of pain and fever in babies and young children aged 2 months to 6 years.",
-    dosage: "Infants 3–6 months (4–6kg): 2.5ml. Infants 6–24 months (6–10kg): 5ml. Doses up to 4 times in 24 hours. Always use included measuring syringe.",
+    description:
+      "Strawberry flavored pediatric paracetamol elixir relieving fever, post-immunization temperature, teething ache, and earache in infants.",
+    indications:
+      "Relief of pain and fever in babies and young children aged 2 months to 6 years.",
+    dosage:
+      "Infants 3–6 months (4–6kg): 2.5ml. Infants 6–24 months (6–10kg): 5ml. Doses up to 4 times in 24 hours. Always use included measuring syringe.",
     sideEffects: "Extremely rare at weight-appropriate therapeutic doses.",
-    contraindications: "Infants under 2 months. Do not exceed recommended weight dose.",
+    contraindications:
+      "Infants under 2 months. Do not exceed recommended weight dose.",
     storage: "Store below 25°C. Keep out of sight and reach of children.",
     price: 480,
     currentStock: 40,
@@ -1037,9 +1245,12 @@ const PRODUCTS: OtcProductSeed[] = [
     brandName: "Infacol",
     packSize: "50ml Bottle with Dropper",
     category: "baby-care",
-    description: "Natural orange-flavored simethicone drops breaking down trapped intestinal air bubbles to relieve infant colic, griping pain, and trapped wind.",
-    indications: "Treatment of infant colic, wind, and griping pain from birth onwards.",
-    dosage: "One dropper full (0.5ml) given before each feed. Use for several consecutive days for cumulative improvement.",
+    description:
+      "Natural orange-flavored simethicone drops breaking down trapped intestinal air bubbles to relieve infant colic, griping pain, and trapped wind.",
+    indications:
+      "Treatment of infant colic, wind, and griping pain from birth onwards.",
+    dosage:
+      "One dropper full (0.5ml) given before each feed. Use for several consecutive days for cumulative improvement.",
     sideEffects: "None. Simethicone is not absorbed into baby's bloodstream.",
     contraindications: "Thyroid medication interaction (leave 4-hour gap).",
     storage: "Store below 25°C.",
@@ -1053,13 +1264,17 @@ const PRODUCTS: OtcProductSeed[] = [
   {
     name: "Sudocrem Diaper Rash Barrier Healing Cream 125g",
     slug: "sudocrem-healing-cream-125g",
-    genericName: "Zinc Oxide + Benzyl Benzoate + Lanolin (Water-Repellent Base)",
+    genericName:
+      "Zinc Oxide + Benzyl Benzoate + Lanolin (Water-Repellent Base)",
     brandName: "Sudocrem",
     packSize: "125g Tub",
     category: "baby-care",
-    description: "Clinically proven water-repellent barrier cream soothing irritated skin, healing diaper rash, and protecting against urine enzymes.",
-    indications: "Treatment and prevention of nappy rash, infant eczema, surface wounds, and bedsores.",
-    dosage: "Apply a thin translucent film to clean dry skin at every nappy change. Massage in small circular motions until absorbed.",
+    description:
+      "Clinically proven water-repellent barrier cream soothing irritated skin, healing diaper rash, and protecting against urine enzymes.",
+    indications:
+      "Treatment and prevention of nappy rash, infant eczema, surface wounds, and bedsores.",
+    dosage:
+      "Apply a thin translucent film to clean dry skin at every nappy change. Massage in small circular motions until absorbed.",
     sideEffects: "Rare: localized skin hypersensitivity.",
     contraindications: "Hypersensitivity to any listed ingredient.",
     storage: "Store below 25°C.",
@@ -1079,11 +1294,14 @@ const PRODUCTS: OtcProductSeed[] = [
     brandName: "Omron",
     packSize: "Complete Device Kit (Monitor + Medium/Large Cuff + Batteries)",
     category: "medical-consumables",
-    description: "Clinically validated upper arm blood pressure monitor with Intellisense technology for comfortable, accurate home cardiovascular monitoring.",
+    description:
+      "Clinically validated upper arm blood pressure monitor with Intellisense technology for comfortable, accurate home cardiovascular monitoring.",
     indications: "Home blood pressure and pulse rate monitoring in adults.",
-    dosage: "Sit quietly for 5 minutes, place cuff 2cm above elbow bend at heart level, and press Start.",
+    dosage:
+      "Sit quietly for 5 minutes, place cuff 2cm above elbow bend at heart level, and press Start.",
     sideEffects: "None.",
-    contraindications: "Severe arm arrhythmia (consult clinician for manual auscultation).",
+    contraindications:
+      "Severe arm arrhythmia (consult clinician for manual auscultation).",
     storage: "Store in protective pouch at room temperature.",
     price: 4500,
     currentStock: 12,
@@ -1098,11 +1316,15 @@ const PRODUCTS: OtcProductSeed[] = [
     brandName: "Contec",
     packSize: "Device + Lanyard + 2x AAA Batteries",
     category: "medical-consumables",
-    description: "Fast, accurate non-invasive measurement of blood oxygen saturation (SpO2) and pulse rate with multi-directional OLED display.",
-    indications: "Monitoring respiratory oxygen levels during asthma, COPD, pneumonia, or fitness training.",
-    dosage: "Clip onto clean, warm index finger and wait 5 seconds for stabilized numeric reading.",
+    description:
+      "Fast, accurate non-invasive measurement of blood oxygen saturation (SpO2) and pulse rate with multi-directional OLED display.",
+    indications:
+      "Monitoring respiratory oxygen levels during asthma, COPD, pneumonia, or fitness training.",
+    dosage:
+      "Clip onto clean, warm index finger and wait 5 seconds for stabilized numeric reading.",
     sideEffects: "None.",
-    contraindications: "Dark nail polish or severe peripheral vasoconstriction may interfere with optical sensors.",
+    contraindications:
+      "Dark nail polish or severe peripheral vasoconstriction may interfere with optical sensors.",
     storage: "Keep dry away from extreme temperatures.",
     price: 1850,
     currentStock: 16,
@@ -1117,11 +1339,15 @@ const PRODUCTS: OtcProductSeed[] = [
     brandName: "Omron",
     packSize: "Thermometer + Storage Case + Battery",
     category: "medical-consumables",
-    description: "Water-resistant, accurate 60-second digital thermometer with fever alarm and memory recall for oral, axillary, or rectal temperature measurement.",
-    indications: "Body temperature measurement in adults, children, and infants.",
-    dosage: "Place under tongue or armpit until the audible beep signals completion.",
+    description:
+      "Water-resistant, accurate 60-second digital thermometer with fever alarm and memory recall for oral, axillary, or rectal temperature measurement.",
+    indications:
+      "Body temperature measurement in adults, children, and infants.",
+    dosage:
+      "Place under tongue or armpit until the audible beep signals completion.",
     sideEffects: "None.",
-    contraindications: "Disinfect probe with 70% alcohol before and after each use.",
+    contraindications:
+      "Disinfect probe with 70% alcohol before and after each use.",
     storage: "Store in protective sleeve.",
     price: 650,
     currentStock: 30,
@@ -1136,9 +1362,12 @@ const PRODUCTS: OtcProductSeed[] = [
     brandName: "OneTouch",
     packSize: "Pack of 50 Test Strips",
     category: "medical-consumables",
-    description: "Accurate blood glucose test strips requiring tiny 1.0 microliter blood sample with results in 5 seconds.",
-    indications: "Quantitative self-testing of blood glucose levels in diabetes management.",
-    dosage: "Insert strip into OneTouch Select Plus meter, touch blood droplet to channel, read result in 5 seconds.",
+    description:
+      "Accurate blood glucose test strips requiring tiny 1.0 microliter blood sample with results in 5 seconds.",
+    indications:
+      "Quantitative self-testing of blood glucose levels in diabetes management.",
+    dosage:
+      "Insert strip into OneTouch Select Plus meter, touch blood droplet to channel, read result in 5 seconds.",
     sideEffects: "None.",
     contraindications: "Use within 6 months of first opening the vial.",
     storage: "Store in original vial tightly capped between 5°C and 30°C.",
@@ -1157,10 +1386,14 @@ const PRODUCTS: OtcProductSeed[] = [
     brandName: "Berocca",
     packSize: "Pack of 15 Effervescent Tablets",
     category: "nutritional-products",
-    description: "Energizing effervescent formula combining high-strength B-vitamins, 1000mg vitamin C, zinc, and natural guarana to combat mental and physical fatigue.",
-    indications: "Nutritional support during fatigue, intense work periods, physical training, and immune defense.",
-    dosage: "Adults: Dissolve 1 tablet in a glass of cold water (250ml) once daily in the morning.",
-    sideEffects: "Harmless bright yellow urine due to Vitamin B2 (Riboflavin) excretion.",
+    description:
+      "Energizing effervescent formula combining high-strength B-vitamins, 1000mg vitamin C, zinc, and natural guarana to combat mental and physical fatigue.",
+    indications:
+      "Nutritional support during fatigue, intense work periods, physical training, and immune defense.",
+    dosage:
+      "Adults: Dissolve 1 tablet in a glass of cold water (250ml) once daily in the morning.",
+    sideEffects:
+      "Harmless bright yellow urine due to Vitamin B2 (Riboflavin) excretion.",
     contraindications: "Hypercalcemia, severe kidney stones. Contains sodium.",
     storage: "Store tube tightly closed below 25°C.",
     price: 850,
@@ -1176,11 +1409,15 @@ const PRODUCTS: OtcProductSeed[] = [
     brandName: "Vitabiotics",
     packSize: "Pack of 30 Tablets",
     category: "nutritional-products",
-    description: "Scientifically formulated multivitamin, mineral, and botanical complex supporting vitality, reproductive health, immunity, and heart function.",
-    indications: "Daily dietary supplementation for active adults seeking balanced micronutrient support.",
-    dosage: "Adults: 1 tablet daily with your main meal. Swallow with water. Not to be chewed.",
+    description:
+      "Scientifically formulated multivitamin, mineral, and botanical complex supporting vitality, reproductive health, immunity, and heart function.",
+    indications:
+      "Daily dietary supplementation for active adults seeking balanced micronutrient support.",
+    dosage:
+      "Adults: 1 tablet daily with your main meal. Swallow with water. Not to be chewed.",
     sideEffects: "Mild gastrointestinal fullness if taken on an empty stomach.",
-    contraindications: "Concomitant high-dose iron therapy. Contains iron — keep away from children.",
+    contraindications:
+      "Concomitant high-dose iron therapy. Contains iron — keep away from children.",
     storage: "Store below 25°C in a dry place.",
     price: 1350,
     currentStock: 30,
@@ -1195,8 +1432,10 @@ const PRODUCTS: OtcProductSeed[] = [
     brandName: "Feroglobin",
     packSize: "200ml Bottle",
     category: "nutritional-products",
-    description: "Delicious honey and Swiss malt flavored gentle iron tonic formulated to support normal hemoglobin formation and reduce fatigue without stomach irritation.",
-    indications: "Supportive nutrition for athletes, menstruating women, growing adolescents, and general fatigue.",
+    description:
+      "Delicious honey and Swiss malt flavored gentle iron tonic formulated to support normal hemoglobin formation and reduce fatigue without stomach irritation.",
+    indications:
+      "Supportive nutrition for athletes, menstruating women, growing adolescents, and general fatigue.",
     dosage: "Adults: 10ml (2 teaspoonfuls) daily after food.",
     sideEffects: "Harmless dark stools. Gentle non-constipating formulation.",
     contraindications: "Hemochromatosis, iron overload disorders.",
@@ -1214,9 +1453,12 @@ const PRODUCTS: OtcProductSeed[] = [
     brandName: "Hydralyte",
     packSize: "Pack of 20 Effervescent Tablets",
     category: "nutritional-products",
-    description: "Clinically formulated hypotonic electrolyte tablets restoring fluid balance and beating dehydration caused by heat, sport, illness, or travel.",
-    indications: "Rapid rehydration during dehydration, heavy sweating, vigorous workouts, and feverish illness.",
-    dosage: "Dissolve 2 tablets in 200ml of drinking water. Drink as required during exercise or dehydration.",
+    description:
+      "Clinically formulated hypotonic electrolyte tablets restoring fluid balance and beating dehydration caused by heat, sport, illness, or travel.",
+    indications:
+      "Rapid rehydration during dehydration, heavy sweating, vigorous workouts, and feverish illness.",
+    dosage:
+      "Dissolve 2 tablets in 200ml of drinking water. Drink as required during exercise or dehydration.",
     sideEffects: "None when dissolved in correct water volume.",
     contraindications: "Severe renal failure.",
     storage: "Store below 30°C.",
@@ -1261,6 +1503,13 @@ async function main() {
   }
   console.log(`Upserted ${CATEGORIES.length} medication categories.`);
 
+  // The shared medication library is platform-managed and intentionally empty
+  // in this environment. Product catalogues must be imported explicitly.
+  console.log(
+    "Skipped OTC product seeding; shared medication library remains empty.",
+  );
+  return;
+
   // Ensure default lookups exist
   const DEFAULT_LOOKUPS = [
     { kind: "dosage_form", value: "Tablet", slug: "tablet", sortOrder: 10 },
@@ -1268,21 +1517,49 @@ async function main() {
     { kind: "dosage_form", value: "Syrup", slug: "syrup", sortOrder: 30 },
     { kind: "dosage_form", value: "Cream", slug: "cream", sortOrder: 40 },
     { kind: "dosage_form", value: "Gel", slug: "gel", sortOrder: 50 },
-    { kind: "dosage_form", value: "Eye Drops", slug: "eye-drops", sortOrder: 60 },
-    { kind: "dosage_form", value: "Nasal Spray", slug: "nasal-spray", sortOrder: 70 },
-    { kind: "dosage_form", value: "Suspension", slug: "suspension", sortOrder: 80 },
+    {
+      kind: "dosage_form",
+      value: "Eye Drops",
+      slug: "eye-drops",
+      sortOrder: 60,
+    },
+    {
+      kind: "dosage_form",
+      value: "Nasal Spray",
+      slug: "nasal-spray",
+      sortOrder: 70,
+    },
+    {
+      kind: "dosage_form",
+      value: "Suspension",
+      slug: "suspension",
+      sortOrder: 80,
+    },
     { kind: "dosage_form", value: "Sachet", slug: "sachet", sortOrder: 90 },
-    { kind: "dosage_form", value: "Ointment", slug: "ointment", sortOrder: 100 },
+    {
+      kind: "dosage_form",
+      value: "Ointment",
+      slug: "ointment",
+      sortOrder: 100,
+    },
     { kind: "dosage_form", value: "Inhaler", slug: "inhaler", sortOrder: 110 },
   ];
   for (const l of DEFAULT_LOOKUPS) {
     await prisma.medicationLookup.upsert({
       where: { kind_slug: { kind: l.kind as any, slug: l.slug } },
-      create: { kind: l.kind as any, value: l.value, slug: l.slug, sortOrder: l.sortOrder, active: true },
+      create: {
+        kind: l.kind as any,
+        value: l.value,
+        slug: l.slug,
+        sortOrder: l.sortOrder,
+        active: true,
+      },
       update: {},
     });
   }
-  const allDosageForms = await prisma.medicationLookup.findMany({ where: { kind: "dosage_form" } });
+  const allDosageForms = await prisma.medicationLookup.findMany({
+    where: { kind: "dosage_form" },
+  });
   const tabletDf = allDosageForms.find((d) => d.slug === "tablet");
 
   // 2. Upsert master products and pharmacy inventory
@@ -1290,7 +1567,10 @@ async function main() {
   for (const p of PRODUCTS) {
     // Determine dosageFormId from packSize/name/indications
     const desc = `${p.name} ${p.packSize} ${p.description}`.toLowerCase();
-    const matchedDf = allDosageForms.find((df) => desc.includes(df.value.toLowerCase()) || desc.includes(df.slug)) || tabletDf;
+    const matchedDf =
+      allDosageForms.find(
+        (df) => desc.includes(df.value.toLowerCase()) || desc.includes(df.slug),
+      ) || tabletDf;
     const dosageFormId = matchedDf?.id ?? null;
 
     // Check if master exists by barcode or slug
@@ -1322,7 +1602,7 @@ async function main() {
       });
     } else {
       master = await prisma.medicationMaster.update({
-        where: { id: master.id },
+        where: { id: master!.id },
         data: {
           name: p.name,
           genericName: p.genericName,
@@ -1335,17 +1615,19 @@ async function main() {
           sideEffects: p.sideEffects,
           contraindications: p.contraindications,
           storage: p.storage,
-          imageUrl: p.imageUrl || master.imageUrl || null,
+          imageUrl: p.imageUrl || master!.imageUrl || null,
         },
       });
     }
+
+    if (!master) continue;
 
     // Upsert PharmacyInventory
     const inv = await prisma.pharmacyInventory.upsert({
       where: { pharmacyId_slug: { pharmacyId: AFYVIA_ID, slug: p.slug } },
       create: {
         pharmacyId: AFYVIA_ID,
-        medicationMasterId: master.id,
+        medicationMasterId: master!.id,
         slug: p.slug,
         sku: p.sku,
         price: p.price,
@@ -1358,7 +1640,7 @@ async function main() {
         active: true,
       },
       update: {
-        medicationMasterId: master.id,
+        medicationMasterId: master!.id,
         price: p.price,
         currentStock: p.currentStock,
         shelfLocation: p.shelfLocation,
@@ -1404,7 +1686,9 @@ async function main() {
       .catch(() => {});
   }
 
-  console.log("Done! Platform now has 100% complete coverage for all 14 OTC Healthcare categories.");
+  console.log(
+    "Done! Platform now has 100% complete coverage for all 14 OTC Healthcare categories.",
+  );
 }
 
 main()
