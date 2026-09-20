@@ -598,8 +598,8 @@ function MedicineCard({
           <span
             className={`rounded-full px-2 py-0.5 text-[9px] font-bold backdrop-blur-md ${
               inStock
-                ? "border border-emerald-300/55 bg-emerald-950/90 text-emerald-200"
-                : "border border-rose-300/55 bg-rose-950/90 text-rose-200"
+                ? "border border-emerald-300/60 bg-emerald-950/90 text-emerald-200"
+                : "border border-rose-300/60 bg-rose-950/90 text-rose-200"
             }`}
           >
             {inStock ? `${item.availableStock} in stock` : "Out of stock"}
