@@ -34,6 +34,7 @@ export type BillingState = {
   waived?: boolean;
   settled?: boolean;
   discount?: string;
+  generatedCode?: string;
 };
 
 async function resolveOwnedBillingInvoice(pharmacyId: string, form: FormData) {
@@ -307,6 +308,45 @@ export async function pharmacyBillingAction(_: BillingState, form: FormData): Pr
   }
 }
 
+const PROMOTION_CODE_ALPHABET = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
+
+function buildPromotionCode() {
+  const bytes = new Uint32Array(8);
+  crypto.getRandomValues(bytes);
+  const token = Array.from(
+    bytes,
+    (value) => PROMOTION_CODE_ALPHABET[value % PROMOTION_CODE_ALPHABET.length],
+  ).join("");
+  return `AFY-${token.slice(0, 4)}-${token.slice(4)}`;
+}
+
+export async function generatePromotionCodeAction(): Promise<BillingState> {
+  try {
+    await requirePlatformAction(["super_admin", "billing_admin"], { stepUp: true });
+
+    // Check the live promotion inventory before returning a code. Creation still
+    // relies on the database unique constraint as the final race-condition guard.
+    for (let attempt = 0; attempt < 12; attempt += 1) {
+      const code = buildPromotionCode();
+      const existing = await db.pharmacyPromotion.findFirst({
+        where: { code: { equals: code, mode: "insensitive" } },
+        select: { id: true },
+      });
+      if (!existing) return { generatedCode: code };
+    }
+
+    throw new Error("Could not generate a unique promotion code. Please try again.");
+  } catch (error) {
+    console.error("[billing][promotion-code] generation failed", error);
+    return {
+      error: publicErrorMessage(
+        error,
+        "We couldn't generate a promotion code right now. Please try again.",
+      ),
+    };
+  }
+}
+
 export async function promotionAction(_: BillingState, form: FormData): Promise<BillingState> {
   try {
     const actor = await requirePlatformAction(["super_admin", "billing_admin"], { stepUp: true });
@@ -340,7 +380,9 @@ export async function promotionAction(_: BillingState, form: FormData): Promise<
       await withPlatformTx(async (tx) => {
         // Ensure unique code if provided
         if (code) {
-          const existing = await tx.pharmacyPromotion.findFirst({ where: { code } });
+          const existing = await tx.pharmacyPromotion.findFirst({
+            where: { code: { equals: code, mode: "insensitive" } },
+          });
           if (existing) {
             throw new Error(`Promotional code "${code}" already exists. Please choose a different code.`);
           }
@@ -371,6 +413,11 @@ export async function promotionAction(_: BillingState, form: FormData): Promise<
     return { success: "Promotion saved. Existing allocated benefits are preserved." };
   } catch (error) {
     console.error("[billing][promotion] action failed", error);
+    if ((error as { code?: string }).code === "P2002") {
+      return {
+        error: "That promotional code was just taken. Generate a new code and try again.",
+      };
+    }
     return {
       error: publicErrorMessage(
         error,
