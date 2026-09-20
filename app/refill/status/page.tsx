@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { CheckCircle2, Clock3, FileText, ShieldCheck } from "lucide-react";
+import { BadgeCheck, CheckCircle2, Clock3, FileText, Package, ShieldCheck, XCircle } from "lucide-react";
 import { prisma } from "@/app/lib/db";
 import { withPharmacy } from "@/app/lib/tenant-context";
 import { verifyRefillTrackingToken } from "@/app/lib/refill-tracking";
@@ -15,6 +15,26 @@ function reference(id: string) {
   return `RF-${id.replaceAll("-", "").slice(0, 10).toUpperCase()}`;
 }
 
+function refillStatusIcon(status: string) {
+  switch (status) {
+    case "under_review":
+      return Clock3;
+    case "approved":
+      return ShieldCheck;
+    case "preparing":
+      return Package;
+    case "ready_for_pickup":
+      return CheckCircle2;
+    case "collected":
+      return BadgeCheck;
+    case "cancelled":
+      return XCircle;
+    case "submitted":
+    default:
+      return FileText;
+  }
+}
+
 export default async function RefillStatusPage({
   searchParams,
 }: {
@@ -26,7 +46,7 @@ export default async function RefillStatusPage({
   if (!claims) {
     return (
       <main className="mx-auto w-full max-w-2xl px-5 py-20 bg-transparent">
-        <div className="liquid-glass care-glass rounded-3xl border border-[var(--care-border)] bg-[var(--care-glass)] p-8 shadow-sm backdrop-blur-xl">
+        <div className="liquid-glass care-glass rounded-3xl border border-[color-mix(in_srgb,var(--foreground)_60%,var(--card))] bg-[var(--care-glass)] p-8 shadow-sm backdrop-blur-xl">
           <ShieldCheck className="h-9 w-9 text-slate-500" aria-hidden="true" />
           <h1 className="mt-5 text-2xl font-bold text-[var(--foreground)]">This tracking link is invalid or expired</h1>
           <p className="mt-2 text-sm leading-6 text-[var(--muted)]">
@@ -66,7 +86,7 @@ export default async function RefillStatusPage({
   if (!result.refill) {
     return (
       <main className="mx-auto w-full max-w-2xl px-5 py-20 bg-transparent">
-        <div className="liquid-glass care-glass rounded-3xl border border-[var(--care-border)] bg-[var(--care-glass)] p-8 shadow-sm backdrop-blur-xl">
+        <div className="liquid-glass care-glass rounded-3xl border border-[color-mix(in_srgb,var(--foreground)_60%,var(--card))] bg-[var(--care-glass)] p-8 shadow-sm backdrop-blur-xl">
           <FileText className="h-9 w-9 text-slate-500" aria-hidden="true" />
           <h1 className="mt-5 text-2xl font-bold text-[var(--foreground)]">Refill request unavailable</h1>
           <p className="mt-2 text-sm leading-6 text-[var(--muted)]">
@@ -79,36 +99,45 @@ export default async function RefillStatusPage({
 
   const refill = result.refill;
   const meta = refillStatusMeta(refill.status);
+  const StatusIcon = refillStatusIcon(refill.status);
   const pharmacyHref = result.pharmacy?.slug ? `/p/${result.pharmacy.slug}` : "/pharmacies";
 
   return (
     <main className="mx-auto w-full max-w-2xl px-5 py-16 sm:py-20 bg-transparent">
-      <div className="liquid-glass care-glass rounded-3xl border border-[var(--care-border)] bg-[var(--care-glass)] p-6 shadow-sm backdrop-blur-xl sm:p-8">
+      <div className="liquid-glass care-glass rounded-3xl border border-[color-mix(in_srgb,var(--foreground)_60%,var(--card))] bg-[var(--care-glass)] p-6 shadow-sm backdrop-blur-xl sm:p-8">
         <div className="flex items-start gap-4">
-          <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-emerald-50 text-emerald-700">
-            <CheckCircle2 className="h-6 w-6" aria-hidden="true" />
+          <div className={`flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl ${meta.color}`}>
+            <StatusIcon className="h-6 w-6" aria-hidden="true" />
           </div>
           <div>
-            <p className="text-sm font-semibold text-emerald-700">{reference(refill.id)}</p>
+            <p className="text-sm font-semibold text-[var(--brand-deep)]">{reference(refill.id)}</p>
             <h1 className="mt-1 text-2xl font-bold text-[var(--foreground)]">Refill status</h1>
             <p className="mt-1 text-sm text-[var(--muted)]">{result.pharmacy?.name || "Your pharmacy"}</p>
           </div>
         </div>
 
         <dl className="mt-8 grid gap-4 sm:grid-cols-2">
-          <div className="rounded-2xl border border-[var(--care-border)] bg-[var(--card-elev)]/80 p-4 backdrop-blur-md">
+          <div className="rounded-2xl border border-[color-mix(in_srgb,var(--foreground)_60%,var(--card))] bg-[var(--card-elev)]/80 p-4 backdrop-blur-md">
             <dt className="text-xs font-semibold uppercase tracking-wide text-[var(--muted)]">Medicine</dt>
             <dd className="mt-1 text-sm font-semibold text-[var(--foreground)]">{refill.medicineName}</dd>
           </div>
-          <div className="rounded-2xl border border-[var(--care-border)] bg-[var(--card-elev)]/80 p-4 backdrop-blur-md">
+          <div className="rounded-2xl border border-[color-mix(in_srgb,var(--foreground)_60%,var(--card))] bg-[var(--card-elev)]/80 p-4 backdrop-blur-md">
             <dt className="text-xs font-semibold uppercase tracking-wide text-[var(--muted)]">Status</dt>
-            <dd className="mt-2"><span className={`inline-flex rounded-full px-2.5 py-1 text-xs font-semibold ${meta.color}`}>{meta.label}</span></dd>
+            <dd className="mt-2">
+              <span
+                aria-label={`Status: ${meta.label}`}
+                className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-semibold ${meta.color}`}
+              >
+                <StatusIcon className="h-3.5 w-3.5" aria-hidden="true" />
+                {meta.label}
+              </span>
+            </dd>
           </div>
-          <div className="rounded-2xl border border-[var(--care-border)] bg-[var(--card-elev)]/80 p-4 backdrop-blur-md">
+          <div className="rounded-2xl border border-[color-mix(in_srgb,var(--foreground)_60%,var(--card))] bg-[var(--card-elev)]/80 p-4 backdrop-blur-md">
             <dt className="text-xs font-semibold uppercase tracking-wide text-[var(--muted)]">Collection</dt>
             <dd className="mt-1 text-sm text-[var(--foreground)]">{refill.pickupPreference === "delivery" ? "Delivery" : "Pickup"}{refill.preferredDate ? ` · ${refill.preferredDate.toLocaleDateString("en-KE")}` : ""}</dd>
           </div>
-          <div className="rounded-2xl border border-[var(--care-border)] bg-[var(--card-elev)]/80 p-4 backdrop-blur-md">
+          <div className="rounded-2xl border border-[color-mix(in_srgb,var(--foreground)_60%,var(--card))] bg-[var(--card-elev)]/80 p-4 backdrop-blur-md">
             <dt className="flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wide text-[var(--muted)]"><Clock3 className="h-3.5 w-3.5" aria-hidden="true" />Last updated</dt>
             <dd className="mt-1 text-sm text-[var(--foreground)]">{refill.statusUpdatedAt.toLocaleString("en-KE")}</dd>
           </div>
