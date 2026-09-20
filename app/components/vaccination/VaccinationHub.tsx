@@ -99,7 +99,7 @@ export function VaccinationHub({
           return (
             <div
               key={s.label}
-              className="liquid-glass care-glass rounded-2xl border border-[var(--care-border)] bg-[var(--care-glass)] p-4 shadow-[0_12px_40px_rgba(8,40,32,0.06)] backdrop-blur-xl"
+              className="liquid-glass care-glass rounded-2xl border border-[var(--public-health-ui-border)] bg-[var(--care-glass)] p-4 shadow-[0_12px_40px_rgba(8,40,32,0.06)] backdrop-blur-xl"
             >
               <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-[#0d6e5a] to-[#084c3f] text-white shadow-md">
                 <Icon className="h-5 w-5" />
@@ -140,8 +140,8 @@ export function VaccinationHub({
             onClick={() => setTab(id)}
             className={`inline-flex items-center gap-2 rounded-full px-4 py-2 text-sm font-semibold transition ${
               tab === id
-                ? "bg-[#084c3f] text-white shadow-md"
-                : "border border-teal-900/10 bg-white text-[#084c3f] hover:bg-teal-50"
+                ? "border border-[var(--brand)] bg-[var(--brand)] text-[var(--background)] shadow-md"
+                : "border border-[var(--public-health-ui-border)] bg-[var(--card)] text-[var(--brand-deep)] hover:bg-[var(--brand-tint)]"
             }`}
           >
             <Icon className="h-4 w-4" />
@@ -167,8 +167,8 @@ export function VaccinationHub({
                 onClick={() => setFilter(id)}
                 className={`rounded-full px-3.5 py-1.5 text-xs font-semibold ${
                   filter === id
-                    ? "bg-teal-800 text-white"
-                    : "border border-teal-900/10 bg-white text-[#084c3f]"
+                    ? "border border-[var(--brand)] bg-[var(--brand)] text-[var(--background)]"
+                    : "border border-[var(--public-health-ui-border)] bg-[var(--card)] text-[var(--brand-deep)]"
                 }`}
               >
                 {label}
@@ -179,7 +179,7 @@ export function VaccinationHub({
             {filtered.map((v) => (
               <article
                 key={v.slug}
-                className="liquid-glass care-glass flex h-full flex-col rounded-3xl border border-[var(--care-border)] bg-[var(--care-glass)] p-6 shadow-[0_16px_50px_rgba(8,40,32,0.07)] backdrop-blur-xl transition hover:border-[var(--brand)] hover:shadow-lg"
+                className="liquid-glass care-glass flex h-full flex-col rounded-3xl border border-[var(--public-health-ui-border)] bg-[var(--care-glass)] p-6 shadow-[0_16px_50px_rgba(8,40,32,0.07)] backdrop-blur-xl transition hover:border-[var(--brand)] hover:shadow-lg"
               >
                 <div className="flex items-start justify-between gap-3">
                   <div>
@@ -196,15 +196,15 @@ export function VaccinationHub({
                     <p className="mt-1 text-xs text-[var(--muted)]">{v.antigen}</p>
                   </div>
                   {v.priceKes != null && v.priceKes > 0 ? (
-                    <span className="shrink-0 rounded-full border border-[var(--care-border)] bg-[var(--card)] px-2.5 py-1 text-xs font-bold text-[var(--foreground)]">
+                    <span className="shrink-0 rounded-full border border-[var(--public-health-ui-border)] bg-[var(--card)] px-2.5 py-1 text-xs font-bold text-[var(--foreground)]">
                       KES {v.priceKes.toLocaleString()}
                     </span>
                   ) : v.pharmacyAdministered ? (
-                    <span className="shrink-0 rounded-full bg-emerald-500/15 border border-emerald-500/30 px-2.5 py-1 text-xs font-bold text-emerald-600 dark:text-emerald-400">
+                    <span className="shrink-0 rounded-full border border-emerald-700/60 bg-emerald-500/15 px-2.5 py-1 text-xs font-bold text-emerald-800 dark:border-emerald-300/60 dark:text-emerald-100">
                       Campaign / MoH
                     </span>
                   ) : (
-                    <span className="shrink-0 rounded-full border border-[var(--care-border)] bg-[var(--card)] px-2.5 py-1 text-xs font-bold text-[var(--muted)]">
+                    <span className="shrink-0 rounded-full border border-[var(--public-health-ui-border)] bg-[var(--card)] px-2.5 py-1 text-xs font-bold text-[var(--muted)]">
                       Info
                     </span>
                   )}
@@ -214,7 +214,7 @@ export function VaccinationHub({
                   {v.diseasesPrevented.slice(0, 3).map((d) => (
                     <span
                       key={d}
-                      className="rounded-full border border-[var(--care-border)] bg-[var(--card)] px-2 py-0.5 text-[11px] text-[var(--brand)]"
+                      className="rounded-full border border-[var(--public-health-ui-border)] bg-[var(--card)] px-2 py-0.5 text-[11px] text-[var(--brand)]"
                     >
                       {d}
                     </span>
@@ -244,7 +244,7 @@ export function VaccinationHub({
 
       {tab === "schedules" && (
         <section className="grid gap-6 lg:grid-cols-2">
-          <div className="liquid-glass care-glass rounded-3xl border border-[var(--care-border)] bg-[var(--care-glass)] p-6 shadow-sm backdrop-blur-xl">
+          <div className="liquid-glass care-glass rounded-3xl border border-[var(--public-health-ui-border)] bg-[var(--care-glass)] p-6 shadow-sm backdrop-blur-xl">
             <div className="flex items-center gap-2">
               <Users className="h-5 w-5 text-[var(--brand)]" />
               <h3 className="text-lg font-semibold text-[var(--foreground)]" style={{ fontFamily: "var(--font-display), serif" }}>
@@ -253,7 +253,7 @@ export function VaccinationHub({
             </div>
             <ul className="mt-4 space-y-4">
               {ADULT_IMMUNIZATION_SCHEDULE.map((row) => (
-                <li key={row.ageOrTrigger} className="border-b border-[var(--line-2)] pb-3 last:border-0">
+                <li key={row.ageOrTrigger} className="border-b border-[var(--public-health-ui-border)] pb-3 last:border-0">
                   <p className="text-xs font-bold uppercase tracking-wider text-[var(--brand)]">{row.ageOrTrigger}</p>
                   <p className="mt-1 text-sm font-medium text-[var(--foreground)]">{row.vaccines.join(" · ")}</p>
                   <p className="mt-1 text-xs text-[var(--muted)]">{row.note}</p>
@@ -263,7 +263,7 @@ export function VaccinationHub({
             <TenantLink href="/vaccinations/schedule" className="mt-4 inline-flex text-sm font-semibold text-[var(--brand)]">
               Full schedule →
             </TenantLink>    </div>
-          <div className="liquid-glass care-glass rounded-3xl border border-[var(--care-border)] bg-[var(--care-glass)] p-6 shadow-sm backdrop-blur-xl">
+          <div className="liquid-glass care-glass rounded-3xl border border-[var(--public-health-ui-border)] bg-[var(--care-glass)] p-6 shadow-sm backdrop-blur-xl">
             <div className="flex items-center gap-2">
               <Baby className="h-5 w-5 text-[var(--brand)]" />
               <h3 className="text-lg font-semibold text-[var(--foreground)]" style={{ fontFamily: "var(--font-display), serif" }}>
@@ -278,7 +278,7 @@ export function VaccinationHub({
               {KEPI_CHILDHOOD_SCHEDULE.map((row) => (
                 <li key={row.age} className="flex gap-3 text-sm">
                   <span className="w-28 shrink-0 font-semibold text-[#084c3f]">{row.age}</span>
-                  <span className="text-[#5a6b62]">{row.vaccines.join(", ")}</span>
+                  <span className="text-[var(--public-health-editorial-body)]">{row.vaccines.join(", ")}</span>
                 </li>
               ))}
             </ul>
@@ -312,14 +312,14 @@ export function VaccinationHub({
           ].map((c) => {
             const Icon = c.icon;
             return (
-              <div key={c.title} className="liquid-glass care-glass rounded-3xl border border-[var(--care-border)] bg-[var(--care-glass)] p-6 shadow-sm backdrop-blur-xl">
+              <div key={c.title} className="liquid-glass care-glass rounded-3xl border border-[var(--public-health-ui-border)] bg-[var(--care-glass)] p-6 shadow-sm backdrop-blur-xl">
                 <Icon className="h-5 w-5 text-[var(--brand)]" />
                 <h3 className="mt-3 text-base font-semibold text-[var(--foreground)]">{c.title}</h3>
                 <p className="mt-2 text-sm leading-relaxed text-[var(--muted)]">{c.body}</p>
               </div>
             );
           })}
-          <div className="md:col-span-2 rounded-3xl border border-[var(--care-border)] bg-[var(--card)] p-6 shadow-sm backdrop-blur-xl">
+          <div className="md:col-span-2 rounded-3xl border border-[var(--public-health-ui-border)] bg-[var(--card)] p-6 shadow-sm backdrop-blur-xl">
             <p className="flex items-center gap-2 text-sm font-semibold text-[var(--brand-deep)]">
               <Info className="h-4 w-4" /> When we will not vaccinate today
             </p>
@@ -336,7 +336,7 @@ export function VaccinationHub({
       {tab === "campaigns" && (
         <section className="space-y-4">
           {campaigns.length === 0 ? (
-            <div className="liquid-glass care-glass rounded-3xl border border-[var(--care-border)] bg-[var(--care-glass)] px-6 py-12 text-center backdrop-blur-xl">
+            <div className="liquid-glass care-glass rounded-3xl border border-[var(--public-health-ui-border)] bg-[var(--care-glass)] px-6 py-12 text-center backdrop-blur-xl">
               <Megaphone className="mx-auto h-8 w-8 text-[var(--brand)]" />
               <p className="mt-3 text-sm font-semibold text-[var(--foreground)]">No public campaigns right now</p>
               <p className="mt-1 text-sm text-[var(--muted)]">
@@ -352,7 +352,7 @@ export function VaccinationHub({
               return (
                 <article
                   key={c.slug}
-                  className="liquid-glass care-glass rounded-3xl border border-[var(--care-border)] bg-[var(--care-glass)] p-6 shadow-sm backdrop-blur-xl transition hover:border-[var(--brand)] hover:shadow-md"
+                  className="liquid-glass care-glass rounded-3xl border border-[var(--public-health-ui-border)] bg-[var(--care-glass)] p-6 shadow-sm backdrop-blur-xl transition hover:border-[var(--brand)] hover:shadow-md"
                 >
                   <p className="text-[10px] font-bold uppercase tracking-wider text-[var(--brand)]">
                     {c.theme.replace(/_/g, " ")} · {c.targetPopulation}
@@ -363,8 +363,8 @@ export function VaccinationHub({
                   >
                     {c.title}
                   </h3>
-                  <p className="mt-2 text-sm leading-relaxed text-[#5a6b62]">{c.short}</p>
-                  <p className="mt-3 text-xs text-[#5a6b62]">
+                  <p className="mt-2 text-sm leading-relaxed text-[var(--public-health-editorial-body)]">{c.short}</p>
+                  <p className="mt-3 text-xs text-[var(--public-health-editorial-body)]">
                     {new Date(c.startDate).toLocaleDateString()} 
                     {c.endDate ? ` – ${new Date(c.endDate).toLocaleDateString()}` : ""}
                     {c.walkInDays ? ` · Walk-ins: ${c.walkInDays}` : ""}
@@ -374,7 +374,7 @@ export function VaccinationHub({
                       <div className="h-2 overflow-hidden rounded-full bg-teal-100">
                         <div className="h-full rounded-full bg-teal-700" style={{ width: `${progress}%` }} />
                       </div>
-                      <p className="mt-1 text-[11px] text-[#5a6b62]">
+                      <p className="mt-1 text-[11px] text-[var(--public-health-editorial-body)]">
                         {c.dosesAdministered} of {c.targetDoses} target doses
                       </p>
                     </div>
