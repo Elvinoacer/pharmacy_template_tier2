@@ -1,6 +1,6 @@
 "use client";
 
-import { useActionState, useEffect, useRef, useState, useTransition } from "react";
+import { useActionState, useEffect, useRef, useState } from "react";
 import {
   Check,
   CheckCircle2,
@@ -17,7 +17,6 @@ import {
   X,
 } from "lucide-react";
 import {
-  generatePromotionCodeAction,
   pharmacyBillingAction,
   promotionAction,
   submitWaiverRequestAction,
@@ -643,32 +642,13 @@ function PromotionStepUpDialog({
 export function PromotionForm({ promotionId }: { promotionId?: string }) {
   const submitRef = useRef<HTMLButtonElement>(null);
   const [state, action, pending] = useActionState(promotionAction, {});
-  const [code, setCode] = useState("");
-  const [generationError, setGenerationError] = useState<string | null>(null);
   const [stepUpOpen, setStepUpOpen] = useState(false);
-  const [generating, startCodeGeneration] = useTransition();
 
   useEffect(() => {
     if (state.error === "STEP_UP_REQUIRED" || state.error === "MFA_REQUIRED") {
       setStepUpOpen(true);
     }
   }, [state.error]);
-
-  useEffect(() => {
-    if (state.generatedCode) setCode(state.generatedCode);
-  }, [state.generatedCode]);
-
-  const generateCode = () => {
-    setGenerationError(null);
-    startCodeGeneration(async () => {
-      const result = await generatePromotionCodeAction();
-      if (result.generatedCode) {
-        setCode(result.generatedCode);
-        return;
-      }
-      setGenerationError(result.error || "Could not generate a unique code. Please try again.");
-    });
-  };
 
   const authRequired = state.error === "STEP_UP_REQUIRED" || state.error === "MFA_REQUIRED";
 
@@ -679,78 +659,67 @@ export function PromotionForm({ promotionId }: { promotionId?: string }) {
         {promotionId ? (
           <input type="hidden" name="promotionId" value={promotionId} />
         ) : (
-          <div className="grid gap-3 sm:grid-cols-2">
-            <label className="text-sm font-medium">
-              Promotion Name / Reason
-              <input className={input} name="name" required minLength={5} maxLength={150} placeholder="e.g. Early Partner Chemist" />
-            </label>
-            <div className="text-sm font-medium">
-              <label htmlFor="promotion-code">Promo Code / Coupon</label>
-              <div className="mt-1 flex flex-col gap-2 sm:flex-row">
-                <input
-                  id="promotion-code"
-                  className={`${input} mt-0 min-w-0 flex-1 uppercase font-mono tracking-wider`}
-                  name="code"
-                  value={code}
-                  onChange={(event) => setCode(event.target.value.toUpperCase())}
-                  placeholder="Auto-generated when created"
-                  autoComplete="off"
-                  autoCapitalize="characters"
-                  spellCheck={false}
-                  disabled={pending || generating}
-                />
-                <button
-                  type="button"
-                  onClick={generateCode}
-                  disabled={pending || generating}
-                  className="btn-ghost min-h-12 shrink-0 justify-center gap-2 px-4 sm:w-auto"
-                >
-                  <RefreshCw className={`h-4 w-4 ${generating ? "animate-spin" : ""}`} aria-hidden />
-                  <span>{generating ? "Generating…" : code ? "New Code" : "Generate Code"}</span>
-                </button>
+          <>
+            <div className="rounded-2xl border border-emerald-500/25 bg-emerald-500/10 p-3">
+              <div className="flex items-start gap-2">
+                <KeyRound className="mt-0.5 h-4 w-4 shrink-0 text-emerald-700 dark:text-emerald-300" aria-hidden />
+                <div>
+                  <p className="text-sm font-semibold text-[var(--foreground)]">Code is generated and activated atomically</p>
+                  <p className="mt-1 text-xs leading-5 text-[var(--muted)]">
+                    When you create the promotion, Afyvia generates a unique AFY-XXXX-XXXX code and saves it to the database in the same transaction. No preview or unsaved voucher can be issued.
+                  </p>
+                </div>
               </div>
-              <p className="mt-1.5 text-xs font-normal text-[var(--muted)]">
-                A generated value is only a preview until the promotion is created. If left blank, Afyvia generates and saves a unique code automatically.
-              </p>
-              {generationError ? (
-                <p role="alert" className="mt-1.5 text-xs font-medium text-rose-700 dark:text-rose-300">
-                  {generationError}
-                </p>
-              ) : null}
             </div>
-            <label className="text-sm font-medium">
-              Redemption Capacity
-              <input className={input} name="capacity" type="number" min={1} max={100000} defaultValue={50} required />
-            </label>
-            <label className="text-sm font-medium">
-              Waive Scope
-              <select className={input} name="scope">
-                <option value="both">Both (Verification KES 100 + Monthly Service)</option>
-                <option value="verification">Verification fee only (KES 100)</option>
-                <option value="recurring">Monthly service only (KES 500/mo)</option>
-              </select>
-            </label>
-            <label className="text-sm font-medium sm:col-span-2">
-              Free Service Months
-              <input className={input} name="months" type="number" min={1} max={120} defaultValue={3} required />
-            </label>
-            <label className="text-sm font-medium">
-              Verification Subsidy (KES 0–100)
-              <input className={input} name="verificationAmount" type="number" min={0} max={100} defaultValue={100} required />
-            </label>
-            <label className="text-sm font-medium">
-              Monthly Subsidy (KES 0–500)
-              <input className={input} name="monthlyAmount" type="number" min={0} max={500} defaultValue={500} required />
-            </label>
-          </div>
+
+            <div className="grid gap-3 sm:grid-cols-2">
+              <label className="text-sm font-medium">
+                Promotion Name / Reason
+                <input className={input} name="name" required minLength={5} maxLength={150} placeholder="e.g. Early Partner Chemist" />
+              </label>
+              <label className="text-sm font-medium">
+                Redemption Capacity
+                <input className={input} name="capacity" type="number" min={1} max={100000} defaultValue={50} required />
+              </label>
+              <label className="text-sm font-medium">
+                Waive Scope
+                <select className={input} name="scope">
+                  <option value="both">Both (Verification KES 100 + Monthly Service)</option>
+                  <option value="verification">Verification fee only (KES 100)</option>
+                  <option value="recurring">Monthly service only (KES 500/mo)</option>
+                </select>
+              </label>
+              <label className="text-sm font-medium">
+                Free Service Months
+                <input className={input} name="months" type="number" min={1} max={120} defaultValue={3} required />
+              </label>
+              <label className="text-sm font-medium">
+                Verification Subsidy (KES 0–100)
+                <input className={input} name="verificationAmount" type="number" min={0} max={100} defaultValue={100} required />
+              </label>
+              <label className="text-sm font-medium">
+                Monthly Subsidy (KES 0–500)
+                <input className={input} name="monthlyAmount" type="number" min={0} max={500} defaultValue={500} required />
+              </label>
+            </div>
+          </>
         )}
-        <button ref={submitRef} className="btn-primary min-h-11" disabled={pending || generating}>
+
+        <button ref={submitRef} className="btn-primary min-h-11" disabled={pending}>
           {pending
             ? "Saving…"
             : promotionId
               ? "Stop new allocations"
-              : "Create Promotion & Activate Code"}
+              : "Create Promotion & Generate Active Code"}
         </button>
+
+        {!promotionId && state.generatedCode && !state.error ? (
+          <div className="rounded-xl border border-emerald-500/30 bg-emerald-500/10 p-3" role="status">
+            <p className="text-xs font-semibold uppercase tracking-wider text-emerald-800 dark:text-emerald-200">Active voucher code</p>
+            <p className="mt-1 font-mono text-lg font-bold tracking-wider text-[var(--foreground)]">{state.generatedCode}</p>
+            <p className="mt-1 text-xs text-[var(--muted)]">This code is saved and can be redeemed immediately during pharmacy onboarding.</p>
+          </div>
+        ) : null}
 
         {authRequired ? (
           <p role="status" className="text-sm text-amber-800 dark:text-amber-200">
