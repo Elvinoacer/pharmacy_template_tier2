@@ -301,7 +301,7 @@ export default function PharmacyDirectory({
         </div>
 
         <div
-          className={`${showFilters ? "grid" : "hidden"} mt-3 gap-2.5 border-t border-[var(--line)] pt-3 sm:grid-cols-2 lg:grid lg:grid-cols-4`}
+          className={`${showFilters ? "grid" : "hidden"} mt-3 gap-2.5 border-t border-[color-mix(in_srgb,var(--foreground)_48%,var(--card))] pt-3 sm:grid-cols-2 lg:grid lg:grid-cols-4`}
         >
           <Select
             value={city}
@@ -352,7 +352,7 @@ export default function PharmacyDirectory({
         </div>
 
         {(activeFilterCount > 0 || position || locationState === "denied") && (
-          <div className="mt-3 flex flex-wrap items-center gap-2 border-t border-[var(--line)] pt-3">
+          <div className="mt-3 flex flex-wrap items-center gap-2 border-t border-[color-mix(in_srgb,var(--foreground)_48%,var(--card))] pt-3">
             {position && (
               <span className="inline-flex items-center gap-1.5 rounded-full border border-[color-mix(in_srgb,var(--foreground)_48%,var(--card))] bg-[var(--brand-soft)] px-2.5 py-1.5 text-[10px] font-bold text-[var(--brand-deep)]">
                 <Navigation className="h-3 w-3" aria-hidden /> Distance enabled
