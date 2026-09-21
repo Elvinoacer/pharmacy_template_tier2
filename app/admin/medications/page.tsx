@@ -3,7 +3,7 @@ import { redirect } from "next/navigation";
 import type { Prisma } from "@/app/generated/prisma/client";
 import { getSessionUser } from "@/app/lib/auth";
 import { prisma } from "@/app/lib/db";
-import { requireTenantId } from "@/app/lib/tenant";
+import { withPharmacy } from "@/app/lib/tenant-context";
 import { adminDeleteMedicationAction } from "@/app/actions/admin";
 import { AdminCard, AdminEmptyState } from "@/app/components/admin/AdminUI";
 import { AdminShell } from "@/app/components/admin/AdminShell";
@@ -155,6 +155,16 @@ export default async function AdminMedicationsPage({
   const user = await getSessionUser();
   if (!user) redirect("/login");
 
+  const pharmacyId = user.activePharmacyId;
+  const activeMembership = pharmacyId
+    ? user.memberships.some(
+        (membership) => membership.pharmacyId === pharmacyId && membership.status === "active",
+      )
+    : false;
+  if (!pharmacyId || (!activeMembership && !user.platformAdmin)) {
+    redirect("/admin/select");
+  }
+
   const sp = await searchParams;
   const q = sp.q?.trim() || undefined;
   const category = sp.category || undefined;
@@ -204,13 +214,13 @@ export default async function AdminMedicationsPage({
   let lastSynced: Date | null = null;
 
   try {
-    const tenantId = await requireTenantId();
-    const lowRows = await prisma.$queryRaw<Array<{ id: string }>>`
-      SELECT id FROM pharmacy_inventory
-      WHERE pharmacy_id = ${tenantId}
-        AND current_stock > 0 AND current_stock <= low_stock_threshold
-    `;
-    const lowStockIds = lowRows.map((r) => r.id);
+    await withPharmacy(pharmacyId, async () => {
+      const lowRows = await prisma.$queryRaw<Array<{ id: string }>>`
+        SELECT id FROM pharmacy_inventory
+        WHERE pharmacy_id = ${pharmacyId}
+          AND current_stock > 0 AND current_stock <= low_stock_threshold
+      `;
+      const lowStockIds = lowRows.map((r) => r.id);
 
     let where: Prisma.PharmacyInventoryWhereInput = baseWhere;
     if (stock === "low") {
@@ -274,7 +284,8 @@ export default async function AdminMedicationsPage({
       take: PAGE_SIZE,
       skip: (pageNum - 1) * PAGE_SIZE,
     });
-    paged = pageRows.map(toCatalogMed);
+      paged = pageRows.map(toCatalogMed);
+    });
   } catch (err) {
     console.error("[admin/medications] Failed to load catalog:", err);
     loadError =
