@@ -163,6 +163,7 @@ export async function pharmacyBillingAction(
       }
 
       revalidatePath("/onboard/billing");
+      revalidatePath("/admin/billing");
       revalidatePath("/onboard");
       revalidatePath("/admin/setup");
 
@@ -186,6 +187,7 @@ export async function pharmacyBillingAction(
     if (intent === "verification_checkout") {
       const invoice = await ensureVerificationInvoice(pharmacyId);
       revalidatePath("/onboard/billing");
+      revalidatePath("/admin/billing");
       revalidatePath("/onboard");
 
       if (Number(invoice.totalKes) === 0 || invoice.status === "paid") {
@@ -238,6 +240,7 @@ export async function pharmacyBillingAction(
         { actorId: user.id },
       );
       revalidatePath("/onboard/billing");
+      revalidatePath("/admin/billing");
       if (!checkout.ok)
         throw new Error(
           checkout.message || "Could not create checkout session.",
@@ -262,6 +265,7 @@ export async function pharmacyBillingAction(
         cancelSubscription(subscription.id, true, user.id),
       );
       revalidatePath("/onboard/billing");
+      revalidatePath("/admin/billing");
       revalidatePath("/admin/setup");
       return {
         success:
@@ -273,7 +277,7 @@ export async function pharmacyBillingAction(
     if (intent === "activate") {
       if (!(await loadPharmacySetup(pharmacyId)).profileReady) {
         throw new Error(
-          "Finish verification and storefront setup, then launch on the free plan. Premium can be added afterwards from Pricing & billing.",
+          "Finish verification and storefront setup, then launch on the free plan. Premium can be added afterwards from Admin → Plans & billing.",
         );
       }
       const invoice = await startPharmacyService(pharmacyId);
@@ -283,6 +287,7 @@ export async function pharmacyBillingAction(
         );
       revalidatePath("/onboard");
       revalidatePath("/onboard/billing");
+      revalidatePath("/admin/billing");
       revalidatePath("/admin/setup");
 
       if (Number(invoice.totalKes) === 0 || invoice.status === "paid") {
@@ -292,6 +297,7 @@ export async function pharmacyBillingAction(
           });
           revalidatePath("/onboard");
           revalidatePath("/onboard/billing");
+      revalidatePath("/admin/billing");
           revalidatePath("/admin/setup");
         }
         return {
@@ -336,6 +342,7 @@ export async function pharmacyBillingAction(
         { actorId: user.id },
       );
       revalidatePath("/onboard/billing");
+      revalidatePath("/admin/billing");
       revalidatePath("/admin/setup");
       if (!checkout.ok)
         throw new Error(checkout.message || "Could not start payment.");
@@ -357,6 +364,7 @@ export async function pharmacyBillingAction(
           actorId: user.id,
         });
         revalidatePath("/onboard/billing");
+      revalidatePath("/admin/billing");
         if (!result.ok)
           throw new Error(
             "Could not start payment. Confirm the number and try again.",
@@ -597,6 +605,7 @@ export async function submitWaiverRequestAction(
     });
     revalidatePath("/onboard");
     revalidatePath("/onboard/billing");
+      revalidatePath("/admin/billing");
     revalidatePath("/platform/billing");
     return { success: "Waiver request submitted. A platform billing admin will review it." };
   } catch (error) {
@@ -631,6 +640,7 @@ export async function waiverDecisionAction(
       });
       revalidatePath("/platform/billing");
       revalidatePath("/onboard/billing");
+      revalidatePath("/admin/billing");
       return { success: "Waiver request declined." };
     }
 
@@ -704,6 +714,7 @@ export async function waiverDecisionAction(
     revalidatePath("/platform/billing");
     revalidatePath("/onboard");
     revalidatePath("/onboard/billing");
+      revalidatePath("/admin/billing");
     return { success: "Waiver approved and applied to the pharmacy's open invoices." };
   } catch (error) {
     const code = error instanceof Error ? error.message : "";
