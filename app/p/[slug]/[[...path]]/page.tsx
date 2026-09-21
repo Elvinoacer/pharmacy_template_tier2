@@ -20,6 +20,7 @@ import PreventivePage from "@/app/preventive/page";
 import PreventiveLayout from "@/app/preventive/layout";
 import HowDoYouFeelPage from "@/app/how-do-you-feel/page";
 import type { Metadata } from "next";
+import type { ReactNode } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
@@ -139,7 +140,7 @@ export default async function PublicStorefrontPage({ params, searchParams }: Pro
   if (section === "delivery") return DeliveryPage();
   if (section === "faq") return FaqPage();
   if (section === "vaccinations") {
-    let content: React.ReactNode;
+    let content: ReactNode;
     if (detail === "book") {
       content = await VaccinationBookingPage({
         searchParams: Promise.resolve({ vaccine: search.vaccine, campaign: search.campaign }),
