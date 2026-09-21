@@ -2,6 +2,7 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { getSessionUser } from "@/app/lib/auth";
 import { getInventoryHealth } from "@/app/lib/services/stock";
+import { withPharmacy } from "@/app/lib/tenant-context";
 import { AdminShell } from "@/app/components/admin/AdminShell";
 import { AdminCard, AdminPanel, AdminEmptyState } from "@/app/components/admin/AdminUI";
 import { formatDate } from "@/app/lib/time";
@@ -22,7 +23,19 @@ export default async function AdminInventoryPage() {
   const user = await getSessionUser();
   if (!user) redirect("/login");
 
-  const health = await getInventoryHealth({ expiryDays: 60, salesLookbackDays: 30 });
+  const pharmacyId = user.activePharmacyId;
+  const activeMembership = pharmacyId
+    ? user.memberships.some(
+        (membership) => membership.pharmacyId === pharmacyId && membership.status === "active",
+      )
+    : false;
+  if (!pharmacyId || (!activeMembership && !user.platformAdmin)) {
+    redirect("/admin/select");
+  }
+
+  const health = await withPharmacy(pharmacyId, () =>
+    getInventoryHealth({ expiryDays: 60, salesLookbackDays: 30 }),
+  );
 
   return (
     <AdminShell
