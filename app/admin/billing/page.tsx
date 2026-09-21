@@ -20,8 +20,10 @@ import {
 
 import { AdminShell } from "@/app/components/admin/AdminShell";
 import {
+  CancelServiceForm,
   PharmacyEnrolmentPricingSelector,
   PromoCardForm,
+  RetryOverdueForm,
 } from "@/app/components/onboard/BillingForms";
 import { getSessionUser } from "@/app/lib/auth";
 import { prisma, prismaUnscoped, withPlatformTx } from "@/app/lib/db";
@@ -209,6 +211,9 @@ export default async function AdminBillingPage() {
   const paymentAvailable = isIntasendConfigured();
   const periodEnd = formatDate(tenantData.subscription?.currentPeriodEnd);
   const latestInvoice = tenantData.invoices[0];
+  const needsRenewal = ["past_due", "unpaid"].includes(
+    tenantData.subscription?.status || "",
+  );
 
   return (
     <AdminShell
@@ -269,7 +274,7 @@ export default async function AdminBillingPage() {
               </div>
 
               {premiumActive ? (
-                <div className="mt-4 space-y-2 text-sm text-[var(--admin-text-muted)]">
+                <div className="mt-4 space-y-3 text-sm text-[var(--admin-text-muted)]">
                   <p className="flex items-center gap-2">
                     <Check className="h-4 w-4 text-emerald-600 dark:text-emerald-300" />
                     Premium entitlements are active.
@@ -280,16 +285,44 @@ export default async function AdminBillingPage() {
                       Auto-renewal is set to stop at period end.
                     </p>
                   ) : null}
+                  {isOwner && !tenantData.subscription?.cancelAt ? (
+                    <details className="rounded-xl border border-[var(--admin-border)] bg-[var(--admin-card)]">
+                      <summary className="cursor-pointer list-none px-3 py-2.5 text-xs font-semibold text-[var(--admin-text-muted)]">
+                        Manage Premium renewal
+                      </summary>
+                      <div className="border-t border-[var(--admin-border)] p-3">
+                        <p className="text-xs leading-5 text-[var(--admin-text-soft)]">
+                          Cancelling stops automatic renewal. Premium remains available through the current paid period.
+                        </p>
+                        <CancelServiceForm pharmacyId={pharmacy.id} />
+                      </div>
+                    </details>
+                  ) : null}
                 </div>
               ) : isOwner ? (
                 <div className="mt-4">
-                  <PharmacyEnrolmentPricingSelector
-                    pharmacyId={pharmacy.id}
-                    grant={grant}
-                    verificationPaid
-                    subscriptionActive={false}
-                    paymentAvailable={paymentAvailable}
-                  />
+                  {needsRenewal ? (
+                    <div className="rounded-2xl border border-amber-500/25 bg-amber-500/[0.06] p-4">
+                      <p className="text-sm font-semibold text-[var(--admin-text)]">
+                        Premium payment needs attention
+                      </p>
+                      <p className="mt-1 text-xs leading-5 text-[var(--admin-text-muted)]">
+                        Settle the outstanding monthly invoice to restore Premium entitlements. Your Free plan remains available.
+                      </p>
+                      <RetryOverdueForm
+                        pharmacyId={pharmacy.id}
+                        suspended={tenantData.subscription?.status === "unpaid"}
+                      />
+                    </div>
+                  ) : (
+                    <PharmacyEnrolmentPricingSelector
+                      pharmacyId={pharmacy.id}
+                      grant={grant}
+                      verificationPaid
+                      subscriptionActive={false}
+                      paymentAvailable={paymentAvailable}
+                    />
+                  )}
                 </div>
               ) : (
                 <div className="mt-4 rounded-2xl border border-[var(--admin-border)] bg-[var(--admin-card)] p-4 text-sm text-[var(--admin-text-muted)]">
