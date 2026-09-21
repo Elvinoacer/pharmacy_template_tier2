@@ -23,10 +23,12 @@ import {
 } from "lucide-react";
 import { isPushSupported, requestFcmToken } from "@/app/lib/firebase/client";
 
+import type { PaymentPolicy } from "@/app/lib/service-payment-policy";
+
 type Props = {
   serviceId: string;
   serviceTitle: string;
-  /** When set, payment is required to confirm. */
+  paymentPolicy: PaymentPolicy;
   price: number | null;
   defaultName?: string;
   defaultPhone?: string;
@@ -42,6 +44,7 @@ export function ServiceBookingForm({
   serviceId,
   serviceTitle,
   price,
+  paymentPolicy,
   defaultName = "",
   defaultPhone = "",
   defaultEmail = "",
@@ -56,7 +59,7 @@ export function ServiceBookingForm({
     "idle" | "requesting" | "on" | "denied" | "unsupported"
   >("idle");
   const askedRef = useRef(false);
-  const requiresPayment = price != null && price > 0;
+  const requiresPayment = paymentPolicy === "ONLINE_REQUIRED";
 
   useEffect(() => {
     if (state?.success) toast.success(state.success);
@@ -168,7 +171,7 @@ export function ServiceBookingForm({
               Confirm with M-Pesa
             </h4>
             <p className="mt-1 text-xs leading-5 text-[var(--muted)]">
-              Your slot is held only after payment succeeds. Use the same phone you entered on the form.
+              Complete payment to confirm your requested visit. Use the same phone you entered on the form.
             </p>
             <div className="mt-3 min-w-0">
               <MpesaPayButton
@@ -183,7 +186,7 @@ export function ServiceBookingForm({
 
         {!state.requiresPayment && (
           <p className="rounded-2xl border border-[color-mix(in_srgb,var(--foreground)_60%,var(--card))] bg-[var(--brand-tint)] p-4 text-sm leading-6 text-[var(--muted)]">
-            No payment is required for this service. Our team will contact you on{" "}
+            {state.isPayableAfter ? "Payment is due at your visit. " : "No online payment is required. "}Our team will contact you on{" "}
             <strong className="break-words text-[var(--foreground)]">{state.phone || defaultPhone}</strong> to finalise timing.
           </p>
         )}
@@ -204,6 +207,8 @@ export function ServiceBookingForm({
       </div>
     );
   }
+
+  if (paymentPolicy === "UNAVAILABLE") return <p role="status" className="text-sm leading-6">This service requires online payment, which is currently unavailable. Please contact the pharmacy to arrange your visit.</p>;
 
   return (
     <form action={formAction} className="min-w-0 space-y-4">
@@ -304,10 +309,10 @@ export function ServiceBookingForm({
       </div>
 
       <div className="rounded-xl border border-[color-mix(in_srgb,var(--foreground)_60%,var(--card))] bg-[var(--card-elev)] px-3.5 py-3 text-sm text-[var(--muted)]">
-        {requiresPayment ? (
+        {price != null && price > 0 ? (
           <>
             <span className="font-semibold text-[var(--foreground)]">KES {price!.toLocaleString()}</span>
-            <span className="ml-1.5 text-xs leading-5">— payment confirms your {serviceTitle} booking</span>
+            <span className="ml-1.5 text-xs leading-5">— {requiresPayment ? `payment confirms your ${serviceTitle} booking` : "pay at your visit; the pharmacy will confirm timing"}</span>
           </>
         ) : (
           <>No fixed fee listed — book freely and settle any charges in person if needed.</>

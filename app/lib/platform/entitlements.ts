@@ -1,14 +1,16 @@
 import "server-only";
+import { PREMIUM_FEATURES } from "./plan-policy";
 
 import { prismaUnscoped } from "@/app/lib/db";
 
 export const DEFAULT_PLAN_FEATURES: Record<string, Record<string, { enabled: boolean; limitInt: number | null }>> = {
   starter: {
+    ai_import: { enabled: true, limitInt: null },
     staff: { enabled: true, limitInt: 2 },
     branches: { enabled: true, limitInt: 1 },
     messages: { enabled: true, limitInt: 500 },
     ai: { enabled: true, limitInt: 50 },
-    analytics: { enabled: false, limitInt: null },
+    analytics: { enabled: true, limitInt: null },
     api: { enabled: false, limitInt: null },
     sso: { enabled: false, limitInt: null },
     pos_sync: { enabled: true, limitInt: null },
@@ -42,11 +44,28 @@ export const DEFAULT_PLAN_FEATURES: Record<string, Record<string, { enabled: boo
   },
 };
 
+export async function hasPremiumPlan(pharmacyId: string): Promise<boolean> {
+  const now = new Date();
+  return Boolean(await prismaUnscoped.subscription.findFirst({
+    where: {
+      pharmacyId,
+      currentPeriodEnd: { gt: now },
+      OR: [
+        { status: "active", currentPeriodStart: { lte: now } },
+        { status: "trialing", trialEndsAt: null },
+        { status: "trialing", trialEndsAt: { gt: now } },
+      ],
+    },
+    select: { id: true },
+  }));
+}
+
 export async function isFeatureEnabled(pharmacyId: string, key: string): Promise<boolean> {
+  if (PREMIUM_FEATURES.has(key)) return hasPremiumPlan(pharmacyId);
   const override = await prismaUnscoped.tenantEntitlement.findUnique({
     where: { pharmacyId_key: { pharmacyId, key } },
   }).catch(() => null);
-  if (override) return override.enabled;
+  if (override && override.source !== "plan") return override.enabled;
 
   const flag = await prismaUnscoped.featureFlag.findUnique({ where: { key } }).catch(() => null);
   if (flag) {
@@ -58,7 +77,7 @@ export async function isFeatureEnabled(pharmacyId: string, key: string): Promise
   }
 
   const sub = await prismaUnscoped.subscription.findFirst({
-    where: { pharmacyId, status: { in: ["trialing", "active"] } },
+    where: { pharmacyId, status: "active", currentPeriodEnd: { gt: new Date() } },
     include: { plan: { include: { features: true } } },
     orderBy: { createdAt: "desc" },
   });
@@ -71,10 +90,10 @@ export async function entitlementLimit(pharmacyId: string, key: string): Promise
   const override = await prismaUnscoped.tenantEntitlement.findUnique({
     where: { pharmacyId_key: { pharmacyId, key } },
   }).catch(() => null);
-  if (override) return override.limitInt;
+  if (override && override.source !== "plan") return override.limitInt;
 
   const sub = await prismaUnscoped.subscription.findFirst({
-    where: { pharmacyId, status: { in: ["trialing", "active"] } },
+    where: { pharmacyId, status: "active", currentPeriodEnd: { gt: new Date() } },
     include: { plan: { include: { features: true } } },
     orderBy: { createdAt: "desc" },
   });

@@ -12,6 +12,8 @@ import {
 } from "@/app/lib/auth";
 import { validateCsrfToken } from "@/app/lib/csrf";
 import { prisma } from "@/app/lib/db";
+import { listingLimitMessage } from "@/app/lib/platform/plan-policy";
+import { assertPublicMedicineSlot } from "@/app/lib/platform/plan-enforcement";
 import { getTenant } from "@/app/lib/tenant";
 import {
   updateRefillStatus,
@@ -1516,6 +1518,26 @@ export async function adminCreateMedicationAction(
     active: parsed.inventory.active,
   };
 
+  if (inventoryData.publicListing && inventoryData.active) {
+    const current = inventoryId
+      ? await prisma.pharmacyInventory.findUnique({
+          where: { id: inventoryId },
+          select: { publicListing: true, active: true },
+        })
+      : null;
+    const alreadyPublic = Boolean(current?.publicListing && current.active);
+    if (!alreadyPublic) {
+      const tenant = await getTenant().catch(() => null);
+      if (tenant?.pharmacyId) {
+        try {
+          await assertPublicMedicineSlot(tenant.pharmacyId);
+        } catch (error) {
+          return { error: listingLimitMessage(error) || "This listing needs Premium." };
+        }
+      }
+    }
+  }
+
   try {
     if (masterId && inventoryId) {
       // Update both models in a transaction.
@@ -1650,6 +1672,8 @@ export async function adminCreateMedicationAction(
     redirect("/admin/medications");
   } catch (e) {
     if (e && typeof e === "object" && "digest" in e) throw e;
+    const limit = listingLimitMessage(e);
+    if (limit) return { error: limit };
     console.error(e);
     return { error: "Could not save medication. The slug, SKU, or barcode may already exist." };
   }

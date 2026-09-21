@@ -47,7 +47,7 @@ export function ReadyToLaunchStep({ snapshot }: { snapshot: PharmacyOnboardingSn
         {pharmacy.name} is ready for patients
       </h2>
       <p className="mt-1 max-w-md mx-auto text-xs text-[var(--muted)] leading-relaxed">
-        All verification checks and storefront requirements are complete. Publishing enables your public storefront and starts receiving online orders.
+        Verification and storefront setup are complete. Publishing opens your free storefront. Premium is optional later if you need more than 5 public medicines or 2 services.
       </p>
 
       {/* Checklist grid */}
@@ -74,7 +74,7 @@ export function ReadyToLaunchStep({ snapshot }: { snapshot: PharmacyOnboardingSn
         </div>
         <div className="flex items-center gap-2 rounded-xl bg-slate-50 dark:bg-white/[0.04] p-3 font-semibold">
           <CheckCircle2 className="h-4 w-4 text-emerald-600 shrink-0" />
-          <span>Platform service active</span>
+          <span>Free plan included</span>
         </div>
       </div>
 

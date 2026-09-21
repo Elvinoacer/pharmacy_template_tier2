@@ -465,7 +465,7 @@ export function resolvePharmacyOnboardingStage(
     return "EMAIL_VERIFICATION";
   }
 
-  const { pharmacy, verificationProfile, verificationPayment, setup, subscription } = snapshot;
+  const { pharmacy, verificationProfile, verificationPayment, setup } = snapshot;
 
   // Terminal or reviewed application states
   if (pharmacy.status === "rejected") {
@@ -483,10 +483,6 @@ export function resolvePharmacyOnboardingStage(
 
     if (!storefrontSetupComplete) {
       return "POST_APPROVAL_SETUP";
-    }
-
-    if (!subscription?.active) {
-      return "SERVICE_ACTIVATION";
     }
 
     return "READY_TO_LAUNCH";

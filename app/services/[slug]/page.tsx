@@ -1,3 +1,5 @@
+import { getServicePaymentPolicy } from "@/app/lib/service-payment-policy";
+import { getPharmacyPaymentCapability } from "@/app/lib/platform/integrations";
 import { serializeJsonLd } from "@/app/lib/seo";
 import type { Metadata } from "next";
 import Image from "next/image";
@@ -94,6 +96,9 @@ export default async function ServiceDetailPage({ params }: Props) {
   if (!pharmacy) notFound();
   const service = await getPublicServiceBySlug(slug, pharmacy.id || undefined).catch(() => null);
   if (!service) notFound();
+
+  const capability = await getPharmacyPaymentCapability(pharmacy.id);
+  const paymentPolicy = getServicePaymentPolicy(service, capability.onlinePaymentsEnabled);
 
   const all = await listPublicServices().catch(() => []);
   const related = all.filter((item) => item.slug !== service.slug).slice(0, 3);
@@ -292,7 +297,7 @@ export default async function ServiceDetailPage({ params }: Props) {
                       <ShieldCheck className="h-4 w-4" aria-hidden="true" />
                       Eligibility
                     </div>
-                    <p>{service.eligibility}</p>
+                    <p>{service.eligibility.replace(/\[payable:(?:before|after)\]/gi, "").trim()}</p>
                   </div>
                 )}
 
@@ -313,7 +318,7 @@ export default async function ServiceDetailPage({ params }: Props) {
                       Price
                     </div>
                     <p className={styles.priceValue}>KES {formatPrice(service.price)}</p>
-                    <p>Online bookings are confirmed only after payment succeeds.</p>
+                    <p>{paymentPolicy === "ONLINE_REQUIRED" ? "Pay online to confirm your booking." : paymentPolicy === "UNAVAILABLE" ? "Contact the pharmacy: online payment is currently unavailable." : "Reserve your visit and settle the fee at the pharmacy."}</p>
                   </div>
                 )}
               </div>
@@ -327,7 +332,7 @@ export default async function ServiceDetailPage({ params }: Props) {
                   <div className="min-w-0">
                     <h2>Book this service</h2>
                     <p>
-                      {service.price != null
+                      {paymentPolicy === "ONLINE_REQUIRED"
                         ? "Enter your details below. Payment confirms your booking."
                         : "Enter your details below. No online payment is required."}
                     </p>
@@ -343,6 +348,7 @@ export default async function ServiceDetailPage({ params }: Props) {
                     serviceId={service.id}
                     serviceTitle={service.title}
                     price={service.price}
+                    paymentPolicy={paymentPolicy}
                     defaultName={defaultName}
                     defaultPhone={defaultPhone}
                     defaultEmail={defaultEmail}

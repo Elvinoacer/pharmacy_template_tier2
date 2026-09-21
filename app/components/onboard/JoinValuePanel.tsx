@@ -47,7 +47,7 @@ export default function JoinValuePanel({
       <div className="flex flex-wrap items-center justify-between gap-1">
         <p className={styles.kicker}>Pharmacy Membership</p>
         <span className="text-[11px] font-bold text-[var(--brand)] lg:hidden">
-          KES 100 once · KES 500/mo
+          KES 100 once · launch free
         </span>
       </div>
       <h1 className={styles.display}>
@@ -115,7 +115,7 @@ export default function JoinValuePanel({
           <span className="hidden sm:inline">·</span>
           <span><strong>KES 100</strong> one-time check</span>
           <span className="hidden sm:inline">·</span>
-          <span><strong>KES 500/mo</strong> only after launch</span>
+          <span><strong>Free</strong> for 5 medicines and 2 services</span>
         </div>
 
         <p

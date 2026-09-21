@@ -21,6 +21,7 @@ export type ServiceBookingState = {
   orderId?: string | null;
   accessToken?: string;
   requiresPayment?: boolean;
+  isPayableAfter?: boolean;
   amount?: number | null;
   phone?: string;
   serviceTitle?: string;

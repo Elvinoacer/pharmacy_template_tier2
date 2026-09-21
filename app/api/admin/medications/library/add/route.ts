@@ -1,3 +1,4 @@
+import { listingLimitMessage } from "@/app/lib/platform/plan-policy";
 import { NextResponse } from "next/server";
 import { z } from "zod";
 import { getSessionUser, isStaff, writeAuditLog } from "@/app/lib/auth";
@@ -68,6 +69,8 @@ export async function POST(req: Request) {
       reusedSharedMaster: true,
     });
   } catch (error) {
+    const limit = listingLimitMessage(error);
+    if (limit) return NextResponse.json({ error: "upgrade_required", message: limit }, { status: 402 });
     const message = error instanceof Error ? error.message : "";
     if (message === "SHARED_MEDICATION_NOT_FOUND") {
       return NextResponse.json(

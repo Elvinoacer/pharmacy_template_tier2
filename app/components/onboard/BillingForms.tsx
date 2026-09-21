@@ -1,18 +1,15 @@
 "use client";
 
 import { useActionState, useEffect, useRef, useState } from "react";
+import { useRouter } from "next/navigation";
 import {
-  Check,
   CheckCircle2,
   CreditCard,
   ExternalLink,
   KeyRound,
-  Layers,
   Loader2,
   RefreshCw,
   ShieldCheck,
-  Smartphone,
-  Sparkles,
   Tag,
   X,
 } from "lucide-react";
@@ -138,262 +135,40 @@ export function WaiverRequestForm({
 }
 
 export function PharmacyEnrolmentPricingSelector({
-  pharmacyId,
-  grant,
-  verificationPaid = false,
-  subscriptionActive = false,
-  defaultPhone,
-  paymentAvailable = true,
+  pharmacyId, grant, verificationPaid = false, subscriptionActive = false, paymentAvailable = true,
 }: {
   pharmacyId: string;
-  grant?: {
-    verification: boolean;
-    verificationDiscountKes?: number | { toString(): string };
-    recurringMonths: number;
-    recurringDiscountKes?: number | { toString(): string };
-  } | null;
+  grant?: { verification: boolean; verificationDiscountKes?: number | { toString(): string }; recurringMonths: number; recurringDiscountKes?: number | { toString(): string } } | null;
   verificationPaid?: boolean;
   subscriptionActive?: boolean;
   defaultPhone?: string | null;
   paymentAvailable?: boolean;
 }) {
-  const [selectedPlan, setSelectedPlan] = useState<"bundle" | "verification" | "recurring">(
-    verificationPaid ? "recurring" : "verification",
-  );
   const [state, action, pending] = useActionState(pharmacyBillingAction, {});
-
+  const router = useRouter();
   useEffect(() => {
-    if (state.checkoutUrl) {
-      window.location.href = state.checkoutUrl;
-    }
-  }, [state.checkoutUrl]);
-
-  const verificationWaived = Boolean(grant?.verification);
-  const recurringWaived = Boolean(grant?.recurringMonths && grant.recurringMonths > 0);
-  const verificationDiscountKes = Math.min(100, Number(grant?.verificationDiscountKes ?? 0) || (verificationWaived ? 100 : 0));
-  const monthlyDiscountKes = Math.min(500, Number(grant?.recurringDiscountKes ?? 0) || (recurringWaived ? 500 : 0));
-
-  // Price calculations
-  const effectiveVerification = verificationPaid ? 0 : Math.max(0, 100 - verificationDiscountKes);
-  const effectiveMonthly = Math.max(0, 500 - monthlyDiscountKes);
-  const effectiveBundle = effectiveVerification + effectiveMonthly;
-
-  const activeCost =
-    selectedPlan === "bundle"
-      ? effectiveBundle
-      : selectedPlan === "verification"
-        ? effectiveVerification
-        : effectiveMonthly;
-
-  const isFree = activeCost === 0;
-  const canSubmit = pending || (!paymentAvailable && !isFree);
-
-  return (
-    <div className="space-y-4">
-      {/* Plan selection tabs */}
-      <div className="grid gap-3 sm:grid-cols-2">
-        {/* Launch-Ready Bundle Card */}
-        {!verificationPaid ? (
-          <button
-            type="button"
-            onClick={() => setSelectedPlan("bundle")}
-            className={`text-left rounded-2xl p-4 border transition-all relative ${
-              selectedPlan === "bundle"
-                ? "border-[var(--brand)] bg-[var(--brand-soft)]/30 ring-2 ring-[var(--brand)]/20 shadow-sm"
-                : "border-[color-mix(in_srgb,var(--foreground)_55%,var(--card-elev))] bg-[var(--card-elev)] hover:border-[var(--brand)]"
-            }`}
-          >
-            <span className="absolute top-3 right-3 px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-[var(--brand)] text-[var(--background)]">
-              Recommended
-            </span>
-            <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-[var(--brand)]">
-              <Sparkles className="h-4 w-4" />
-              <span>Launch-Ready Bundle</span>
-            </div>
-            <div className="mt-2 flex items-baseline gap-2">
-              <span className="text-2xl font-bold text-[var(--foreground)]">
-                KES {effectiveBundle}
-              </span>
-              {(verificationDiscountKes > 0 || monthlyDiscountKes > 0) && (
-                <span className="text-sm text-[var(--muted)] line-through">KES 600</span>
-              )}
-            </div>
-            <p className="mt-1 text-xs font-medium text-[var(--foreground)]">
-              KES 100 verification + KES 500 first month platform subscription
-            </p>
-            <ul className="mt-2.5 space-y-1 text-xs text-[var(--muted)]">
-              <li className="flex items-center gap-1.5">
-                <Check className="h-3.5 w-3.5 text-[var(--brand)] shrink-0" />
-                <span>One-time PPB premises verification &amp; anti-clone lock</span>
-              </li>
-              <li className="flex items-center gap-1.5">
-                <Check className="h-3.5 w-3.5 text-[var(--brand)] shrink-0" />
-                <span>First month full platform access (Storefront, AI intake, 1,400+ meds)</span>
-              </li>
-              <li className="flex items-center gap-1.5">
-                <Check className="h-3.5 w-3.5 text-[var(--brand)] shrink-0" />
-                <span>Zero launch delay: opens to patients immediately upon approval</span>
-              </li>
-            </ul>
-          </button>
-        ) : null}
-
-        {/* Verification Only Card */}
-        {!verificationPaid ? (
-          <button
-            type="button"
-            onClick={() => setSelectedPlan("verification")}
-            className={`text-left rounded-2xl p-4 border transition-all ${
-              selectedPlan === "verification"
-                ? "border-[var(--brand)] bg-[var(--brand-soft)]/30 ring-2 ring-[var(--brand)]/20 shadow-sm"
-                : "border-[color-mix(in_srgb,var(--foreground)_55%,var(--card-elev))] bg-[var(--card-elev)] hover:border-[var(--brand)]"
-            }`}
-          >
-            <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-[var(--muted)]">
-              <ShieldCheck className="h-4 w-4" />
-              <span>Verification Only</span>
-            </div>
-            <div className="mt-2 flex items-baseline gap-2">
-              <span className="text-2xl font-bold text-[var(--foreground)]">
-                KES {effectiveVerification}
-              </span>
-              {verificationDiscountKes > 0 && (
-                <span className="text-sm text-[var(--muted)] line-through">KES 100</span>
-              )}
-            </div>
-            <p className="mt-1 text-xs font-medium text-[var(--foreground)]">
-              One-time PPB check only
-            </p>
-            <ul className="mt-2.5 space-y-1 text-xs text-[var(--muted)]">
-              <li className="flex items-center gap-1.5">
-                <Check className="h-3.5 w-3.5 text-[var(--brand)] shrink-0" />
-                <span>Get verified and anti-clone locked first</span>
-              </li>
-              <li className="flex items-center gap-1.5">
-                <Check className="h-3.5 w-3.5 text-[var(--brand)] shrink-0" />
-                <span>Pay KES 500 monthly service later when ready to go live</span>
-              </li>
-            </ul>
-          </button>
-        ) : null}
-
-        {/* Monthly Subscription Only Card */}
-        {verificationPaid && !subscriptionActive ? (
-          <div className="sm:col-span-2 rounded-2xl p-4 border border-[var(--brand)] bg-[var(--brand-soft)]/20">
-            <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-[var(--brand)]">
-              <Sparkles className="h-4 w-4" />
-              <span>First Month Platform Service</span>
-            </div>
-            <div className="mt-2 flex items-baseline gap-2">
-              <span className="text-2xl font-bold text-[var(--foreground)]">
-                KES {effectiveMonthly}
-              </span>
-              {monthlyDiscountKes > 0 && (
-                <span className="text-sm text-[var(--muted)] line-through">KES 500</span>
-              )}
-            </div>
-            <p className="mt-1 text-xs text-[var(--muted)]">
-              Verification is already completed. Activate your digital pharmacy storefront.
-            </p>
-          </div>
-        ) : null}
-      </div>
-
-      {/* Payment Action Form */}
-      <form action={action} className="rounded-2xl border border-[color-mix(in_srgb,var(--foreground)_55%,var(--card-elev))] bg-[var(--card-elev)] p-4">
-        <input type="hidden" name="pharmacyId" value={pharmacyId} />
-        <input
-          type="hidden"
-          name="intent"
-          value={
-            selectedPlan === "bundle"
-              ? "bundle_checkout"
-              : selectedPlan === "verification"
-                ? "verification_checkout"
-                : "activate"
-          }
-        />
-
-        <div className="flex items-center justify-between gap-3 mb-3">
-          <div>
-            <h4 className="text-sm font-semibold text-[var(--foreground)]">
-              {isFree
-                ? "100% Promotional Waiver Active"
-                : `Total Payable: KES ${activeCost}`}
-            </h4>
-            <p className="text-xs text-[var(--muted)]">
-              {isFree
-                ? "All required fees have been waived. Activate immediately with zero charges."
-                : "Powered by IntaSend: Pay with M-PESA, Visa, Mastercard, or Bank."}
-            </p>
-          </div>
-          {!isFree && (
-            <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-[#f1f5f9] dark:bg-[#1e293b] text-[10px] font-semibold text-[#475569] dark:text-[#94a3b8]">
-              <Smartphone className="h-3 w-3 text-emerald-600" />
-              <span>M-PESA</span>
-              <span className="text-slate-300">·</span>
-              <CreditCard className="h-3 w-3 text-blue-600" />
-              <span>Card</span>
-            </div>
-          )}
-        </div>
-
-        {!paymentAvailable && !isFree ? (
-          <p role="alert" className="mb-3 rounded-xl border border-[color-mix(in_srgb,var(--foreground)_55%,var(--card-elev))] bg-rose-500/10 p-3 text-xs text-rose-700 dark:text-rose-300">
-            Online payment is temporarily unavailable. Please try again later or contact support.
-          </p>
-        ) : null}
-
-        <button
-          disabled={canSubmit}
-          type="submit"
-          className={`btn-primary min-h-12 w-full justify-center text-sm font-semibold flex items-center gap-2 ${
-            isFree ? "bg-emerald-700 hover:bg-emerald-800 text-white" : ""
-          }`}
-        >
-          {pending ? (
-            <>
-              <Loader2 className="h-4 w-4 animate-spin" />
-              <span>Processing...</span>
-            </>
-          ) : isFree ? (
-            <>
-              <CheckCircle2 className="h-4 w-4" />
-              <span>Activate Immediately (KES 0)</span>
-            </>
-          ) : (
-            <>
-              <ShieldCheck className="h-4 w-4" />
-              <span>Pay KES {activeCost} with IntaSend</span>
-            </>
-          )}
-        </button>
-
-        {state.checkoutUrl && (
-          <div className="mt-3 p-2 text-center text-xs text-[var(--brand)]">
-            <span>Taking you to IntaSend... </span>
-            <a
-              href={state.checkoutUrl}
-              className="underline font-semibold inline-flex items-center gap-1"
-            >
-              Click here if not redirected automatically <ExternalLink className="h-3 w-3" />
-            </a>
-          </div>
-        )}
-
-        {state.error && (
-          <p role="alert" className="mt-2.5 text-xs text-rose-700 dark:text-rose-300">
-            {state.error}
-          </p>
-        )}
-        {state.success && (
-          <p role="status" className="mt-2.5 text-xs text-emerald-700 dark:text-emerald-400">
-            {state.success}
-          </p>
-        )}
-      </form>
-    </div>
-  );
+    if (state.checkoutUrl) window.location.href = state.checkoutUrl;
+    if (state.settled) router.refresh();
+  }, [state.checkoutUrl, state.settled, router]);
+  const discount = verificationPaid
+    ? Number(grant?.recurringDiscountKes ?? 0) || (grant?.recurringMonths ? 500 : 0)
+    : Number(grant?.verificationDiscountKes ?? 0) || (grant?.verification ? 100 : 0);
+  const amount = Math.max(0, (verificationPaid ? 500 : 100) - discount);
+  return <section className="space-y-4 rounded-2xl border border-[var(--line-2)] p-5">
+    <h3 className="font-semibold">{verificationPaid ? "Free plan included · Premium is optional" : "One-time verification fee"}</h3>
+    <p className="text-sm">Launch with 5 public medicine listings and 2 active services, reservations, bookings and your own M-Pesa connection. No monthly fee is required.</p>
+    {verificationPaid && <p className="text-sm">Premium costs KES 500/month and unlocks more listings, AI-assisted imports, advanced analytics and POS synchronization.</p>}
+    {subscriptionActive ? <p role="status">Premium is active.</p> : <form action={action}>
+      <input type="hidden" name="pharmacyId" value={pharmacyId} />
+      <input type="hidden" name="intent" value={verificationPaid ? "activate" : "verification_checkout"} />
+      <button type="submit" disabled={pending || (!paymentAvailable && amount > 0)} className="btn-primary">
+        {pending ? "Preparing checkout…" : verificationPaid ? `Upgrade to Premium · KES ${amount}/month` : `Pay verification · KES ${amount}`}
+      </button>
+      {!paymentAvailable && amount > 0 && <p role="status" className="mt-2 text-sm">Online checkout is temporarily unavailable. Please try again later.</p>}
+    </form>}
+    {state.error && <p role="alert" className="text-sm text-rose-700">{state.error}</p>}
+    {state.success && <p role="status" className="text-sm">{state.success}</p>}
+  </section>;
 }
 
 export function PharmacyPaymentForm({

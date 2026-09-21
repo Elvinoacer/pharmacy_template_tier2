@@ -189,7 +189,7 @@ export default async function PharmacyBillingPage(props: PageProps) {
         Simple, frictionless billing.
       </h1>
       <p className="mt-1.5 max-w-md text-xs sm:text-sm leading-relaxed text-[var(--muted)]">
-        Pay KES 600 at once (KES 100 verification + KES 500 first month platform service), or pay KES 100 verification first. Powered by IntaSend with M-PESA, Visa &amp; Mastercard.
+        Join with the one-time KES 100 verification fee or a voucher. Launch free with 5 medicine listings and 2 services. Premium is optional at KES 500/month.
       </p>
 
       {/* PROMO CARD / VOUCHER FORM */}
@@ -229,7 +229,7 @@ export default async function PharmacyBillingPage(props: PageProps) {
 
       {/* PRICING & ENROLMENT SELECTOR */}
       <div className="mt-5">
-        <h2 className="text-base font-semibold mb-3">Choose how to activate</h2>
+        <h2 className="text-base font-semibold mb-3">Verification & optional Premium</h2>
         <PharmacyEnrolmentPricingSelector
           pharmacyId={pharmacy.id}
           grant={grant}
@@ -269,17 +269,17 @@ export default async function PharmacyBillingPage(props: PageProps) {
         <section className={styles.section}>
           <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-[var(--brand)]">
             <Sparkles className="h-4 w-4" />
-            <span>KES 500 / Month Subscription</span>
+            <span>Premium · KES 500 / month</span>
           </div>
-          <h2 className="mt-1 text-sm font-semibold">~KES 17 a day · Only after you launch</h2>
+          <h2 className="mt-1 text-sm font-semibold">Optional upgrade when you need more</h2>
           <ul className="mt-2 space-y-1.5 text-xs text-[var(--muted)]">
             <li className="flex items-start gap-1.5">
               <CheckCircle2 className="mt-0.5 h-3.5 w-3.5 shrink-0 text-[var(--brand)]" />
-              <span><strong>Storefront &amp; AI:</strong> Dedicated neighborhood chemist profile with 1,400+ pre-loaded Kenyan medicines.</span>
+              <span><strong>Storefront &amp; AI:</strong> More than 5 medicine listings and 2 active services, with AI-assisted imports.</span>
             </li>
             <li className="flex items-start gap-1.5">
               <CheckCircle2 className="mt-0.5 h-3.5 w-3.5 shrink-0 text-[var(--brand)]" />
-              <span><strong>WhatsApp Refills:</strong> Automated patient refill reminders keep chronic regulars coming back.</span>
+              <span><strong>Premium tools:</strong> Advanced analytics and POS synchronization.</span>
             </li>
             <li className="flex items-start gap-1.5">
               <CheckCircle2 className="mt-0.5 h-3.5 w-3.5 shrink-0 text-[var(--brand)]" />
@@ -287,7 +287,7 @@ export default async function PharmacyBillingPage(props: PageProps) {
             </li>
           </ul>
           <p className="mt-2 rounded-lg bg-[var(--brand-soft)] p-2 text-[11px] font-semibold text-[var(--brand)]">
-            💡 Just 1 saved chronic refill covers 5 full months of Afyvia.
+            Your free storefront, reservations and bookings remain available without Premium.
           </p>
         </section>
       </div>
@@ -311,12 +311,12 @@ export default async function PharmacyBillingPage(props: PageProps) {
           <div>
             <h2>
               {billingSuspended
-                ? "Service paused — your data is safe"
+                ? "Premium renewal due — your free plan remains available"
                 : `${graceRemaining} day${graceRemaining === 1 ? "" : "s"} of grace remaining`}
             </h2>
             <p>
               {billingSuspended
-                ? "Your public listing and new orders are paused. Settle the overdue invoice with IntaSend to restore your pharmacy immediately."
+                ? "Renew Premium to add more listings and use premium tools. Your free storefront and existing orders remain available."
                 : "The pharmacy remains live during your grace window. Renew now with IntaSend."}
             </p>
           </div>
@@ -330,9 +330,9 @@ export default async function PharmacyBillingPage(props: PageProps) {
               <p className={styles.kicker}>Monthly service</p>
               <h2 className="mt-1 font-semibold">
                 {billingSuspended
-                  ? "Payment required to restore service"
+                  ? "Renew Premium"
                   : subscriptionActive
-                    ? "Active Platform Subscription"
+                    ? "Premium active"
                     : "Subscription Renewal Due"}
               </h2>
               <p className="mt-2 text-sm text-[var(--muted)]">

@@ -1,7 +1,8 @@
 import { redirect } from "next/navigation";
-import { getSessionUser } from "@/app/lib/auth";
-import { AdminShell } from "@/app/components/admin/AdminShell";
 import Link from "next/link";
+import { getSessionUser } from "@/app/lib/auth";
+import { isFeatureEnabled } from "@/app/lib/platform/entitlements";
+import { AdminShell } from "@/app/components/admin/AdminShell";
 import { ArrowLeft, Camera, ClipboardCheck, Sparkles } from "lucide-react";
 import { AiImportFlow } from "./AiImportFlow";
 
@@ -10,6 +11,22 @@ export const metadata = { title: "AI-Assisted Import — Medication" };
 export default async function AiImportPage() {
   const user = await getSessionUser();
   if (!user) redirect("/login");
+  const premium =
+    user.platformAdmin ||
+    (user.activePharmacyId ? await isFeatureEnabled(user.activePharmacyId, "ai_import") : false);
+  if (!premium) {
+    return (
+      <AdminShell user={user} title="Import with AI assistance" subtitle="Premium unlocks AI-assisted medicine imports.">
+        <section className="mx-auto max-w-xl space-y-3 rounded-2xl border border-[var(--admin-border)] bg-[var(--admin-card)] p-5">
+          <h2 className="text-lg font-semibold">AI-assisted import is part of Premium</h2>
+          <p className="text-sm leading-6 admin-muted">
+            The free plan includes manual entry and the shared medicine library, with up to 5 public listings. Premium is KES 500/month and adds AI-assisted imports, more listings, advanced analytics and POS synchronization.
+          </p>
+          <Link href="/onboard/billing" className="btn-primary inline-flex">View Premium</Link>
+        </section>
+      </AdminShell>
+    );
+  }
 
   return (
     <AdminShell

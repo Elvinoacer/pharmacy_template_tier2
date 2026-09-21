@@ -68,18 +68,23 @@ export function ServiceActivationStep({
   return (
     <div className={`${styles.form} ${polish.wizardShell}`} aria-busy={pending}>
       <div className={polish.topline}>
-        <span className={polish.stepPill}>Step 9 · Service Activation</span>
+        <span className={polish.stepPill}>Optional · Premium</span>
         <span className={polish.securePill}>
-          <CreditCard className="h-3.5 w-3.5" aria-hidden /> Monthly Platform Plan
+          <CreditCard className="h-3.5 w-3.5" aria-hidden /> KES 500 / month
         </span>
       </div>
 
       <header className={`${styles.formHead} ${polish.heading}`}>
-        <h2>Activate monthly platform service</h2>
+        <h2>Premium is optional</h2>
         <p>
-          Your setup is complete. Activate your monthly digital storefront service to connect with patients and launch your pharmacy.
+          Launch stays free with 5 public medicine listings, 2 services, reservations and bookings. Upgrade only when you need more listings, AI-assisted imports, advanced analytics or POS synchronization.
         </p>
       </header>
+      <p className="mb-4">
+        <button type="button" className="btn-ghost" onClick={() => router.push(`/onboard?stage=launch&pharmacyId=${pharmacy.id}`)}>
+          Continue on the free plan <ArrowRight className="h-4 w-4" aria-hidden />
+        </button>
+      </p>
 
       {/* Returning from checkout */}
       {isReturned && !subscription?.active ? (

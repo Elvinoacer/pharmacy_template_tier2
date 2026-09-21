@@ -84,7 +84,7 @@ export function ServiceManager({ initial }: { initial: ServiceRow[] }) {
   const [imageUrl, setImageUrl] = useState("");
   const [icon, setIcon] = useState("");
   const [price, setPrice] = useState("");
-  const [paymentTiming, setPaymentTiming] = useState<"before" | "after">("before");
+  const [paymentTiming, setPaymentTiming] = useState<"auto" | "before" | "after">("auto");
   const [bookable, setBookable] = useState(true);
   const [active, setActive] = useState(true);
   const [sortOrder, setSortOrder] = useState("");
@@ -151,7 +151,7 @@ export function ServiceManager({ initial }: { initial: ServiceRow[] }) {
     setImageUrl("");
     setIcon("");
     setPrice("");
-    setPaymentTiming("before");
+    setPaymentTiming("auto");
     setBookable(true);
     setActive(true);
     setSortOrder("");
@@ -167,7 +167,7 @@ export function ServiceManager({ initial }: { initial: ServiceRow[] }) {
     setDescription(row.description);
     setBenefits(row.benefits.join("\n"));
     const isPayAfter = (row.eligibility || "").toLowerCase().includes("[payable:after]");
-    setPaymentTiming(isPayAfter ? "after" : "before");
+    setPaymentTiming(isPayAfter ? "after" : (row.eligibility || "").includes("[payable:before]") ? "before" : "auto");
     setEligibility((row.eligibility || "").replace(/\[payable:(?:before|after)\]/gi, "").trim());
     setDuration(row.duration || "");
     setImageUrl(row.imageUrl || "");
@@ -454,9 +454,10 @@ export function ServiceManager({ initial }: { initial: ServiceRow[] }) {
               <select
                 name="paymentTiming"
                 value={paymentTiming}
-                onChange={(e) => setPaymentTiming(e.target.value as "before" | "after")}
+                onChange={(e) => setPaymentTiming(e.target.value as "auto" | "before" | "after")}
                 className="input-admin"
               >
+                <option value="auto">Online when available, otherwise pay at visit</option>
                 <option value="before">Payable Before (Online STK)</option>
                 <option value="after">Payable After (At visit)</option>
               </select>

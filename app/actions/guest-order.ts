@@ -1,4 +1,6 @@
 "use server";
+import { z } from "zod";
+import { getPharmacyPaymentCapability } from "@/app/lib/platform/integrations";
 import { issueOrderAccessToken } from "@/app/lib/services/payments";
 
 import { revalidatePath } from "next/cache";
@@ -19,6 +21,7 @@ export type GuestOrderState = {
   total?: number;
   /** Soft prompt after success — account is optional */
   suggestAccount?: boolean;
+  onlinePaymentsEnabled?: boolean;
 };
 
 /**
@@ -36,7 +39,7 @@ export async function guestCreateOrderAction(
   const medicationId = String(formData.get("medicationId") || "").trim();
   const submittedPharmacyId = String(formData.get("pharmacyId") || "").trim();
   const submittedPharmacySlug = String(formData.get("pharmacySlug") || "").trim().toLowerCase();
-  const quantity = Math.max(1, Math.min(20, Number(formData.get("quantity") || 1)));
+  const quantity = Number(formData.get("quantity") || 1);
   const fullName = String(formData.get("fullName") || "").trim();
   const phone = String(formData.get("phone") || "").trim();
   const email = String(formData.get("email") || "").trim().toLowerCase();
@@ -47,6 +50,11 @@ export async function guestCreateOrderAction(
   // client opens STK panel after success when payNow is set.
   const payNow = formData.get("payNow") === "on" || formData.get("payNow") === "true";
 
+  if (!Number.isInteger(quantity) || quantity < 1 || quantity > 20) return { error: "Choose a whole quantity between 1 and 20." };
+  if (!/^254[17]\d{8}$/.test(formatMpesaPhone(phone))) return { error: "Enter a valid Kenyan mobile number." };
+  if (email && !z.email().max(254).safeParse(email).success) return { error: "Enter a valid email address." };
+  if (!["pickup", "delivery"].includes(pickupPreference)) return { error: "Choose pickup or delivery." };
+  if (fullName.length > 120 || notes.length > 1500 || reason.length > 1500) return { error: "Please shorten your order details." };
   if (!medicationId) return { error: "Please select a product." };
   if (!fullName || fullName.length < 2) return { error: "Your name is required." };
   if (!phone || phone.replace(/\D/g, "").length < 9) {
@@ -108,11 +116,9 @@ export async function guestCreateOrderAction(
 
   const med = await prisma.pharmacyInventory.findFirst({
     where: {
-      id: medicationId,
-      active: true,
+      ...buildPublicInventoryWhere({ id: medicationId, pharmacyId: trustedPharmacyId }),
       overTheCounter: true,
-      publicListing: true,
-      pharmacyId: trustedPharmacyId,
+      prescriptionRequired: false,
     },
     include: {
       medicationMaster: { select: { name: true } },
@@ -166,7 +172,9 @@ export async function guestCreateOrderAction(
   const session = await getSessionUser().catch(() => null);
   const customerId: string | null = session?.customerId ?? null;
 
+  const capability = await getPharmacyPaymentCapability(trustedPharmacyId);
   const unitPrice = Number(med.price);
+  if (!Number.isFinite(unitPrice) || unitPrice <= 0) return { error: "This product has no valid selling price. Please contact the pharmacy." };
   const total = Math.max(0, unitPrice * quantity);
   const mpesaPhone = formatMpesaPhone(phone);
   const fulfillment = pickupPreference === "delivery" ? "delivery" : "reserve";
@@ -302,7 +310,7 @@ export async function guestCreateOrderAction(
     severity: "info",
     relatedType: "order",
     relatedId: orderId,
-  });
+  }).catch(() => {});
 
   const { dispatchPushToStaff } = await import("@/app/lib/services/push");
   await dispatchPushToStaff({
@@ -331,7 +339,10 @@ export async function guestCreateOrderAction(
   revalidatePath("/admin/inventory");
 
   return {
-    success: payNow
+    onlinePaymentsEnabled: capability.onlinePaymentsEnabled,
+    success: !capability.onlinePaymentsEnabled
+      ? `Reserved under ${orderId.slice(0, 8).toUpperCase()}. The pharmacy will contact you on ${phone} to confirm ${pickupPreference === "delivery" ? "delivery and payment arrangements" : "collection and payment"}.`
+      : payNow
       ? `Reserved. Complete M-Pesa below — stock is held under ref ${orderId.slice(0, 8).toUpperCase()}.`
       : `Reserved under ${orderId.slice(0, 8).toUpperCase()}. Pay with M-Pesa now or at collection. We'll confirm on ${phone}.`,
     orderId,

@@ -177,7 +177,7 @@ export default function OnboardWizard({ signedIn, existing, verificationFeePaid 
       <div className={`${styles.form} ${styles.status} ${polish.wizardShell}`}>
         <p className={styles.kicker}>Verified</p>
         <h2>{name || "Your pharmacy"} is approved</h2>
-        <p>Finish setup, activate monthly service, then publish.</p>
+        <p>Finish setup, then publish on the free plan.</p>
         <Link href="/admin/setup" className="btn-primary mt-6 inline-flex justify-center">
           Continue to setup
         </Link>
@@ -593,7 +593,7 @@ export default function OnboardWizard({ signedIn, existing, verificationFeePaid 
               </button>
             ) : (
               <Link href="/onboard/billing" className={`btn-primary justify-center ${polish.primaryAction}`}>
-                Pay Fees / Activate (KES 100 or KES 600 Bundle) <ArrowRight className="h-4 w-4" aria-hidden />
+                Pay verification fee (KES 100 or voucher) <ArrowRight className="h-4 w-4" aria-hidden />
               </Link>
             )}
           </div>

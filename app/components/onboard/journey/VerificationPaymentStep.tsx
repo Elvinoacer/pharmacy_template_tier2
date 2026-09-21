@@ -5,12 +5,10 @@ import { useRouter, useSearchParams } from "next/navigation";
 import {
   ArrowLeft,
   ArrowRight,
-  Check,
   CheckCircle2,
   Loader2,
   Lock,
   ShieldCheck,
-  Sparkles,
   Tag,
 } from "lucide-react";
 import { pharmacyBillingAction } from "@/app/actions/pharmacy-billing";
@@ -31,13 +29,14 @@ export function VerificationPaymentStep({
 }) {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const isReturned = searchParams?.get("status") === "returned" || searchParams?.get("payment") === "returned";
+  const isReturned =
+    searchParams?.get("status") === "returned" ||
+    searchParams?.get("payment") === "returned";
 
   const pharmacy = snapshot.pharmacy;
   const payment = snapshot.verificationPayment;
   const grant = snapshot.promotionGrant;
 
-  const [selectedPlan, setSelectedPlan] = useState<"verification" | "bundle">("bundle");
   const [promoCode, setPromoCode] = useState("");
   const [state, action, pending] = useActionState(pharmacyBillingAction, {});
 
@@ -65,14 +64,8 @@ export function VerificationPaymentStep({
   if (!pharmacy) return null;
 
   const verificationWaived = Boolean(grant?.verification);
-  const recurringWaived = Boolean(grant?.recurringMonths && grant.recurringMonths > 0);
-
-  const verificationDiscountKes = grant?.verificationDiscountKes ?? (verificationWaived ? 100 : 0);
-  const monthlyDiscountKes = grant?.recurringDiscountKes ?? (recurringWaived ? 500 : 0);
-  const verificationCost = Math.max(0, 100 - verificationDiscountKes);
-  const bundleCost = verificationCost + Math.max(0, 500 - monthlyDiscountKes);
-
-  const currentCost = selectedPlan === "bundle" ? bundleCost : verificationCost;
+  const verificationDiscountKes = grant?.verificationDiscountKes || (verificationWaived ? 100 : 0);
+  const currentCost = Math.max(0, 100 - verificationDiscountKes);
   const isWaivedZero = currentCost === 0;
   const canSubmit = pending || (!paymentAvailable && !isWaivedZero);
 
@@ -81,14 +74,16 @@ export function VerificationPaymentStep({
       <div className={polish.topline}>
         <span className={polish.stepPill}>Step 5 · Verification Fee</span>
         <span className={polish.securePill}>
-          <ShieldCheck className="h-3.5 w-3.5" aria-hidden /> Secure IntaSend Checkout
+          <ShieldCheck className="h-3.5 w-3.5" aria-hidden /> Secure IntaSend
+          Checkout
         </span>
       </div>
 
       <header className={`${styles.formHead} ${polish.heading}`}>
         <h2>Anti-clone verification fee</h2>
         <p>
-          A one-time KES 100 admin review fee locks your pharmacy name and map pin so copycats cannot impersonate your business.
+          A one-time KES 100 admin review fee locks your pharmacy name and map
+          pin so copycats cannot impersonate your business.
         </p>
       </header>
 
@@ -102,7 +97,8 @@ export function VerificationPaymentStep({
                 Confirming payment with IntaSend…
               </strong>
               <p className="text-xs text-[var(--muted)]">
-                Checking your transaction status. This screen will advance automatically once confirmed.
+                Checking your transaction status. This screen will advance
+                automatically once confirmed.
               </p>
             </div>
           </div>
@@ -125,89 +121,16 @@ export function VerificationPaymentStep({
 
       {!paymentAvailable && !isWaivedZero ? (
         <p className={`${styles.alert} ${styles.alertError} mb-4`} role="alert">
-          Online payment is temporarily unavailable. Please try again later or contact support.
+          Online payment is temporarily unavailable. Please try again later or
+          contact support.
         </p>
       ) : null}
 
-      {/* Pricing options selector */}
-      <div className="grid gap-3 sm:grid-cols-2 mb-5">
-        {/* Bundle option */}
-        <button
-          type="button"
-          onClick={() => setSelectedPlan("bundle")}
-          className={`text-left rounded-2xl p-4 border transition-all relative cursor-pointer ${
-            selectedPlan === "bundle"
-              ? "border-[var(--brand)] bg-[var(--brand-soft)]/30 ring-2 ring-[var(--brand)]/20 shadow-sm"
-              : "border-[color-mix(in_srgb,var(--foreground)_55%,var(--card-elev))] bg-[var(--card-elev)] hover:border-[var(--brand)]"
-          }`}
-        >
-          <span className="absolute top-3 right-3 px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-[var(--brand)] text-[var(--background)]">
-            Recommended
-          </span>
-          <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-[var(--brand)]">
-            <Sparkles className="h-4 w-4" />
-            <span>Launch-Ready Bundle</span>
-          </div>
-          <div className="mt-2 flex items-baseline gap-2">
-            <span className="text-2xl font-bold text-[var(--foreground)]">
-              KES {bundleCost}
-            </span>
-            {(verificationDiscountKes > 0 || monthlyDiscountKes > 0) && (
-              <span className="text-sm text-[var(--muted)] line-through">KES 600</span>
-            )}
-          </div>
-          <p className="mt-1 text-xs font-medium text-[var(--foreground)]">
-            KES 100 verification + KES 500 prepaid 1st month subscription
-          </p>
-          <ul className="mt-2.5 space-y-1.5 text-xs text-[var(--muted)]">
-            <li className="flex items-center gap-1.5">
-              <Check className="h-3.5 w-3.5 text-[var(--brand)] shrink-0" />
-              <span>PPB anti-clone review lock</span>
-            </li>
-            <li className="flex items-center gap-1.5">
-              <Check className="h-3.5 w-3.5 text-[var(--brand)] shrink-0" />
-              <span>Prepaid 1st month credited (activates after approval)</span>
-            </li>
-          </ul>
-        </button>
-
-        {/* Verification only option */}
-        <button
-          type="button"
-          onClick={() => setSelectedPlan("verification")}
-          className={`text-left rounded-2xl p-4 border transition-all cursor-pointer ${
-            selectedPlan === "verification"
-              ? "border-[var(--brand)] bg-[var(--brand-soft)]/30 ring-2 ring-[var(--brand)]/20 shadow-sm"
-              : "border-[color-mix(in_srgb,var(--foreground)_55%,var(--card-elev))] bg-[var(--card-elev)] hover:border-[var(--brand)]"
-          }`}
-        >
-          <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-[var(--muted)]">
-            <ShieldCheck className="h-4 w-4" />
-            <span>Verification Only</span>
-          </div>
-          <div className="mt-2 flex items-baseline gap-2">
-            <span className="text-2xl font-bold text-[var(--foreground)]">
-              KES {verificationCost}
-            </span>
-            {verificationDiscountKes > 0 && (
-              <span className="text-sm text-[var(--muted)] line-through">KES 100</span>
-            )}
-          </div>
-          <p className="mt-1 text-xs font-medium text-[var(--foreground)]">
-            One-time verification review only
-          </p>
-          <ul className="mt-2.5 space-y-1.5 text-xs text-[var(--muted)]">
-            <li className="flex items-center gap-1.5">
-              <Check className="h-3.5 w-3.5 text-[var(--brand)] shrink-0" />
-              <span>PPB anti-clone review lock</span>
-            </li>
-            <li className="flex items-center gap-1.5">
-              <Check className="h-3.5 w-3.5 text-[var(--brand)] shrink-0" />
-              <span>Pay KES 500 monthly service later when ready to publish</span>
-            </li>
-          </ul>
-        </button>
-      </div>
+      <section className="mb-5 rounded-2xl border border-[var(--brand)] bg-[var(--brand-soft)]/30 p-4">
+        <h3 className="font-semibold">One-time verification · KES {currentCost}</h3>
+        <p className="mt-2 text-sm">No monthly payment is required to join or launch. Your free plan includes 5 public medicine listings, 2 services, reservations and bookings.</p>
+        <p className="mt-2 text-xs text-[var(--muted)]">Upgrade later to Premium for KES 500/month when you need more listings or premium tools.</p>
+      </section>
 
       {/* Payment Action Form */}
       <form action={action}>
@@ -215,14 +138,16 @@ export function VerificationPaymentStep({
         <input
           type="hidden"
           name="intent"
-          value={selectedPlan === "bundle" ? "bundle_checkout" : "verification_checkout"}
+          value="verification_checkout"
         />
 
         <div className={`${styles.actions} ${polish.actionsBar}`}>
           {isReviewEdit ? (
             <button
               type="button"
-              onClick={() => router.push(`/onboard?stage=review&pharmacyId=${pharmacy.id}`)}
+              onClick={() =>
+                router.push(`/onboard?stage=review&pharmacyId=${pharmacy.id}`)
+              }
               className={`btn-ghost justify-center ${polish.secondaryAction}`}
             >
               <ArrowLeft className="h-4 w-4" aria-hidden /> Return to review
@@ -234,13 +159,11 @@ export function VerificationPaymentStep({
             type="submit"
             disabled={canSubmit}
           >
-            {pending ? (
-              "Securing checkout…"
-            ) : isWaivedZero ? (
-              "Continue (Waiver Applied · KES 0)"
-            ) : (
-              `Pay KES ${currentCost} via IntaSend / M-PESA`
-            )}
+            {pending
+              ? "Securing checkout…"
+              : isWaivedZero
+                ? "Continue (Waiver Applied · KES 0)"
+                : `Pay KES ${currentCost} via IntaSend / M-PESA`}
             {!pending ? <ArrowRight className="h-4 w-4" aria-hidden /> : null}
           </button>
         </div>
@@ -253,13 +176,18 @@ export function VerificationPaymentStep({
         <summary className="flex cursor-pointer list-none items-center gap-2 px-3.5 py-3 text-xs font-semibold text-[var(--muted)] marker:hidden">
           <Tag className="h-3.5 w-3.5 text-[var(--brand)]" aria-hidden />
           <span>Have a voucher or need help with the fee?</span>
-          <span className="ml-auto text-[10px] font-medium uppercase tracking-wider text-[var(--muted)]">Optional</span>
+          <span className="ml-auto text-[10px] font-medium uppercase tracking-wider text-[var(--muted)]">
+            Optional
+          </span>
         </summary>
         <div className="space-y-4 border-t border-[color-mix(in_srgb,var(--foreground)_20%,var(--card-elev))] p-3.5">
           <form action={action} className="space-y-2">
             <input type="hidden" name="pharmacyId" value={pharmacy.id} />
             <input type="hidden" name="intent" value="apply_promo" />
-            <label className="block text-xs font-semibold text-[var(--foreground)]" htmlFor="pharmacy-promo-code">
+            <label
+              className="block text-xs font-semibold text-[var(--foreground)]"
+              htmlFor="pharmacy-promo-code"
+            >
               Promotional code
               <span className="mt-1.5 flex flex-col gap-2 sm:flex-row">
                 <input
@@ -280,7 +208,11 @@ export function VerificationPaymentStep({
                   disabled={pending || !promoCode.trim()}
                   className="btn-ghost min-h-10 w-full shrink-0 justify-center px-4 text-xs font-semibold sm:w-auto"
                 >
-                  {pending ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : "Apply code"}
+                  {pending ? (
+                    <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                  ) : (
+                    "Apply code"
+                  )}
                 </button>
               </span>
             </label>
@@ -291,24 +223,39 @@ export function VerificationPaymentStep({
               <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-emerald-600" />
               <div>
                 <div className="flex flex-wrap items-center gap-2">
-                  <strong>Active benefit: {grant.promotionName || "Promotion"}</strong>
-                  {grant.promotionCode ? <span className="rounded bg-emerald-500/20 px-1.5 py-0.5 font-mono text-[10px] font-bold">{grant.promotionCode}</span> : null}
+                  <strong>
+                    Active benefit: {grant.promotionName || "Promotion"}
+                  </strong>
+                  {grant.promotionCode ? (
+                    <span className="rounded bg-emerald-500/20 px-1.5 py-0.5 font-mono text-[10px] font-bold">
+                      {grant.promotionCode}
+                    </span>
+                  ) : null}
                 </div>
                 <p className="mt-0.5 text-[11px]">
-                  {grant.verificationDiscountKes ? `KES ${grant.verificationDiscountKes} off verification. ` : ""}
-                  {grant.recurringDiscountKes ? `KES ${grant.recurringDiscountKes} off monthly service for ${grant.recurringMonths} period${grant.recurringMonths === 1 ? "" : "s"}.` : ""}
+                  {grant.verificationDiscountKes
+                    ? `KES ${grant.verificationDiscountKes} off verification. `
+                    : ""}
+                  {grant.recurringDiscountKes
+                    ? `KES ${grant.recurringDiscountKes} off monthly service for ${grant.recurringMonths} period${grant.recurringMonths === 1 ? "" : "s"}.`
+                    : ""}
                 </p>
               </div>
             </div>
           ) : null}
 
-          <WaiverRequestForm pharmacyId={pharmacy.id} latestRequest={snapshot.waiverRequest} />
+          <WaiverRequestForm
+            pharmacyId={pharmacy.id}
+            latestRequest={snapshot.waiverRequest}
+          />
         </div>
       </details>
 
       <div className="mt-4 flex items-center justify-center gap-2 text-xs text-[var(--muted)]">
         <Lock className="h-3 w-3" />
-        <span>Supports M-PESA STK Push, Visa, Mastercard, and Bank Transfer</span>
+        <span>
+          Supports M-PESA STK Push, Visa, Mastercard, and Bank Transfer
+        </span>
       </div>
     </div>
   );

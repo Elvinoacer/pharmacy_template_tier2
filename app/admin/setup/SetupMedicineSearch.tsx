@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
+import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { CheckCircle2, Loader2, Pill, Plus, Search } from "lucide-react";
 
@@ -12,6 +13,7 @@ type Result = {
   strengthDisplay: string | null;
   dosageForm: string | null;
   alreadyStocked: boolean;
+  imageUrl: string | null;
 };
 
 function slugify(input: string) {
@@ -25,6 +27,7 @@ function slugify(input: string) {
 
 export function SetupMedicineSearch() {
   const router = useRouter();
+  const [overTheCounter, setOverTheCounter] = useState(false);
   const [query, setQuery] = useState("");
   const [results, setResults] = useState<Result[]>([]);
   const [searching, setSearching] = useState(false);
@@ -91,8 +94,8 @@ export function SetupMedicineSearch() {
           price: numericPrice,
           currentStock: numericStock,
           lowStockThreshold: Math.min(10, numericStock),
-          overTheCounter: false,
-          prescriptionRequired: true,
+          overTheCounter,
+          prescriptionRequired: !overTheCounter,
           publicListing: true,
           active: true,
         }),
@@ -151,7 +154,7 @@ export function SetupMedicineSearch() {
               className="flex w-full items-center gap-3 border-b border-slate-100 px-3 py-3 text-left transition last:border-b-0 hover:bg-emerald-50 disabled:cursor-default disabled:opacity-55 dark:border-white/[0.06] dark:hover:bg-emerald-400/5"
             >
               <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-emerald-500/10 text-emerald-700 dark:text-emerald-300">
-                <Pill className="h-4 w-4" />
+                {medicine.imageUrl ? <Image src={medicine.imageUrl} alt={medicine.name} width={36} height={36} unoptimized className="h-9 w-9 rounded-xl object-contain" /> : <Pill className="h-4 w-4" />}
               </span>
               <span className="min-w-0 flex-1">
                 <span className="block truncate text-sm font-semibold text-slate-900 dark:text-white">{medicine.name}</span>
@@ -178,6 +181,10 @@ export function SetupMedicineSearch() {
             </div>
             <span className="rounded-full bg-emerald-500/10 px-2 py-1 text-[10px] font-bold text-emerald-700 dark:text-emerald-300">Public</span>
           </div>
+          <label className="mb-3 flex items-start gap-2 text-xs">
+            <input type="checkbox" checked={overTheCounter} onChange={(event) => setOverTheCounter(event.target.checked)} />
+            This medicine is approved for over-the-counter sale. Otherwise, a prescription is required.
+          </label>
           <div className="grid grid-cols-2 gap-2">
             <label className="text-[11px] font-semibold text-slate-600 dark:text-slate-300">
               Price (KES)

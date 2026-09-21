@@ -3,6 +3,7 @@ import { MONTHLY_FEE_KES, VERIFICATION_FEE_KES, nextBillingMonth } from "./prici
 
 import type { Prisma } from "@/app/generated/prisma/client";
 import { prismaUnscoped } from "@/app/lib/db";
+import { releasePremiumOverflow } from "@/app/lib/platform/plan-enforcement";
 import { withPharmacy, withPlatformBypass } from "@/app/lib/tenant-context";
 import { DEFAULT_PLAN_FEATURES } from "@/app/lib/platform/entitlements";
 import { recordAuditRequired } from "@/app/lib/platform/audit";
@@ -13,7 +14,7 @@ import { createIntasendCheckout, getIntasendConfig, logIntasend } from "@/app/li
 
 export async function ensureDefaultPlans() {
   await prismaUnscoped.plan.updateMany({ where: { slug: { in: ["professional", "enterprise"] } }, data: { active: false, priceKes: MONTHLY_FEE_KES } });
-  const defs = [{ slug: "starter", name: "Pharmacy Platform", priceKes: MONTHLY_FEE_KES, sortOrder: 1 }] as const;
+  const defs = [{ slug: "starter", name: "Pharmacy Premium", priceKes: MONTHLY_FEE_KES, sortOrder: 1 }] as const;
   for (const d of defs) {
     const plan = await prismaUnscoped.plan.upsert({
       where: { slug: d.slug },
@@ -242,20 +243,10 @@ export async function applyDunning(invoiceId: string) {
     ? await prismaUnscoped.dunningCase.update({ where: { id: existing.id }, data: { status, warningAt: existing.warningAt ?? now, graceUntil: new Date(due + 7 * 86400000) } })
     : await prismaUnscoped.dunningCase.create({ data: { pharmacyId: invoice.pharmacyId, invoiceId, status, warningAt: now, graceUntil: new Date(due + 7 * 86400000) } });
 
-  if (status === "restricted" || status === "suspended") {
-    await withPharmacy(invoice.pharmacyId, async () => {
-      await prismaUnscoped.pharmacy.update({
-        where: { id: invoice.pharmacyId },
-        data: {
-          lifecycleStatus: status === "suspended" ? "suspended" : "restricted",
-          restrictedAt: now,
-          suspendedAt: status === "suspended" ? now : undefined,
-          listed: status === "suspended" ? false : undefined,
-        },
-      });
-    });
-    await recordLifecycle(invoice.pharmacyId, status === "suspended" ? "suspended" : "restricted", { toStatus: status, reason: "invoice_overdue" });
-  }
+  // Premium expiry removes premium access through entitlement checks. The free
+  // storefront and existing orders remain available; billing cannot suspend them.
+  // After the grace window, extra public listings and services fall back to the free caps.
+  if (status === "suspended") await releasePremiumOverflow(invoice.pharmacyId);
   return row;
 }
 
@@ -300,6 +291,7 @@ export async function processSubscriptionCycle() {
     });
     if (claimed.count === 0) continue;
     await recordLifecycle(sub.pharmacyId, "plan_changed", { reason: "cancelled_at_period_end" });
+    await releasePremiumOverflow(sub.pharmacyId);
   }
 
   const unfinished = await prismaUnscoped.subscription.findMany({ where: { status: "past_due" }, take: 100 });
@@ -352,7 +344,10 @@ export async function cancelSubscription(subscriptionId: string, atPeriodEnd = t
   const sub = await prismaUnscoped.subscription.findUnique({ where: { id: subscriptionId } });
   if (!sub) throw new Error("subscription_not_found");
   if (atPeriodEnd) await prismaUnscoped.subscription.update({ where: { id: sub.id }, data: { cancelAt: sub.currentPeriodEnd } });
-  else await prismaUnscoped.subscription.update({ where: { id: sub.id }, data: { status: "cancelled", cancelledAt: new Date(), cancelAt: new Date() } });
+  else {
+    await prismaUnscoped.subscription.update({ where: { id: sub.id }, data: { status: "cancelled", cancelledAt: new Date(), cancelAt: new Date() } });
+    await releasePremiumOverflow(sub.pharmacyId);
+  }
   await recordLifecycle(sub.pharmacyId, "plan_changed", { reason: atPeriodEnd ? "cancel_at_period_end" : "cancelled_immediate", actorId: actorId ?? undefined });
 }
 

@@ -280,13 +280,13 @@ describe("Pharmacy Onboarding State Machine & Journey Architecture", () => {
       assert.equal(resolvePharmacyOnboardingStage(snapshot), "POST_APPROVAL_SETUP");
     });
 
-    it("resolves SERVICE_ACTIVATION when storefront setup complete but subscription inactive", () => {
+    it("resolves READY_TO_LAUNCH when storefront setup is complete, even without a subscription", () => {
       const snapshot = createMockSnapshot({
         pharmacy: { status: "approved", verifiedAt: new Date() } as any,
         setup: { hoursOk: true, medicinesOk: true, servicesOk: true, profileOk: true } as any,
         subscription: { active: false, status: null, currentPeriodEnd: null },
       });
-      assert.equal(resolvePharmacyOnboardingStage(snapshot), "SERVICE_ACTIVATION");
+      assert.equal(resolvePharmacyOnboardingStage(snapshot), "READY_TO_LAUNCH");
     });
 
     it("resolves READY_TO_LAUNCH when storefront setup complete and subscription active", () => {

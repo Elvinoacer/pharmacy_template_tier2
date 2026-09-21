@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import ImageUploadField from "@/app/components/admin/ImageUploadField";
 import {
   ArrowRight,
   CheckCircle2,
@@ -129,6 +130,7 @@ export function PharmacySetupStep({ snapshot, initialStep }: Props) {
 
           <form action={saveSetupHoursAction} className="space-y-3">
             <input type="hidden" name="source" value="onboard" />
+            <input type="hidden" name="pharmacyId" value={pharmacy.id} />
 
             {[
               ["Monday – Friday", "weekday", "08:00", "20:00"],
@@ -193,7 +195,7 @@ export function PharmacySetupStep({ snapshot, initialStep }: Props) {
           </div>
 
           <p className="text-xs text-[var(--muted)] leading-relaxed">
-            Add medicines you already stock from our shared Kenyan pharmaceutical library, or continue and build your inventory after launch.
+            Add medicines you already stock from the shared library — photos from the library come with them — or add them after launch. The free plan includes 5 public listings.
           </p>
 
           {setup && setup.counts.medicines > 0 ? (
@@ -220,6 +222,7 @@ export function PharmacySetupStep({ snapshot, initialStep }: Props) {
             <span className="text-xs text-[var(--muted)]">No medicines to add right now?</span>
             <form action={deferSetupMedicinesAction}>
               <input type="hidden" name="source" value="onboard" />
+            <input type="hidden" name="pharmacyId" value={pharmacy.id} />
               <button
                 type="submit"
                 className="btn-ghost text-xs border border-[var(--line-2)] px-4 min-h-10 inline-flex items-center gap-1.5"
@@ -240,11 +243,12 @@ export function PharmacySetupStep({ snapshot, initialStep }: Props) {
           </div>
 
           <p className="text-xs text-[var(--muted)] leading-relaxed">
-            Add at least one healthcare service or check you provide at this premises.
+            Add at least one service patients can book. The free plan includes 2 active services, with an optional image and a choice to pay online or at the visit.
           </p>
 
           <form action={saveSetupServiceAction} className="space-y-3">
             <input type="hidden" name="source" value="onboard" />
+            <input type="hidden" name="pharmacyId" value={pharmacy.id} />
 
             <label className="block text-xs font-semibold text-[var(--foreground)]">
               Service Name
@@ -277,6 +281,17 @@ export function PharmacySetupStep({ snapshot, initialStep }: Props) {
               />
             </label>
 
+            <ImageUploadField name="imageUrl" label="Service image (optional)" folder="services" />
+            <label className="block text-xs font-semibold">
+              Booking payment
+              <select name="paymentTiming" defaultValue="auto" className="input-admin mt-1">
+                <option value="auto">Online when available, otherwise pay at visit</option>
+                <option value="after">Reserve now, pay at visit</option>
+                <option value="before">Require online payment</option>
+              </select>
+            </label>
+            <p className="text-xs text-[var(--muted)]">Online payment requires your pharmacy’s M-Pesa connection. You can configure it in payment settings.</p>
+
             <div className={`${styles.actions} ${polish.actionsBar} mt-4`}>
               <button
                 type="submit"
@@ -303,6 +318,7 @@ export function PharmacySetupStep({ snapshot, initialStep }: Props) {
 
           <form action={saveSetupProfileAction} className="space-y-3">
             <input type="hidden" name="source" value="onboard" />
+            <input type="hidden" name="pharmacyId" value={pharmacy.id} />
 
             <label className="block text-xs font-semibold text-[var(--foreground)]">
               Tagline · Optional

@@ -19,7 +19,7 @@ export const metadata = {
   alternates: { canonical: "/for-pharmacies" },
   openGraph: { title: "Afyvia for pharmacies in Kenya", description: "Publish your pharmacy storefront, medicines and services, and receive customer requests on Afyvia.", url: "/for-pharmacies" },
   description:
-    "Your online storefront, refill requests and patient follow-up. KES 100 verification, then KES 500/month when you start service.",
+    "Your online storefront, refill requests and patient follow-up. KES 100 verification, then launch free. Premium is KES 500/month only when you need more.",
 };
 
 export default function ForPharmaciesPage() {
@@ -182,7 +182,7 @@ export default function ForPharmaciesPage() {
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-[var(--brand)]">
                   <Sparkles size={16} aria-hidden />
-                  <span>Why KES 500 / Month Subscription?</span>
+                  <span>Optional Premium · KES 500 / month</span>
                 </div>
                 <span className="rounded-full bg-emerald-100 px-2.5 py-0.5 text-xs font-bold text-emerald-800 dark:bg-emerald-950/70 dark:text-emerald-200">
                   After Launch
@@ -251,7 +251,7 @@ export default function ForPharmaciesPage() {
                 <tr>
                   <td className="py-2.5 px-3 font-semibold">Monthly upkeep &amp; hosting</td>
                   <td className="py-2.5 px-3 text-[var(--muted)]">KES 3,000 – KES 8,000 / mo</td>
-                  <td className="py-2.5 px-3 font-bold text-[var(--brand)]">KES 500 / mo (~KES 17 a day)</td>
+                  <td className="py-2.5 px-3 font-bold text-[var(--brand)]">Free to launch · Premium KES 500 / mo</td>
                 </tr>
                 <tr>
                   <td className="py-2.5 px-3 font-semibold">Time to launch</td>

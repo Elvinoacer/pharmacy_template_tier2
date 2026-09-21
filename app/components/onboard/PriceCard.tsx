@@ -3,26 +3,26 @@ import styles from "./OnboardSurface.module.css";
 
 const included = [
   "24/7 Digital storefront (/p/your-name)",
-  "WhatsApp refill reminders (keep chronic regulars)",
-  "AI prescription intake & photo upload",
+  "5 public medicine listings and 2 services",
+  "Customer reservations and service bookings",
   "1,400+ Kenyan medicines with standard doses",
   "M-PESA Till & Paybill payouts",
-  "KES 0 monthly until you review and launch",
+  "Optional Premium: more listings, AI imports, analytics and POS sync",
 ];
 
 export default function PriceCard({ full = false }: { full?: boolean }) {
   return (
     <section className={`${styles.price} ${full ? styles.priceFull : ""}`} aria-label="Pharmacy pricing">
       <div>
-        <small>After you go live</small>
+        <small>Free after verification</small>
         <div className={styles.amount}>
           <span>KES</span>
-          <b>500</b>
+          <b>0</b>
           <em>/ month</em>
         </div>
-        <p>About KES 17 a day. Zero monthly charges until your pharmacy launches.</p>
+        <p>Pay only KES 100 once for verification, or use a voucher. No monthly charge to launch.</p>
         <p style={{ marginTop: "0.4rem", fontSize: "0.72rem", color: "var(--brand)", fontWeight: 650 }}>
-          💡 Just 1 saved refill (avg KES 2,500) covers 5 months of platform fees.
+          Premium is KES 500/month when you need more than 5 medicine listings, 2 services or premium tools.
         </p>
       </div>
 

@@ -29,6 +29,7 @@ type Med = { id: string; name: string; price: number; stockQty: number; slug: st
 
 export function GuestOrderForm({
   medications,
+  onlinePaymentsEnabled = false,
   defaultMedicationId,
   isLoggedIn = false,
   supportsDelivery = false,
@@ -38,6 +39,7 @@ export function GuestOrderForm({
   pharmacySlug,
 }: {
   medications: Med[];
+  onlinePaymentsEnabled?: boolean;
   defaultMedicationId?: string;
   isLoggedIn?: boolean;
   supportsDelivery?: boolean;
@@ -53,7 +55,7 @@ export function GuestOrderForm({
   const [productSearch, setProductSearch] = useState("");
   const [catalog, setCatalog] = useState(medications);
   const [quantity, setQuantity] = useState(1);
-  const [payNow, setPayNow] = useState(true);
+  const [payNow, setPayNow] = useState(onlinePaymentsEnabled);
   const [showLoginNudge, setShowLoginNudge] = useState(!isLoggedIn);
 
   const selected = catalog.find((m) => m.id === medicationId) || medications.find((m) => m.id === medicationId);
@@ -109,7 +111,7 @@ export function GuestOrderForm({
           }
           return next;
         });
-      });
+      }).catch(() => toast.error("Could not search medicines. Please try again."));
     }, 250);
     return () => window.clearTimeout(timer);
   }, [pharmacyId, productSearch, medications, medicationId]);
@@ -134,6 +136,7 @@ export function GuestOrderForm({
           )}
         </div>
 
+        {state.onlinePaymentsEnabled && <>
         {/* Pay now — no account needed; phone already on the order */}
         <div className="rounded-2xl border border-[var(--public-flow-ui-border)] bg-[var(--card)] p-5 text-[var(--foreground)] shadow-sm">
           <h4 className="flex items-center gap-2 text-sm font-semibold text-[var(--foreground)]">
@@ -152,6 +155,8 @@ export function GuestOrderForm({
             />
           </div>
         </div>
+
+        </>}
 
         {/* Soft account nudge — never blocks purchase */}
         {state.suggestAccount && (
@@ -384,7 +389,7 @@ export function GuestOrderForm({
         />
       </div>
 
-      <label className="flex cursor-pointer items-start gap-2 rounded-xl border border-[var(--public-flow-ui-border)] bg-[var(--card-elev)]/40 px-3 py-2.5 text-sm">
+      {onlinePaymentsEnabled && <label className="flex cursor-pointer items-start gap-2 rounded-xl border border-[var(--public-flow-ui-border)] bg-[var(--card-elev)]/40 px-3 py-2.5 text-sm">
         <input
           type="checkbox"
           name="payNow"
@@ -399,7 +404,7 @@ export function GuestOrderForm({
             We hold stock first, then open STK on your phone. Uncheck to pay at collection only.
           </span>
         </span>
-      </label>
+      </label>}
 
       <p className="text-xs text-[var(--muted)]">
         No account required. Remote orders are <strong>reservations</strong> — staff dispatch when
@@ -416,7 +421,7 @@ export function GuestOrderForm({
         ) : (
           <>
             <ShoppingBag className="h-4 w-4" />
-            {payNow ? "Reserve & pay" : "Reserve only"}
+            {onlinePaymentsEnabled && payNow ? "Reserve & pay" : "Reserve only"}
             <Send className="h-4 w-4 opacity-70" />
           </>
         )}

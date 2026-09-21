@@ -11,10 +11,12 @@ export function PortalOrderForm({
   medications,
   defaultMedicationId,
   defaultPhone,
+  onlinePaymentsEnabled = false,
 }: {
   medications: Med[];
   defaultMedicationId?: string;
   defaultPhone?: string;
+  onlinePaymentsEnabled?: boolean;
 }) {
   const [state, formAction, pending] = useActionState(portalCreateOrderAction, {} as ActionState);
   const [medicationId, setMedicationId] = useState(defaultMedicationId || medications[0]?.id || "");
@@ -118,7 +120,7 @@ export function PortalOrderForm({
       </div>
 
       <div>
-        <label className="label-premium">M-Pesa phone (for STK push)</label>
+        <label className="label-premium">{onlinePaymentsEnabled ? "M-Pesa phone (for STK push)" : "Phone for confirmation"}</label>
         <div className="relative">
           <Phone className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[#8a9a92]" />
           <input
@@ -130,7 +132,9 @@ export function PortalOrderForm({
           />
         </div>
         <p className="mt-1 text-xs text-[#5a6b62]">
-          After placing the order you can trigger M-Pesa payment from your orders list, or pay in store.
+          {onlinePaymentsEnabled
+            ? "After placing the order you can pay with M-Pesa from your orders list, or pay in store."
+            : "This reserves the medicine. The pharmacy will contact you to confirm collection or delivery, and you pay when you collect."}
         </p>
       </div>
 

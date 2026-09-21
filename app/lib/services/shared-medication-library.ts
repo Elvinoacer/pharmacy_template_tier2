@@ -1,4 +1,6 @@
 import "server-only";
+import { assertPublicMedicineSlot } from "@/app/lib/platform/plan-enforcement";
+import { peekTenant } from "@/app/lib/tenant-context";
 
 import { prisma } from "@/app/lib/db";
 import { computeEnrichmentScore, normalizeForMatch } from "@/app/lib/services/medication-validation";
@@ -280,6 +282,12 @@ async function uniqueInventorySlug(tx: any, desired: string | null | undefined, 
   return `${base}-${Date.now().toString(36)}`;
 }
 
+async function reservePublicListing(seed: PharmacyInventorySeed) {
+  if (seed.publicListing !== true || seed.active === false) return;
+  const pharmacyId = peekTenant()?.pharmacyId;
+  if (pharmacyId) await assertPublicMedicineSlot(pharmacyId);
+}
+
 function inventoryData(seed: PharmacyInventorySeed, slug: string) {
   const otc = seed.overTheCounter === true;
   return {
@@ -305,7 +313,7 @@ export async function addSharedMasterToPharmacy(
 ): Promise<SharedMedicationResult> {
   return prisma.$transaction(async (tx) => {
     const master = await tx.medicationMaster.findUnique({
-      where: { id: medicationMasterId },
+      where: { id: medicationMasterId, status: "active" },
       select: { id: true, name: true, enrichmentScore: true, enrichmentStatus: true },
     });
     if (!master) throw new Error("SHARED_MEDICATION_NOT_FOUND");
@@ -327,6 +335,7 @@ export async function addSharedMasterToPharmacy(
     }
 
     const slug = await uniqueInventorySlug(tx, seed.slug, master.name, master.id);
+    await reservePublicListing(seed);
     const inventory = await tx.pharmacyInventory.create({
       data: { ...inventoryData(seed, slug), medicationMasterId: master.id },
       select: { id: true },
@@ -444,6 +453,7 @@ export async function createOrReuseMedicationForPharmacy(
     }
 
     const slug = await uniqueInventorySlug(tx, seed.slug || input.slug, masterName, masterId);
+    await reservePublicListing(seed);
     const inventory = await tx.pharmacyInventory.create({
       data: { ...inventoryData(seed, slug), medicationMasterId: masterId },
       select: { id: true },

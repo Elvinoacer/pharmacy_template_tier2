@@ -1,3 +1,4 @@
+import { getPharmacyPaymentCapability } from "@/app/lib/platform/integrations";
 import type { Metadata } from "next";
 import Link from "next/link";
 import PageHero from "@/app/components/PageHero";
@@ -36,6 +37,7 @@ export default async function GuestOrderPage({
   }
   const session = await getSessionUser().catch(() => null);
 
+  const capability = await getPharmacyPaymentCapability(pharmacy.id);
   const supportsDelivery = pharmacySupportsDelivery(pharmacy);
 
   const preselected = sp.medicationId
@@ -103,7 +105,7 @@ export default async function GuestOrderPage({
       <PageHero
         eyebrow="OTC order"
         title="Reserve over-the-counter products"
-        description="No account required. Hold stock online, pay with M-Pesa now or at collection — staff dispatch when you pick up."
+        description="No account required. Reserve stock for pickup or delivery. The pharmacy will confirm your order and payment options."
         crumbs={[{ label: "Order OTC" }]}
       />
 
@@ -155,6 +157,7 @@ export default async function GuestOrderPage({
             )}
 
             <GuestOrderForm
+              onlinePaymentsEnabled={capability.onlinePaymentsEnabled}
               medications={list.map((m) => ({
                 id: m.id,
                 name: m.medicationMaster.name,
@@ -191,7 +194,7 @@ export default async function GuestOrderPage({
                   <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-teal-100 text-xs font-bold text-teal-800 dark:bg-teal-900/40 dark:text-teal-300">
                     2
                   </span>
-                  Pay with M-Pesa on your phone (optional) or settle at collection.
+                  {capability.onlinePaymentsEnabled ? "Pay with M-Pesa on your phone (optional) or settle at collection." : "The pharmacy will confirm payment arrangements for collection or delivery."}
                 </li>
                 <li className="flex gap-3">
                   <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-teal-100 text-xs font-bold text-teal-800 dark:bg-teal-900/40 dark:text-teal-300">
@@ -209,7 +212,7 @@ export default async function GuestOrderPage({
                 <Clock className="h-5 w-5 text-teal-700 dark:text-teal-400" /> Prefer the full portal?
               </h3>
               <p className="mt-2 text-sm text-[var(--muted)]">
-                Optional — guests can already pay with M-Pesa. Accounts add refill history, loyalty,
+                Guest reservations do not require an account. Accounts add refill history, loyalty,
                 and dose reminders.
               </p>
               <div className="mt-4 flex flex-wrap gap-2">

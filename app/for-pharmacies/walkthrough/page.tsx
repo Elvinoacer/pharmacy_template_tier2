@@ -61,7 +61,7 @@ const steps = [
   {
     num: "05",
     title: "Go Live & Keep Patients",
-    desc: "Activate your KES 500/month service (~KES 17/day) and open your doors online. Automated WhatsApp reminders keep chronic patients returning to your counter.",
+    desc: "Publish on the free plan, with up to 5 public medicines and 2 services. Upgrade to Premium (KES 500/month) only when you need more listings or premium tools.",
     duration: "Instant",
     href: "/onboard",
     cta: "Launch your pharmacy",

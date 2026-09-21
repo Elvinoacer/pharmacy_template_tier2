@@ -95,7 +95,7 @@ function formatClock(value: string) {
 
 function range(open: string, close: string) {
   if (!open && !close) return "Closed";
-  if (!open || !close) return null;
+  if (!open || !close || !/^([01]\d|2[0-3]):[0-5]\d$/.test(open) || !/^([01]\d|2[0-3]):[0-5]\d$/.test(close) || close <= open) return null;
   return `${formatClock(open)} – ${formatClock(close)}`;
 }
 
@@ -206,6 +206,8 @@ export async function saveSetupServiceAction(formData: FormData) {
         short,
         description,
         price,
+        imageUrl: clean(formData, "imageUrl") || null,
+        eligibility: ["before", "after"].includes(clean(formData, "paymentTiming")) ? `[payable:${clean(formData, "paymentTiming")}]` : null,
         active: true,
         bookable: true,
       }),
@@ -255,7 +257,7 @@ export async function saveSetupProfileAction(formData: FormData) {
   revalidatePath("/admin/setup");
   revalidatePath(`/p/${pharmacy.slug}`);
   if (source === "onboard") {
-    redirect(`/onboard?stage=service&pharmacyId=${pharmacy.id}`);
+    redirect(`/onboard?stage=launch&pharmacyId=${pharmacy.id}`);
   }
-  redirect("/admin/setup?step=billing");
+  redirect("/onboard?stage=launch");
 }

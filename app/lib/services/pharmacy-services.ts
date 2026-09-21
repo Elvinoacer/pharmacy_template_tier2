@@ -1,4 +1,8 @@
 import "server-only";
+import { getServicePaymentPolicy } from "@/app/lib/service-payment-policy";
+import { getPharmacyPaymentCapability } from "@/app/lib/platform/integrations";
+import { assertActiveServiceSlot } from "@/app/lib/platform/plan-enforcement";
+import { peekTenant } from "@/app/lib/tenant-context";
 
 import { acceptingCareRequests } from "./care-request-availability";
 import { notifyCareRequest } from "./care-request-notifications";
@@ -129,6 +133,10 @@ export type CreateServiceInput = {
 export async function createService(input: CreateServiceInput) {
   const slug = slugifyService(input.slug || input.title);
   if (!slug) throw new Error("A valid slug is required.");
+  if (input.active !== false) {
+    const pharmacyId = peekTenant()?.pharmacyId;
+    if (pharmacyId) await assertActiveServiceSlot(pharmacyId);
+  }
 
   const existing = await prisma.pharmacyService.findFirst({ where: { slug } });
   if (existing) throw new Error(`Service slug "${slug}" already exists.`);
@@ -165,6 +173,9 @@ export async function updateService(
 ) {
   const current = await prisma.pharmacyService.findUnique({ where: { id } });
   if (!current) throw new Error("Service not found.");
+  if ((input.active ?? current.active) && !current.active) {
+    await assertActiveServiceSlot(current.pharmacyId);
+  }
 
   let nextSlug: string | undefined;
   if (input.slug !== undefined || input.title !== undefined) {
@@ -249,38 +260,7 @@ export type BookingInput = {
   customerId?: string | null;
 };
 
-export function isServicePayableAfter(service: {
-  eligibility?: string | null;
-  description?: string | null;
-}): boolean {
-  const text = `${service.eligibility || ""} ${service.description || ""}`.toLowerCase();
-  return (
-    text.includes("[payable:after]") ||
-    text.includes("payable after") ||
-    text.includes("pay at visit") ||
-    text.includes("pay at clinic") ||
-    text.includes("pay at pharmacy")
-  );
-}
-
-export type PaymentPolicy = "ONLINE_REQUIRED" | "PAY_AT_VISIT" | "FREE";
-
-export function getServicePaymentPolicy(service: {
-  price?: { toString(): string } | number | null;
-  eligibility?: string | null;
-  description?: string | null;
-}): PaymentPolicy {
-  const price =
-    service.price == null
-      ? null
-      : typeof service.price === "number"
-        ? service.price
-        : Number(service.price.toString());
-  const hasPrice = price != null && Number.isFinite(price) && price > 0;
-  if (!hasPrice) return "FREE";
-  if (isServicePayableAfter(service)) return "PAY_AT_VISIT";
-  return "ONLINE_REQUIRED";
-}
+export { isServicePayableAfter, getServicePaymentPolicy } from "@/app/lib/service-payment-policy";
 
 /**
  * Create a service booking.
@@ -315,7 +295,9 @@ export async function createServiceBooking(input: BookingInput) {
     service.price == null ? null : Number(service.price.toString());
   const hasPrice =
     priceNum != null && Number.isFinite(priceNum) && priceNum > 0;
-  const policy = getServicePaymentPolicy(service);
+  const capability = await getPharmacyPaymentCapability(service.pharmacyId);
+  const policy = getServicePaymentPolicy(service, capability.onlinePaymentsEnabled);
+  if (policy === "UNAVAILABLE") throw new BookingValidationError("This service requires online payment, but the pharmacy has not enabled it. Please contact the pharmacy to arrange your visit.");
   const isPayAfter = policy === "PAY_AT_VISIT";
   const requiresOnlinePayment = policy === "ONLINE_REQUIRED";
   const initialStatus = requiresOnlinePayment ? "awaiting_payment" : "requested";
@@ -323,6 +305,7 @@ export async function createServiceBooking(input: BookingInput) {
   const result = await prisma.$transaction(async (tx) => {
     // Slot capacity check: prevent multiple overlapping bookings on the same date and time slot
     if (input.preferredDate && input.preferredTime) {
+      await tx.$queryRaw`SELECT pg_advisory_xact_lock(hashtext(${service.pharmacyId}), hashtext(${input.preferredDate}))`;
       const slotCollision = await tx.serviceBooking.findFirst({
         where: {
           pharmacyId: service.pharmacyId,

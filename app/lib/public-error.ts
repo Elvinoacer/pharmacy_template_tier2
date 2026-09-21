@@ -1,3 +1,5 @@
+import { listingLimitMessage } from "@/app/lib/platform/plan-policy";
+
 const FRIENDLY_ERROR_CODES: Record<string, string> = {
   STEP_UP_REQUIRED: "Please verify your identity again to continue.",
   MFA_REQUIRED: "Please complete two-factor authentication to continue.",
@@ -29,6 +31,8 @@ export function publicErrorMessage(
   error: unknown,
   fallback = "Something went wrong. Please try again.",
 ): string {
+  const limitMessage = listingLimitMessage(error);
+  if (limitMessage) return limitMessage;
   const raw = textFromUnknown(error);
   if (!raw) return fallback;
 

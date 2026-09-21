@@ -162,24 +162,6 @@ export async function pharmacyBillingAction(
         }
       }
 
-      // If pharmacy is post-approval (Step 9) and monthly service is waived, activate service immediately
-      let serviceActivated = false;
-      if (["approved", "active"].includes(pharmacy.status) && discounts.monthlyKes >= 500) {
-        try {
-          const serviceInvoice = await startPharmacyService(pharmacyId);
-          if (serviceInvoice.subscriptionId) {
-            if (serviceInvoice.status !== "paid") {
-              await withPlatformTx(async (tx) => {
-                await settleInvoice(tx, serviceInvoice.id, user.id);
-              });
-            }
-            serviceActivated = true;
-          }
-        } catch {
-          // If setup prerequisites pending, grant is preserved and will apply on activation
-        }
-      }
-
       revalidatePath("/onboard/billing");
       revalidatePath("/onboard");
       revalidatePath("/admin/setup");
@@ -191,45 +173,13 @@ export async function pharmacyBillingAction(
         success: `Promotional voucher "${promo.name}" applied successfully! (${benefitText})`,
         discount: benefitText,
         waived: isVerificationWaived,
-        settled: isVerificationWaived || isBundleWaived || serviceActivated,
+        settled: isVerificationWaived || isBundleWaived,
       };
     }
 
-    // 2. BUNDLE CHECKOUT (KES 600 or waived)
+    // Old onboarding clients must never start a recurring bundle checkout.
     if (intent === "bundle_checkout") {
-      const invoice = await ensureBundleInvoice(pharmacyId);
-      revalidatePath("/onboard/billing");
-      revalidatePath("/onboard");
-
-      if (Number(invoice.totalKes) === 0 || invoice.status === "paid") {
-        if (invoice.status !== "paid") {
-          await withPlatformTx(async (tx) => {
-            await settleInvoice(tx, invoice.id, user.id);
-            await handleBundleSettlement(tx, invoice, user.id);
-          });
-          revalidatePath("/onboard");
-        }
-        return {
-          success:
-            "All fees waived by promotion! Your pharmacy verification and first month are active.",
-          settled: true,
-          waived: true,
-        };
-      }
-
-      const checkout = await createIntasendBillingCheckout(
-        pharmacyId,
-        invoice.id,
-        { actorId: user.id },
-      );
-      if (!checkout.ok)
-        throw new Error(
-          checkout.message || "Could not create IntaSend checkout.",
-        );
-      return {
-        success: "Redirecting to IntaSend secure payment...",
-        checkoutUrl: checkout.checkoutUrl,
-      };
+      return { error: "Onboarding now requires only the verification fee. Refresh to pay KES 100 or apply a voucher." };
     }
 
     // 3. VERIFICATION CHECKOUT (KES 100 or waived)
@@ -323,7 +273,7 @@ export async function pharmacyBillingAction(
     if (intent === "activate") {
       if (!(await loadPharmacySetup(pharmacyId)).profileReady) {
         throw new Error(
-          "Complete verification and your pharmacy profile before starting monthly billing.",
+          "Finish verification and storefront setup, then launch on the free plan. Premium can be added afterwards from Pricing & billing.",
         );
       }
       const invoice = await startPharmacyService(pharmacyId);

@@ -1,3 +1,7 @@
+import { listingLimitMessage } from "@/app/lib/platform/plan-policy";
+import { assertPublicMedicineSlot } from "@/app/lib/platform/plan-enforcement";
+import { hasPremiumPlan } from "@/app/lib/platform/entitlements";
+import { peekTenant } from "@/app/lib/tenant-context";
 import { NextResponse } from "next/server";
 import { z } from "zod";
 import { getSessionUser, isStaff, writeAuditLog } from "@/app/lib/auth";
@@ -32,6 +36,19 @@ export async function POST(req: Request) {
           ? { publicListing: false }
           : { publicListing: true };
 
+  try {
+  const pharmacyId = peekTenant()?.pharmacyId;
+  if (pharmacyId && (parsed.action === "publish" || parsed.action === "activate") && !(await hasPremiumPlan(pharmacyId))) {
+    const becomingPublic =
+      parsed.action === "publish"
+        ? await prisma.pharmacyInventory.count({
+            where: { id: { in: parsed.ids }, active: true, publicListing: false },
+          })
+        : await prisma.pharmacyInventory.count({
+            where: { id: { in: parsed.ids }, active: false, publicListing: true },
+          });
+    await assertPublicMedicineSlot(pharmacyId, becomingPublic);
+  }
   const result = await prisma.pharmacyInventory.updateMany({
     where: { id: { in: parsed.ids } },
     data,
@@ -47,4 +64,8 @@ export async function POST(req: Request) {
     count: result.count,
     message: `Updated ${result.count} medication(s) (${parsed.action}).`,
   });
+  } catch (error) {
+    const limit = listingLimitMessage(error);
+    return NextResponse.json({ error: limit ? "upgrade_required" : "update_failed", message: limit || "Could not update listings. Please try again." }, { status: limit ? 402 : 500 });
+  }
 }

@@ -1,5 +1,6 @@
 "use server";
 
+import { publicErrorMessage } from "@/app/lib/public-error";
 import { revalidatePath } from "next/cache";
 import { getSessionUser, writeAuditLog } from "@/app/lib/auth";
 import { requirePermission } from "@/app/lib/platform/policy";
@@ -74,6 +75,9 @@ export async function saveServiceAction(
   const active = formData.get("active") === "on" || formData.get("active") === "true";
   const sortOrderRaw = String(formData.get("sortOrder") || "").trim();
   const sortOrder = sortOrderRaw ? Number(sortOrderRaw) : undefined;
+
+  const rawPrice = String(formData.get("price") || "").trim();
+  if (rawPrice && (!Number.isFinite(Number(rawPrice)) || Number(rawPrice) < 0)) return { error: "Enter a valid non-negative service price." };
 
   if (!title) return { error: "Title is required." };
   if (!short) return { error: "Short description is required." };
@@ -152,7 +156,7 @@ export async function saveServiceAction(
     revalidatePath("/");
     return { success: `Created “${created.title}”.`, serviceId: created.id };
   } catch (e) {
-    return { error: e instanceof Error ? e.message : "Could not save service." };
+    return { error: publicErrorMessage(e, "Could not save service.") };
   }
 }
 

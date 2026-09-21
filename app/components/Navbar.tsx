@@ -114,7 +114,7 @@ const PLATFORM_CATEGORIES: NavCategory[] = [
     items: [
       { href: "/for-pharmacies", label: "Why Afyvia", desc: "Be found. Keep refill patients.", icon: Building2 },
       { href: "/for-pharmacies/walkthrough", label: "Platform walkthrough", desc: "Interactive demo of pharmacist features", icon: Sparkles },
-      { href: "/onboard", label: "List your pharmacy", desc: "KES 500 a month after you go live", icon: BadgeCheck, badge: "Join" },
+      { href: "/onboard", label: "List your pharmacy", desc: "KES 100 verification, then launch free", icon: BadgeCheck, badge: "Join" },
       { href: "/login?next=/admin", label: "Staff sign in", desc: "CRM, refills, and the pharmacy workspace", icon: LayoutDashboard },
     ],
   },

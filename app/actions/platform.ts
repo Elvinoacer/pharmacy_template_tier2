@@ -260,7 +260,7 @@ export async function setPharmacyLiveAction(formData: FormData): Promise<void> {
     const pharmacy = await prismaUnscoped.pharmacy.findUnique({ where: { id: pharmacyId } });
     if (!pharmacy) throw new Error("Pharmacy not found.");
 
-    if ((listed || restore) && !suspend && !(await loadPharmacySetup(pharmacyId)).ready) throw new Error("Complete verification, storefront setup and billing before listing this pharmacy.");
+    if ((listed || restore) && !suspend && !(await loadPharmacySetup(pharmacyId)).ready) throw new Error("Complete verification and storefront setup before listing this pharmacy.");
 
     if (suspend) {
       await prismaUnscoped.pharmacy.update({

@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { getSessionUser, isStaff, writeAuditLog } from "@/app/lib/auth";
+import { isFeatureEnabled } from "@/app/lib/platform/entitlements";
 import { prisma } from "@/app/lib/db";
 import { MedicationAiSchema } from "@/app/lib/medication-ai-schema";
 import { validateMedication } from "@/app/lib/services/medication-validation";
@@ -19,6 +20,18 @@ export async function POST(req: Request) {
       { error: "forbidden", message: "You do not have permission to import medications." },
       { status: 403 },
     );
+  }
+  if (!user.platformAdmin) {
+    const allowed = user.activePharmacyId ? await isFeatureEnabled(user.activePharmacyId, "ai_import") : false;
+    if (!allowed) {
+      return NextResponse.json(
+        {
+          error: "upgrade_required",
+          message: "AI-assisted import is part of Premium (KES 500/month). You can still add medicines manually or from the shared library on the free plan.",
+        },
+        { status: 402 },
+      );
+    }
   }
 
   let body: unknown;

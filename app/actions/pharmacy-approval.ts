@@ -6,8 +6,9 @@ import { reviewPharmacyAction, type ReviewActionState } from "@/app/actions/plat
 import { publicErrorMessage } from "@/app/lib/public-error";
 import { requirePlatformAction } from "@/app/lib/platform/policy";
 import { recordAuditRequired } from "@/app/lib/platform/audit";
+import { ensureVerificationInvoice, grantFeeDiscounts } from "@/app/lib/platform/pharmacy-enrolment";
+import { VERIFICATION_FEE_KES } from "@/app/lib/platform/pricing";
 import { provisionTenant } from "@/app/lib/platform/provision";
-import { startPharmacyService } from "@/app/lib/platform/pharmacy-enrolment";
 import { loadApprovalReadiness } from "@/app/lib/services/pharmacy-verification";
 import { sendDelivery, type DeliveryResult } from "@/app/lib/services/delivery";
 
@@ -27,8 +28,6 @@ async function notifyOwnerPharmacyIsApproved(opts: {
   ownerUserId: string | null;
   pharmacyEmail: string | null;
   notes: string;
-  monthlyAmountKes: number;
-  monthlyInvoiceStatus: string;
 }): Promise<ApprovalEmailResult> {
   let toEmail = opts.pharmacyEmail?.trim() || null;
   let ownerName = "there";
@@ -47,10 +46,6 @@ async function notifyOwnerPharmacyIsApproved(opts: {
   }
 
   const base = appUrl();
-  const billingLine =
-    opts.monthlyInvoiceStatus === "paid"
-      ? "Your current monthly platform-service period is already covered."
-      : `Your KES ${opts.monthlyAmountKes.toLocaleString("en-KE")} monthly service invoice is ready inside setup.`;
 
   const body = [
     `Hi ${ownerName},`,
@@ -60,8 +55,8 @@ async function notifyOwnerPharmacyIsApproved(opts: {
     "",
     "Your verified premises location, map pin and contact details have already been carried into your account.",
     "",
-    "Next: finish the guided setup. Add opening hours, a small starter medicine catalogue, one service and your public profile.",
-    billingLine,
+    "Next: finish the guided setup. Add opening hours, up to 5 public medicines, up to 2 services and your public profile. Launch is free — no monthly fee is required.",
+    "Premium is optional at KES 500/month when you need more listings, AI-assisted imports, advanced analytics or POS synchronization.",
     "",
     `[Continue setup](${base}/admin/setup)`,
     "",
@@ -134,8 +129,17 @@ async function approvePharmacyForSetup(formData: FormData): Promise<ReviewAction
     return { error: "Only a submitted, under-review or already-approved pharmacy can be approved." };
   }
 
+  const [bundleFee, grant] = await Promise.all([
+    prismaUnscoped.invoice.findUnique({ where: { number: `BUNDLE-${pharmacyId}` } }),
+    prismaUnscoped.pharmacyPromotionGrant.findUnique({ where: { pharmacyId } }),
+  ]);
+  const verificationWaived =
+    bundleFee?.status === "paid" || grantFeeDiscounts(grant).verificationKes >= VERIFICATION_FEE_KES;
+  if (verificationWaived) {
+    await ensureVerificationInvoice(pharmacyId);
+  }
   const verificationFee = await prismaUnscoped.invoice.findUnique({ where: { number: `KYP-${pharmacyId}` } });
-  if (verificationFee?.status !== "paid") {
+  if (verificationFee?.status !== "paid" && bundleFee?.status !== "paid") {
     return { error: "Verification fee must be paid or waived before approval." };
   }
 
@@ -176,20 +180,7 @@ async function approvePharmacyForSetup(formData: FormData): Promise<ReviewAction
   });
 
   await provisionTenant(pharmacyId, reviewer.id);
-  const monthlyInvoice = await startPharmacyService(pharmacyId);
-  const subscription = await prismaUnscoped.subscription.findFirst({
-    where: { pharmacyId, status: { not: "cancelled" } },
-    orderBy: { createdAt: "desc" },
-  });
-
-  const lifecycleStatus =
-    subscription?.status === "active"
-      ? "active"
-      : subscription?.status === "trialing"
-        ? "trial"
-        : subscription?.status === "past_due"
-          ? "past_due"
-          : "onboarding";
+  const lifecycleStatus = "onboarding" as const;
 
   pharmacy = await prismaUnscoped.pharmacy.update({
     where: { id: pharmacyId },
@@ -207,9 +198,7 @@ async function approvePharmacyForSetup(formData: FormData): Promise<ReviewAction
       status: "approved",
       listed: false,
       setupCompleted: false,
-      monthlyInvoiceId: monthlyInvoice.id,
-      monthlyInvoiceStatus: monthlyInvoice.status,
-      subscriptionStatus: subscription?.status ?? null,
+      plan: "free",
     },
   });
 
@@ -219,8 +208,6 @@ async function approvePharmacyForSetup(formData: FormData): Promise<ReviewAction
     ownerUserId: pharmacy.ownerUserId,
     pharmacyEmail: pharmacy.email,
     notes,
-    monthlyAmountKes: Number(monthlyInvoice.totalKes),
-    monthlyInvoiceStatus: monthlyInvoice.status,
   });
 
   await prismaUnscoped.pharmacyOnboardingEvent.create({

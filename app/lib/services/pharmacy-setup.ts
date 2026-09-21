@@ -1,4 +1,6 @@
 import "server-only";
+import { grantFeeDiscounts } from "@/app/lib/platform/pharmacy-enrolment";
+import { VERIFICATION_FEE_KES } from "@/app/lib/platform/pricing";
 
 import { prismaUnscoped as db } from "@/app/lib/db";
 import { withPharmacy } from "@/app/lib/tenant-context";
@@ -31,7 +33,7 @@ export type PharmacySetupCheck = {
 
 export async function loadPharmacySetup(pharmacyId: string) {
   return withPharmacy(pharmacyId, async () => {
-    const [p, medicines, services, invoice, subscription, verificationProfile, medicineDeferredEvent] = await Promise.all([
+    const [p, medicines, services, invoice, subscription, verificationProfile, medicineDeferredEvent, bundleInvoice, grant] = await Promise.all([
       db.pharmacy.findUniqueOrThrow({
         where: { id: pharmacyId },
         include: {
@@ -65,6 +67,8 @@ export async function loadPharmacySetup(pharmacyId: string) {
         orderBy: { createdAt: "desc" },
         select: { id: true, createdAt: true },
       }),
+      db.invoice.findUnique({ where: { number: `BUNDLE-${pharmacyId}` } }),
+      db.pharmacyPromotionGrant.findUnique({ where: { pharmacyId } }),
     ]);
 
     const settings = p.settings;
@@ -90,7 +94,7 @@ export async function loadPharmacySetup(pharmacyId: string) {
       },
       {
         key: "verification_fee",
-        ok: invoice?.status === "paid",
+        ok: invoice?.status === "paid" || bundleInvoice?.status === "paid" || grantFeeDiscounts(grant).verificationKes >= VERIFICATION_FEE_KES,
         required: true,
         label: "Verification fee",
         hint: "KES 100 paid or promotional waiver applied",
@@ -181,9 +185,9 @@ export async function loadPharmacySetup(pharmacyId: string) {
       {
         key: "subscription",
         ok: Boolean(subscription),
-        required: true,
-        label: "Monthly platform service",
-        hint: "KES 500/month active",
+        required: false,
+        label: "Premium (optional)",
+        hint: "Free: 5 medicine listings and 2 services. Upgrade for KES 500/month when needed.",
         href: "/onboard/billing",
       },
       {

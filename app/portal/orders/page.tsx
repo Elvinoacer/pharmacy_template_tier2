@@ -9,6 +9,7 @@ import { Panel, EmptyState } from "@/app/components/portal/PortalWidgets";
 import { formatDateTime } from "@/app/lib/time";
 import { formatPrice } from "@/app/lib/format";
 import { MpesaPayButton } from "@/app/components/portal/MpesaPayButton";
+import { getPharmacyPaymentCapability } from "@/app/lib/platform/integrations";
 import { ShoppingCart, Plus } from "lucide-react";
 
 export const metadata = { title: "My orders" };
@@ -40,6 +41,19 @@ export default async function PortalOrdersPage({
   });
 
   const highlight = sp.orderId || sp.placed;
+  const pharmacyIds = [...new Set(orders.map((order) => order.pharmacyId))];
+  const paymentReady = new Set(
+    (
+      await Promise.all(
+        pharmacyIds.map(async (pharmacyId) => {
+          const capability = await getPharmacyPaymentCapability(pharmacyId);
+          return capability.onlinePaymentsEnabled ? pharmacyId : null;
+        }),
+      )
+    ).filter((pharmacyId): pharmacyId is string => Boolean(pharmacyId)),
+  );
+  const placedOrder = sp.placed ? orders.find((order) => order.id === sp.placed) : null;
+  const placedCanPay = placedOrder ? paymentReady.has(placedOrder.pharmacyId) : false;
 
   return (
     <PortalShell
@@ -54,8 +68,9 @@ export default async function PortalOrdersPage({
     >
       {sp.placed && (
         <div className="mb-4 rounded-xl border border-emerald-200 bg-emerald-50 px-3 py-3 text-sm leading-relaxed text-emerald-800 sm:px-4">
-          Order reserved — stock is held. Pay with M-Pesa below or at the counter; staff will
-          dispatch when you collect.
+          {placedCanPay
+            ? "Order reserved — stock is held. Pay with M-Pesa below or at the counter; staff will dispatch when you collect."
+            : "Order reserved — stock is held. This pharmacy will contact you to confirm collection or delivery. Pay when you collect."}
         </div>
       )}
 
@@ -122,14 +137,16 @@ export default async function PortalOrdersPage({
                     </div>
                     <div className="flex w-full items-center justify-between gap-3 border-t border-[var(--line)] pt-3 sm:w-auto sm:block sm:border-0 sm:pt-0 sm:text-right">
                       <p className="shrink-0 font-bold text-[var(--foreground)]">{formatPrice(Number(o.total))}</p>
-                      {pendingPay && (
+                      {pendingPay && paymentReady.has(o.pharmacyId) ? (
                         <div className="min-w-0 sm:mt-2">
                           <MpesaPayButton
                             orderId={o.id}
                             defaultPhone={o.guestPhone || profile?.phone || ""}
                           />
                         </div>
-                      )}
+                      ) : pendingPay ? (
+                        <p className="mt-2 max-w-48 text-xs leading-5 text-[var(--muted)]">Pay at collection. The pharmacy will confirm the visit.</p>
+                      ) : null}
                     </div>
                   </div>
                 </li>
