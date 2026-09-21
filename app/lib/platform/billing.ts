@@ -178,8 +178,8 @@ export async function issueSubscriptionInvoice(subscriptionId: string, period?: 
             recipient: { email },
             subject: `Your Afyvia pharmacy invoice ${number}`,
             body: recurringDiscountKes > 0
-              ? `A KES ${recurringDiscountKes} subsidy was applied. Your monthly platform service invoice balance is KES ${totalKes}. Review your invoices at /onboard/billing.`
-              : `Your monthly platform service invoice is KES ${price}. If M-PESA Ratiba is authorized, Safaricom will collect it automatically; otherwise open Pricing & billing to pay securely with M-PESA STK Push.`,
+              ? `A KES ${recurringDiscountKes} subsidy was applied. Your monthly platform service invoice balance is KES ${totalKes}. Review your invoices at /admin/billing.`
+              : `Your monthly platform service invoice is KES ${price}. If M-PESA Ratiba is authorized, Safaricom will collect it automatically; otherwise open Admin → Plans & billing to pay securely with M-PESA STK Push.`,
             fallback: ["email"],
             attempted: [],
           },
