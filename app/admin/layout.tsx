@@ -51,7 +51,8 @@ export default async function AdminLayout({ children }: { children: React.ReactN
   // dashboard; users with several pharmacies can still switch workspaces.
   if (!user.platformAdmin && user.activePharmacyId) {
     const access = await getPharmacyWorkspaceAccess(user.activePharmacyId);
-    const isRecoverySurface = pathname.startsWith("/admin/access-paused");
+    const isRecoverySurface =
+      pathname.startsWith("/admin/access-paused") || pathname.startsWith("/admin/billing");
     const isTenantPicker = pathname.startsWith("/admin/select");
 
     if (access.blocksOperations && !isRecoverySurface && !isTenantPicker) {
@@ -61,7 +62,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
       const isOwner = membership?.role === "owner" || access.pharmacy?.ownerUserId === user.id;
 
       if (access.mode === "billing_suspended" && isOwner) {
-        redirect("/onboard/billing?state=suspended");
+        redirect("/admin/billing?state=suspended");
       }
       redirect("/admin/access-paused");
     }
