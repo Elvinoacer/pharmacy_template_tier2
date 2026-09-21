@@ -311,6 +311,9 @@ export async function addSharedMasterToPharmacy(
   medicationMasterId: string,
   seed: PharmacyInventorySeed,
 ): Promise<SharedMedicationResult> {
+  const pharmacyId = peekTenant()?.pharmacyId;
+  if (!pharmacyId) throw new Error("PHARMACY_CONTEXT_REQUIRED");
+
   return prisma.$transaction(async (tx) => {
     const master = await tx.medicationMaster.findUnique({
       where: { id: medicationMasterId, status: "active" },
@@ -319,7 +322,7 @@ export async function addSharedMasterToPharmacy(
     if (!master) throw new Error("SHARED_MEDICATION_NOT_FOUND");
 
     const existing = await tx.pharmacyInventory.findFirst({
-      where: { medicationMasterId },
+      where: { pharmacyId, medicationMasterId },
       select: { id: true },
     });
     if (existing) {
@@ -337,7 +340,7 @@ export async function addSharedMasterToPharmacy(
     const slug = await uniqueInventorySlug(tx, seed.slug, master.name, master.id);
     await reservePublicListing(seed);
     const inventory = await tx.pharmacyInventory.create({
-      data: { ...inventoryData(seed, slug), medicationMasterId: master.id },
+      data: { pharmacyId, ...inventoryData(seed, slug), medicationMasterId: master.id },
       select: { id: true },
     });
 
