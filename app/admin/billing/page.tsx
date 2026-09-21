@@ -1,4 +1,5 @@
 import Link from "next/link";
+import type { ReactNode } from "react";
 import { redirect } from "next/navigation";
 import {
   ArrowRight,
@@ -53,7 +54,7 @@ function UsageMeter({
   label: string;
   used: number;
   limit: number;
-  icon: React.ReactNode;
+  icon: ReactNode;
 }) {
   const percent = Math.min(100, Math.round((used / Math.max(limit, 1)) * 100));
   return (
@@ -153,7 +154,7 @@ export default async function AdminBillingPage() {
   });
   if (!pharmacy) redirect("/admin/select");
 
-  const isOwner = pharmacy.ownerUserId === user.id || user.platformAdmin;
+  const isOwner = pharmacy.ownerUserId === user.id;
   const premiumActive = await hasPremiumPlan(pharmacy.id);
 
   const [tenantData, grant] = await Promise.all([
@@ -175,7 +176,7 @@ export default async function AdminBillingPage() {
               currentPeriodStart: true,
               currentPeriodEnd: true,
               trialEndsAt: true,
-              cancelAtPeriodEnd: true,
+              cancelAt: true,
             },
           }),
           prisma.invoice.findMany({
@@ -274,7 +275,7 @@ export default async function AdminBillingPage() {
                     Premium entitlements are active.
                   </p>
                   {periodEnd ? <p>Current paid period ends {periodEnd}.</p> : null}
-                  {tenantData.subscription?.cancelAtPeriodEnd ? (
+                  {tenantData.subscription?.cancelAt ? (
                     <p className="text-amber-700 dark:text-amber-300">
                       Auto-renewal is set to stop at period end.
                     </p>
