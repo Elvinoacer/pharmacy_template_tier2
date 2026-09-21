@@ -27,6 +27,11 @@ const input =
 export function PromoCardForm({ pharmacyId }: { pharmacyId: string }) {
   const [state, action, pending] = useActionState(pharmacyBillingAction, {});
   const [code, setCode] = useState("");
+  const router = useRouter();
+
+  useEffect(() => {
+    if (state.success || state.settled) router.refresh();
+  }, [state.success, state.settled, router]);
 
   return (
     <form
