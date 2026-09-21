@@ -73,6 +73,7 @@ export const ADMIN_LINKS = [
   { href: "/admin/settings/location", label: "Pharmacy Settings", icon: Settings, group: "intelligence", description: "Store & branch config" },
   { href: "/admin/settings/integrations", label: "Integrations", icon: Settings, group: "intelligence", description: "M-Pesa, SMS, WhatsApp, POS" },
   { href: "/admin/setup", label: "Go-live checklist", icon: ClipboardCheck, group: "intelligence", description: "Onboarding remaining items" },
+  { href: "/admin/billing", label: "Plans & billing", icon: Sparkles, group: "intelligence", description: "Free vs Premium, invoices and upgrade" },
   { href: "/admin/services/bookings", label: "Service bookings", icon: CalendarClock, group: "clinical", description: "Review appointments and payments" },
   { href: "/admin/enquiries", label: "Patient enquiries", icon: Inbox, group: "care", description: "Respond to patient questions" },
   { href: "/admin/feedback", label: "Patient feedback", icon: Star, group: "care", description: "Read reviews and respond" },
