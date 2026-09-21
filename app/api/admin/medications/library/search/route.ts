@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { z } from "zod";
 import { getSessionUser, isStaff } from "@/app/lib/auth";
 import { prisma } from "@/app/lib/db";
+import { withPharmacy } from "@/app/lib/tenant-context";
 
 export const runtime = "nodejs";
 
@@ -18,6 +19,23 @@ export async function GET(req: Request) {
     );
   }
 
+  const pharmacyId = user.activePharmacyId;
+  const activeMembership = pharmacyId
+    ? user.memberships.some(
+        (membership) => membership.pharmacyId === pharmacyId && membership.status === "active",
+      )
+    : false;
+
+  if (!pharmacyId || !activeMembership) {
+    return NextResponse.json(
+      {
+        error: "pharmacy_required",
+        message: "Choose an active pharmacy workspace before searching inventory status.",
+      },
+      { status: 409 },
+    );
+  }
+
   const url = new URL(req.url);
   const q = (url.searchParams.get("q") || "").trim();
   if (!q) return NextResponse.json({ ok: true, results: [] });
@@ -25,33 +43,32 @@ export async function GET(req: Request) {
   try {
     Query.parse({ q });
 
-    const existingInv = await prisma.pharmacyInventory.findMany({
-      select: { medicationMasterId: true },
-    });
-    const stockedMasterIds = new Set(existingInv.map((i) => i.medicationMasterId));
+    const results = await withPharmacy(pharmacyId, async () => {
+      const existingInv = await prisma.pharmacyInventory.findMany({
+        select: { medicationMasterId: true },
+      });
+      const stockedMasterIds = new Set(existingInv.map((i) => i.medicationMasterId));
 
-    const results = await prisma.medicationMaster.findMany({
-      where: {
-        status: "active",
-        OR: [
-          { name: { contains: q, mode: "insensitive" } },
-          { genericName: { contains: q, mode: "insensitive" } },
-          { brandName: { contains: q, mode: "insensitive" } },
-          { barcode: { contains: q, mode: "insensitive" } },
-        ],
-      },
-      include: {
-        dosageForm: { select: { value: true } },
-        manufacturer: { select: { name: true } },
-        activeIngredients: { include: { activeIngredient: { select: { name: true } } } },
-      },
-      orderBy: [{ name: "asc" }],
-      take: 25,
-    });
+      const shared = await prisma.medicationMaster.findMany({
+        where: {
+          status: "active",
+          OR: [
+            { name: { contains: q, mode: "insensitive" } },
+            { genericName: { contains: q, mode: "insensitive" } },
+            { brandName: { contains: q, mode: "insensitive" } },
+            { barcode: { contains: q, mode: "insensitive" } },
+          ],
+        },
+        include: {
+          dosageForm: { select: { value: true } },
+          manufacturer: { select: { name: true } },
+          activeIngredients: { include: { activeIngredient: { select: { name: true } } } },
+        },
+        orderBy: [{ name: "asc" }],
+        take: 25,
+      });
 
-    return NextResponse.json({
-      ok: true,
-      results: results.map((m) => ({
+      return shared.map((m) => ({
         id: m.id,
         name: m.name,
         genericName: m.genericName,
@@ -69,8 +86,10 @@ export async function GET(req: Request) {
           amount: ai.amount,
           unit: ai.unit,
         })),
-      })),
+      }));
     });
+
+    return NextResponse.json({ ok: true, results });
   } catch (e) {
     console.error("[library search GET]", e);
     return NextResponse.json(
