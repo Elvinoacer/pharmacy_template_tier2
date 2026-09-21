@@ -14,7 +14,7 @@ export default async function AnalyticsLayout({ children }: { children: React.Re
       <p className="text-sm leading-6 text-[var(--muted)]">
         Orders, reservations and bookings stay available on the free plan. Premium is KES 500/month and adds analytics, AI-assisted imports, POS synchronization and more than 5 medicine listings and 2 services.
       </p>
-      <Link href="/onboard/billing" className="btn-primary inline-flex">Upgrade to Premium</Link>
+      <Link href="/admin/billing" className="btn-primary inline-flex">Upgrade to Premium</Link>
     </section>
   );
 }
