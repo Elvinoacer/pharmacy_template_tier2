@@ -593,7 +593,7 @@ export default function OnboardWizard({ signedIn, existing, verificationFeePaid 
               </button>
             ) : (
               <Link href="/onboard/billing" className={`btn-primary justify-center ${polish.primaryAction}`}>
-                Pay verification fee (KES 100 or voucher) <ArrowRight className="h-4 w-4" aria-hidden />
+                Pay verification fee · KES 100 <ArrowRight className="h-4 w-4" aria-hidden />
               </Link>
             )}
           </div>
