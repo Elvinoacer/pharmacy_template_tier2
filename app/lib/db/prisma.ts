@@ -292,7 +292,7 @@ export async function withTenantTx<T>(
     return client.$transaction(async (tx) => {
       await tx.$queryRaw`SELECT set_config('app.pharmacy_id', ${pharmacyId}, true), set_config('app.platform_bypass', '', true)`;
       return fn(tx as unknown as PrismaClient);
-    }, { maxWait: 15000, timeout: 30000 });
+    }, { maxWait: 60000, timeout: 120000 });
   });
 }
 
@@ -303,7 +303,7 @@ export async function withPlatformTx<T>(fn: (tx: PrismaClient) => Promise<T>): P
     return client.$transaction(async (tx) => {
       await tx.$queryRaw`SELECT set_config('app.platform_bypass', '1', true), set_config('app.pharmacy_id', '', true)`;
       return fn(tx as unknown as PrismaClient);
-    }, { maxWait: 15000, timeout: 30000 });
+    }, { maxWait: 60000, timeout: 120000 });
   });
 }
 

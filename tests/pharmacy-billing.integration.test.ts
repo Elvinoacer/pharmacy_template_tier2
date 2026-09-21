@@ -89,7 +89,6 @@ test("pharmacy billing: capped promotions, settlement, isolation and renewals", 
       // Random UUIDs/emails/slugs make retained fixtures safe across reruns.
     }
   });
-  await db.$disconnect();
 });
 
 test("pharmacy onboarding: voucher redemption, code variants, and capacity checks", { skip: !testDatabaseUrl }, async () => {
@@ -98,7 +97,8 @@ test("pharmacy onboarding: voucher redemption, code variants, and capacity check
     db.user.create({ data: { email: `admin-${randomUUID()}@example.test`, passwordHash: "test-only", role: "manager" } })
   );
 
-  const testCode = "AFY-XCQD-NZGK";
+  const codeSuffix = `XCQD-${randomUUID().slice(0, 4).toUpperCase()}`;
+  const testCode = `AFY-${codeSuffix}`;
   const promo = await withPlatformBypass(() =>
     db.pharmacyPromotion.create({
       data: {
@@ -145,10 +145,9 @@ test("pharmacy onboarding: voucher redemption, code variants, and capacity check
       );
     });
 
-    // 2. Pharmacy 1 redeems using lowercase with stripped dashes and no prefix: "xcqd-nzgk"
-    // Simulating user in pharmacy tenant context (e.g. during onboarding)
+    // 2. Pharmacy 1 redeems using lowercase with stripped dashes and no prefix: "xcqd..."
     const result1 = await withPharmacy(pharmacy1.id, async () => {
-      return applyPromoCode(pharmacy1.id, "xcqd-nzgk", owner1.id);
+      return applyPromoCode(pharmacy1.id, codeSuffix.toLowerCase().replace("-", ""), owner1.id);
     });
     assert.equal(result1.promotion.id, promo.id);
     assert.equal(result1.alreadyApplied, false);
@@ -162,9 +161,9 @@ test("pharmacy onboarding: voucher redemption, code variants, and capacity check
     });
     assert.equal(result1Repeat.alreadyApplied, true);
 
-    // 4. Pharmacy 2 redeems using exact code format: "AFY-XCQD-NZGK"
+    // 4. Pharmacy 2 redeems using exact code format
     const result2 = await withPharmacy(pharmacy2.id, async () => {
-      return applyPromoCode(pharmacy2.id, "AFY-XCQD-NZGK", owner2.id);
+      return applyPromoCode(pharmacy2.id, testCode, owner2.id);
     });
     assert.equal(result2.promotion.id, promo.id);
     assert.equal(result2.alreadyApplied, false);
@@ -173,12 +172,12 @@ test("pharmacy onboarding: voucher redemption, code variants, and capacity check
     await withPharmacy(pharmacy3.id, async () => {
       await assert.rejects(
         applyPromoCode(pharmacy3.id, testCode, owner3.id),
-        /Promotional code "AFY-XCQD-NZGK" has reached its maximum redemptions\./,
+        new RegExp(`Promotional code "${testCode}" has reached its maximum redemptions\\.`),
       );
     });
 
     // 6. Test stopped code error
-    const stoppedCode = "AFY-STOP-PED1";
+    const stoppedCode = `AFY-STOP-${randomUUID().slice(0, 6).toUpperCase()}`;
     await withPlatformBypass(() =>
       db.pharmacyPromotion.create({
         data: {
@@ -188,7 +187,7 @@ test("pharmacy onboarding: voucher redemption, code variants, and capacity check
           active: false,
           verification: true,
           recurring: false,
-          recurringMonths: 0,
+          recurringMonths: 1,
           createdBy: admin.id,
         },
       })
@@ -196,7 +195,7 @@ test("pharmacy onboarding: voucher redemption, code variants, and capacity check
     await withPharmacy(pharmacy3.id, async () => {
       await assert.rejects(
         applyPromoCode(pharmacy3.id, stoppedCode, owner3.id),
-        /Promotional code "AFY-STOP-PED1" exists but has been stopped and can no longer be redeemed\./,
+        new RegExp(`Promotional code "${stoppedCode}" exists but has been stopped and can no longer be redeemed\\.`),
       );
     });
   } finally {
