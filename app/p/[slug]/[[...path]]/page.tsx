@@ -1,17 +1,23 @@
 import MedicineDetailPage from "@/app/medicines/[slug]/page";
+import MedicinesLayout from "@/app/medicines/layout";
 import ServiceDetailPage from "@/app/services/[slug]/page";
+import ServicesLayout from "@/app/services/layout";
 import GuestOrderPage from "@/app/order/page";
+import OrderLayout from "@/app/order/layout";
 import RefillPage from "@/app/refill/page";
 import CareersPage from "@/app/careers/page";
 import ContactPage from "@/app/contact/page";
 import DeliveryPage from "@/app/delivery/page";
 import FaqPage from "@/app/faq/page";
 import VaccinationHubPage from "@/app/vaccinations/page";
+import VaccinationsLayout from "@/app/vaccinations/layout";
 import VaccineDetailPage from "@/app/vaccinations/[slug]/page";
 import VaccinationBookingPage from "@/app/vaccinations/book/page";
 import VaccinationSchedulePage from "@/app/vaccinations/schedule/page";
 import HealthScreeningsPage from "@/app/screenings/page";
+import ScreeningsLayout from "@/app/screenings/layout";
 import PreventivePage from "@/app/preventive/page";
+import PreventiveLayout from "@/app/preventive/layout";
 import HowDoYouFeelPage from "@/app/how-do-you-feel/page";
 import type { Metadata } from "next";
 import Image from "next/image";
@@ -106,26 +112,53 @@ export default async function PublicStorefrontPage({ params, searchParams }: Pro
   const q = typeof search.q === "string" ? search.q.trim().slice(0, 120) : "";
   const parsedPage = Number(search.page);
   const page = Number.isSafeInteger(parsedPage) && parsedPage > 0 && parsedPage <= 10000 ? parsedPage : 1;
-  if (section === "medicines" && detail) return MedicineDetailPage({ params: Promise.resolve({ slug: detail, pharmacySlug: slug }) });
-  if (section === "services" && detail) return ServiceDetailPage({ params: Promise.resolve({ slug: detail }) });
-  if (section === "order") return GuestOrderPage({ searchParams: Promise.resolve(search) });
+  if (section === "medicines" && detail) {
+    return (
+      <MedicinesLayout>
+        {await MedicineDetailPage({ params: Promise.resolve({ slug: detail, pharmacySlug: slug }) })}
+      </MedicinesLayout>
+    );
+  }
+  if (section === "services" && detail) {
+    return (
+      <ServicesLayout>
+        {await ServiceDetailPage({ params: Promise.resolve({ slug: detail }) })}
+      </ServicesLayout>
+    );
+  }
+  if (section === "order") {
+    return (
+      <OrderLayout>
+        {await GuestOrderPage({ searchParams: Promise.resolve(search) })}
+      </OrderLayout>
+    );
+  }
   if (section === "refill") return RefillPage({ searchParams: Promise.resolve({}) });
   if (section === "careers") return CareersPage();
   if (section === "contact") return ContactPage();
   if (section === "delivery") return DeliveryPage();
   if (section === "faq") return FaqPage();
   if (section === "vaccinations") {
+    let content: React.ReactNode;
     if (detail === "book") {
-      return VaccinationBookingPage({
+      content = await VaccinationBookingPage({
         searchParams: Promise.resolve({ vaccine: search.vaccine, campaign: search.campaign }),
       });
+    } else if (detail === "schedule") {
+      content = await VaccinationSchedulePage();
+    } else if (detail) {
+      content = await VaccineDetailPage({ params: Promise.resolve({ slug: detail }) });
+    } else {
+      content = await VaccinationHubPage();
     }
-    if (detail === "schedule") return VaccinationSchedulePage();
-    if (detail) return VaccineDetailPage({ params: Promise.resolve({ slug: detail }) });
-    return VaccinationHubPage();
+    return <VaccinationsLayout>{content}</VaccinationsLayout>;
   }
-  if (section === "screenings") return HealthScreeningsPage();
-  if (section === "preventive") return PreventivePage();
+  if (section === "screenings") {
+    return <ScreeningsLayout>{await HealthScreeningsPage()}</ScreeningsLayout>;
+  }
+  if (section === "preventive") {
+    return <PreventiveLayout>{await PreventivePage()}</PreventiveLayout>;
+  }
   if (section === "how-do-you-feel") return HowDoYouFeelPage({});
   const medicines = section === "medicines" ? await publicStorefrontMedicines(slug, detail ? "" : q, page, detail) : null;
   const services = section === "services" ? await publicStorefrontServices(slug, detail) : null;
