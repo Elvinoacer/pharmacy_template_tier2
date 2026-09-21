@@ -189,7 +189,7 @@ export default async function PharmacyBillingPage(props: PageProps) {
         Simple, frictionless billing.
       </h1>
       <p className="mt-1.5 max-w-md text-xs sm:text-sm leading-relaxed text-[var(--muted)]">
-        Join with the one-time KES 100 verification fee or a voucher. Launch free with 5 medicine listings and 2 services. Premium is optional at KES 500/month.
+        Complete the one-time KES 100 verification fee, then launch free with 5 medicine listings and 2 services. Premium remains optional at KES 500/month.
       </p>
 
       {/* ACTIVE PROMOTION BANNER */}
