@@ -1,5 +1,6 @@
 import { listingLimitMessage } from "@/app/lib/platform/plan-policy";
 import { NextResponse } from "next/server";
+import { revalidatePath } from "next/cache";
 import { z } from "zod";
 import { getSessionUser, isStaff, writeAuditLog } from "@/app/lib/auth";
 import { addSharedMasterToPharmacy } from "@/app/lib/services/shared-medication-library";
@@ -82,6 +83,10 @@ export async function POST(req: Request) {
 
       return added;
     });
+
+    revalidatePath("/admin/medications");
+    revalidatePath("/admin/inventory");
+    revalidatePath("/admin/medications/library");
 
     return NextResponse.json({
       ok: true,
