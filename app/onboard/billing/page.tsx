@@ -192,21 +192,6 @@ export default async function PharmacyBillingPage(props: PageProps) {
         Join with the one-time KES 100 verification fee or a voucher. Launch free with 5 medicine listings and 2 services. Premium is optional at KES 500/month.
       </p>
 
-      {/* PROMO CARD / VOUCHER FORM */}
-      <div className="mt-5">
-        <PromoCardForm pharmacyId={pharmacy.id} />
-      </div>
-      <div className="mt-3">
-        <WaiverRequestForm
-          pharmacyId={pharmacy.id}
-          latestRequest={waiverRequest ? {
-            status: waiverRequest.status,
-            requestedAmountKes: waiverRequest.requestedAmountKes === null ? null : Number(waiverRequest.requestedAmountKes),
-            decisionNote: waiverRequest.decisionNote,
-          } : null}
-        />
-      </div>
-
       {/* ACTIVE PROMOTION BANNER */}
       {grant ? (
         <section className={`${styles.notice} ${styles.noticeOk} mt-3`}>
@@ -239,6 +224,32 @@ export default async function PharmacyBillingPage(props: PageProps) {
           paymentAvailable={intasendConfigured}
         />
       </div>
+
+      <details className="group mt-3 rounded-2xl border border-[var(--line-2)] bg-[var(--card)]/70">
+        <summary className="flex cursor-pointer list-none items-center justify-between gap-4 px-4 py-3.5 text-sm font-semibold text-[var(--foreground)]">
+          <span className="inline-flex items-center gap-2">
+            <Tag className="h-4 w-4 text-[var(--brand)]" aria-hidden />
+            Voucher or fee assistance
+          </span>
+          <span className="text-[10px] font-medium uppercase tracking-wider text-[var(--muted)] group-open:hidden">
+            Optional
+          </span>
+        </summary>
+        <div className="space-y-3 border-t border-[var(--line-2)] p-4">
+          <p className="text-xs leading-5 text-[var(--muted)]">
+            Only open this if the platform team gave you a promotional code or you need help with the one-time verification fee.
+          </p>
+          <PromoCardForm pharmacyId={pharmacy.id} />
+          <WaiverRequestForm
+            pharmacyId={pharmacy.id}
+            latestRequest={waiverRequest ? {
+              status: waiverRequest.status,
+              requestedAmountKes: waiverRequest.requestedAmountKes === null ? null : Number(waiverRequest.requestedAmountKes),
+              decisionNote: waiverRequest.decisionNote,
+            } : null}
+          />
+        </div>
+      </details>
 
       <div className="mt-5 grid gap-3 sm:grid-cols-2">
         <section className={styles.section}>
