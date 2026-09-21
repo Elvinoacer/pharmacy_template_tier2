@@ -174,6 +174,23 @@ export function MobileWorkspaceDock({
             </div>
           )}
 
+          {role === "admin" && (
+            <div className="px-4 py-2.5 border-b border-[var(--admin-border)]">
+              <Link
+                href="/admin/billing"
+                onClick={() => {
+                  startNavigation("/admin/billing", "Plans & billing");
+                  closeSheet();
+                }}
+                className="flex w-full items-center gap-2.5 rounded-xl border border-emerald-500/25 bg-emerald-500/10 px-3 py-2.5 text-xs font-semibold text-emerald-800 dark:text-emerald-200"
+              >
+                <Sparkles size={15} className="shrink-0" />
+                <span className="flex-1 text-left">Explore Premium</span>
+                <ChevronRight size={14} className="opacity-60" />
+              </Link>
+            </div>
+          )}
+
           {/* Quick Command Trigger in Sheet */}
           <div className="px-4 py-2.5 border-b border-[var(--admin-border)]">
             <button
