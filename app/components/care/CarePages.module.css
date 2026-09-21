@@ -78,12 +78,12 @@
   gap: 10px;
   border-radius: 17px;
   padding: 17px;
-  background: #ffffffe0;
+  background: color-mix(in srgb, var(--card-elev) 92%, transparent);
   backdrop-filter: blur(20px);
-  border: 1px solid #ffffffd9;
-  color: #214332;
+  border: 1px solid var(--care-border);
+  color: var(--foreground);
   font-size: 11px;
-  box-shadow: 0 10px 30px #183c3220;
+  box-shadow: var(--glass-shadow);
 }
 .photoGlass > span:nth-child(2) {
   flex: 1;
