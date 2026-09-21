@@ -110,67 +110,6 @@ export function VerificationPaymentStep({
         </div>
       ) : null}
 
-      {/* Promo Code Input */}
-      <section className="mb-5 rounded-2xl border border-[color-mix(in_srgb,var(--foreground)_55%,var(--card-elev))] bg-teal-50/40 dark:bg-teal-950/20 p-4">
-        <form action={action} className="space-y-2">
-          <input type="hidden" name="pharmacyId" value={pharmacy.id} />
-          <input type="hidden" name="intent" value="apply_promo" />
-
-          <div className="flex items-center gap-2">
-            <Tag className="h-4 w-4 text-[var(--brand)]" />
-            <h3 className="text-xs font-bold uppercase tracking-wider text-[var(--foreground)]">
-              Have a promotional card or voucher?
-            </h3>
-          </div>
-          <div className="flex flex-col gap-2 sm:flex-row">
-            <input
-              name="code"
-              type="text"
-              value={promoCode}
-              onChange={(e) => setPromoCode(e.target.value.toUpperCase())}
-              placeholder="e.g. AFYVIA2026"
-              autoComplete="off"
-              autoCapitalize="characters"
-              spellCheck={false}
-              aria-label="Promotional voucher code"
-              className="input-admin min-h-12 w-full min-w-0 flex-1 uppercase font-mono text-base tracking-wider sm:min-h-10 sm:text-sm"
-              disabled={pending}
-            />
-            <button
-              type="submit"
-              disabled={pending || !promoCode.trim()}
-              className="btn-primary min-h-12 w-full shrink-0 justify-center px-4 text-sm font-semibold sm:min-h-10 sm:w-auto sm:text-xs"
-            >
-              {pending ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : "Apply voucher"}
-            </button>
-          </div>
-        </form>
-
-        {grant ? (
-          <div className="mt-3 flex items-start gap-2 rounded-xl bg-emerald-500/10 p-2.5 text-xs text-emerald-800 dark:text-emerald-200">
-            <CheckCircle2 className="h-4 w-4 shrink-0 text-emerald-600 mt-0.5" />
-            <div>
-              <div className="flex items-center gap-2">
-                <strong>Active benefit: {grant.promotionName || "Promotion"}</strong>
-                {grant.promotionCode && (
-                  <span className="font-mono bg-emerald-500/20 px-1.5 py-0.5 rounded text-[10px] font-bold">
-                    {grant.promotionCode}
-                  </span>
-                )}
-              </div>
-              <p className="text-[11px] mt-0.5">
-                {grant.verificationDiscountKes ? `KES ${grant.verificationDiscountKes} off verification. ` : ""}
-                {grant.recurringDiscountKes ? `KES ${grant.recurringDiscountKes} off monthly service for ${grant.recurringMonths} period${grant.recurringMonths === 1 ? "" : "s"}.` : ""}
-              </p>
-            </div>
-          </div>
-        ) : null}
-      </section>
-
-      <div className="mb-5">
-        <WaiverRequestForm pharmacyId={pharmacy.id} latestRequest={snapshot.waiverRequest} />
-      </div>
-
       {/* Feedback states */}
       {state.success ? (
         <p className={`${styles.alert} ${styles.alertOk} mb-4`} role="alert">
@@ -306,6 +245,66 @@ export function VerificationPaymentStep({
           </button>
         </div>
       </form>
+
+      <details
+        className="mt-5 rounded-xl border border-[color-mix(in_srgb,var(--foreground)_30%,var(--card-elev))] bg-[color-mix(in_srgb,var(--card-elev)_45%,transparent)]"
+        open={Boolean(grant)}
+      >
+        <summary className="flex cursor-pointer list-none items-center gap-2 px-3.5 py-3 text-xs font-semibold text-[var(--muted)] marker:hidden">
+          <Tag className="h-3.5 w-3.5 text-[var(--brand)]" aria-hidden />
+          <span>Have a voucher or need help with the fee?</span>
+          <span className="ml-auto text-[10px] font-medium uppercase tracking-wider text-[var(--muted)]">Optional</span>
+        </summary>
+        <div className="space-y-4 border-t border-[color-mix(in_srgb,var(--foreground)_20%,var(--card-elev))] p-3.5">
+          <form action={action} className="space-y-2">
+            <input type="hidden" name="pharmacyId" value={pharmacy.id} />
+            <input type="hidden" name="intent" value="apply_promo" />
+            <label className="block text-xs font-semibold text-[var(--foreground)]" htmlFor="pharmacy-promo-code">
+              Promotional code
+              <span className="mt-1.5 flex flex-col gap-2 sm:flex-row">
+                <input
+                  id="pharmacy-promo-code"
+                  name="code"
+                  type="text"
+                  value={promoCode}
+                  onChange={(e) => setPromoCode(e.target.value.toUpperCase())}
+                  placeholder="Enter your code"
+                  autoComplete="off"
+                  autoCapitalize="characters"
+                  spellCheck={false}
+                  className="input-admin min-h-10 w-full min-w-0 flex-1 uppercase font-mono text-sm tracking-wider"
+                  disabled={pending}
+                />
+                <button
+                  type="submit"
+                  disabled={pending || !promoCode.trim()}
+                  className="btn-ghost min-h-10 w-full shrink-0 justify-center px-4 text-xs font-semibold sm:w-auto"
+                >
+                  {pending ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : "Apply code"}
+                </button>
+              </span>
+            </label>
+          </form>
+
+          {grant ? (
+            <div className="flex items-start gap-2 rounded-lg bg-emerald-500/10 p-2.5 text-xs text-emerald-800 dark:text-emerald-200">
+              <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-emerald-600" />
+              <div>
+                <div className="flex flex-wrap items-center gap-2">
+                  <strong>Active benefit: {grant.promotionName || "Promotion"}</strong>
+                  {grant.promotionCode ? <span className="rounded bg-emerald-500/20 px-1.5 py-0.5 font-mono text-[10px] font-bold">{grant.promotionCode}</span> : null}
+                </div>
+                <p className="mt-0.5 text-[11px]">
+                  {grant.verificationDiscountKes ? `KES ${grant.verificationDiscountKes} off verification. ` : ""}
+                  {grant.recurringDiscountKes ? `KES ${grant.recurringDiscountKes} off monthly service for ${grant.recurringMonths} period${grant.recurringMonths === 1 ? "" : "s"}.` : ""}
+                </p>
+              </div>
+            </div>
+          ) : null}
+
+          <WaiverRequestForm pharmacyId={pharmacy.id} latestRequest={snapshot.waiverRequest} />
+        </div>
+      </details>
 
       <div className="mt-4 flex items-center justify-center gap-2 text-xs text-[var(--muted)]">
         <Lock className="h-3 w-3" />
