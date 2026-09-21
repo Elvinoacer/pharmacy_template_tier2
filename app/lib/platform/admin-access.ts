@@ -26,6 +26,7 @@ const ADMIN_ACCESS_RULES: readonly AdminAccessRule[] = [
   { prefix: "/admin", exact: true },
   { prefix: "/admin/select" },
   { prefix: "/admin/access-paused" },
+  { prefix: "/admin/billing" },
 
   { prefix: "/admin/settings/integrations", permissions: ["integrations.manage"] },
   { prefix: "/admin/settings/storefront", permissions: ["settings.manage"] },
