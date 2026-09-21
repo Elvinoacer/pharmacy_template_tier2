@@ -91,7 +91,7 @@ export default async function AccessPausedPage() {
                 <>
                   <h2 className="mt-2 text-lg font-semibold admin-text">Restore your pharmacy</h2>
                   <p className="mt-2 text-sm leading-6 admin-muted">Update the saved card or retry the KES 500 subscription payment. You do not need to repeat onboarding.</p>
-                  <Link href="/onboard/billing?state=suspended" className="btn-primary mt-4 inline-flex min-h-11 w-full items-center justify-center gap-2">
+                  <Link href="/admin/billing?state=suspended" className="btn-primary mt-4 inline-flex min-h-11 w-full items-center justify-center gap-2">
                     Fix billing & restore
                     <ArrowRight className="h-4 w-4" aria-hidden />
                   </Link>
