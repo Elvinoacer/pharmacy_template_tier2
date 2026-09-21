@@ -3,7 +3,7 @@ import { randomUUID } from "node:crypto";
 import { test } from "node:test";
 import { prismaUnscoped as db } from "../app/lib/db";
 import { withPlatformBypass, withPharmacy } from "../app/lib/tenant-context";
-import { claimPromotion, ensureVerificationInvoice, startPharmacyService } from "../app/lib/platform/pharmacy-enrolment";
+import { claimPromotion, ensureVerificationInvoice, startPharmacyService, applyPromoCode } from "../app/lib/platform/pharmacy-enrolment";
 import { completeBillingPayment, processSubscriptionCycle, collectInvoicePayment } from "../app/lib/platform/billing";
 import { loadPharmacySetup } from "../app/lib/services/pharmacy-setup";
 
@@ -91,3 +91,116 @@ test("pharmacy billing: capped promotions, settlement, isolation and renewals", 
   });
   await db.$disconnect();
 });
+
+test("pharmacy onboarding: voucher redemption, code variants, and capacity checks", { skip: !testDatabaseUrl }, async () => {
+  process.env.DATABASE_URL = testDatabaseUrl;
+  const admin = await withPlatformBypass(() =>
+    db.user.create({ data: { email: `admin-${randomUUID()}@example.test`, passwordHash: "test-only", role: "manager" } })
+  );
+
+  const testCode = "AFY-XCQD-NZGK";
+  const promo = await withPlatformBypass(() =>
+    db.pharmacyPromotion.create({
+      data: {
+        name: "Onboarding Launch Voucher",
+        code: testCode,
+        capacity: 2,
+        verification: true,
+        verificationDiscountKes: 100,
+        recurring: true,
+        recurringDiscountKes: 500,
+        recurringMonths: 3,
+        createdBy: admin.id,
+      },
+    })
+  );
+
+  const owner1 = await withPlatformBypass(() =>
+    db.user.create({ data: { email: `owner1-${randomUUID()}@example.test`, passwordHash: "test-only", role: "manager" } })
+  );
+  const pharmacy1 = await withPlatformBypass(() =>
+    db.pharmacy.create({ data: { name: "Onboard Chemist 1", slug: randomUUID(), ownerUserId: owner1.id } })
+  );
+
+  const owner2 = await withPlatformBypass(() =>
+    db.user.create({ data: { email: `owner2-${randomUUID()}@example.test`, passwordHash: "test-only", role: "manager" } })
+  );
+  const pharmacy2 = await withPlatformBypass(() =>
+    db.pharmacy.create({ data: { name: "Onboard Chemist 2", slug: randomUUID(), ownerUserId: owner2.id } })
+  );
+
+  const owner3 = await withPlatformBypass(() =>
+    db.user.create({ data: { email: `owner3-${randomUUID()}@example.test`, passwordHash: "test-only", role: "manager" } })
+  );
+  const pharmacy3 = await withPlatformBypass(() =>
+    db.pharmacy.create({ data: { name: "Onboard Chemist 3", slug: randomUUID(), ownerUserId: owner3.id } })
+  );
+
+  try {
+    // 1. Non-existent code throws expected error
+    await withPharmacy(pharmacy1.id, async () => {
+      await assert.rejects(
+        applyPromoCode(pharmacy1.id, "DOES-NOT-EXIST"),
+        /Promotional code "DOES-NOT-EXIST" was not found\. Ask the platform team to confirm that the code is listed as active before retrying\./,
+      );
+    });
+
+    // 2. Pharmacy 1 redeems using lowercase with stripped dashes and no prefix: "xcqd-nzgk"
+    // Simulating user in pharmacy tenant context (e.g. during onboarding)
+    const result1 = await withPharmacy(pharmacy1.id, async () => {
+      return applyPromoCode(pharmacy1.id, "xcqd-nzgk", owner1.id);
+    });
+    assert.equal(result1.promotion.id, promo.id);
+    assert.equal(result1.alreadyApplied, false);
+    assert.equal(Number(result1.grant.verificationDiscountKes), 100);
+    assert.equal(Number(result1.grant.recurringDiscountKes), 500);
+    assert.equal(result1.grant.recurringMonths, 3);
+
+    // 3. Idempotent re-application returns alreadyApplied: true
+    const result1Repeat = await withPharmacy(pharmacy1.id, async () => {
+      return applyPromoCode(pharmacy1.id, testCode, owner1.id);
+    });
+    assert.equal(result1Repeat.alreadyApplied, true);
+
+    // 4. Pharmacy 2 redeems using exact code format: "AFY-XCQD-NZGK"
+    const result2 = await withPharmacy(pharmacy2.id, async () => {
+      return applyPromoCode(pharmacy2.id, "AFY-XCQD-NZGK", owner2.id);
+    });
+    assert.equal(result2.promotion.id, promo.id);
+    assert.equal(result2.alreadyApplied, false);
+
+    // 5. Pharmacy 3 attempts to redeem, but capacity (2) is now exhausted
+    await withPharmacy(pharmacy3.id, async () => {
+      await assert.rejects(
+        applyPromoCode(pharmacy3.id, testCode, owner3.id),
+        /Promotional code "AFY-XCQD-NZGK" has reached its maximum redemptions\./,
+      );
+    });
+
+    // 6. Test stopped code error
+    const stoppedCode = "AFY-STOP-PED1";
+    await withPlatformBypass(() =>
+      db.pharmacyPromotion.create({
+        data: {
+          name: "Stopped Voucher",
+          code: stoppedCode,
+          capacity: 10,
+          active: false,
+          verification: true,
+          recurring: false,
+          recurringMonths: 0,
+          createdBy: admin.id,
+        },
+      })
+    );
+    await withPharmacy(pharmacy3.id, async () => {
+      await assert.rejects(
+        applyPromoCode(pharmacy3.id, stoppedCode, owner3.id),
+        /Promotional code "AFY-STOP-PED1" exists but has been stopped and can no longer be redeemed\./,
+      );
+    });
+  } finally {
+    await db.$disconnect();
+  }
+});
+

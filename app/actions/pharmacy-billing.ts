@@ -128,7 +128,7 @@ export async function pharmacyBillingAction(
         form.get("code") || form.get("promoCode") || "",
       ).trim();
       if (!code) throw new Error("Enter a promotion or coupon code.");
-      const result = await applyPromoCode(pharmacyId, code);
+      const result = await applyPromoCode(pharmacyId, code, user.id);
 
       const promo = result.promotion;
       const discounts = grantFeeDiscounts(result.grant);
@@ -149,9 +149,14 @@ export async function pharmacyBillingAction(
       // If both verification and monthly are fully waived (KES 600 bundle), ensure bundle invoice is satisfied immediately
       if (discounts.verificationKes >= 100 && discounts.monthlyKes >= 500) {
         const bundleInvoice = await ensureBundleInvoice(pharmacyId);
-        if (bundleInvoice.status !== "paid") {
-          await db.$transaction(async (tx) => {
-            await settleInvoice(tx, bundleInvoice.id, user.id);
+        const creditEvent = await db.pharmacyOnboardingEvent.findFirst({
+          where: { pharmacyId, type: "bundle_prepaid_credit_granted" },
+        });
+        if (bundleInvoice.status !== "paid" || !creditEvent) {
+          await withPlatformTx(async (tx) => {
+            if (bundleInvoice.status !== "paid") {
+              await settleInvoice(tx, bundleInvoice.id, user.id);
+            }
             await handleBundleSettlement(tx, bundleInvoice, user.id);
           });
         }
@@ -164,7 +169,7 @@ export async function pharmacyBillingAction(
           const serviceInvoice = await startPharmacyService(pharmacyId);
           if (serviceInvoice.subscriptionId) {
             if (serviceInvoice.status !== "paid") {
-              await db.$transaction(async (tx) => {
+              await withPlatformTx(async (tx) => {
                 await settleInvoice(tx, serviceInvoice.id, user.id);
               });
             }
@@ -198,7 +203,7 @@ export async function pharmacyBillingAction(
 
       if (Number(invoice.totalKes) === 0 || invoice.status === "paid") {
         if (invoice.status !== "paid") {
-          await db.$transaction(async (tx) => {
+          await withPlatformTx(async (tx) => {
             await settleInvoice(tx, invoice.id, user.id);
             await handleBundleSettlement(tx, invoice, user.id);
           });
@@ -235,7 +240,7 @@ export async function pharmacyBillingAction(
 
       if (Number(invoice.totalKes) === 0 || invoice.status === "paid") {
         if (invoice.status !== "paid") {
-          await db.$transaction(async (tx) => {
+          await withPlatformTx(async (tx) => {
             await settleInvoice(tx, invoice.id, user.id);
           });
           revalidatePath("/onboard");
@@ -332,7 +337,7 @@ export async function pharmacyBillingAction(
 
       if (Number(invoice.totalKes) === 0 || invoice.status === "paid") {
         if (invoice.status !== "paid") {
-          await db.$transaction(async (tx) => {
+          await withPlatformTx(async (tx) => {
             await settleInvoice(tx, invoice.id, user.id);
           });
           revalidatePath("/onboard");

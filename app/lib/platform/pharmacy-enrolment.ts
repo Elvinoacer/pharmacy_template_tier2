@@ -121,6 +121,7 @@ export async function findPromotionByNormalizedCode(
   const upperCode = code.toUpperCase().trim();
   const stripped = upperCode.replace(/[-\s]/g, "");
   const withAfy = stripped.startsWith("AFY") ? stripped : `AFY${stripped}`;
+  const withoutAfy = stripped.startsWith("AFY") ? stripped.slice(3) : stripped;
 
   const rows = activeOnly
     ? await tx.$queryRaw<Array<{ id: string }>>`
@@ -128,9 +129,10 @@ export async function findPromotionByNormalizedCode(
         FROM pharmacy_promotions
         WHERE active = true
           AND (
-            upper(code) = ${upperCode}
-            OR replace(replace(upper(code), '-', ''), ' ', '') = ${stripped}
-            OR replace(replace(upper(code), '-', ''), ' ', '') = ${withAfy}
+            upper(trim(code)) = ${upperCode}
+            OR replace(replace(upper(trim(code)), '-', ''), ' ', '') = ${stripped}
+            OR replace(replace(upper(trim(code)), '-', ''), ' ', '') = ${withAfy}
+            OR replace(replace(upper(trim(code)), '-', ''), ' ', '') = ${withoutAfy}
           )
         ORDER BY created_at DESC
         LIMIT 1
@@ -140,9 +142,10 @@ export async function findPromotionByNormalizedCode(
         SELECT id
         FROM pharmacy_promotions
         WHERE (
-            upper(code) = ${upperCode}
-            OR replace(replace(upper(code), '-', ''), ' ', '') = ${stripped}
-            OR replace(replace(upper(code), '-', ''), ' ', '') = ${withAfy}
+            upper(trim(code)) = ${upperCode}
+            OR replace(replace(upper(trim(code)), '-', ''), ' ', '') = ${stripped}
+            OR replace(replace(upper(trim(code)), '-', ''), ' ', '') = ${withAfy}
+            OR replace(replace(upper(trim(code)), '-', ''), ' ', '') = ${withoutAfy}
           )
         ORDER BY created_at DESC
         LIMIT 1
@@ -262,7 +265,11 @@ export async function claimPromotion(
   });
 }
 
-export async function applyPromoCode(pharmacyId: string, rawCode: string) {
+export async function applyPromoCode(
+  pharmacyId: string,
+  rawCode: string,
+  actorId?: string | null,
+) {
   const code = normalizePromotionCode(rawCode);
   if (!code) throw new Error("Please enter a promotional card or coupon code.");
 
@@ -285,7 +292,7 @@ export async function applyPromoCode(pharmacyId: string, rawCode: string) {
       where: { pharmacyId },
     });
     if (prior && prior.promotionId === promotion.id) {
-      await syncGrantInvoices(tx, pharmacyId, prior);
+      await syncGrantInvoices(tx, pharmacyId, prior, actorId);
       return { grant: prior, promotion, alreadyApplied: true };
     }
     if (promotion.claimed >= promotion.capacity) {
@@ -330,7 +337,7 @@ export async function applyPromoCode(pharmacyId: string, rawCode: string) {
       },
     });
 
-    await syncGrantInvoices(tx, pharmacyId, grant);
+    await syncGrantInvoices(tx, pharmacyId, grant, actorId);
 
     return { grant, promotion, alreadyApplied: false };
   });
