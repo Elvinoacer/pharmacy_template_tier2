@@ -3,6 +3,7 @@ import { NextResponse } from "next/server";
 import { z } from "zod";
 import { getSessionUser, isStaff, writeAuditLog } from "@/app/lib/auth";
 import { addSharedMasterToPharmacy } from "@/app/lib/services/shared-medication-library";
+import { withPharmacy } from "@/app/lib/tenant-context";
 
 export const runtime = "nodejs";
 
@@ -32,6 +33,23 @@ export async function POST(req: Request) {
     );
   }
 
+  const pharmacyId = user.activePharmacyId;
+  const activeMembership = pharmacyId
+    ? user.memberships.some(
+        (membership) => membership.pharmacyId === pharmacyId && membership.status === "active",
+      )
+    : false;
+
+  if (!pharmacyId || !activeMembership) {
+    return NextResponse.json(
+      {
+        error: "pharmacy_required",
+        message: "Choose an active pharmacy workspace before adding medicine to inventory.",
+      },
+      { status: 409 },
+    );
+  }
+
   let body: z.infer<typeof Body>;
   try {
     body = Body.parse(await req.json());
@@ -53,12 +71,16 @@ export async function POST(req: Request) {
   }
 
   try {
-    const result = await addSharedMasterToPharmacy(body.medicationMasterId, body);
+    const result = await withPharmacy(pharmacyId, async () => {
+      const added = await addSharedMasterToPharmacy(body.medicationMasterId, body);
 
-    await writeAuditLog(user.id, "shared_medication_reused", "medication_master", result.masterId, {
-      inventoryId: result.inventoryId,
-      alreadyStocked: result.alreadyStocked,
-      acquisitionMethod: "shared_library",
+      await writeAuditLog(user.id, "shared_medication_reused", "medication_master", added.masterId, {
+        inventoryId: added.inventoryId,
+        alreadyStocked: added.alreadyStocked,
+        acquisitionMethod: "shared_library",
+      });
+
+      return added;
     });
 
     return NextResponse.json({
