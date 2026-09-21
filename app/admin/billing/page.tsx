@@ -1,0 +1,501 @@
+import Link from "next/link";
+import { redirect } from "next/navigation";
+import {
+  ArrowRight,
+  BadgeCheck,
+  BarChart3,
+  Check,
+  CircleGauge,
+  CreditCard,
+  Package,
+  PlugZap,
+  ShieldCheck,
+  Sparkles,
+  Stethoscope,
+  Store,
+  Tag,
+  X,
+} from "lucide-react";
+
+import { AdminShell } from "@/app/components/admin/AdminShell";
+import {
+  PharmacyEnrolmentPricingSelector,
+  PromoCardForm,
+} from "@/app/components/onboard/BillingForms";
+import { getSessionUser } from "@/app/lib/auth";
+import { prisma, prismaUnscoped, withPlatformTx } from "@/app/lib/db";
+import { hasPremiumPlan } from "@/app/lib/platform/entitlements";
+import {
+  FREE_MEDICINE_LIMIT,
+  FREE_SERVICE_LIMIT,
+} from "@/app/lib/platform/plan-policy";
+import { isIntasendConfigured } from "@/app/lib/services/intasend";
+import { withPharmacy } from "@/app/lib/tenant-context";
+
+export const dynamic = "force-dynamic";
+export const metadata = { title: "Plans & billing · Afyvia" };
+
+function formatDate(value: Date | null | undefined) {
+  if (!value) return null;
+  return new Intl.DateTimeFormat("en-KE", {
+    day: "numeric",
+    month: "short",
+    year: "numeric",
+  }).format(value);
+}
+
+function UsageMeter({
+  label,
+  used,
+  limit,
+  icon,
+}: {
+  label: string;
+  used: number;
+  limit: number;
+  icon: React.ReactNode;
+}) {
+  const percent = Math.min(100, Math.round((used / Math.max(limit, 1)) * 100));
+  return (
+    <div className="rounded-2xl border border-[var(--admin-border)] bg-[var(--admin-card)] p-4">
+      <div className="flex items-center justify-between gap-3">
+        <div className="flex items-center gap-2 text-sm font-semibold text-[var(--admin-text)]">
+          {icon}
+          {label}
+        </div>
+        <span className="text-xs font-semibold text-[var(--admin-text-muted)]">
+          {used} / {limit}
+        </span>
+      </div>
+      <div className="mt-3 h-2 overflow-hidden rounded-full bg-[var(--admin-inset)]">
+        <div
+          className="h-full rounded-full bg-[var(--admin-accent)] transition-[width]"
+          style={{ width: `${percent}%` }}
+        />
+      </div>
+      <p className="mt-2 text-xs text-[var(--admin-text-soft)]">
+        {used >= limit
+          ? "Free-plan allowance reached."
+          : `${Math.max(0, limit - used)} remaining on Free.`}
+      </p>
+    </div>
+  );
+}
+
+const comparison = [
+  {
+    feature: "Monthly platform fee",
+    free: "KES 0",
+    premium: "KES 500 / month",
+  },
+  {
+    feature: "Public medicine listings",
+    free: `${FREE_MEDICINE_LIMIT} listings`,
+    premium: "Free-plan cap removed",
+  },
+  {
+    feature: "Active pharmacy services",
+    free: `${FREE_SERVICE_LIMIT} services`,
+    premium: "Free-plan cap removed",
+  },
+  {
+    feature: "Storefront, orders, reservations & bookings",
+    free: "Included",
+    premium: "Included",
+  },
+  {
+    feature: "Your pharmacy M-PESA connection",
+    free: "Included",
+    premium: "Included",
+  },
+  {
+    feature: "AI-assisted medication import",
+    free: "Not included",
+    premium: "Included",
+  },
+  {
+    feature: "Advanced analytics",
+    free: "Not included",
+    premium: "Included",
+  },
+  {
+    feature: "POS synchronization",
+    free: "Not included",
+    premium: "Included",
+  },
+] as const;
+
+export default async function AdminBillingPage() {
+  const user = await getSessionUser();
+  if (!user) redirect("/login?next=/admin/billing");
+
+  const pharmacyId =
+    user.activePharmacyId ||
+    user.memberships.find((membership) => membership.status === "active")?.pharmacyId;
+  if (!pharmacyId) redirect("/admin/select");
+
+  const membership = user.memberships.find(
+    (candidate) =>
+      candidate.pharmacyId === pharmacyId && candidate.status === "active",
+  );
+  if (!membership && !user.platformAdmin) redirect("/admin/select");
+
+  const pharmacy = await prismaUnscoped.pharmacy.findUnique({
+    where: { id: pharmacyId },
+    select: {
+      id: true,
+      name: true,
+      ownerUserId: true,
+      status: true,
+      listed: true,
+      verifiedAt: true,
+    },
+  });
+  if (!pharmacy) redirect("/admin/select");
+
+  const isOwner = pharmacy.ownerUserId === user.id || user.platformAdmin;
+  const premiumActive = await hasPremiumPlan(pharmacy.id);
+
+  const [tenantData, grant] = await Promise.all([
+    withPharmacy(pharmacy.id, async () => {
+      const [publicMedicines, activeServices, subscription, invoices] =
+        await Promise.all([
+          prisma.pharmacyInventory.count({
+            where: { active: true, publicListing: true },
+          }),
+          prisma.pharmacyService.count({
+            where: { active: true },
+          }),
+          prisma.subscription.findFirst({
+            where: { status: { not: "cancelled" } },
+            orderBy: { createdAt: "desc" },
+            select: {
+              id: true,
+              status: true,
+              currentPeriodStart: true,
+              currentPeriodEnd: true,
+              trialEndsAt: true,
+              cancelAtPeriodEnd: true,
+            },
+          }),
+          prisma.invoice.findMany({
+            orderBy: { createdAt: "desc" },
+            take: 5,
+            select: {
+              id: true,
+              number: true,
+              status: true,
+              totalKes: true,
+              dueAt: true,
+              createdAt: true,
+            },
+          }),
+        ]);
+      return { publicMedicines, activeServices, subscription, invoices };
+    }),
+    withPlatformTx((tx) =>
+      tx.pharmacyPromotionGrant.findUnique({
+        where: { pharmacyId: pharmacy.id },
+        include: {
+          promotion: {
+            select: { name: true, code: true, recurringMonths: true },
+          },
+        },
+      }),
+    ).catch(() => null),
+  ]);
+
+  const paymentAvailable = isIntasendConfigured();
+  const periodEnd = formatDate(tenantData.subscription?.currentPeriodEnd);
+  const latestInvoice = tenantData.invoices[0];
+
+  return (
+    <AdminShell
+      user={user}
+      title="Plans & billing"
+      subtitle="Keep the free pharmacy workspace, or move to Premium when you need more reach and automation."
+    >
+      <div className="space-y-6">
+        <section className="overflow-hidden rounded-3xl border border-[var(--admin-border)] bg-[var(--admin-card)] shadow-sm">
+          <div className="grid gap-0 lg:grid-cols-[1.35fr_0.65fr]">
+            <div className="p-5 sm:p-7">
+              <div className="flex flex-wrap items-center gap-2">
+                <span className="inline-flex items-center gap-1.5 rounded-full border border-[var(--admin-border)] bg-[var(--admin-inset)] px-2.5 py-1 text-xs font-semibold text-[var(--admin-text-muted)]">
+                  {premiumActive ? (
+                    <BadgeCheck className="h-3.5 w-3.5 text-[var(--admin-accent)]" />
+                  ) : (
+                    <ShieldCheck className="h-3.5 w-3.5 text-[var(--admin-accent)]" />
+                  )}
+                  {premiumActive ? "Premium active" : "Free plan"}
+                </span>
+                {tenantData.subscription?.status && (
+                  <span className="rounded-full bg-[var(--admin-inset)] px-2.5 py-1 text-[11px] font-semibold capitalize text-[var(--admin-text-soft)]">
+                    {tenantData.subscription.status.replace(/_/g, " ")}
+                  </span>
+                )}
+              </div>
+
+              <h2 className="mt-4 max-w-2xl text-2xl font-bold tracking-tight text-[var(--admin-text)] sm:text-3xl">
+                {premiumActive
+                  ? "Your pharmacy has Premium capacity."
+                  : "Start free. Upgrade only when the limits begin to matter."}
+              </h2>
+              <p className="mt-2 max-w-2xl text-sm leading-6 text-[var(--admin-text-muted)]">
+                Free keeps the core pharmacy presence live. Premium removes the free listing caps and unlocks AI-assisted imports, advanced analytics and POS synchronization.
+              </p>
+
+              <div className="mt-5 flex flex-wrap gap-2 text-xs text-[var(--admin-text-muted)]">
+                <span className="inline-flex items-center gap-1.5 rounded-full bg-[var(--admin-inset)] px-3 py-1.5">
+                  <Store className="h-3.5 w-3.5" /> Storefront stays available on Free
+                </span>
+                <span className="inline-flex items-center gap-1.5 rounded-full bg-[var(--admin-inset)] px-3 py-1.5">
+                  <CreditCard className="h-3.5 w-3.5" /> Month-to-month Premium
+                </span>
+              </div>
+            </div>
+
+            <div className="border-t border-[var(--admin-border)] bg-[var(--admin-inset)]/70 p-5 sm:p-7 lg:border-l lg:border-t-0">
+              <p className="text-xs font-bold uppercase tracking-[0.14em] text-[var(--admin-accent-text)]">
+                {premiumActive ? "Current plan" : "Upgrade"}
+              </p>
+              <div className="mt-2 flex items-end gap-2">
+                <span className="text-3xl font-bold tracking-tight text-[var(--admin-text)]">
+                  {premiumActive ? "Premium" : "KES 500"}
+                </span>
+                {!premiumActive && (
+                  <span className="pb-1 text-sm text-[var(--admin-text-muted)]">/ month</span>
+                )}
+              </div>
+
+              {premiumActive ? (
+                <div className="mt-4 space-y-2 text-sm text-[var(--admin-text-muted)]">
+                  <p className="flex items-center gap-2">
+                    <Check className="h-4 w-4 text-emerald-600 dark:text-emerald-300" />
+                    Premium entitlements are active.
+                  </p>
+                  {periodEnd ? <p>Current paid period ends {periodEnd}.</p> : null}
+                  {tenantData.subscription?.cancelAtPeriodEnd ? (
+                    <p className="text-amber-700 dark:text-amber-300">
+                      Auto-renewal is set to stop at period end.
+                    </p>
+                  ) : null}
+                </div>
+              ) : isOwner ? (
+                <div className="mt-4">
+                  <PharmacyEnrolmentPricingSelector
+                    pharmacyId={pharmacy.id}
+                    grant={grant}
+                    verificationPaid
+                    subscriptionActive={false}
+                    paymentAvailable={paymentAvailable}
+                  />
+                </div>
+              ) : (
+                <div className="mt-4 rounded-2xl border border-[var(--admin-border)] bg-[var(--admin-card)] p-4 text-sm text-[var(--admin-text-muted)]">
+                  The pharmacy owner can activate Premium. You can still review the benefits and current usage here.
+                </div>
+              )}
+
+              <Link
+                href="/onboard/billing"
+                className="mt-4 inline-flex items-center gap-1.5 text-xs font-semibold text-[var(--admin-accent-text)] hover:underline"
+              >
+                Billing history & payment management
+                <ArrowRight className="h-3.5 w-3.5" />
+              </Link>
+            </div>
+          </div>
+        </section>
+
+        {!premiumActive && (
+          <section>
+            <div className="mb-3 flex items-end justify-between gap-4">
+              <div>
+                <p className="text-xs font-bold uppercase tracking-[0.12em] text-[var(--admin-accent-text)]">
+                  Free plan usage
+                </p>
+                <h2 className="mt-1 text-lg font-bold text-[var(--admin-text)]">
+                  Know exactly when an upgrade is useful
+                </h2>
+              </div>
+            </div>
+            <div className="grid gap-3 md:grid-cols-2">
+              <UsageMeter
+                label="Public medicine listings"
+                used={tenantData.publicMedicines}
+                limit={FREE_MEDICINE_LIMIT}
+                icon={<Package className="h-4 w-4 text-[var(--admin-accent)]" />}
+              />
+              <UsageMeter
+                label="Active services"
+                used={tenantData.activeServices}
+                limit={FREE_SERVICE_LIMIT}
+                icon={<Stethoscope className="h-4 w-4 text-[var(--admin-accent)]" />}
+              />
+            </div>
+          </section>
+        )}
+
+        <section className="rounded-3xl border border-[var(--admin-border)] bg-[var(--admin-card)] p-4 sm:p-6">
+          <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
+            <div>
+              <p className="text-xs font-bold uppercase tracking-[0.12em] text-[var(--admin-accent-text)]">
+                Compare plans
+              </p>
+              <h2 className="mt-1 text-xl font-bold text-[var(--admin-text)]">
+                Free vs Premium
+              </h2>
+            </div>
+            <p className="max-w-lg text-xs leading-5 text-[var(--admin-text-muted)]">
+              Premium is an expansion layer, not a requirement to keep the pharmacy online.
+            </p>
+          </div>
+
+          <div className="mt-5 overflow-hidden rounded-2xl border border-[var(--admin-border)]">
+            <div className="grid grid-cols-[1.3fr_0.85fr_0.85fr] bg-[var(--admin-inset)] text-xs font-bold text-[var(--admin-text)]">
+              <div className="p-3 sm:p-4">Capability</div>
+              <div className="border-l border-[var(--admin-border)] p-3 sm:p-4">Free</div>
+              <div className="border-l border-[var(--admin-border)] p-3 sm:p-4">
+                <span className="inline-flex items-center gap-1.5">
+                  <Sparkles className="h-3.5 w-3.5 text-[var(--admin-accent)]" />
+                  Premium
+                </span>
+              </div>
+            </div>
+            {comparison.map((row) => (
+              <div
+                key={row.feature}
+                className="grid grid-cols-[1.3fr_0.85fr_0.85fr] border-t border-[var(--admin-border)] text-xs sm:text-sm"
+              >
+                <div className="p-3 font-semibold text-[var(--admin-text)] sm:p-4">
+                  {row.feature}
+                </div>
+                <div className="border-l border-[var(--admin-border)] p-3 text-[var(--admin-text-muted)] sm:p-4">
+                  {row.free === "Not included" ? (
+                    <span className="inline-flex items-center gap-1.5">
+                      <X className="h-3.5 w-3.5 text-[var(--admin-text-soft)]" />
+                      {row.free}
+                    </span>
+                  ) : (
+                    row.free
+                  )}
+                </div>
+                <div className="border-l border-[var(--admin-border)] p-3 font-medium text-[var(--admin-text)] sm:p-4">
+                  <span className="inline-flex items-start gap-1.5">
+                    <Check className="mt-0.5 h-3.5 w-3.5 shrink-0 text-emerald-600 dark:text-emerald-300" />
+                    {row.premium}
+                  </span>
+                </div>
+              </div>
+            ))}
+          </div>
+        </section>
+
+        <section className="grid gap-3 md:grid-cols-3">
+          {[
+            {
+              icon: <Sparkles className="h-5 w-5" />,
+              title: "AI-assisted imports",
+              body: "Move new medicine data into the catalogue faster while preserving the shared medication validation path.",
+            },
+            {
+              icon: <BarChart3 className="h-5 w-5" />,
+              title: "Advanced analytics",
+              body: "Use richer operational and commercial reporting when the pharmacy needs more than day-to-day workflow views.",
+            },
+            {
+              icon: <PlugZap className="h-5 w-5" />,
+              title: "POS synchronization",
+              body: "Connect inventory workflows to supported POS integrations instead of maintaining the same stock in two places.",
+            },
+          ].map((benefit) => (
+            <article
+              key={benefit.title}
+              className="rounded-2xl border border-[var(--admin-border)] bg-[var(--admin-card)] p-5"
+            >
+              <div className="grid h-10 w-10 place-items-center rounded-xl bg-[var(--admin-inset)] text-[var(--admin-accent-text)]">
+                {benefit.icon}
+              </div>
+              <h3 className="mt-4 text-sm font-bold text-[var(--admin-text)]">
+                {benefit.title}
+              </h3>
+              <p className="mt-1 text-xs leading-5 text-[var(--admin-text-muted)]">
+                {benefit.body}
+              </p>
+            </article>
+          ))}
+        </section>
+
+        {isOwner && (
+          <details className="group rounded-2xl border border-[var(--admin-border)] bg-[var(--admin-card)]">
+            <summary className="flex cursor-pointer list-none items-center justify-between gap-4 px-4 py-3.5 text-sm font-semibold text-[var(--admin-text)]">
+              <span className="inline-flex items-center gap-2">
+                <Tag className="h-4 w-4 text-[var(--admin-accent)]" />
+                Have a voucher or promotional code?
+              </span>
+              <span className="text-xs font-medium text-[var(--admin-text-soft)] group-open:hidden">
+                Optional
+              </span>
+            </summary>
+            <div className="border-t border-[var(--admin-border)] p-4">
+              <p className="mb-3 text-xs leading-5 text-[var(--admin-text-muted)]">
+                Vouchers are optional. Apply one here only if the platform team gave your pharmacy a code.
+              </p>
+              <PromoCardForm pharmacyId={pharmacy.id} />
+            </div>
+          </details>
+        )}
+
+        <section className="rounded-2xl border border-[var(--admin-border)] bg-[var(--admin-card)] p-5">
+          <div className="flex flex-wrap items-center justify-between gap-3">
+            <div>
+              <div className="flex items-center gap-2 text-sm font-bold text-[var(--admin-text)]">
+                <CircleGauge className="h-4 w-4 text-[var(--admin-accent)]" />
+                Billing snapshot
+              </div>
+              <p className="mt-1 text-xs text-[var(--admin-text-muted)]">
+                Latest platform invoice activity for {pharmacy.name}.
+              </p>
+            </div>
+            {latestInvoice ? (
+              <span className="rounded-full bg-[var(--admin-inset)] px-2.5 py-1 text-[11px] font-semibold capitalize text-[var(--admin-text-muted)]">
+                Latest: {latestInvoice.status}
+              </span>
+            ) : null}
+          </div>
+
+          {tenantData.invoices.length ? (
+            <div className="mt-4 divide-y divide-[var(--admin-border)] overflow-hidden rounded-xl border border-[var(--admin-border)]">
+              {tenantData.invoices.map((invoice) => (
+                <div
+                  key={invoice.id}
+                  className="flex flex-col gap-2 bg-[var(--admin-panel)] px-3.5 py-3 text-xs sm:flex-row sm:items-center sm:justify-between"
+                >
+                  <div>
+                    <p className="font-semibold text-[var(--admin-text)]">{invoice.number}</p>
+                    <p className="mt-0.5 text-[var(--admin-text-soft)]">
+                      {formatDate(invoice.createdAt)}
+                      {invoice.dueAt ? ` · due ${formatDate(invoice.dueAt)}` : ""}
+                    </p>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <span className="font-semibold text-[var(--admin-text)]">
+                      KES {Number(invoice.totalKes).toLocaleString("en-KE")}
+                    </span>
+                    <span className="rounded-full bg-[var(--admin-inset)] px-2 py-1 font-semibold capitalize text-[var(--admin-text-muted)]">
+                      {invoice.status}
+                    </span>
+                  </div>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <p className="mt-4 text-sm text-[var(--admin-text-muted)]">
+              No platform invoices yet.
+            </p>
+          )}
+        </section>
+      </div>
+    </AdminShell>
+  );
+}
