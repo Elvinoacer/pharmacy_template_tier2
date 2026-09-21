@@ -23,4 +23,5 @@ export async function createTransactionFeeStatement() {
     await tx.usageRecord.create({ data: { pharmacyId: pharmacy.id, metric: "transaction_fee_cents", quantity: -amount * 100, unit: "KES_cent", eventId: `fee-statement:${invoice.id}`, period: now.toISOString().slice(0, 7), billable: false, meta: { invoiceId: invoice.id } } });
   }));
   revalidatePath("/onboard/billing");
+  revalidatePath("/admin/billing");
 }
