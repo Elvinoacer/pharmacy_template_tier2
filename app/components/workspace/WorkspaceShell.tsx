@@ -11,6 +11,7 @@ import {
   Monitor,
   Store,
   ChevronDown,
+  Sparkles,
 } from "lucide-react";
 import type { SessionUser } from "@/app/lib/types";
 import {
@@ -195,6 +196,17 @@ export function WorkspaceShell({
               {/* Right: Actions, Theme, Notifications & User Menu */}
               <div className="flex items-center gap-2 shrink-0">
                 {headerExtra}
+
+                {role === "admin" && (
+                  <Link
+                    href="/admin/billing"
+                    className="hidden min-h-9 items-center gap-1.5 rounded-xl border border-emerald-500/25 bg-emerald-500/10 px-3 text-xs font-semibold text-emerald-800 transition hover:bg-emerald-500/15 dark:text-emerald-200 sm:inline-flex"
+                    aria-label="Explore Premium plans and billing"
+                  >
+                    <Sparkles size={14} aria-hidden="true" />
+                    <span>Upgrade</span>
+                  </Link>
+                )}
 
                 {/* Theme toggle */}
                 <WorkspaceThemeToggle
