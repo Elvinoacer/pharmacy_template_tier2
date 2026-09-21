@@ -22,7 +22,7 @@ export default async function AiImportPage() {
           <p className="text-sm leading-6 admin-muted">
             The free plan includes manual entry and the shared medicine library, with up to 5 public listings. Premium is KES 500/month and adds AI-assisted imports, more listings, advanced analytics and POS synchronization.
           </p>
-          <Link href="/onboard/billing" className="btn-primary inline-flex">View Premium</Link>
+          <Link href="/admin/billing" className="btn-primary inline-flex">View Premium</Link>
         </section>
       </AdminShell>
     );
