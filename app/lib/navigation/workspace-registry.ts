@@ -984,6 +984,19 @@ export const WORKSPACE_DESTINATIONS: readonly NavigationDestination[] = [
 
   /* Admin More & Settings */
   {
+    id: "admin-billing",
+    label: "Plans & billing",
+    description: "Compare Free and Premium, review usage limits, apply an optional voucher, and upgrade the pharmacy.",
+    keywords: ["premium", "upgrade", "plans", "billing", "pricing", "subscription", "voucher"],
+    href: "/admin/billing",
+    icon: "Sparkles",
+    workspace: "admin",
+    groupId: "more",
+    entityType: "setting",
+    searchAliases: ["upgrade to premium", "pricing", "billing", "subscription", "plan", "premium"],
+    priority: 92,
+  },
+  {
     id: "admin-settings-location",
     label: "Pharmacy details & hours",
     description: "Update your location, opening hours, phone, and contact information.",
