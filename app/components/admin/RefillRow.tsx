@@ -94,7 +94,7 @@ export function RefillRow({
                   <ChevronRight className="h-3 w-3 admin-soft opacity-0 transition group-hover:opacity-100" />
                 )}
               </div>
-              <div className="mt-0.5 flex flex-wrap gap-2 text-xs admin-soft">
+              <div className="mt-0.5 flex flex-wrap gap-2 text-sm admin-soft">
                 {refill.phone && (
                   <span className="inline-flex items-center gap-0.5 font-mono">
                     <Phone className="h-2.5 w-2.5" /> {refill.phone}
@@ -115,31 +115,31 @@ export function RefillRow({
           <div className="flex items-center gap-1.5 flex-wrap">
             <p className="font-medium admin-text">{refill.medicineName}</p>
             {refill.attachmentUrls && refill.attachmentUrls.length > 0 && (
-              <span className="inline-flex items-center gap-1 rounded-full bg-indigo-500/15 px-2 py-0.5 text-[10px] font-bold text-indigo-700 dark:text-indigo-400">
+              <span className="inline-flex items-center gap-1 rounded-full bg-indigo-500/15 px-2 py-0.5 text-sm font-bold text-indigo-700 dark:text-indigo-400">
                 <FileText className="h-2.5 w-2.5" /> Rx Scan ({refill.attachmentUrls.length})
               </span>
             )}
             {refill.notes && (
               <span
                 title={refill.notes}
-                className="inline-flex items-center gap-1 rounded-full bg-amber-500/15 px-2 py-0.5 text-[10px] font-medium text-amber-800 dark:text-amber-400"
+                className="inline-flex items-center gap-1 rounded-full bg-amber-500/15 px-2 py-0.5 text-sm font-medium text-amber-800 dark:text-amber-400"
               >
                 <MessageSquare className="h-2.5 w-2.5" /> Notes
               </span>
             )}
           </div>
-          <p className="font-mono text-xs admin-soft">{refill.rxReference || "—"}</p>
+          <p className="font-mono text-sm admin-soft">{refill.rxReference || "—"}</p>
         </td>
 
         {/* Source */}
         <td>
-          <span className="inline-flex items-center rounded-full bg-[var(--admin-inset)] px-2 py-0.5 text-xs font-medium capitalize admin-muted">
+          <span className="inline-flex items-center rounded-full bg-[var(--admin-inset)] px-2 py-0.5 text-sm font-medium capitalize admin-muted">
             {refill.source}
           </span>
         </td>
 
         {/* Submitted */}
-        <td className="text-xs admin-muted">
+        <td className="text-sm admin-muted">
           <span className="inline-flex items-center gap-1">
             <Clock className="h-2.5 w-2.5" />
             {formatDateTime(created)}
@@ -148,7 +148,7 @@ export function RefillRow({
 
         {/* Status */}
         <td>
-          <span className={`rounded-full px-2 py-0.5 text-xs font-semibold ${meta.color}`}>
+          <span className={`rounded-full px-2 py-0.5 text-sm font-semibold ${meta.color}`}>
             {meta.label}
           </span>
         </td>
@@ -159,7 +159,7 @@ export function RefillRow({
             <button
               type="button"
               onClick={() => (onReview ? onReview(refill.id) : setShowReview(true))}
-              className="inline-flex items-center gap-1 rounded-lg bg-gradient-to-r from-emerald-600 to-teal-700 px-2.5 py-1 text-xs font-bold text-white shadow-sm hover:brightness-110 transition"
+              className="inline-flex items-center gap-1 rounded-lg bg-gradient-to-r from-emerald-600 to-teal-700 px-2.5 py-1 text-sm font-bold text-white shadow-sm hover:brightness-110 transition"
             >
               <ShieldCheck className="h-3 w-3" /> Review
             </button>
@@ -168,7 +168,7 @@ export function RefillRow({
               type="button"
               onClick={() => setShowContact(true)}
               title="Contact Patient"
-              className="inline-flex items-center rounded-lg border border-[var(--admin-border)] bg-[var(--admin-inset)] p-1 text-xs admin-soft hover:admin-text hover:bg-[var(--admin-inset-2)] transition"
+              className="inline-flex items-center rounded-lg border border-[var(--admin-border)] bg-[var(--admin-inset)] p-1 text-sm admin-soft hover:admin-text hover:bg-[var(--admin-inset-2)] transition"
             >
               <MessageSquare className="h-3 w-3 text-emerald-600" />
             </button>
@@ -179,7 +179,7 @@ export function RefillRow({
                 name="status"
                 defaultValue={refill.status}
                 disabled={pending}
-                className="rounded-lg border border-[var(--admin-border-2)] bg-[var(--admin-inset)] px-2 py-1 text-xs admin-text focus:border-[var(--admin-accent)] focus:outline-none disabled:opacity-60"
+                className="min-h-11 rounded-lg border border-[var(--admin-border-2)] bg-[var(--admin-inset)] px-2 py-1 text-sm admin-text focus:border-[var(--admin-accent)] focus:outline-none disabled:opacity-60"
               >
                 {REFILL_STATUSES.map((s) => (
                   <option key={s.value} value={s.value}>
@@ -191,7 +191,7 @@ export function RefillRow({
                 type="submit"
                 disabled={pending}
                 title="Save status"
-                className="inline-flex items-center gap-1 rounded-lg bg-[var(--admin-accent-soft)] px-2 py-1 text-xs font-semibold admin-accent-text transition hover:bg-[var(--admin-accent-soft)] hover:brightness-110 disabled:opacity-50"
+                className="min-h-11 inline-flex items-center gap-1 rounded-lg bg-[var(--admin-accent-soft)] px-2 py-1 text-sm font-semibold admin-accent-text transition hover:bg-[var(--admin-accent-soft)] hover:brightness-110 disabled:opacity-50"
               >
                 {pending ? (
                   <><span className="typing-dot" /> Saving…</>
