@@ -116,42 +116,42 @@ export default async function CaregiverPatientDetailPage({
       actions={
         <Link
           href="/caregiver/patients"
-          className="inline-flex items-center gap-1.5 rounded-full bg-[#e6f4ef] px-3 py-1.5 text-xs font-semibold text-[#0d6e5a] transition hover:bg-[#d5efe6]"
+          className="inline-flex items-center gap-1.5 rounded-full bg-[#e6f4ef] px-3 py-1.5 text-sm font-semibold text-[#0d6e5a] transition hover:bg-[#d5efe6]"
         >
           <ArrowLeft className="h-3.5 w-3.5" /> All patients
         </Link>
       }
     >
       {/* Top stat strip */}
-      <div className="grid gap-3 sm:grid-cols-4">
+      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
         <div className="card-stat p-4">
-          <p className="text-[10px] uppercase tracking-wide text-[#8a9a92]">14-day adherence</p>
+          <p className="text-sm uppercase tracking-wide text-[#8a9a92]">14-day adherence</p>
           <p className={`mt-1 text-xl font-bold ${stats.adherenceRate >= 80 ? "text-emerald-700" : stats.adherenceRate >= 60 ? "text-amber-700" : "text-rose-700"}`}>
             {stats.adherenceRate}%
           </p>
         </div>
         <div className="card-stat p-4">
-          <p className="text-[10px] uppercase tracking-wide text-[#8a9a92]">Doses logged (14d)</p>
+          <p className="text-sm uppercase tracking-wide text-[#8a9a92]">Doses logged (14d)</p>
           <p className="mt-1 text-xl font-bold text-[#0c1a14]">{stats.totalLogged}</p>
         </div>
         <div className="card-stat p-4">
-          <p className="text-[10px] uppercase tracking-wide text-[#8a9a92]">Current streak</p>
+          <p className="text-sm uppercase tracking-wide text-[#8a9a92]">Current streak</p>
           <p className="mt-1 text-xl font-bold text-[#0d6e5a]">{stats.currentStreakDays}d</p>
         </div>
         <div className="card-stat p-4">
-          <p className="text-[10px] uppercase tracking-wide text-[#8a9a92]">Active meds</p>
+          <p className="text-sm uppercase tracking-wide text-[#8a9a92]">Active meds</p>
           <p className="mt-1 text-xl font-bold text-[#0c1a14]">{patient.prescriptions.length}</p>
         </div>
       </div>
 
       {/* Today's doses */}
-      <section className="mt-6 card-premium p-5">
-        <div className="mb-4 flex items-center justify-between">
+      <section className="mt-5 card-premium p-4 sm:mt-6 sm:p-5 lg:p-6">
+        <div className="mb-4 flex flex-col items-stretch gap-2 sm:flex-row sm:items-start sm:justify-between">
           <h2 className="flex items-center gap-2 text-base font-semibold text-[#0c1a14]">
             <CalendarDays className="h-4 w-4 text-[#0d6e5a]" /> Today's doses
           </h2>
           {!link.canLogAdherence && (
-            <span className="text-[10px] font-semibold text-[#8a9a92]">Read-only — patient has not granted adherence permission</span>
+            <span className="text-sm font-semibold text-[#8a9a92]">Read-only — patient has not granted adherence permission</span>
           )}
         </div>
         {todaysDoses.length === 0 ? (
@@ -164,14 +164,14 @@ export default async function CaregiverPatientDetailPage({
             {todaysDoses.map((d) => (
               <li
                 key={d.scheduleId}
-                className="flex flex-wrap items-center justify-between gap-3 rounded-xl bg-[#f4f7f4] px-3 py-3"
+                className="flex min-w-0 flex-col items-stretch gap-3 rounded-xl bg-[#f4f7f4] px-3 py-3 sm:flex-row sm:items-center sm:justify-between sm:px-4"
               >
                 <div className="min-w-0">
                   <p className="text-sm font-semibold text-[#0c1a14]">
                     {d.medicineName}
                     {d.label ? <span className="ml-1 text-[#8a9a92]">· {d.label}</span> : null}
                   </p>
-                  <p className="text-[10px] text-[#5a6b62]">
+                  <p className="text-sm text-[#5a6b62]">
                     {d.timeOfDay}
                     {d.dosage ? ` · ${d.dosage}` : ""}
                     {d.doseLog ? ` · already logged as ${d.doseLog.status}` : ""}
@@ -192,11 +192,11 @@ export default async function CaregiverPatientDetailPage({
                     }
                   />
                 ) : d.doseLog ? (
-                  <span className="rounded-full bg-slate-100 px-3 py-1 text-[10px] font-semibold text-slate-700">
+                  <span className="rounded-full bg-slate-100 px-3 py-1 text-sm font-semibold text-slate-700">
                     {d.doseLog.status}
                   </span>
                 ) : (
-                  <span className="rounded-full bg-slate-100 px-3 py-1 text-[10px] font-semibold text-slate-500">pending</span>
+                  <span className="rounded-full bg-slate-100 px-3 py-1 text-sm font-semibold text-slate-500">pending</span>
                 )}
               </li>
             ))}
@@ -205,7 +205,7 @@ export default async function CaregiverPatientDetailPage({
       </section>
 
       {/* Medications + schedules */}
-      <section className="mt-6 card-premium p-5">
+      <section className="mt-5 card-premium p-4 sm:mt-6 sm:p-5 lg:p-6">
         <h2 className="mb-4 flex items-center gap-2 text-base font-semibold text-[#0c1a14]">
           <FileText className="h-4 w-4 text-[#0d6e5a]" /> Active medications
         </h2>
@@ -218,10 +218,10 @@ export default async function CaregiverPatientDetailPage({
               const rxStats = perRx.find((s) => s.prescriptionId === p.id);
               return (
                 <li key={p.id} className="rounded-xl border border-[#e3ebe6] bg-[#fafbfa] p-4">
-                  <div className="flex flex-wrap items-start justify-between gap-3">
+                  <div className="flex flex-col items-stretch gap-3 sm:flex-row sm:items-start sm:justify-between">
                     <div className="min-w-0">
                       <p className="text-sm font-semibold text-[#0c1a14]">{p.medicineName}</p>
-                      <p className="text-xs text-[#5a6b62]">
+                      <p className="text-sm text-[#5a6b62]">
                         {p.dosage || "—"}
                         {p.refillsRemaining != null ? ` · ${p.refillsRemaining} refills left` : ""}
                         {p.nextRefillDue ? ` · due ${formatDate(p.nextRefillDue)}` : ""}
@@ -232,7 +232,7 @@ export default async function CaregiverPatientDetailPage({
                           {schedule.map((s) => (
                             <span
                               key={s.id}
-                              className="inline-flex items-center gap-1 rounded-full bg-[#e6f4ef] px-2 py-0.5 text-[10px] font-medium text-[#0d6e5a]"
+                              className="inline-flex items-center gap-1 rounded-full bg-[#e6f4ef] px-2 py-0.5 text-sm font-medium text-[#0d6e5a]"
                             >
                               <Clock className="h-2.5 w-2.5" />
                               {s.timeOfDay}
@@ -242,10 +242,10 @@ export default async function CaregiverPatientDetailPage({
                         </div>
                       )}
                     </div>
-                    <div className="flex flex-col items-end gap-2">
+                    <div className="flex w-full flex-col items-stretch gap-2 sm:w-auto sm:shrink-0 sm:items-end">
                       {rxStats?.adherenceRate != null && (
                         <span
-                          className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[10px] font-semibold ${
+                          className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-sm font-semibold ${
                             rxStats.adherenceRate >= 80
                               ? "bg-emerald-100 text-emerald-700"
                               : rxStats.adherenceRate >= 60
@@ -259,7 +259,7 @@ export default async function CaregiverPatientDetailPage({
                       {link.canRequestRefills && (p.refillsRemaining ?? 0) > 0 && (
                         <Link
                           href={`/caregiver/refills/new?customerId=${customerId}&prescriptionId=${p.id}`}
-                          className="inline-flex items-center gap-1 rounded-full bg-[#0d6e5a] px-3 py-1 text-[10px] font-semibold text-white hover:bg-[#084c3f]"
+                          className="inline-flex items-center gap-1 rounded-full bg-[#0d6e5a] px-3 py-1 text-sm font-semibold text-white hover:bg-[#084c3f]"
                         >
                           <Plus className="h-3 w-3" /> Request refill
                         </Link>
@@ -274,27 +274,27 @@ export default async function CaregiverPatientDetailPage({
       </section>
 
       {/* Active refills + reminders + pickups */}
-      <div className="mt-6 grid gap-4 lg:grid-cols-3">
-        <section className="card-premium p-5">
+      <div className="mt-5 grid grid-cols-1 gap-4 sm:mt-6 sm:grid-cols-2 lg:grid-cols-3">
+        <section className="card-premium min-w-0 p-4 sm:p-5">
           <h2 className="mb-3 flex items-center gap-2 text-sm font-semibold text-[#0c1a14]">
             <Pill className="h-4 w-4 text-[#0d6e5a]" /> Refill requests
           </h2>
           {refillRequests.length === 0 ? (
-            <p className="text-xs text-[#5a6b62]">None in progress.</p>
+            <p className="text-sm text-[#5a6b62]">None in progress.</p>
           ) : (
             <ul className="space-y-1.5">
               {refillRequests.map((r) => (
-                <li key={r.id} className="rounded-lg bg-[#f4f7f4] px-3 py-2 text-xs">
+                <li key={r.id} className="rounded-lg bg-[#f4f7f4] px-3 py-2 text-sm">
                   <span className="font-semibold text-[#0c1a14]">{r.medicineName}</span>
                   <span className="ml-2 capitalize text-[#5a6b62]">{r.status.replace(/_/g, " ")}</span>
-                  <span className="block text-[10px] text-[#8a9a92]">{formatDate(r.createdAt)}</span>
+                  <span className="block text-sm text-[#8a9a92]">{formatDate(r.createdAt)}</span>
                 </li>
               ))}
             </ul>
           )}
         </section>
 
-        <section className="card-premium p-5">
+        <section className="card-premium min-w-0 p-4 sm:p-5">
           <h2 className="mb-3 flex items-center gap-2 text-sm font-semibold text-[#0c1a14]">
             <Bell className="h-4 w-4 text-[#0d6e5a]" /> Pickup alerts
           </h2>
@@ -303,29 +303,29 @@ export default async function CaregiverPatientDetailPage({
               {readyPickups.map((r) => (
                 <li
                   key={r.id}
-                  className="rounded-lg border border-emerald-200 bg-emerald-50 px-3 py-2 text-xs text-emerald-800"
+                  className="rounded-lg border border-emerald-200 bg-emerald-50 px-3 py-2 text-sm text-emerald-800"
                 >
                   <strong>{r.medicineName}</strong> is ready for pickup.
                 </li>
               ))}
             </ul>
           ) : (
-            <p className="text-xs text-[#5a6b62]">No pickups ready right now.</p>
+            <p className="text-sm text-[#5a6b62]">No pickups ready right now.</p>
           )}
         </section>
 
-        <section className="card-premium p-5">
+        <section className="card-premium min-w-0 p-4 sm:p-5">
           <h2 className="mb-3 flex items-center gap-2 text-sm font-semibold text-[#0c1a14]">
             <Clock className="h-4 w-4 text-[#0d6e5a]" /> Upcoming reminders
           </h2>
           {reminders.length === 0 ? (
-            <p className="text-xs text-[#5a6b62]">No upcoming reminders.</p>
+            <p className="text-sm text-[#5a6b62]">No upcoming reminders.</p>
           ) : (
             <ul className="space-y-1.5">
               {reminders.map((r) => (
-                <li key={r.id} className="rounded-lg bg-[#f4f7f4] px-3 py-2 text-xs">
+                <li key={r.id} className="rounded-lg bg-[#f4f7f4] px-3 py-2 text-sm">
                   <p className="font-medium text-[#0c1a14]">{r.title}</p>
-                  <p className="text-[10px] text-[#5a6b62]">{formatDateTime(r.scheduledFor)}</p>
+                  <p className="text-sm text-[#5a6b62]">{formatDateTime(r.scheduledFor)}</p>
                 </li>
               ))}
             </ul>

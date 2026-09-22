@@ -42,15 +42,15 @@ export default async function CaregiverNewRefillPage({
         title="New refill request"
         subtitle="Choose the patient you are authorized to request a refill for."
       >
-        <div className="mx-auto max-w-2xl">
-          <div className="card-premium p-5">
+        <div className="mx-auto w-full max-w-2xl">
+          <div className="card-premium p-4 sm:p-5 lg:p-6">
             <div className="mb-4 flex items-start gap-3">
               <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[#e6f4ef] text-[#0d6e5a]">
                 <Users className="h-5 w-5" />
               </span>
               <div>
                 <p className="text-sm font-semibold text-[#0c1a14]">Select a patient</p>
-                <p className="mt-0.5 text-xs text-[#5a6b62]">
+                <p className="mt-0.5 text-sm text-[#5a6b62]">
                   You can only request refills for patients who have granted you refill permission.
                 </p>
               </div>
@@ -60,11 +60,11 @@ export default async function CaregiverNewRefillPage({
                 <Link
                   key={caregiverLink.customerId}
                   href={`/caregiver/refills/new?customerId=${encodeURIComponent(caregiverLink.customerId)}`}
-                  className="flex items-center justify-between rounded-xl border border-[#e3ebe6] bg-white px-4 py-3 transition hover:border-[#0d6e5a]/40 hover:bg-[#f7faf8]"
+                  className="flex min-h-11 min-w-0 items-center justify-between gap-3 rounded-xl border border-[#e3ebe6] bg-white px-3 py-3 transition sm:px-4 hover:border-[#0d6e5a]/40 hover:bg-[#f7faf8]"
                 >
                   <div>
                     <p className="text-sm font-semibold text-[#0c1a14]">{caregiverLink.customer.fullName}</p>
-                    <p className="mt-0.5 text-[11px] text-[#5a6b62]">Refill requests enabled</p>
+                    <p className="mt-0.5 text-sm text-[#5a6b62]">Refill requests enabled</p>
                   </div>
                   <ArrowRight className="h-4 w-4 text-[#0d6e5a]" />
                 </Link>
@@ -105,7 +105,7 @@ export default async function CaregiverNewRefillPage({
       title={`Request refill for ${patient.fullName}`}
       subtitle="A pharmacist will review every request before preparing the medication."
     >
-      <div className="grid gap-6 lg:grid-cols-3">
+      <div className="grid grid-cols-1 gap-4 sm:gap-5 lg:grid-cols-3 lg:gap-6">
         <aside className="space-y-3 lg:col-span-1">
           <div className="card-premium p-4">
             <div className="flex items-start gap-3">
@@ -114,7 +114,7 @@ export default async function CaregiverNewRefillPage({
               </span>
               <div>
                 <p className="text-sm font-semibold text-[#0c1a14]">Submitting on behalf</p>
-                <p className="mt-0.5 text-xs text-[#5a6b62]">
+                <p className="mt-0.5 text-sm text-[#5a6b62]">
                   This refill request will be attributed to <strong>{patient.fullName}</strong> and tagged as submitted by you ({link.caregiverName}).
                 </p>
               </div>
@@ -122,30 +122,30 @@ export default async function CaregiverNewRefillPage({
           </div>
           <div className="card-premium p-4">
             <p className="mb-3 text-sm font-semibold text-[#0c1a14]">What happens next</p>
-            <ol className="space-y-2.5 text-xs">
+            <ol className="space-y-2.5 text-sm">
               <li className="flex items-start gap-2.5">
-                <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-[#0d6e5a] text-[9px] font-bold text-white">1</span>
+                <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-[#0d6e5a] text-sm font-bold text-white">1</span>
                 <div>
                   <p className="font-medium text-[#0c1a14]">Submitted</p>
                   <p className="text-[#5a6b62]">Request enters the pharmacist queue</p>
                 </div>
               </li>
               <li className="flex items-start gap-2.5">
-                <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-[#0d6e5a] text-[9px] font-bold text-white">2</span>
+                <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-[#0d6e5a] text-sm font-bold text-white">2</span>
                 <div>
                   <p className="font-medium text-[#0c1a14]">Under review</p>
                   <p className="text-[#5a6b62]">Pharmacist verifies the prescription</p>
                 </div>
               </li>
               <li className="flex items-start gap-2.5">
-                <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-[#0d6e5a] text-[9px] font-bold text-white">3</span>
+                <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-[#0d6e5a] text-sm font-bold text-white">3</span>
                 <div>
                   <p className="font-medium text-[#0c1a14]">Preparing</p>
                   <p className="text-[#5a6b62]">Medication is being prepared</p>
                 </div>
               </li>
               <li className="flex items-start gap-2.5">
-                <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-[#0d6e5a] text-[9px] font-bold text-white">4</span>
+                <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-[#0d6e5a] text-sm font-bold text-white">4</span>
                 <div>
                   <p className="font-medium text-[#0c1a14]">Ready for pickup</p>
                   <p className="text-[#5a6b62]">Patient/caregiver notified automatically</p>
@@ -154,7 +154,7 @@ export default async function CaregiverNewRefillPage({
             </ol>
           </div>
           <div className="card-premium p-4">
-            <div className="space-y-2 text-xs">
+            <div className="space-y-2 text-sm">
               <div className="flex items-center gap-2 text-[#5a6b62]">
                 <Clock className="h-4 w-4 text-[#0d6e5a]" />
                 <span>Average review time: <strong className="text-[#0c1a14]">2 hours</strong></span>
@@ -171,10 +171,10 @@ export default async function CaregiverNewRefillPage({
           </div>
         </aside>
 
-        <div className="lg:col-span-2">
-          <div className="card-premium p-5">
+        <div className="min-w-0 lg:col-span-2">
+          <div className="card-premium p-4 sm:p-5 lg:p-6">
             <p className="mb-1 text-sm font-semibold text-[#0c1a14]">Refill details</p>
-            <p className="mb-4 text-xs text-[#5a6b62]">
+            <p className="mb-4 text-sm text-[#5a6b62]">
               Select a prescription on file — medicine details are locked to the patient&apos;s record.
             </p>
             <CaregiverRefillForm

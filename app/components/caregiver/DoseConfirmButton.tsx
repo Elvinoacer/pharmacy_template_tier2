@@ -92,7 +92,7 @@ export function DoseConfirmButton({
     };
     return (
       <span className={`inline-flex min-h-11 items-center gap-1 rounded-full px-3 py-2 text-sm font-semibold ${colorMap[logged]}`}>
-        <Check className="h-3 w-3" /> {logged} {scheduledTime ? `· ${scheduledTime}` : ""}
+        <Check className="h-4 w-4" /> {logged} {scheduledTime ? `· ${scheduledTime}` : ""}
       </span>
     );
   }
@@ -106,12 +106,12 @@ export function DoseConfirmButton({
           {scheduledTime ? ` · ${scheduledTime}` : ""}
         </span>
       </div>
-      <div className="grid grid-cols-2 gap-2 lg:grid-cols-4">
+      <div className="grid grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-4">
         <button
           type="button"
           disabled={busy}
           onClick={() => log("taken")}
-          className="inline-flex min-h-11 items-center justify-center gap-1.5 rounded-xl bg-emerald-500 px-3 text-sm font-bold text-white transition active:scale-[0.98] hover:bg-emerald-600 disabled:cursor-wait disabled:opacity-60"
+          className="inline-flex min-h-11 w-full min-w-11 items-center justify-center gap-1.5 rounded-xl bg-emerald-500 px-3 text-sm font-bold text-white transition active:scale-[0.98] hover:bg-emerald-600 disabled:cursor-wait disabled:opacity-60"
           title="Took this dose"
         >
           <Check className="h-4 w-4" /> {busy ? "…" : "Taken"}
@@ -120,7 +120,7 @@ export function DoseConfirmButton({
           type="button"
           disabled={busy}
           onClick={() => log("late")}
-          className="inline-flex min-h-11 items-center justify-center gap-1.5 rounded-xl bg-orange-500 px-3 text-sm font-bold text-white transition active:scale-[0.98] hover:bg-orange-600 disabled:cursor-wait disabled:opacity-60"
+          className="inline-flex min-h-11 w-full min-w-11 items-center justify-center gap-1.5 rounded-xl bg-orange-500 px-3 text-sm font-bold text-white transition active:scale-[0.98] hover:bg-orange-600 disabled:cursor-wait disabled:opacity-60"
           title="Took it late"
         >
           <Clock className="h-4 w-4" /> Late
@@ -129,7 +129,7 @@ export function DoseConfirmButton({
           type="button"
           disabled={busy}
           onClick={() => log("missed")}
-          className="inline-flex min-h-11 items-center justify-center gap-1.5 rounded-xl bg-rose-500 px-3 text-sm font-bold text-white transition active:scale-[0.98] hover:bg-rose-600 disabled:cursor-wait disabled:opacity-60"
+          className="inline-flex min-h-11 w-full min-w-11 items-center justify-center gap-1.5 rounded-xl bg-rose-500 px-3 text-sm font-bold text-white transition active:scale-[0.98] hover:bg-rose-600 disabled:cursor-wait disabled:opacity-60"
           title="Missed this dose"
         >
           <X className="h-4 w-4" /> Missed
@@ -138,7 +138,7 @@ export function DoseConfirmButton({
           type="button"
           disabled={busy}
           onClick={() => log("skipped")}
-          className="inline-flex min-h-11 items-center justify-center gap-1.5 rounded-xl bg-amber-500 px-3 text-sm font-bold text-white transition active:scale-[0.98] hover:bg-amber-600 disabled:cursor-wait disabled:opacity-60"
+          className="inline-flex min-h-11 w-full min-w-11 items-center justify-center gap-1.5 rounded-xl bg-amber-500 px-3 text-sm font-bold text-white transition active:scale-[0.98] hover:bg-amber-600 disabled:cursor-wait disabled:opacity-60"
           title="Skipped intentionally"
         >
           Skip

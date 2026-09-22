@@ -72,10 +72,10 @@ export function CaregiverRefillForm({
 
   if (prescriptions.length === 0) {
     return (
-      <div className="rounded-2xl border border-dashed border-[#e3ebe6] bg-white px-6 py-10 text-center">
+      <div className="rounded-2xl border border-dashed border-[#e3ebe6] bg-white px-4 py-8 text-center sm:px-6 sm:py-10">
         <Pill className="mx-auto h-8 w-8 text-[#8a9a92]" />
         <p className="mt-2 text-sm font-semibold text-[#0c1a14]">No active prescriptions</p>
-        <p className="mt-1 text-xs text-[#5a6b62]">
+        <p className="mt-1 text-sm text-[#5a6b62]">
           {customerName} has no active prescriptions on file. The patient should contact the pharmacy to have one added.
         </p>
       </div>
@@ -85,13 +85,13 @@ export function CaregiverRefillForm({
   const selected = prescriptions.find((p) => p.id === rxId);
 
   return (
-    <form onSubmit={submit} className="space-y-5">
+    <form onSubmit={submit} className="min-w-0 space-y-5">
       <div>
         <label className="label-premium">Prescription *</label>
         <select
           value={rxId}
           onChange={(e) => setRxId(e.target.value)}
-          className="input-premium"
+          className="input-premium min-h-11 w-full min-w-0 text-sm"
           required
         >
           {prescriptions.map((p) => (
@@ -103,7 +103,7 @@ export function CaregiverRefillForm({
           ))}
         </select>
         {selected && (
-          <p className="mt-1.5 text-xs text-[#5a6b62]">
+          <p className="mt-1.5 text-sm text-[#5a6b62]">
             {selected.rxReference ? `Rx: ${selected.rxReference} · ` : ""}
             {(selected.refillsRemaining ?? 0) > 0
               ? `${selected.refillsRemaining} refills remaining.`
@@ -114,11 +114,11 @@ export function CaregiverRefillForm({
 
       <div>
         <label className="label-premium">Pickup preference</label>
-        <div className="grid grid-cols-2 gap-2">
+        <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
           <button
             type="button"
             onClick={() => setPickup("pickup")}
-            className={`flex items-center gap-2 rounded-xl border px-3 py-2.5 text-sm transition ${
+            className={`flex min-h-11 w-full min-w-11 items-center justify-center gap-2 rounded-xl border px-3 py-2.5 text-sm transition ${
               pickup === "pickup"
                 ? "border-[#0d6e5a] bg-[#e6f4ef] text-[#0c1a14]"
                 : "border-[#e3ebe6] bg-white text-[#5a6b62] hover:border-[#0d6e5a]/30"
@@ -129,7 +129,7 @@ export function CaregiverRefillForm({
           <button
             type="button"
             onClick={() => setPickup("delivery")}
-            className={`flex items-center gap-2 rounded-xl border px-3 py-2.5 text-sm transition ${
+            className={`flex min-h-11 w-full min-w-11 items-center justify-center gap-2 rounded-xl border px-3 py-2.5 text-sm transition ${
               pickup === "delivery"
                 ? "border-[#0d6e5a] bg-[#e6f4ef] text-[#0c1a14]"
                 : "border-[#e3ebe6] bg-white text-[#5a6b62] hover:border-[#0d6e5a]/30"
@@ -147,12 +147,12 @@ export function CaregiverRefillForm({
           onChange={(e) => setNotes(e.target.value)}
           rows={3}
           placeholder="Any context the pharmacist should know (e.g. patient travelling next week)"
-          className="input-premium resize-none"
+          className="input-premium min-h-28 w-full min-w-0 resize-none text-sm"
           maxLength={500}
         />
       </div>
 
-      <div className="rounded-xl bg-[#e6f4ef] px-3 py-2.5 text-xs text-[#0d6e5a]">
+      <div className="rounded-xl bg-[#e6f4ef] px-3 py-2.5 text-sm text-[#0d6e5a]">
         Submitting on behalf of <strong>{customerName}</strong>. A pharmacist will review the request before it is prepared —
         you cannot approve it yourself.
       </div>
@@ -160,7 +160,7 @@ export function CaregiverRefillForm({
       <button
         type="submit"
         disabled={busy || (selected?.refillsRemaining ?? 0) <= 0}
-        className="btn-primary w-full disabled:opacity-60"
+        className="btn-primary min-h-11 w-full min-w-11 text-sm disabled:opacity-60"
       >
         {busy ? (
           <><Loader2 className="h-4 w-4 animate-spin" /> Submitting…</>
