@@ -55,7 +55,7 @@ export default async function RevenueAnalyticsPage({
 
       <AdminPanel title="Daily trend" description="Gross sales, net sales, and collections. Swipe horizontally on smaller screens to inspect longer periods.">
         {daily.length === 0 ? (
-          <p className="text-xs admin-muted">No transactions in this period.</p>
+          <p className="text-sm admin-muted">No transactions in this period.</p>
         ) : (
           <div className="space-y-3">
             <div tabIndex={0} role="region" aria-label="Scrollable daily revenue chart" className="overflow-x-auto overscroll-x-contain pb-2 [scrollbar-width:thin]">
@@ -85,7 +85,7 @@ export default async function RevenueAnalyticsPage({
                             title={`${d.date} collected: ${formatKES(d.collected)}`}
                           />
                         </div>
-                        <span className="h-4 whitespace-nowrap text-[10px] admin-muted">
+                        <span className="h-5 whitespace-nowrap text-sm admin-muted">
                           {showLabel ? d.date.slice(5) : ""}
                         </span>
                       </div>
@@ -94,7 +94,7 @@ export default async function RevenueAnalyticsPage({
                 </div>
               </div>
             </div>
-            <div className="flex flex-wrap items-center gap-x-4 gap-y-2 text-xs admin-muted">
+            <div className="flex flex-wrap items-center gap-x-4 gap-y-2 text-sm admin-muted">
               <span className="flex items-center gap-1.5"><span className="h-2 w-2 rounded bg-amber-400" /> Gross sales</span>
               <span className="flex items-center gap-1.5"><span className="h-2 w-2 rounded bg-emerald-500" /> Net sales</span>
               <span className="flex items-center gap-1.5"><span className="h-2 w-2 rounded bg-sky-500" /> Collected</span>
@@ -103,30 +103,54 @@ export default async function RevenueAnalyticsPage({
         )}
       </AdminPanel>
 
-      <AdminPanel title="Daily breakdown" description="Exact numbers per day. The date stays visible while you scroll across columns.">
-        <div tabIndex={0} role="region" aria-label="Scrollable revenue records" className="admin-table-region overflow-x-auto overscroll-x-contain">
-          <table className="min-w-[760px] w-full text-xs">
+      <AdminPanel title="Daily breakdown" description="Exact numbers per day. Mobile uses stacked day cards; tablet and desktop keep the full comparison table.">
+        <div className="space-y-3 md:hidden">
+          {daily.slice().reverse().map((d) => (
+            <article key={d.date} className="min-w-0 rounded-2xl border border-[var(--admin-border)] bg-[var(--admin-inset)] p-4">
+              <div className="flex min-w-0 items-start justify-between gap-3">
+                <div className="min-w-0">
+                  <p className="text-sm font-semibold admin-muted">Date</p>
+                  <p className="mt-1 break-words text-base font-bold admin-text">{d.date}</p>
+                </div>
+                <div className="min-w-0 text-right">
+                  <p className="text-sm font-semibold admin-muted">Gross profit</p>
+                  <p className="mt-1 break-words text-base font-bold admin-text">{formatKES(d.grossProfit)}</p>
+                </div>
+              </div>
+              <div className="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-2">
+                <RevenueDayMetric label="Gross sales" value={formatKES(d.grossSales)} />
+                <RevenueDayMetric label="Net sales" value={formatKES(d.netSales)} />
+                <RevenueDayMetric label="Collected" value={formatKES(d.collected)} />
+                <RevenueDayMetric label="Refunds" value={formatKES(d.refunds)} />
+                <RevenueDayMetric label="COGS" value={formatKES(d.cogs)} />
+              </div>
+            </article>
+          ))}
+        </div>
+
+        <div tabIndex={0} role="region" aria-label="Scrollable revenue records" className="admin-table-region hidden overflow-x-auto overscroll-x-contain md:block">
+          <table className="w-full min-w-[760px] text-sm">
             <thead>
               <tr className="border-b border-[var(--admin-border)] text-left admin-muted">
-                <th className="sticky left-0 z-10 bg-[var(--admin-card)] py-2 pr-4">Date</th>
-                <th className="py-2 pr-4 text-right">Gross</th>
-                <th className="py-2 pr-4 text-right">Net</th>
-                <th className="py-2 pr-4 text-right">Collected</th>
-                <th className="py-2 pr-4 text-right">Refunds</th>
-                <th className="py-2 pr-4 text-right">COGS</th>
-                <th className="py-2 pr-4 text-right">Profit</th>
+                <th className="sticky left-0 z-10 bg-[var(--admin-card)] py-3 pr-4">Date</th>
+                <th className="py-3 pr-4 text-right">Gross</th>
+                <th className="py-3 pr-4 text-right">Net</th>
+                <th className="py-3 pr-4 text-right">Collected</th>
+                <th className="py-3 pr-4 text-right">Refunds</th>
+                <th className="py-3 pr-4 text-right">COGS</th>
+                <th className="py-3 pr-4 text-right">Profit</th>
               </tr>
             </thead>
             <tbody>
               {daily.slice().reverse().map((d) => (
                 <tr key={d.date} className="border-b border-[var(--admin-border)] transition-colors hover:bg-[var(--admin-success-soft)] motion-reduce:transition-none">
-                  <td className="sticky left-0 z-10 bg-[var(--admin-card)] py-2 pr-4 font-medium admin-text">{d.date}</td>
-                  <td className="py-2 pr-4 text-right admin-muted">{formatKES(d.grossSales)}</td>
-                  <td className="py-2 pr-4 text-right admin-muted">{formatKES(d.netSales)}</td>
-                  <td className="py-2 pr-4 text-right admin-muted">{formatKES(d.collected)}</td>
-                  <td className="py-2 pr-4 text-right admin-muted">{formatKES(d.refunds)}</td>
-                  <td className="py-2 pr-4 text-right admin-muted">{formatKES(d.cogs)}</td>
-                  <td className="py-2 pr-4 text-right font-semibold admin-text">{formatKES(d.grossProfit)}</td>
+                  <td className="sticky left-0 z-10 bg-[var(--admin-card)] py-3 pr-4 font-medium admin-text">{d.date}</td>
+                  <td className="py-3 pr-4 text-right admin-muted">{formatKES(d.grossSales)}</td>
+                  <td className="py-3 pr-4 text-right admin-muted">{formatKES(d.netSales)}</td>
+                  <td className="py-3 pr-4 text-right admin-muted">{formatKES(d.collected)}</td>
+                  <td className="py-3 pr-4 text-right admin-muted">{formatKES(d.refunds)}</td>
+                  <td className="py-3 pr-4 text-right admin-muted">{formatKES(d.cogs)}</td>
+                  <td className="py-3 pr-4 text-right font-semibold admin-text">{formatKES(d.grossProfit)}</td>
                 </tr>
               ))}
             </tbody>
@@ -134,5 +158,15 @@ export default async function RevenueAnalyticsPage({
         </div>
       </AdminPanel>
     </AnalyticsShell>
+  );
+}
+
+
+function RevenueDayMetric({ label, value }: { label: string; value: string }) {
+  return (
+    <div className="min-w-0 rounded-xl border border-[var(--admin-border)] bg-[var(--admin-card)] p-3">
+      <p className="text-sm font-semibold admin-muted">{label}</p>
+      <p className="mt-1 break-words text-base font-bold admin-text">{value}</p>
+    </div>
   );
 }
