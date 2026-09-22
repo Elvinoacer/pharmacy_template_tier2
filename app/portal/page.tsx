@@ -42,7 +42,7 @@ export default async function PortalDashboardPage() {
       title={`Hello, ${firstName}`}
       subtitle="Here's a snapshot of your prescriptions, refills, and rewards."
       actions={
-        <Link href="/refill" className="btn-primary">
+        <Link href="/refill" className="btn-primary min-h-11">
           <Plus className="h-4 w-4" /> Request refill
         </Link>
       }
@@ -83,7 +83,7 @@ export default async function PortalDashboardPage() {
       </div>
 
       {/* Two-column main grid */}
-      <div className="grid gap-6 lg:grid-cols-2">
+      <div className="grid min-w-0 gap-6 md:grid-cols-2">
         {/* Active prescriptions */}
         <Panel
           title="Active prescriptions"
@@ -91,7 +91,7 @@ export default async function PortalDashboardPage() {
           action={
             <Link
               href="/portal/prescriptions"
-              className="inline-flex items-center gap-1 text-sm font-semibold text-[#0d6e5a] hover:underline"
+              className="inline-flex min-h-11 items-center gap-1 py-2 text-sm font-semibold text-[#0d6e5a] hover:underline"
             >
               View all <ArrowRight className="h-3.5 w-3.5" />
             </Link>
@@ -102,24 +102,24 @@ export default async function PortalDashboardPage() {
               icon={FileText}
               title="No prescriptions on file"
               description="Upload a prescription or ask your pharmacy to add one. You can follow its review here."
-              action={<Link href="/prescription" className="btn-primary !py-2 text-sm">Find my medicines</Link>}
+              action={<Link href="/prescription" className="btn-primary min-h-11 !py-2 text-sm">Find my medicines</Link>}
             />
           ) : (
             <ul className="space-y-2.5">
               {data.prescriptions.slice(0, 4).map((p) => (
                 <li
                   key={p.id}
-                  className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-[#e3ebe6] bg-[#fafbfa] px-3.5 py-3 transition hover:border-[#0d6e5a]/30 hover:bg-[#f0faf6]"
+                  className="flex min-w-0 flex-col items-stretch gap-3 rounded-xl border border-[#e3ebe6] bg-[#fafbfa] px-4 py-3 transition hover:border-[#0d6e5a]/30 hover:bg-[#f0faf6] sm:flex-row sm:items-center sm:justify-between"
                 >
                   <div className="min-w-0">
                     <p className="font-semibold text-[#0c1a14]">{p.medicineName}</p>
-                    <p className="mt-0.5 text-xs text-[#5a6b62]">
+                    <p className="mt-1 break-words text-sm text-[#5a6b62]">
                       {p.rxReference || "No Rx ref"} · {p.refillsRemaining ?? 0} refills left
                     </p>
                   </div>
                   <Link
                     href={`/portal/refills/new?prescriptionId=${p.id}&medicine=${encodeURIComponent(p.medicineName)}&rx=${encodeURIComponent(p.rxReference || "")}`}
-                    className="inline-flex shrink-0 items-center gap-1 rounded-full bg-[#0d6e5a] px-3 py-1.5 text-xs font-semibold text-white transition hover:bg-[#084c3f]"
+                    className="inline-flex min-h-11 w-full shrink-0 items-center justify-center gap-2 rounded-xl bg-[#0d6e5a] px-4 py-2 text-sm font-semibold text-white transition hover:bg-[#084c3f] sm:w-auto sm:rounded-full"
                   >
                     <Plus className="h-3 w-3" /> Refill
                   </Link>
@@ -136,7 +136,7 @@ export default async function PortalDashboardPage() {
           action={
             <Link
               href="/portal/refills/new"
-              className="inline-flex items-center gap-1 text-sm font-semibold text-[#0d6e5a] hover:underline"
+              className="inline-flex min-h-11 items-center gap-1 py-2 text-sm font-semibold text-[#0d6e5a] hover:underline"
             >
               New request <ArrowRight className="h-3.5 w-3.5" />
             </Link>
@@ -148,7 +148,7 @@ export default async function PortalDashboardPage() {
               title="No refill requests yet"
               description="Submit your first refill request and our pharmacists will get to work."
               action={
-                <Link href="/portal/refills/new" className="btn-primary !py-2 text-sm">
+                <Link href="/portal/refills/new" className="btn-primary min-h-11 !py-2 text-sm">
                   <Plus className="h-4 w-4" /> Request a refill
                 </Link>
               }
@@ -160,11 +160,11 @@ export default async function PortalDashboardPage() {
                 return (
                   <li
                     key={r.id}
-                    className="flex items-center justify-between gap-3 rounded-xl border border-[#e3ebe6] px-3.5 py-3 transition hover:border-[#0d6e5a]/30"
+                    className="flex min-w-0 flex-col items-start gap-3 rounded-xl border border-[#e3ebe6] px-4 py-3 transition hover:border-[#0d6e5a]/30 sm:flex-row sm:items-center sm:justify-between"
                   >
                     <div className="min-w-0">
-                      <p className="truncate font-semibold text-[#0c1a14]">{r.medicineName}</p>
-                      <p className="mt-0.5 flex items-center gap-1 text-xs text-[#5a6b62]">
+                      <p className="break-words font-semibold text-[#0c1a14]">{r.medicineName}</p>
+                      <p className="mt-1 flex items-center gap-2 text-sm text-[#5a6b62]">
                         <Clock className="h-3 w-3" />
                         {formatDate(r.createdAt)}
                       </p>
@@ -184,7 +184,7 @@ export default async function PortalDashboardPage() {
           action={
             <Link
               href="/portal/messages"
-              className="inline-flex items-center gap-1 text-sm font-semibold text-[#0d6e5a] hover:underline"
+              className="inline-flex min-h-11 items-center gap-1 py-2 text-sm font-semibold text-[#0d6e5a] hover:underline"
             >
               View all <ArrowRight className="h-3.5 w-3.5" />
             </Link>
@@ -203,13 +203,13 @@ export default async function PortalDashboardPage() {
                   key={n.id}
                   className="flex items-start gap-3 rounded-xl border border-[#e3ebe6] bg-[#fafbfa] px-3.5 py-3"
                 >
-                  <span className="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-[#e6f4ef] text-[#0d6e5a]">
+                  <span className="mt-0.5 flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[#e6f4ef] text-[#0d6e5a]">
                     <Bell className="h-4 w-4" />
                   </span>
                   <div className="min-w-0">
-                    <p className="text-sm font-semibold text-[#0c1a14]">{n.title}</p>
-                    <p className="mt-0.5 line-clamp-2 text-xs text-[#5a6b62]">{n.body}</p>
-                    <p className="mt-1 text-[10px] uppercase tracking-wide text-[#8a9a92]">
+                    <p className="text-base font-semibold text-[#0c1a14]">{n.title}</p>
+                    <p className="mt-1 break-words text-sm leading-relaxed text-[#5a6b62]">{n.body}</p>
+                    <p className="mt-2 text-sm text-[#8a9a92]">
                       {formatDateTime(n.createdAt)}
                     </p>
                   </div>
@@ -235,9 +235,9 @@ export default async function PortalDashboardPage() {
                     <CheckCircle2 className="h-3 w-3 text-white" />
                   </span>
                   <div className="ml-4">
-                    <p className="text-sm font-semibold text-[#0c1a14]">{e.title}</p>
-                    {e.description && <p className="text-xs text-[#5a6b62]">{e.description}</p>}
-                    <p className="mt-0.5 text-[10px] uppercase tracking-wide text-[#8a9a92]">
+                    <p className="text-base font-semibold text-[#0c1a14]">{e.title}</p>
+                    {e.description && <p className="mt-1 break-words text-sm leading-relaxed text-[#5a6b62]">{e.description}</p>}
+                    <p className="mt-1 text-sm text-[#8a9a92]">
                       {formatDateTime(e.createdAt)}
                     </p>
                   </div>
