@@ -15,16 +15,16 @@ export default function PortalNextSteps({ readyForPickup }: { readyForPickup: nu
       <div className="grid gap-3 sm:grid-cols-2">
         <Link
           href={readyForPickup ? "/portal/refills" : "/portal/orders"}
-          className="group flex items-center gap-3 rounded-2xl border border-[var(--line-2)] bg-[var(--card)] p-4 transition hover:border-[var(--brand)]"
+          className="group flex min-h-20 items-center gap-3 rounded-2xl border border-[var(--line-2)] bg-[var(--card)] p-4 transition hover:border-[var(--brand)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--brand)]"
         >
-          <span className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-[var(--brand-soft)] text-[var(--brand)]">
+          <span className="grid h-11 w-11 shrink-0 place-items-center rounded-xl bg-[var(--brand-soft)] text-[var(--brand)]">
             <Package className="h-5 w-5" aria-hidden />
           </span>
           <span className="min-w-0 flex-1">
-            <strong className="block text-sm font-semibold text-[var(--foreground)]">
+            <strong className="block text-base font-semibold text-[var(--foreground)]">
               {readyForPickup ? `${readyForPickup} ready for collection` : "Track my requests"}
             </strong>
-            <span className="mt-0.5 block text-xs text-[var(--muted)]">
+            <span className="mt-1 block text-sm leading-relaxed text-[var(--muted)]">
               Orders, refill progress and payment updates.
             </span>
           </span>
@@ -33,14 +33,14 @@ export default function PortalNextSteps({ readyForPickup }: { readyForPickup: nu
 
         <Link
           href="/portal/messages"
-          className="group flex items-center gap-3 rounded-2xl border border-[var(--line-2)] bg-[var(--card)] p-4 transition hover:border-[var(--brand)]"
+          className="group flex min-h-20 items-center gap-3 rounded-2xl border border-[var(--line-2)] bg-[var(--card)] p-4 transition hover:border-[var(--brand)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--brand)]"
         >
-          <span className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-[var(--brand-soft)] text-[var(--brand)]">
+          <span className="grid h-11 w-11 shrink-0 place-items-center rounded-xl bg-[var(--brand-soft)] text-[var(--brand)]">
             <Bell className="h-5 w-5" aria-hidden />
           </span>
           <span className="min-w-0 flex-1">
-            <strong className="block text-sm font-semibold text-[var(--foreground)]">Messages & updates</strong>
-            <span className="mt-0.5 block text-xs text-[var(--muted)]">
+            <strong className="block text-base font-semibold text-[var(--foreground)]">Messages & updates</strong>
+            <span className="mt-1 block text-sm leading-relaxed text-[var(--muted)]">
               Continue conversations about care already in progress.
             </span>
           </span>
