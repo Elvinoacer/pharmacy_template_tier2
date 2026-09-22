@@ -36,6 +36,7 @@ export default async function SalesAnalyticsPage({
       period={period}
       basePath="/admin/analytics/sales"
     >
+      <div className="space-y-4 sm:space-y-6 [&_.admin-stat_p:first-child]:!text-sm [&_.admin-stat_p:nth-child(3)]:!text-sm">
       <StatGrid>
         <AdminCard label="Net Sales" value={formatKES(metrics.netSales)} hint="After discounts and adjustments" icon={TrendingUp} accent="accent" />
         <AdminCard label="Orders" value={formatNumber(metrics.totalOrders)} hint={`${formatNumber(metrics.cancelledOrders)} cancelled`} icon={ShoppingCart} accent="info" />
@@ -86,6 +87,7 @@ export default async function SalesAnalyticsPage({
             </div>
           )}
         </AdminPanel>
+      </div>
       </div>
     </AnalyticsShell>
   );
