@@ -2,7 +2,7 @@ import "server-only";
 import { MONTHLY_FEE_KES, VERIFICATION_FEE_KES, nextBillingMonth } from "./pricing";
 
 import type { Prisma } from "@/app/generated/prisma/client";
-import { prismaUnscoped } from "@/app/lib/db";
+import { prismaUnscoped, withPlatformTx } from "@/app/lib/db";
 import { releasePremiumOverflow } from "@/app/lib/platform/plan-enforcement";
 import { withPharmacy, withPlatformBypass } from "@/app/lib/tenant-context";
 import { DEFAULT_PLAN_FEATURES } from "@/app/lib/platform/entitlements";
