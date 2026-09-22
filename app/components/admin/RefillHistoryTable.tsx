@@ -134,21 +134,21 @@ export function RefillHistoryTable({
     <div className="space-y-4">
       {/* Search & Export Bar */}
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-        <div className="relative flex-1 min-w-[240px]">
+        <div className="relative w-full min-w-0 flex-1 sm:min-w-[240px]">
           <Search className="pointer-events-none absolute left-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 admin-soft" />
           <input
             value={searchQuery}
             onChange={(e) => onSearchChange(e.target.value)}
             placeholder="Search completed refills, medicines, customers, Rx #…"
-            className="input-admin pl-9 text-xs w-full"
+            className="input-admin min-h-11 pl-9 text-sm w-full"
           />
         </div>
 
         <div className="flex items-center gap-2">
-          <span className="text-xs admin-soft font-bold">{filtered.length} records</span>
+          <span className="text-sm admin-soft font-bold">{filtered.length} records</span>
           <button
             onClick={exportCSV}
-            className="inline-flex items-center gap-1.5 rounded-xl border border-[var(--admin-border)] bg-[var(--admin-card)] px-3.5 py-1.5 text-xs font-bold admin-text hover:bg-[var(--admin-inset)] shadow-sm transition"
+            className="min-h-11 inline-flex items-center gap-1.5 rounded-xl border border-[var(--admin-border)] bg-[var(--admin-card)] px-3.5 py-1.5 text-sm font-bold admin-text hover:bg-[var(--admin-inset)] shadow-sm transition"
           >
             <Download className="h-3.5 w-3.5 text-emerald-600" /> Export CSV
           </button>
@@ -159,13 +159,13 @@ export function RefillHistoryTable({
         <div className="rounded-2xl border border-[var(--admin-border)] bg-[var(--admin-card)] p-8 text-center space-y-2">
           <Clock className="h-8 w-8 mx-auto text-emerald-600/60" />
           <h4 className="text-sm font-bold admin-text">No refill history records found</h4>
-          <p className="text-xs admin-soft">Completed and cancelled refill records will appear here.</p>
+          <p className="text-sm admin-soft">Completed and cancelled refill records will appear here.</p>
         </div>
       ) : (
         <div tabIndex={0} role="region" aria-label="Scrollable records" className="admin-table-region overflow-x-auto scroll-admin rounded-2xl border border-[var(--admin-border)] bg-[var(--admin-card)] shadow-sm">
-          <table className="table-admin text-xs">
+          <table className="table-admin text-sm">
             <thead>
-              <tr className="border-b border-[var(--admin-border)] bg-[var(--admin-inset)]/60 text-xs font-bold uppercase tracking-wider admin-soft">
+              <tr className="border-b border-[var(--admin-border)] bg-[var(--admin-inset)]/60 text-sm font-bold uppercase tracking-wider admin-soft">
                 <th>Customer / Patient</th>
                 <th>Medicine &amp; Rx #</th>
                 <th>Fill Sequence</th>
@@ -191,22 +191,22 @@ export function RefillHistoryTable({
                         {r.customerId ? (
                           <Link
                             href={`/admin/customers/${r.customerId}`}
-                            className="font-bold text-xs admin-text hover:admin-accent-text hover:underline block"
+                            className="font-bold text-sm admin-text hover:admin-accent-text hover:underline block"
                           >
                             {r.customerFullName || r.customerName || "Customer"}
                           </Link>
                         ) : (
-                          <span className="font-bold text-xs admin-text block">{r.customerName || "Guest"}</span>
+                          <span className="font-bold text-sm admin-text block">{r.customerName || "Guest"}</span>
                         )}
-                        <p className="text-xs admin-soft font-mono">{r.phone || r.email || "—"}</p>
+                        <p className="text-sm admin-soft font-mono">{r.phone || r.email || "—"}</p>
                       </div>
                     </td>
 
                     {/* Medicine */}
                     <td>
                       <div className="space-y-0.5">
-                        <p className="font-bold text-xs admin-text">{r.medicineName}</p>
-                        <p className="text-xs admin-soft font-mono">Rx: {r.rxReference || "—"}</p>
+                        <p className="font-bold text-sm admin-text">{r.medicineName}</p>
+                        <p className="text-sm admin-soft font-mono">Rx: {r.rxReference || "—"}</p>
                       </div>
                     </td>
 
@@ -214,35 +214,35 @@ export function RefillHistoryTable({
                     <td>
                       {fill ? (
                         <div className="space-y-0.5">
-                          <span className="inline-flex items-center gap-1 rounded bg-emerald-500/15 px-2 py-0.5 text-xs font-extrabold text-emerald-800 dark:text-emerald-300">
+                          <span className="inline-flex items-center gap-1 rounded bg-emerald-500/15 px-2 py-0.5 text-sm font-extrabold text-emerald-800 dark:text-emerald-300">
                             Fill #{fill.fillNumber}
                           </span>
                           {fill.dispensedBy && (
-                            <p className="text-xs admin-soft">by {fill.dispensedBy.email.split("@")[0]}</p>
+                            <p className="text-sm admin-soft">by {fill.dispensedBy.email.split("@")[0]}</p>
                           )}
                         </div>
                       ) : (
-                        <span className="text-xs admin-soft">Fill #1 (Standard)</span>
+                        <span className="text-sm admin-soft">Fill #1 (Standard)</span>
                       )}
                     </td>
 
                     {/* Turnaround */}
                     <td>
                       <div className="space-y-0.5">
-                        <span className="inline-flex items-center gap-1 text-xs font-semibold text-emerald-700">
+                        <span className="inline-flex items-center gap-1 text-sm font-semibold text-emerald-700">
                           <Timer className="h-3 w-3" /> {turnaround}
                         </span>
-                        <p className="text-xs admin-soft">{formatDateTime(r.statusUpdatedAt)}</p>
+                        <p className="text-sm admin-soft">{formatDateTime(r.statusUpdatedAt)}</p>
                       </div>
                     </td>
 
                     {/* Source */}
                     <td>
                       <div className="flex items-center gap-1.5">
-                        <span className="rounded bg-black/5 dark:bg-white/10 px-2 py-0.5 text-xs font-bold capitalize admin-text">
+                        <span className="rounded bg-black/5 dark:bg-white/10 px-2 py-0.5 text-sm font-bold capitalize admin-text">
                           {r.source}
                         </span>
-                        <span className="text-xs admin-soft">
+                        <span className="text-sm admin-soft">
                           {r.pickupPreference === "delivery" ? "🚚 Delivery" : "🏢 Pickup"}
                         </span>
                       </div>
@@ -254,12 +254,12 @@ export function RefillHistoryTable({
                         <div className="space-y-0.5">
                           <Link
                             href={`/admin/orders?search=${order.id}`}
-                            className="text-xs font-bold text-emerald-700 hover:underline flex items-center gap-1"
+                            className="text-sm font-bold text-emerald-700 hover:underline flex items-center gap-1"
                           >
                             Kes {Number(order.total).toLocaleString()}
                             <ExternalLink className="h-2.5 w-2.5" />
                           </Link>
-                          <div className="flex items-center gap-1 text-xs">
+                          <div className="flex items-center gap-1 text-sm">
                             <span
                               className={`font-bold ${
                                 order.amountPaid >= order.total ? "text-emerald-600" : "text-amber-600"
@@ -275,14 +275,14 @@ export function RefillHistoryTable({
                           </div>
                         </div>
                       ) : (
-                        <span className="text-xs admin-soft">No linked order</span>
+                        <span className="text-sm admin-soft">No linked order</span>
                       )}
                     </td>
 
                     {/* Status */}
                     <td>
                       <span
-                        className={`inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-xs font-bold capitalize ${
+                        className={`inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-sm font-bold capitalize ${
                           r.status === "collected"
                             ? "bg-emerald-500/15 text-emerald-800 dark:text-emerald-300"
                             : r.status === "cancelled"
