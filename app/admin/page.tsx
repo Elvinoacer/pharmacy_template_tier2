@@ -72,7 +72,7 @@ export default async function AdminDashboardPage() {
         </div>
       }
     >
-      <div className="space-y-6">
+      <div className="space-y-6 [&_.admin-panel-heading_p]:!text-sm [&_.admin-stat_p:first-child]:!text-sm [&_.admin-stat_p:nth-child(3)]:!text-sm">
         <div className="[&_.admin-task-card_p]:!text-sm [&_.admin-task-card>span:last-child]:!text-sm [&_.admin-task-grid]:!grid-cols-1 sm:[&_.admin-task-grid]:!grid-cols-2 lg:[&_.admin-task-grid]:!grid-cols-3">
           <AdminToday user={user} refills={a.activeRefills} enquiries={a.openEnquiries} escalations={a.aiEscalations} />
         </div>
