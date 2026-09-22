@@ -1,6 +1,7 @@
 import { redirect } from "next/navigation";
 import Link from "next/link";
 import { getSessionUser } from "@/app/lib/auth";
+import { requireMedicationWriteContext } from "@/app/lib/services/medication-access";
 import { isFeatureEnabled } from "@/app/lib/platform/entitlements";
 import { AdminShell } from "@/app/components/admin/AdminShell";
 import { ArrowLeft, Camera, ClipboardCheck, Sparkles } from "lucide-react";
@@ -11,9 +12,17 @@ export const metadata = { title: "AI-Assisted Import — Medication" };
 export default async function AiImportPage() {
   const user = await getSessionUser();
   if (!user) redirect("/login");
+
+  let pharmacyId: string;
+  try {
+    pharmacyId = await requireMedicationWriteContext(user);
+  } catch {
+    redirect("/admin/medications");
+  }
+
   const premium =
     user.platformAdmin ||
-    (user.activePharmacyId ? await isFeatureEnabled(user.activePharmacyId, "ai_import") : false);
+    await isFeatureEnabled(pharmacyId, "ai_import");
   if (!premium) {
     return (
       <AdminShell user={user} title="Import with AI assistance" subtitle="Premium unlocks AI-assisted medicine imports.">
