@@ -144,11 +144,13 @@ export default async function PortalLoyaltyPage() {
           className="lg:col-span-2"
         >
           {availableCoupons.length === 0 ? (
-            <EmptyState
-              icon={Tag}
-              title="No active coupons right now"
-              description="Check back soon — new rewards drop every month."
-            />
+            <div className="[&_p]:text-sm">
+              <EmptyState
+                icon={Tag}
+                title="No active coupons right now"
+                description="Check back soon — new rewards drop every month."
+              />
+            </div>
           ) : (
             <ul className="grid gap-3 sm:grid-cols-2">
               {availableCoupons.map((c) => {
@@ -201,7 +203,9 @@ export default async function PortalLoyaltyPage() {
           className="lg:col-span-2"
         >
           {!account?.transactions.length ? (
-            <EmptyState icon={TrendingUp} title="No transactions yet" />
+            <div className="[&_p]:text-sm">
+              <EmptyState icon={TrendingUp} title="No transactions yet" />
+            </div>
           ) : (
             <ul className="divide-y divide-[var(--line)]">
               {account.transactions.map((t) => {
