@@ -53,7 +53,7 @@ export default async function AdminInventoryPage() {
         </Link>
       }
     >
-      <div className="mb-5 grid grid-cols-2 gap-2.5 sm:mb-6 sm:gap-3 lg:grid-cols-3 xl:grid-cols-5">
+      <div className="mb-5 grid grid-cols-1 gap-3 sm:mb-6 sm:grid-cols-3 lg:grid-cols-5">
         <AdminCard
           label="Active SKUs"
           value={health.counts.totalActive}
@@ -89,7 +89,7 @@ export default async function AdminInventoryPage() {
           />
         </Link>
         {premiumActive ? (
-          <Link href="#reorder" className="col-span-2 block min-w-0 lg:col-span-1">
+          <Link href="#reorder" className="block min-w-0 sm:col-span-2 lg:col-span-1">
             <AdminCard
               label="Reorder now"
               value={health.counts.reorder}
@@ -99,7 +99,7 @@ export default async function AdminInventoryPage() {
             />
           </Link>
         ) : (
-          <Link href="/admin/billing" className="col-span-2 block min-w-0 lg:col-span-1">
+          <Link href="/admin/billing" className="block min-w-0 sm:col-span-2 lg:col-span-1">
             <AdminCard
               label="Inventory intelligence"
               value="Premium"
@@ -134,14 +134,14 @@ export default async function AdminInventoryPage() {
                     >
                       {item.name}
                     </Link>
-                    <p className="mt-0.5 break-words text-xs leading-5 admin-soft">
+                    <p className="mt-0.5 break-words text-sm leading-5 admin-soft">
                       {item.currentStock} left · alert ≤ {item.lowStockThreshold}
                       {item.supplier ? ` · ${item.supplier}` : ""}
                     </p>
                   </div>
                   <Link
                     href={`/admin/medications/${item.id}`}
-                    className="inline-flex min-h-10 items-center justify-between gap-1 rounded-lg bg-[var(--admin-inset)] px-3 text-xs font-semibold admin-accent-text sm:min-h-0 sm:justify-start sm:bg-transparent sm:px-0"
+                    className="inline-flex min-h-11 w-full items-center justify-between gap-1 rounded-lg bg-[var(--admin-inset)] px-3 text-sm font-semibold admin-accent-text sm:w-auto sm:justify-start sm:bg-transparent sm:px-0"
                   >
                     Receive stock <ArrowRight className="h-3.5 w-3.5" />
                   </Link>
@@ -169,14 +169,14 @@ export default async function AdminInventoryPage() {
                     >
                       {item.name}
                     </Link>
-                    <p className="mt-0.5 break-words text-xs leading-5 admin-soft">
+                    <p className="mt-0.5 break-words text-sm leading-5 admin-soft">
                       Threshold ≤ {item.lowStockThreshold}
                       {item.supplier ? ` · ${item.supplier}` : ""}
                     </p>
                   </div>
                   <Link
                     href={`/admin/medications/${item.id}`}
-                    className="inline-flex min-h-10 items-center justify-between gap-1 rounded-lg bg-rose-500/10 px-3 text-xs font-semibold text-rose-700 dark:bg-rose-400/10 dark:text-rose-300 sm:min-h-0 sm:justify-start sm:bg-transparent sm:px-0 dark:sm:bg-transparent"
+                    className="inline-flex min-h-11 w-full items-center justify-between gap-1 rounded-lg bg-rose-500/10 px-3 text-sm font-semibold text-rose-700 dark:bg-rose-400/10 dark:text-rose-300 sm:w-auto sm:justify-start sm:bg-transparent sm:px-0 dark:sm:bg-transparent"
                   >
                     Restock <ArrowRight className="h-3.5 w-3.5" />
                   </Link>
@@ -200,27 +200,27 @@ export default async function AdminInventoryPage() {
             />
           ) : (
             <>
-              <div className="space-y-2 md:hidden">
+              <div className="space-y-2 sm:hidden">
                 {health.expiredLots.map((lot) => (
                   <article key={lot.lotId} className="rounded-2xl border border-rose-500/20 bg-rose-500/[0.04] p-3.5 dark:border-rose-400/20 dark:bg-rose-400/[0.04]">
                     <div className="flex min-w-0 items-start justify-between gap-3">
                       <div className="min-w-0">
                         <h3 className="break-words text-sm font-semibold admin-text">{lot.name}</h3>
-                        <p className="mt-1 text-xs admin-muted">Batch {lot.batchNumber}</p>
+                        <p className="mt-1 text-sm admin-muted">Batch {lot.batchNumber}</p>
                       </div>
-                      <span className="rounded-full bg-rose-500/12 px-2.5 py-1 text-[10px] font-bold uppercase tracking-[0.06em] text-rose-700 ring-1 ring-inset ring-rose-500/20 dark:bg-rose-400/10 dark:text-rose-300 dark:ring-rose-400/20">Expired</span>
+                      <span className="rounded-full bg-rose-500/12 px-2.5 py-1 text-sm font-bold uppercase tracking-[0.06em] text-rose-700 ring-1 ring-inset ring-rose-500/20 dark:bg-rose-400/10 dark:text-rose-300 dark:ring-rose-400/20">Expired</span>
                     </div>
-                    <div className="mt-3 grid grid-cols-2 gap-2 text-xs">
+                    <div className="mt-3 grid grid-cols-2 gap-2 text-sm">
                       <div className="rounded-xl bg-[var(--admin-inset)] p-2.5">
-                        <p className="text-[10px] uppercase tracking-[0.06em] admin-soft">Expiry</p>
+                        <p className="text-sm uppercase tracking-[0.06em] admin-soft">Expiry</p>
                         <p className="mt-1 font-semibold admin-text">{formatDate(lot.expiryDate)}</p>
                       </div>
                       <div className="rounded-xl bg-[var(--admin-inset)] p-2.5">
-                        <p className="text-[10px] uppercase tracking-[0.06em] admin-soft">Quantity</p>
+                        <p className="text-sm uppercase tracking-[0.06em] admin-soft">Quantity</p>
                         <p className="mt-1 font-semibold admin-text">{lot.quantity}</p>
                       </div>
                     </div>
-                    <Link href={`/admin/medications/${lot.inventoryId}`} className="mt-3 inline-flex min-h-11 w-full items-center justify-center gap-1 rounded-xl bg-[var(--admin-inset)] px-3 text-xs font-semibold admin-accent-text">
+                    <Link href={`/admin/medications/${lot.inventoryId}`} className="mt-3 inline-flex min-h-11 w-full items-center justify-center gap-1 rounded-xl bg-[var(--admin-inset)] px-3 text-sm font-semibold admin-accent-text">
                       Manage lot <ArrowRight className="h-3.5 w-3.5" />
                     </Link>
                   </article>
@@ -231,31 +231,31 @@ export default async function AdminInventoryPage() {
                     <div className="flex min-w-0 items-start justify-between gap-3">
                       <div className="min-w-0">
                         <h3 className="break-words text-sm font-semibold admin-text">{lot.name}</h3>
-                        <p className="mt-1 text-xs admin-muted">Batch {lot.batchNumber}</p>
+                        <p className="mt-1 text-sm admin-muted">Batch {lot.batchNumber}</p>
                       </div>
-                      <span className="rounded-full bg-amber-500/12 px-2.5 py-1 text-[10px] font-bold uppercase tracking-[0.06em] text-amber-800 ring-1 ring-inset ring-amber-500/20 dark:bg-amber-400/10 dark:text-amber-300 dark:ring-amber-400/20">{lot.daysUntilExpiry}d left</span>
+                      <span className="rounded-full bg-amber-500/12 px-2.5 py-1 text-sm font-bold uppercase tracking-[0.06em] text-amber-800 ring-1 ring-inset ring-amber-500/20 dark:bg-amber-400/10 dark:text-amber-300 dark:ring-amber-400/20">{lot.daysUntilExpiry}d left</span>
                     </div>
-                    <div className="mt-3 grid grid-cols-2 gap-2 text-xs">
+                    <div className="mt-3 grid grid-cols-2 gap-2 text-sm">
                       <div className="rounded-xl bg-[var(--admin-inset)] p-2.5">
-                        <p className="text-[10px] uppercase tracking-[0.06em] admin-soft">Expiry</p>
+                        <p className="text-sm uppercase tracking-[0.06em] admin-soft">Expiry</p>
                         <p className="mt-1 font-semibold admin-text">{formatDate(lot.expiryDate)}</p>
                       </div>
                       <div className="rounded-xl bg-[var(--admin-inset)] p-2.5">
-                        <p className="text-[10px] uppercase tracking-[0.06em] admin-soft">Quantity</p>
+                        <p className="text-sm uppercase tracking-[0.06em] admin-soft">Quantity</p>
                         <p className="mt-1 font-semibold admin-text">{lot.quantity}</p>
                       </div>
                     </div>
-                    <Link href={`/admin/medications/${lot.inventoryId}`} className="mt-3 inline-flex min-h-11 w-full items-center justify-center gap-1 rounded-xl bg-[var(--admin-inset)] px-3 text-xs font-semibold admin-accent-text">
+                    <Link href={`/admin/medications/${lot.inventoryId}`} className="mt-3 inline-flex min-h-11 w-full items-center justify-center gap-1 rounded-xl bg-[var(--admin-inset)] px-3 text-sm font-semibold admin-accent-text">
                       Manage lot <ArrowRight className="h-3.5 w-3.5" />
                     </Link>
                   </article>
                 ))}
               </div>
 
-              <div tabIndex={0} role="region" aria-label="Expiry records" className="admin-table-region hidden overflow-x-auto md:block">
+              <div tabIndex={0} role="region" aria-label="Expiry records" className="admin-table-region hidden overflow-x-auto sm:block">
                 <table className="w-full min-w-[36rem] text-left text-sm">
                   <thead>
-                    <tr className="border-b border-[var(--admin-border)] text-xs uppercase tracking-wide admin-soft">
+                    <tr className="border-b border-[var(--admin-border)] text-sm uppercase tracking-wide admin-soft">
                       <th className="px-2 py-2">Medicine</th>
                       <th className="px-2 py-2">Batch</th>
                       <th className="px-2 py-2">Expiry</th>
@@ -272,10 +272,10 @@ export default async function AdminInventoryPage() {
                         <td className="px-2 py-2">{formatDate(lot.expiryDate)}</td>
                         <td className="px-2 py-2 text-right tabular-nums">{lot.quantity}</td>
                         <td className="px-2 py-2">
-                          <span className="rounded-full bg-rose-500/12 px-2.5 py-1 text-xs font-bold text-rose-700 dark:bg-rose-400/10 dark:text-rose-300">Expired</span>
+                          <span className="rounded-full bg-rose-500/12 px-2.5 py-1 text-sm font-bold text-rose-700 dark:bg-rose-400/10 dark:text-rose-300">Expired</span>
                         </td>
                         <td className="px-2 py-2 text-right">
-                          <Link href={`/admin/medications/${lot.inventoryId}`} className="text-xs font-semibold admin-accent-text">Manage</Link>
+                          <Link href={`/admin/medications/${lot.inventoryId}`} className="text-sm font-semibold admin-accent-text">Manage</Link>
                         </td>
                       </tr>
                     ))}
@@ -286,10 +286,10 @@ export default async function AdminInventoryPage() {
                         <td className="px-2 py-2">{formatDate(lot.expiryDate)}</td>
                         <td className="px-2 py-2 text-right tabular-nums">{lot.quantity}</td>
                         <td className="px-2 py-2">
-                          <span className="rounded-full bg-amber-500/12 px-2.5 py-1 text-xs font-bold text-amber-800 dark:bg-amber-400/10 dark:text-amber-300">{lot.daysUntilExpiry}d left</span>
+                          <span className="rounded-full bg-amber-500/12 px-2.5 py-1 text-sm font-bold text-amber-800 dark:bg-amber-400/10 dark:text-amber-300">{lot.daysUntilExpiry}d left</span>
                         </td>
                         <td className="px-2 py-2 text-right">
-                          <Link href={`/admin/medications/${lot.inventoryId}`} className="text-xs font-semibold admin-accent-text">Manage</Link>
+                          <Link href={`/admin/medications/${lot.inventoryId}`} className="text-sm font-semibold admin-accent-text">Manage</Link>
                         </td>
                       </tr>
                     ))}
@@ -311,12 +311,14 @@ export default async function AdminInventoryPage() {
           className="lg:col-span-2"
         >
           {!premiumActive ? (
-            <PremiumFeatureNotice
-              compact
-              title="Know what to restock before you run out — and what not to buy again"
-              description="Premium inventory intelligence uses recent sales velocity and stock thresholds to suggest replenishment quantities. Core stock-outs, low-stock alerts, batches and expiry tracking remain Free."
-              benefits={["Sales velocity", "Reorder suggestions", "Stock optimisation"]}
-            />
+            <div className="[&_a]:min-h-11 [&_a]:text-sm [&_span]:text-sm">
+              <PremiumFeatureNotice
+                compact
+                title="Know what to restock before you run out — and what not to buy again"
+                description="Premium inventory intelligence uses recent sales velocity and stock thresholds to suggest replenishment quantities. Core stock-outs, low-stock alerts, batches and expiry tracking remain Free."
+                benefits={["Sales velocity", "Reorder suggestions", "Stock optimisation"]}
+              />
+            </div>
           ) : health.reorderSuggestions.length === 0 ? (
             <AdminEmptyState
               icon={Truck}
@@ -325,47 +327,47 @@ export default async function AdminInventoryPage() {
             />
           ) : (
             <>
-              <div className="space-y-2 md:hidden">
+              <div className="space-y-2 sm:hidden">
                 {health.reorderSuggestions.map((item) => (
                   <article key={item.id} className="rounded-2xl border border-[var(--admin-border)] bg-[var(--admin-card)] p-3.5">
                     <div className="flex min-w-0 items-start justify-between gap-3">
                       <div className="min-w-0">
                         <h3 className="break-words text-sm font-semibold admin-text">{item.name}</h3>
-                        <p className="mt-1 break-words text-xs admin-muted">{item.supplier || "No supplier assigned"}</p>
+                        <p className="mt-1 break-words text-sm admin-muted">{item.supplier || "No supplier assigned"}</p>
                       </div>
                       <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-[var(--admin-accent-soft)] admin-accent-text">
                         <Boxes className="h-4 w-4" />
                       </span>
                     </div>
-                    <div className="mt-3 grid grid-cols-2 gap-2 text-xs">
+                    <div className="mt-3 grid grid-cols-2 gap-2 text-sm">
                       <div className="rounded-xl bg-[var(--admin-inset)] p-2.5">
-                        <p className="text-[10px] uppercase tracking-[0.06em] admin-soft">On hand</p>
+                        <p className="text-sm uppercase tracking-[0.06em] admin-soft">On hand</p>
                         <p className="mt-1 font-semibold admin-text">{item.currentStock}</p>
                       </div>
                       <div className="rounded-xl bg-[var(--admin-inset)] p-2.5">
-                        <p className="text-[10px] uppercase tracking-[0.06em] admin-soft">Sold 30d</p>
+                        <p className="text-sm uppercase tracking-[0.06em] admin-soft">Sold 30d</p>
                         <p className="mt-1 font-semibold admin-text">{item.unitsSold30d}</p>
                       </div>
                       <div className="rounded-xl bg-[var(--admin-inset)] p-2.5">
-                        <p className="text-[10px] uppercase tracking-[0.06em] admin-soft">Threshold</p>
+                        <p className="text-sm uppercase tracking-[0.06em] admin-soft">Threshold</p>
                         <p className="mt-1 font-semibold admin-text">{item.lowStockThreshold}</p>
                       </div>
                       <div className="rounded-xl bg-emerald-500/10 p-2.5 dark:bg-emerald-400/10">
-                        <p className="text-[10px] uppercase tracking-[0.06em] text-emerald-700 dark:text-emerald-300">Suggested order</p>
+                        <p className="text-sm uppercase tracking-[0.06em] text-emerald-700 dark:text-emerald-300">Suggested order</p>
                         <p className="mt-1 font-bold text-emerald-700 dark:text-emerald-300">{item.suggestedOrderQty}</p>
                       </div>
                     </div>
-                    <Link href={`/admin/medications/${item.id}`} className="mt-3 inline-flex min-h-11 w-full items-center justify-center gap-1 rounded-xl bg-[var(--admin-accent-soft)] px-3 text-xs font-semibold admin-accent-text">
+                    <Link href={`/admin/medications/${item.id}`} className="mt-3 inline-flex min-h-11 w-full items-center justify-center gap-1 rounded-xl bg-[var(--admin-accent-soft)] px-3 text-sm font-semibold admin-accent-text">
                       Receive stock <ArrowRight className="h-3.5 w-3.5" />
                     </Link>
                   </article>
                 ))}
               </div>
 
-              <div tabIndex={0} role="region" aria-label="Reorder records" className="admin-table-region hidden overflow-x-auto md:block">
+              <div tabIndex={0} role="region" aria-label="Reorder records" className="admin-table-region hidden overflow-x-auto sm:block">
                 <table className="w-full min-w-[40rem] text-left text-sm">
                   <thead>
-                    <tr className="border-b border-[var(--admin-border)] text-xs uppercase tracking-wide admin-soft">
+                    <tr className="border-b border-[var(--admin-border)] text-sm uppercase tracking-wide admin-soft">
                       <th className="px-2 py-2">Medicine</th>
                       <th className="px-2 py-2 text-right">On hand</th>
                       <th className="px-2 py-2 text-right">Threshold</th>
@@ -383,9 +385,9 @@ export default async function AdminInventoryPage() {
                         <td className="px-2 py-2 text-right tabular-nums">{item.lowStockThreshold}</td>
                         <td className="px-2 py-2 text-right tabular-nums">{item.unitsSold30d}</td>
                         <td className="px-2 py-2 text-right font-bold tabular-nums text-emerald-700 dark:text-emerald-300">{item.suggestedOrderQty}</td>
-                        <td className="px-2 py-2 text-xs admin-soft">{item.supplier || "—"}</td>
+                        <td className="px-2 py-2 text-sm admin-soft">{item.supplier || "—"}</td>
                         <td className="px-2 py-2 text-right">
-                          <Link href={`/admin/medications/${item.id}`} className="inline-flex items-center gap-1 text-xs font-semibold admin-accent-text">
+                          <Link href={`/admin/medications/${item.id}`} className="inline-flex min-h-11 items-center gap-1 text-sm font-semibold admin-accent-text">
                             Receive <ArrowRight className="h-3 w-3" />
                           </Link>
                         </td>
