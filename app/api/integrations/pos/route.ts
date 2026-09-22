@@ -4,6 +4,7 @@ import { authenticatePos } from "@/app/lib/platform/integrations";
 import { beginIdempotent, completeIdempotent } from "@/app/lib/platform/idempotency";
 import { enqueueJob } from "@/app/lib/platform/jobs";
 import { runPosSync } from "@/app/lib/platform/pos-sync";
+import { isFeatureEnabled } from "@/app/lib/platform/entitlements";
 
 export const runtime = "nodejs";
 
@@ -27,6 +28,14 @@ const MedicationInput = z.object({
   prescriptionRequired: z.boolean().default(true),
   active: z.boolean().default(true),
   version: z.coerce.number().int().min(1).optional(),
+}).superRefine((medication, ctx) => {
+  if (medication.overTheCounter && medication.prescriptionRequired) {
+    ctx.addIssue({
+      code: z.ZodIssueCode.custom,
+      path: ["prescriptionRequired"],
+      message: "An over-the-counter medicine cannot also require a prescription.",
+    });
+  }
 });
 
 function fallbackSlug(name: string) {
@@ -91,6 +100,16 @@ export async function POST(req: Request) {
     return NextResponse.json(
       { error: "tenant_mismatch", message: "This connection cannot write to the requested pharmacy." },
       { status: 403 },
+    );
+  }
+
+  if (!(await isFeatureEnabled(auth.pharmacyId, "pos_sync"))) {
+    return NextResponse.json(
+      {
+        error: "upgrade_required",
+        message: "POS synchronization is part of Premium (KES 500/month). Upgrade before syncing medicine inventory.",
+      },
+      { status: 402 },
     );
   }
 
