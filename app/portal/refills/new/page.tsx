@@ -34,8 +34,8 @@ export default async function NewRefillPage({
       title="Request a refill"
       subtitle="A pharmacist will review every request before preparing your medication."
     >
-      <div className="grid min-w-0 gap-4 sm:gap-6 lg:grid-cols-3">
-        <aside className="order-2 min-w-0 space-y-3 lg:order-1 lg:col-span-1">
+      <div className="grid min-w-0 gap-4 sm:gap-6 md:grid-cols-3">
+        <aside className="order-2 min-w-0 space-y-4 md:order-1 md:col-span-1">
           <Panel>
             <div className="flex items-start gap-3">
               <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-brand-soft text-brand">
@@ -43,7 +43,7 @@ export default async function NewRefillPage({
               </span>
               <div className="min-w-0">
                 <p className="text-sm font-semibold text-foreground">Not a clinical approval</p>
-                <p className="mt-0.5 text-xs leading-relaxed text-muted">
+                <p className="mt-0.5 text-sm leading-relaxed text-muted">
                   Submitting this form starts a refill request. A pharmacist must review and approve
                   every prescription before it is prepared.
                 </p>
@@ -53,31 +53,31 @@ export default async function NewRefillPage({
           <Panel title="What happens next">
             <ol className="space-y-3 text-sm">
               <li className="flex items-start gap-2.5">
-                <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-brand text-[10px] font-bold text-white">1</span>
+                <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-brand text-sm font-bold text-white">1</span>
                 <div className="min-w-0">
                   <p className="font-medium text-foreground">Submitted</p>
-                  <p className="text-xs text-muted">Request enters our pharmacist queue</p>
+                  <p className="text-sm text-muted">Request enters our pharmacist queue</p>
                 </div>
               </li>
               <li className="flex items-start gap-2.5">
-                <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-brand text-[10px] font-bold text-white">2</span>
+                <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-brand text-sm font-bold text-white">2</span>
                 <div className="min-w-0">
                   <p className="font-medium text-foreground">Under review</p>
-                  <p className="text-xs text-muted">Pharmacist verifies the prescription</p>
+                  <p className="text-sm text-muted">Pharmacist verifies the prescription</p>
                 </div>
               </li>
               <li className="flex items-start gap-2.5">
-                <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-brand text-[10px] font-bold text-white">3</span>
+                <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-brand text-sm font-bold text-white">3</span>
                 <div className="min-w-0">
                   <p className="font-medium text-foreground">Preparing</p>
-                  <p className="text-xs text-muted">Medication is being prepared</p>
+                  <p className="text-sm text-muted">Medication is being prepared</p>
                 </div>
               </li>
               <li className="flex items-start gap-2.5">
-                <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-brand text-[10px] font-bold text-white">4</span>
+                <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-brand text-sm font-bold text-white">4</span>
                 <div className="min-w-0">
                   <p className="font-medium text-foreground">Ready for pickup</p>
-                  <p className="text-xs text-muted">You will get a notification when it is ready</p>
+                  <p className="text-sm text-muted">You will get a notification when it is ready</p>
                 </div>
               </li>
             </ol>
@@ -100,7 +100,7 @@ export default async function NewRefillPage({
           </Panel>
         </aside>
 
-        <div className="order-1 min-w-0 lg:order-2 lg:col-span-2">
+        <div className="order-1 min-w-0 md:order-2 md:col-span-2">
           <Panel
             title="Refill details"
             description={
