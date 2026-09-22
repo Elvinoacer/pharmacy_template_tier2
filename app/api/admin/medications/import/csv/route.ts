@@ -18,6 +18,25 @@ import { MAX_PHARMACY_CSV_IMPORT_ROWS } from "@/app/lib/medication-import-limits
 
 export const runtime = "nodejs";
 
+function csvBoolean(defaultValue: boolean) {
+  return z.preprocess((value) => {
+    if (value === undefined || value === null) return defaultValue;
+    if (typeof value === "boolean") return value;
+    if (typeof value === "number") {
+      if (value === 1) return true;
+      if (value === 0) return false;
+      return value;
+    }
+    if (typeof value === "string") {
+      const normalized = value.trim().toLowerCase();
+      if (!normalized) return defaultValue;
+      if (["true", "1", "yes", "y"].includes(normalized)) return true;
+      if (["false", "0", "no", "n"].includes(normalized)) return false;
+    }
+    return value;
+  }, z.boolean());
+}
+
 const ImportRow = z.object({
   name: z.string().min(1),
   genericName: z.string().optional().default(""),
@@ -33,9 +52,9 @@ const ImportRow = z.object({
   lowStockThreshold: z.coerce.number().int().min(0).default(10),
   sku: z.string().optional().nullable(),
   supplier: z.string().optional().nullable(),
-  overTheCounter: z.coerce.boolean().optional().default(false),
-  prescriptionRequired: z.coerce.boolean().optional().default(true),
-  publicListing: z.coerce.boolean().optional().default(false),
+  overTheCounter: csvBoolean(false),
+  prescriptionRequired: csvBoolean(true),
+  publicListing: csvBoolean(false),
 });
 
 const Body = z.object({
