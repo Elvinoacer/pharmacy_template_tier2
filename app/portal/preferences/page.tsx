@@ -69,7 +69,7 @@ export default async function PortalPreferencesPage() {
             <div className="[&_button]:min-h-11 [&_button]:min-w-11 [&_button]:text-sm [&_label]:min-h-11 [&_li_p]:text-sm">
               <PreferencesForm
                 action={updatePreferencesAction}
-              prefs={{
+                prefs={{
                 emailEnabled: prefs?.emailEnabled ?? true,
                 smsEnabled: prefs?.smsEnabled ?? true,
                 whatsappEnabled: prefs?.whatsappEnabled ?? true,
