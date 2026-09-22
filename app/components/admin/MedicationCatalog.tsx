@@ -113,8 +113,16 @@ function MedThumb({
       <img
         src={src}
         alt={name}
-        className={`${dim} shrink-0 rounded-xl bg-[var(--admin-inset)] object-cover ring-1 ring-[var(--admin-border-2)]`}
+        className={`${dim} shrink-0 rounded-xl bg-[var(--admin-inset)] object-contain p-1 ring-1 ring-[var(--admin-border-2)]`}
         loading="lazy"
+        onError={(event) => {
+          const image = event.currentTarget;
+          if (image.dataset.fallbackApplied === "true") return;
+          image.dataset.fallbackApplied = "true";
+          image.src = "/images/care/medicine-still-life.png";
+          image.classList.remove("p-1");
+          image.classList.add("object-cover");
+        }}
       />
     );
   }
