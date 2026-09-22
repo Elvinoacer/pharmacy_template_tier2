@@ -81,15 +81,15 @@ export default async function AnalyticsOverviewPage({
       <section className="admin-card min-w-0 overflow-hidden p-4 sm:p-5">
         <div className="min-w-0">
           <h2 className="text-sm font-semibold admin-text">Reservation funnel</h2>
-          <p className="mt-1 text-xs leading-relaxed admin-muted">Website and portal reservations from creation through conversion, expiry, or cancellation.</p>
+          <p className="mt-1 text-sm leading-relaxed admin-muted">Website and portal reservations from creation through conversion, expiry, or cancellation.</p>
         </div>
-        <div className="mt-4 grid grid-cols-2 gap-2.5 lg:grid-cols-4">
+        <div className="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
           <FunnelStat label="Created" value={data.fulfillment.reservationsCreated} />
           <FunnelStat label="Converted" value={data.fulfillment.reservationsConverted} />
           <FunnelStat label="Expired" value={data.fulfillment.reservationsExpired} />
           <FunnelStat label="Cancelled" value={data.fulfillment.reservationsCancelled} />
         </div>
-        <div className="mt-3 grid grid-cols-3 gap-2">
+        <div className="mt-3 grid grid-cols-1 gap-3 sm:grid-cols-3">
           <RateStat label="Conversion" value={formatPct(data.fulfillment.conversionRate)} />
           <RateStat label="Expired" value={formatPct(data.fulfillment.expiredRate)} />
           <RateStat label="Cancelled" value={formatPct(data.fulfillment.cancelledRate)} />
@@ -99,15 +99,15 @@ export default async function AnalyticsOverviewPage({
       <section className="admin-card min-w-0 overflow-hidden p-4 sm:p-5">
         <div className="min-w-0">
           <h2 className="text-sm font-semibold admin-text">Payments</h2>
-          <p className="mt-1 text-xs leading-relaxed admin-muted">Attempt health, channel collections, refunds, and retry pressure.</p>
+          <p className="mt-1 text-sm leading-relaxed admin-muted">Attempt health, channel collections, refunds, and retry pressure.</p>
         </div>
-        <div className="mt-4 grid grid-cols-2 gap-2.5 lg:grid-cols-4">
+        <div className="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
           <AdminCard label="Total Attempts" value={formatNumber(data.payments.totalAttempts)} icon={Activity} accent="neutral" />
           <AdminCard label="Successful" value={formatNumber(data.payments.successful)} hint={`${formatPct(data.payments.successRate)} success`} icon={Wallet} accent="info" />
           <AdminCard label="Failed" value={formatNumber(data.payments.failed)} hint={`${formatPct(data.payments.failureRate)} failure`} icon={AlertTriangle} accent="danger" />
           <AdminCard label="Pending" value={formatNumber(data.payments.pending)} icon={RefreshCw} accent="neutral" />
         </div>
-        <div className="mt-4 space-y-2 text-xs">
+        <div className="mt-4 space-y-2 text-sm">
           {Object.entries(data.payments.collectedByProvider).map(([prov, amt]) => (
             <MetricListRow key={prov} label={prov} value={formatKES(amt)} />
           ))}
@@ -119,8 +119,8 @@ export default async function AnalyticsOverviewPage({
       <div className="grid min-w-0 gap-4 lg:grid-cols-2">
         <section className="admin-card min-w-0 overflow-hidden p-4 sm:p-5">
           <h2 className="text-sm font-semibold admin-text">Prescriptions</h2>
-          <p className="mt-1 text-xs admin-muted">Workload, collections, and prescription economics.</p>
-          <div className="mt-3 grid grid-cols-2 gap-2 text-xs">
+          <p className="mt-1 text-sm admin-muted">Workload, collections, and prescription economics.</p>
+          <div className="mt-3 grid grid-cols-1 gap-3 text-sm sm:grid-cols-2">
             <RowKV label="Total prescriptions" value={formatNumber(data.prescriptions.totalPrescriptions)} />
             <RowKV label="Active" value={formatNumber(data.prescriptions.active)} />
             <RowKV label="Fills (period)" value={formatNumber(data.prescriptions.fillsTotal)} />
@@ -138,8 +138,8 @@ export default async function AnalyticsOverviewPage({
 
         <section className="admin-card min-w-0 overflow-hidden p-4 sm:p-5">
           <h2 className="text-sm font-semibold admin-text">Refills</h2>
-          <p className="mt-1 text-xs admin-muted">Request progression, payment conversion, and turnaround.</p>
-          <div className="mt-3 grid grid-cols-2 gap-2 text-xs">
+          <p className="mt-1 text-sm admin-muted">Request progression, payment conversion, and turnaround.</p>
+          <div className="mt-3 grid grid-cols-1 gap-3 text-sm sm:grid-cols-2">
             <RowKV label="Requests" value={formatNumber(data.refills.totalRequests)} />
             <RowKV label="Approved" value={formatNumber(data.refills.approved)} />
             <RowKV label="Preparing" value={formatNumber(data.refills.preparing)} />
@@ -158,8 +158,8 @@ export default async function AnalyticsOverviewPage({
       <div className="grid min-w-0 gap-4 lg:grid-cols-2">
         <section className="admin-card min-w-0 overflow-hidden p-4 sm:p-5">
           <h2 className="text-sm font-semibold admin-text">Inventory</h2>
-          <p className="mt-1 text-xs admin-muted">Availability risk and value tied up in stock.</p>
-          <div className="mt-3 grid grid-cols-2 gap-2 text-xs">
+          <p className="mt-1 text-sm admin-muted">Availability risk and value tied up in stock.</p>
+          <div className="mt-3 grid grid-cols-1 gap-3 text-sm sm:grid-cols-2">
             <RowKV label="Active items" value={formatNumber(data.inventory.totalActive)} />
             <RowKV label="Low stock" value={formatNumber(data.inventory.lowStock)} />
             <RowKV label="Out of stock" value={formatNumber(data.inventory.outOfStock)} />
@@ -176,12 +176,12 @@ export default async function AnalyticsOverviewPage({
 
         <section className="admin-card min-w-0 overflow-hidden p-4 sm:p-5">
           <h2 className="text-sm font-semibold admin-text">Outstanding receivables</h2>
-          <p className="mt-1 text-xs admin-muted">Open balances grouped by order age.</p>
+          <p className="mt-1 text-sm admin-muted">Open balances grouped by order age.</p>
           <div className="mt-4 rounded-2xl border border-[var(--admin-border)] bg-[var(--admin-inset)] p-4">
-            <p className="text-[10px] font-semibold uppercase tracking-[0.12em] admin-muted">Total outstanding</p>
+            <p className="text-sm font-semibold uppercase tracking-[0.12em] admin-muted">Total outstanding</p>
             <p className="mt-1 break-words text-2xl font-bold tracking-tight admin-text">{formatKES(data.outstandingAging.total)}</p>
           </div>
-          <div className="mt-3 space-y-2 text-xs">
+          <div className="mt-3 space-y-2 text-sm">
             {data.outstandingAging.buckets.map((b) => (
               <MetricListRow key={b.label} label={b.label} value={formatKES(b.amount)} meta={`${b.count} orders`} />
             ))}
@@ -192,7 +192,7 @@ export default async function AnalyticsOverviewPage({
       <div className="grid min-w-0 gap-4 lg:grid-cols-2">
         <section className="admin-card min-w-0 overflow-hidden p-4 sm:p-5">
           <h2 className="text-sm font-semibold admin-text">Sales by source</h2>
-          <div className="mt-3 space-y-2 text-xs">
+          <div className="mt-3 space-y-2 text-sm">
             {Object.entries(data.sales.bySource).map(([src, v]) => (
               <MetricListRow key={src} label={src} value={formatKES(v.revenue)} meta={`${v.orders} orders · ${v.units} units`} />
             ))}
@@ -202,7 +202,7 @@ export default async function AnalyticsOverviewPage({
 
         <section className="admin-card min-w-0 overflow-hidden p-4 sm:p-5">
           <h2 className="text-sm font-semibold admin-text">Sales by type</h2>
-          <div className="mt-3 space-y-2 text-xs">
+          <div className="mt-3 space-y-2 text-sm">
             {Object.entries(data.sales.byType).map(([type, v]) => (
               <MetricListRow key={type} label={type} value={formatKES(v.revenue)} meta={`${v.orders} orders · ${v.units} units`} />
             ))}
@@ -217,7 +217,7 @@ export default async function AnalyticsOverviewPage({
 function FunnelStat({ label, value }: { label: string; value: number }) {
   return (
     <div className="min-w-0 rounded-2xl border border-[var(--admin-border)] bg-[var(--admin-inset)] p-3.5 transition-[border-color,background-color,box-shadow] duration-200 hover:border-[var(--admin-border-2)] hover:bg-[var(--admin-hover)] hover:shadow-sm motion-reduce:transition-none sm:p-4">
-      <p className="text-[10px] font-semibold uppercase tracking-[0.1em] admin-muted sm:text-[11px]">{label}</p>
+      <p className="text-sm font-semibold uppercase tracking-[0.1em] admin-muted">{label}</p>
       <p className="mt-2 text-2xl font-bold tracking-tight admin-text sm:text-3xl">{formatNumber(value)}</p>
     </div>
   );
@@ -226,7 +226,7 @@ function FunnelStat({ label, value }: { label: string; value: number }) {
 function RateStat({ label, value }: { label: string; value: string }) {
   return (
     <div className="min-w-0 rounded-xl border border-[var(--admin-border)] bg-[var(--admin-card)] px-2.5 py-2.5 text-center sm:px-3">
-      <p className="truncate text-[9px] font-semibold uppercase tracking-wide admin-muted sm:text-[10px]">{label}</p>
+      <p className="break-words text-sm font-semibold uppercase tracking-wide admin-muted">{label}</p>
       <p className="mt-1 break-words text-sm font-bold admin-text sm:text-base">{value}</p>
     </div>
   );
@@ -235,7 +235,7 @@ function RateStat({ label, value }: { label: string; value: string }) {
 function RowKV({ label, value }: { label: string; value: string }) {
   return (
     <div className="min-w-0 rounded-xl border border-[var(--admin-border)] bg-[var(--admin-inset)] px-3 py-2.5 transition-[border-color,background-color] duration-150 hover:border-[var(--admin-border-2)] hover:bg-[var(--admin-hover)] motion-reduce:transition-none">
-      <p className="text-[9px] font-semibold uppercase leading-relaxed tracking-[0.08em] admin-muted sm:text-[10px]">{label}</p>
+      <p className="text-sm font-semibold uppercase leading-relaxed tracking-[0.08em] admin-muted">{label}</p>
       <p className="mt-1 break-words font-semibold leading-snug admin-text">{value}</p>
     </div>
   );
@@ -247,7 +247,7 @@ function MetricListRow({ label, value, meta }: { label: string; value: string; m
       <span className="break-words font-medium capitalize admin-muted">{label}</span>
       <span className="min-w-0 sm:text-right">
         <strong className="block break-words text-sm admin-text">{value}</strong>
-        {meta && <small className="mt-0.5 block text-[11px] admin-muted">{meta}</small>}
+        {meta && <small className="mt-0.5 block text-sm admin-muted">{meta}</small>}
       </span>
     </div>
   );
