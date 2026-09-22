@@ -1,5 +1,6 @@
 import { redirect } from "next/navigation";
 import { getSessionUser } from "@/app/lib/auth";
+import { requireMedicationWriteContext } from "@/app/lib/services/medication-access";
 import { adminCreateSharedMedicationAction } from "@/app/actions/shared-medications";
 import { listActiveCategoryOptions } from "@/app/lib/medication-categories";
 import {
@@ -25,6 +26,11 @@ export default async function NewMedicationPage({
 }) {
   const user = await getSessionUser();
   if (!user) redirect("/login");
+  try {
+    await requireMedicationWriteContext(user);
+  } catch {
+    redirect("/admin/medications");
+  }
   const params = searchParams ? await searchParams : {};
   const fullMode = params.mode === "full";
 
