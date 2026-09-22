@@ -96,52 +96,62 @@
   color: #94a3b8 !important;
 }
 
-@media (max-width: 639px) {
-  .surface {
-    overflow-x: hidden;
-  }
+/* Mobile-first surface constraints. */
+.surface {
+  overflow-x: hidden;
+}
 
-  /* Keep header controls reachable on narrow Android/iPhone screens rather
-     than allowing the pharmacy switcher and notification controls to clip. */
+/* Keep header controls reachable on narrow Android/iPhone screens rather
+   than allowing switchers or notification controls to clip. */
+.surface :global(.shell-header) > :global(.ml-auto) {
+  max-width: calc(100vw - 64px);
+  overflow-x: auto;
+  overscroll-behavior-inline: contain;
+  scrollbar-width: none;
+}
+
+.surface :global(.shell-header) > :global(.ml-auto)::-webkit-scrollbar {
+  display: none;
+}
+
+/* 16px prevents mobile browsers from zooming form controls on focus. */
+.surface :global(input),
+.surface :global(select),
+.surface :global(textarea) {
+  font-size: 16px !important;
+}
+
+.surface :global([class~="p-10"]) {
+  padding: 24px !important;
+}
+
+/* Medication calendar controls should shrink with the viewport instead of
+   forcing a horizontal page overflow. */
+.surface :global([class*="min-w-[140px]"]) {
+  min-width: 112px !important;
+}
+
+.surface :global(.grid-cols-7) {
+  gap: 4px !important;
+}
+
+.surface :global(.grid-cols-7) > * {
+  min-width: 0;
+}
+
+/* User menu and other fixed-width popovers remain inside the viewport. */
+.surface :global(.w-64) {
+  max-width: calc(100vw - 24px);
+}
+
+@media (min-width: 640px) {
   .surface :global(.shell-header) > :global(.ml-auto) {
-    max-width: calc(100vw - 4.1rem);
-    overflow-x: auto;
-    overscroll-behavior-inline: contain;
-    scrollbar-width: none;
+    max-width: none;
+    overflow-x: visible;
   }
 
-  .surface :global(.shell-header) > :global(.ml-auto)::-webkit-scrollbar {
-    display: none;
-  }
-
-  /* 16px prevents mobile browsers from zooming form controls on focus. */
-  .surface :global(input),
-  .surface :global(select),
-  .surface :global(textarea) {
-    font-size: 16px !important;
-  }
-
-  .surface :global([class~="p-10"]) {
-    padding: 1.25rem !important;
-  }
-
-  /* Medication calendar controls should shrink with the viewport instead of
-     forcing a horizontal page overflow. */
-  .surface :global([class*="min-w-[140px]"]) {
-    min-width: 7rem !important;
-  }
-
-  .surface :global(.grid-cols-7) {
-    gap: 0.25rem !important;
-  }
-
-  .surface :global(.grid-cols-7) > * {
-    min-width: 0;
-  }
-
-  /* User menu and other fixed-width popovers remain inside the viewport. */
   .surface :global(.w-64) {
-    max-width: calc(100vw - 1.5rem);
+    max-width: 256px;
   }
 }
 
