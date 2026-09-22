@@ -120,7 +120,7 @@ export default function DigitalCounsellingCard({
     : null;
 
   return (
-    <div className="overflow-hidden rounded-3xl border border-[var(--health-ui-border)] bg-[var(--card)] text-[var(--foreground)] shadow-sm transition-all print:border-none print:shadow-none">
+    <div className="min-w-0 overflow-hidden rounded-3xl border border-[var(--health-ui-border)] bg-[var(--card)] text-[var(--foreground)] shadow-sm transition-all print:border-none print:shadow-none">
       {/* Luxury Hero Banner */}
       <div className="relative overflow-hidden bg-gradient-to-br from-[#063b31] via-[#0d6e5a] to-[#128a71] p-6 sm:p-8 text-white">
         {/* Subtle decorative background circles */}
@@ -130,14 +130,14 @@ export default function DigitalCounsellingCard({
         <div className="relative z-10 flex flex-wrap items-start justify-between gap-4">
           <div className="max-w-2xl">
             <div className="flex flex-wrap items-center gap-2">
-              <span className="inline-flex items-center gap-1 rounded-full bg-white/20 px-3 py-1 text-[11px] font-bold uppercase tracking-wider text-emerald-100 backdrop-blur-md border border-white/10">
+              <span className="inline-flex items-center gap-1 rounded-full bg-white/20 px-3 py-1 text-sm font-bold uppercase tracking-wider text-emerald-100 backdrop-blur-md border border-white/10">
                 <Sparkles className="h-3 w-3 text-emerald-300" />
                 Digital Clinical Leaflet
               </span>
-              <span className="rounded-full bg-emerald-950/40 px-2.5 py-0.5 text-[11px] font-semibold text-emerald-200 border border-emerald-400/20">
+              <span className="rounded-full bg-emerald-950/40 px-3 py-0.5 text-sm font-semibold text-emerald-200 border border-emerald-400/20">
                 12-Pillar Standard
               </span>
-              <span className="rounded-full bg-teal-900/60 px-2.5 py-0.5 text-[11px] font-semibold text-white">
+              <span className="rounded-full bg-teal-900/60 px-3 py-0.5 text-sm font-semibold text-white">
                 {counselling.categoryName}
               </span>
             </div>
@@ -148,24 +148,24 @@ export default function DigitalCounsellingCard({
             >
               {counselling.brandNames[0]}
               {counselling.genericName && counselling.genericName !== counselling.brandNames[0] && (
-                <span className="ml-2.5 font-normal text-emerald-100 text-lg sm:text-2xl opacity-90">
+                <span className="ml-3 font-normal text-emerald-100 text-lg sm:text-2xl opacity-90">
                   ({counselling.genericName})
                 </span>
               )}
             </h2>
 
-            <p className="mt-2 text-xs sm:text-sm text-emerald-50 leading-relaxed max-w-xl">
+            <p className="mt-2 text-sm sm:text-sm text-emerald-50 leading-relaxed max-w-xl">
               {counselling.standardDosageSummary}
             </p>
           </div>
 
           {showFullActions && (
-            <div className="flex flex-wrap items-center gap-2 print:hidden">
+            <div className="grid w-full grid-cols-1 gap-2 print:hidden sm:flex sm:w-auto sm:flex-wrap sm:items-center">
               <button
                 type="button"
                 onClick={toggleSpeech}
                 title="Read counselling aloud"
-                className={`flex items-center gap-1.5 rounded-full px-3.5 py-2 text-xs font-semibold transition backdrop-blur-md ${
+                className={`min-h-11 min-w-11 flex items-center gap-2 rounded-full px-4 py-2 text-sm font-semibold transition backdrop-blur-md ${
                   isSpeaking
                     ? "bg-amber-400 text-amber-950 font-bold shadow-md animate-pulse"
                     : "bg-white/15 text-white hover:bg-white/25 border border-white/10"
@@ -178,7 +178,7 @@ export default function DigitalCounsellingCard({
               <button
                 type="button"
                 onClick={handleShare}
-                className="flex items-center gap-1.5 rounded-full bg-white/15 px-3.5 py-2 text-xs font-semibold text-white hover:bg-white/25 transition backdrop-blur-md border border-white/10"
+                className="min-h-11 min-w-11 flex items-center gap-2 rounded-full bg-white/15 px-4 py-2 text-sm font-semibold text-white hover:bg-white/25 transition backdrop-blur-md border border-white/10"
               >
                 {copiedShare ? <Check className="h-3.5 w-3.5 text-emerald-300" /> : <Share2 className="h-3.5 w-3.5" />}
                 <span>{copiedShare ? "Link Copied!" : "Share"}</span>
@@ -187,7 +187,7 @@ export default function DigitalCounsellingCard({
               <button
                 type="button"
                 onClick={handlePrint}
-                className="flex items-center gap-1.5 rounded-full bg-white px-4 py-2 text-xs font-bold text-teal-950 shadow-sm hover:bg-emerald-50 transition"
+                className="min-h-11 min-w-11 flex items-center gap-2 rounded-full bg-white px-4 py-2 text-sm font-bold text-teal-950 shadow-sm hover:bg-emerald-50 transition"
               >
                 <Printer className="h-3.5 w-3.5 text-teal-800" />
                 <span>Print Leaflet</span>
@@ -198,13 +198,13 @@ export default function DigitalCounsellingCard({
       </div>
 
       {/* Interactive Toolbar & View Switcher */}
-      <div className="flex flex-wrap items-center justify-between gap-3 border-b border-[var(--health-ui-border)] bg-[var(--card-elev)] px-6 py-3.5 text-xs print:hidden">
+      <div className="grid grid-cols-1 gap-3 border-b border-[var(--health-ui-border)] bg-[var(--card-elev)] px-4 py-4 text-sm print:hidden sm:flex sm:flex-wrap sm:items-center sm:justify-between sm:px-6">
         {/* Navigation Tabs */}
         <div className="flex flex-wrap items-center gap-2">
           <button
             type="button"
-            onClick={() => setActiveTab("pillars")}
-            className={`flex items-center gap-1.5 rounded-xl px-3.5 py-2 font-bold transition ${
+            onClick={() = className="min-h-11 min-w-11"> setActiveTab("pillars")}
+            className={`flex items-center gap-2 rounded-xl px-4 py-2 font-bold transition ${
               activeTab === "pillars"
                 ? "bg-[var(--brand)] text-[var(--background)] shadow-xs"
                 : "bg-[var(--card)] border border-[var(--health-ui-border)] text-[var(--muted)] hover:bg-[var(--card-elev)] hover:text-[var(--foreground)]"
@@ -217,8 +217,8 @@ export default function DigitalCounsellingCard({
           {specialFormGuide && (
             <button
               type="button"
-              onClick={() => setActiveTab("form")}
-              className={`flex items-center gap-1.5 rounded-xl px-3.5 py-2 font-bold transition ${
+              onClick={() = className="min-h-11 min-w-11"> setActiveTab("form")}
+              className={`flex items-center gap-2 rounded-xl px-4 py-2 font-bold transition ${
                 activeTab === "form"
                   ? "bg-[var(--brand)] text-[var(--background)] shadow-xs"
                   : "bg-[var(--card)] border border-[var(--health-ui-border)] text-[var(--muted)] hover:bg-[var(--card-elev)] hover:text-[var(--foreground)]"
@@ -232,8 +232,8 @@ export default function DigitalCounsellingCard({
           {deviceGuide && (
             <button
               type="button"
-              onClick={() => setActiveTab("device")}
-              className={`flex items-center gap-1.5 rounded-xl px-3.5 py-2 font-bold transition ${
+              onClick={() = className="min-h-11 min-w-11"> setActiveTab("device")}
+              className={`flex items-center gap-2 rounded-xl px-4 py-2 font-bold transition ${
                 activeTab === "device"
                   ? "bg-[var(--brand)] text-[var(--background)] shadow-xs"
                   : "bg-[var(--card)] border border-[var(--health-ui-border)] text-[var(--muted)] hover:bg-[var(--card-elev)] hover:text-[var(--foreground)]"
@@ -250,8 +250,8 @@ export default function DigitalCounsellingCard({
           <div className="flex items-center gap-1 rounded-xl border border-[var(--health-ui-border)] bg-[var(--card-elev)] p-1">
             <button
               type="button"
-              onClick={() => setViewMode("grid")}
-              className={`flex items-center gap-1 rounded-lg px-2.5 py-1 text-[11px] font-bold transition ${
+              onClick={() = className="min-h-11 min-w-11"> setViewMode("grid")}
+              className={`flex items-center gap-1 rounded-lg px-3 py-1 text-sm font-bold transition ${
                 viewMode === "grid"
                   ? "bg-[var(--brand)] text-[var(--background)] shadow-xs"
                   : "bg-[var(--card)] text-[var(--muted)] hover:bg-[var(--card-elev)] hover:text-[var(--foreground)]"
@@ -262,8 +262,8 @@ export default function DigitalCounsellingCard({
             </button>
             <button
               type="button"
-              onClick={() => setViewMode("leaflet")}
-              className={`flex items-center gap-1 rounded-lg px-2.5 py-1 text-[11px] font-bold transition ${
+              onClick={() = className="min-h-11 min-w-11"> setViewMode("leaflet")}
+              className={`flex items-center gap-1 rounded-lg px-3 py-1 text-sm font-bold transition ${
                 viewMode === "leaflet"
                   ? "bg-[var(--brand)] text-[var(--background)] shadow-xs"
                   : "bg-[var(--card)] text-[var(--muted)] hover:bg-[var(--card-elev)] hover:text-[var(--foreground)]"
@@ -280,7 +280,7 @@ export default function DigitalCounsellingCard({
       {activeTab === "pillars" && (
         <div className="p-6 sm:p-8 space-y-8">
           {/* Golden Rule Callout Banner */}
-          <div className="flex flex-wrap items-center justify-between gap-4 rounded-2xl border-2 border-amber-500/40 bg-amber-700/10 p-4 text-xs">
+          <div className="flex flex-wrap items-center justify-between gap-4 rounded-2xl border-2 border-amber-500/40 bg-amber-700/10 p-4 text-sm">
             <div className="flex items-start gap-3">
               <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-amber-700 text-white font-bold shadow-xs">
                 ⚠️
@@ -289,14 +289,14 @@ export default function DigitalCounsellingCard({
                 <strong className="text-amber-950 dark:text-amber-200 font-bold text-sm block">
                   Golden Safety Rule: {counselling.missedDose.neverDoubleUpRule}
                 </strong>
-                <p className="mt-0.5 text-amber-900 dark:text-amber-300 leading-relaxed text-[11px]">
+                <p className="mt-0.5 text-amber-900 dark:text-amber-300 leading-relaxed text-sm">
                   {counselling.missedDose.ruleOfThumb}
                 </p>
               </div>
             </div>
             <Link
               href="/health/counselling"
-              className="inline-flex items-center gap-1 rounded-full bg-amber-700/20 px-3 py-1 text-[11px] font-extrabold text-amber-900 dark:text-amber-200 hover:bg-amber-700/30 transition border border-amber-500/30"
+              className="min-h-11 min-w-11 inline-flex items-center gap-1 rounded-full bg-amber-700/20 px-3 py-1 text-sm font-extrabold text-amber-900 dark:text-amber-200 hover:bg-amber-700/30 transition border border-amber-500/30"
             >
               Missed Dose Calculator →
             </Link>
@@ -312,19 +312,19 @@ export default function DigitalCounsellingCard({
                 icon={<Pill className="h-4 w-4" />}
                 accent="teal"
               >
-                <p className="font-semibold text-teal-950 text-xs leading-relaxed">
+                <p className="font-semibold text-teal-950 text-sm leading-relaxed">
                   {counselling.howToTake.technique}
                 </p>
-                <ul className="mt-2.5 space-y-1.5">
+                <ul className="mt-3 space-y-2">
                   {counselling.howToTake.instructions.map((ins, i) => (
-                    <li key={i} className="flex items-start gap-2 text-[11px] text-[#4a5b52]">
+                    <li key={i} className="flex items-start gap-2 text-sm text-[#4a5b52]">
                       <span className="mt-1 h-1.5 w-1.5 shrink-0 rounded-full bg-teal-600" />
                       <span>{ins}</span>
                     </li>
                   ))}
                 </ul>
                 {counselling.howToTake.swallowWholeWarning && (
-                  <div className="mt-3 rounded-xl border border-amber-200 bg-amber-50/80 p-2 text-[10px] font-bold text-amber-900">
+                  <div className="mt-3 rounded-xl border border-amber-200 bg-amber-50/80 p-2 text-sm font-bold text-amber-900">
                     ⚠️ Swallow whole — do NOT crush or chew.
                   </div>
                 )}
@@ -337,13 +337,13 @@ export default function DigitalCounsellingCard({
                 icon={<Clock className="h-4 w-4" />}
                 accent="indigo"
               >
-                <p className="font-semibold text-indigo-950 text-xs">
+                <p className="font-semibold text-indigo-950 text-sm">
                   {counselling.whenToTake.bestTimeOfDay}
                 </p>
-                <p className="mt-2 text-[11px] text-[#4a5b52] leading-relaxed">
+                <p className="mt-2 text-sm text-[#4a5b52] leading-relaxed">
                   {counselling.whenToTake.circadianRationale}
                 </p>
-                <div className="mt-3 rounded-xl border border-indigo-100 bg-indigo-50/60 p-2 text-[10px] text-indigo-950">
+                <div className="mt-3 rounded-xl border border-indigo-100 bg-indigo-50/60 p-2 text-sm text-indigo-950">
                   💡 <strong>Routine tip:</strong> {counselling.whenToTake.routineIntegrationTip}
                 </div>
               </PillarCard>
@@ -355,13 +355,13 @@ export default function DigitalCounsellingCard({
                 icon={<Calendar className="h-4 w-4" />}
                 accent="teal"
               >
-                <p className="font-semibold text-teal-950 text-xs">
+                <p className="font-semibold text-teal-950 text-sm">
                   {counselling.howOftenToTake.frequencySchedule}
                 </p>
-                <p className="mt-1.5 text-[11px] text-[#4a5b52]">
+                <p className="mt-2 text-sm text-[#4a5b52]">
                   Interval: <strong>{counselling.howOftenToTake.intervalHours}</strong>
                 </p>
-                <div className="mt-3 rounded-xl border border-rose-200 bg-rose-50/70 p-2 text-[10px] text-rose-950 font-medium">
+                <div className="mt-3 rounded-xl border border-rose-200 bg-rose-50/70 p-2 text-sm text-rose-950 font-medium">
                   🛑 <strong>Maximum Limit:</strong> {counselling.howOftenToTake.maxDailyDose}
                 </div>
               </PillarCard>
@@ -373,16 +373,16 @@ export default function DigitalCounsellingCard({
                 icon={<Utensils className="h-4 w-4" />}
                 accent="amber"
               >
-                <div className="inline-block rounded-full bg-amber-100 px-2.5 py-0.5 text-[10px] font-extrabold uppercase tracking-wider text-amber-900 border border-amber-300">
+                <div className="inline-block rounded-full bg-amber-100 px-3 py-0.5 text-sm font-extrabold uppercase tracking-wider text-amber-900 border border-amber-300">
                   {counselling.foodAndDrink.rule.replace(/_/g, " ")}
                 </div>
-                <p className="mt-2 font-semibold text-[#0c1a14] text-xs">
+                <p className="mt-2 font-semibold text-[#0c1a14] text-sm">
                   {counselling.foodAndDrink.summary}
                 </p>
-                <p className="mt-1.5 text-[11px] text-[#4a5b52] leading-relaxed">
+                <p className="mt-2 text-sm text-[#4a5b52] leading-relaxed">
                   {counselling.foodAndDrink.detailedGuidance}
                 </p>
-                <div className="mt-2.5 space-y-1 text-[10px]">
+                <div className="mt-3 space-y-1 text-sm">
                   {counselling.foodAndDrink.grapefruitInteraction && (
                     <p className="text-rose-700 font-bold">🚫 Avoid Grapefruit juice (interacts with metabolism)</p>
                   )}
@@ -400,26 +400,26 @@ export default function DigitalCounsellingCard({
                 icon={<Thermometer className="h-4 w-4" />}
                 accent="cyan"
               >
-                <p className="font-semibold text-cyan-950 text-xs">
+                <p className="font-semibold text-cyan-950 text-sm">
                   {counselling.storage.temperatureRange}
                 </p>
-                <div className="mt-2 flex flex-wrap gap-1.5">
+                <div className="mt-2 flex flex-wrap gap-2">
                   {counselling.storage.refrigerationRequired ? (
-                    <span className="rounded-md bg-blue-100 px-2 py-0.5 text-[10px] font-extrabold text-blue-900">
+                    <span className="rounded-md bg-blue-100 px-2 py-0.5 text-sm font-extrabold text-blue-900">
                       ❄️ Refrigerate (2–8°C)
                     </span>
                   ) : (
-                    <span className="rounded-md bg-emerald-100 px-2 py-0.5 text-[10px] font-extrabold text-emerald-900">
+                    <span className="rounded-md bg-emerald-100 px-2 py-0.5 text-sm font-extrabold text-emerald-900">
                       🌡️ Room Temp (&lt; 25°C)
                     </span>
                   )}
                   {counselling.storage.inUseExpirationDays && (
-                    <span className="rounded-md bg-purple-100 px-2 py-0.5 text-[10px] font-extrabold text-purple-900">
+                    <span className="rounded-md bg-purple-100 px-2 py-0.5 text-sm font-extrabold text-purple-900">
                       📅 Discard after {counselling.storage.inUseExpirationDays} days
                     </span>
                   )}
                 </div>
-                <p className="mt-2 text-[11px] text-[#4a5b52]">
+                <p className="mt-2 text-sm text-[#4a5b52]">
                   {counselling.storage.homeLocationAdvice}
                 </p>
               </PillarCard>
@@ -433,22 +433,22 @@ export default function DigitalCounsellingCard({
               >
                 {counselling.specialDosageForm ? (
                   <div>
-                    <span className="rounded-md bg-teal-100 px-2 py-0.5 text-[10px] font-extrabold text-teal-900">
+                    <span className="rounded-md bg-teal-100 px-2 py-0.5 text-sm font-extrabold text-teal-900">
                       {counselling.specialDosageForm.formName}
                     </span>
-                    <p className="mt-2 text-xs font-semibold text-[#0c1a14]">
+                    <p className="mt-2 text-sm font-semibold text-[#0c1a14]">
                       {counselling.specialDosageForm.highlightedInstruction}
                     </p>
                     <button
                       type="button"
-                      onClick={() => setActiveTab("form")}
-                      className="mt-3 inline-flex items-center gap-1 text-[11px] font-bold text-teal-800 hover:underline"
+                      onClick={() = className="min-h-11 min-w-11"> setActiveTab("form")}
+                      className="mt-3 inline-flex items-center gap-1 text-sm font-bold text-teal-800 hover:underline"
                     >
                       Open Full Step-by-Step Guide →
                     </button>
                   </div>
                 ) : (
-                  <p className="text-xs text-[var(--health-editorial-body)]">
+                  <p className="text-sm text-[var(--health-editorial-body)]">
                     Standard solid oral tablet/capsule formulation. Swallow with adequate water in an upright posture.
                   </p>
                 )}
@@ -462,16 +462,16 @@ export default function DigitalCounsellingCard({
                 accent="rose"
               >
                 <div className="space-y-2">
-                  <div className="space-y-1.5">
+                  <div className="space-y-2">
                     {counselling.sideEffects.expected.map((se, i) => (
-                      <div key={i} className="rounded-lg bg-rose-50/60 p-2 text-[11px] border border-rose-100">
+                      <div key={i} className="rounded-lg bg-rose-50/60 p-2 text-sm border border-rose-100">
                         <p className="font-bold text-rose-950">{se.effect}</p>
-                        <p className="mt-0.5 text-[10px] text-rose-800">{se.homeManagement}</p>
+                        <p className="mt-0.5 text-sm text-rose-800">{se.homeManagement}</p>
                       </div>
                     ))}
                   </div>
 
-                  <div className="rounded-xl border border-rose-300 bg-rose-100/60 p-2.5 text-[10px] text-rose-950">
+                  <div className="rounded-xl border border-rose-300 bg-rose-100/60 p-3 text-sm text-rose-950">
                     <strong className="block font-bold">🚨 Emergency Red Flags:</strong>
                     <ul className="mt-1 space-y-0.5 list-disc list-inside">
                       {counselling.sideEffects.emergencyRedFlags.slice(0, 2).map((rf, i) => (
@@ -489,13 +489,13 @@ export default function DigitalCounsellingCard({
                 icon={<RotateCcw className="h-4 w-4" />}
                 accent="indigo"
               >
-                <p className="font-semibold text-indigo-950 text-xs">
+                <p className="font-semibold text-indigo-950 text-sm">
                   {counselling.missedDose.ruleOfThumb}
                 </p>
-                <p className="mt-2 text-[11px] text-[#4a5b52] leading-relaxed">
+                <p className="mt-2 text-sm text-[#4a5b52] leading-relaxed">
                   {counselling.missedDose.specificScenarioGuidance}
                 </p>
-                <div className="mt-3 rounded-xl border border-rose-200 bg-rose-50 p-2 text-[10px] font-extrabold text-rose-950">
+                <div className="mt-3 rounded-xl border border-rose-200 bg-rose-50 p-2 text-sm font-extrabold text-rose-950">
                   🛑 {counselling.missedDose.neverDoubleUpRule}
                 </div>
               </PillarCard>
@@ -507,14 +507,14 @@ export default function DigitalCounsellingCard({
                 icon={<ShieldCheck className="h-4 w-4" />}
                 accent="purple"
               >
-                <div className="inline-block rounded-full bg-purple-100 px-2.5 py-0.5 text-[10px] font-extrabold uppercase tracking-wider text-purple-900 border border-purple-300">
+                <div className="inline-block rounded-full bg-purple-100 px-3 py-0.5 text-sm font-extrabold uppercase tracking-wider text-purple-900 border border-purple-300">
                   {counselling.courseCompletion.importance} Adherence
                 </div>
-                <p className="mt-2 font-semibold text-purple-950 text-xs">
+                <p className="mt-2 font-semibold text-purple-950 text-sm">
                   {counselling.courseCompletion.rationale}
                 </p>
                 {counselling.courseCompletion.antimicrobialResistanceWarning && (
-                  <div className="mt-2.5 rounded-xl border border-purple-200 bg-purple-50 p-2 text-[10px] text-purple-950 font-medium">
+                  <div className="mt-3 rounded-xl border border-purple-200 bg-purple-50 p-2 text-sm text-purple-950 font-medium">
                     🛡️ <strong>AMR Protection:</strong> {counselling.courseCompletion.antimicrobialResistanceWarning}
                   </div>
                 )}
@@ -529,22 +529,22 @@ export default function DigitalCounsellingCard({
               >
                 {counselling.device ? (
                   <div>
-                    <span className="rounded-md bg-teal-100 px-2 py-0.5 text-[10px] font-extrabold text-teal-900">
+                    <span className="rounded-md bg-teal-100 px-2 py-0.5 text-sm font-extrabold text-teal-900">
                       {counselling.device.deviceName}
                     </span>
-                    <p className="mt-2 text-xs font-semibold text-[#0c1a14]">
+                    <p className="mt-2 text-sm font-semibold text-[#0c1a14]">
                       {counselling.device.quickInstructions}
                     </p>
                     <button
                       type="button"
-                      onClick={() => setActiveTab("device")}
-                      className="mt-3 inline-flex items-center gap-1 text-[11px] font-bold text-teal-800 hover:underline"
+                      onClick={() = className="min-h-11 min-w-11"> setActiveTab("device")}
+                      className="mt-3 inline-flex items-center gap-1 text-sm font-bold text-teal-800 hover:underline"
                     >
                       View Illustrated Device Protocol →
                     </button>
                   </div>
                 ) : (
-                  <p className="text-xs text-[var(--health-editorial-body)]">
+                  <p className="text-sm text-[var(--health-editorial-body)]">
                     No specialized medical device is required for this medication formulation.
                   </p>
                 )}
@@ -557,10 +557,10 @@ export default function DigitalCounsellingCard({
                 icon={<Lock className="h-4 w-4" />}
                 accent="teal"
               >
-                <p className="text-xs font-semibold text-[#0c1a14]">
+                <p className="text-sm font-semibold text-[#0c1a14]">
                   {counselling.safeHandling.safeDisposal}
                 </p>
-                <div className="mt-2.5 space-y-1.5 text-[11px] text-[#4a5b52]">
+                <div className="mt-3 space-y-2 text-sm text-[#4a5b52]">
                   <p>🧼 {counselling.safeHandling.handHygiene}</p>
                   <p>🔒 {counselling.safeHandling.childProofing}</p>
                   <p className="text-rose-700 font-bold">🚫 {counselling.safeHandling.neverShareMessage}</p>
@@ -574,18 +574,18 @@ export default function DigitalCounsellingCard({
                 icon={<HeartPulse className="h-4 w-4" />}
                 accent="rose"
               >
-                <p className="text-xs font-semibold text-rose-950">
+                <p className="text-sm font-semibold text-rose-950">
                   Improvement timeline: <strong>{counselling.whenToReturn.expectedImprovementTimeline}</strong>
                 </p>
-                <div className="mt-2 space-y-1 text-[11px] text-[#4a5b52]">
+                <div className="mt-2 space-y-1 text-sm text-[#4a5b52]">
                   <p className="font-bold text-teal-900">👨‍⚕️ Pharmacist Review If:</p>
-                  <ul className="list-disc list-inside text-[10px] space-y-0.5">
+                  <ul className="list-disc list-inside text-sm space-y-0.5">
                     {counselling.whenToReturn.pharmacistConsultTriggers.slice(0, 2).map((t, i) => (
                       <li key={i}>{t}</li>
                     ))}
                   </ul>
                   <p className="font-bold text-rose-900 mt-2">🚨 Doctor Emergency If:</p>
-                  <ul className="list-disc list-inside text-[10px] text-rose-800 space-y-0.5">
+                  <ul className="list-disc list-inside text-sm text-rose-800 space-y-0.5">
                     {counselling.whenToReturn.doctorEmergencyTriggers.slice(0, 2).map((t, i) => (
                       <li key={i}>{t}</li>
                     ))}
@@ -595,12 +595,12 @@ export default function DigitalCounsellingCard({
             </div>
           ) : (
             /* View Mode 2: Clean Formal Patient Leaflet Document */
-            <div className="max-w-4xl mx-auto space-y-6 text-xs text-[var(--foreground)] leading-relaxed bg-[var(--card-elev)] p-6 sm:p-8 rounded-3xl border border-[var(--health-ui-border)]">
+            <div className="max-w-4xl mx-auto space-y-6 text-sm text-[var(--foreground)] leading-relaxed bg-[var(--card-elev)] p-6 sm:p-8 rounded-3xl border border-[var(--health-ui-border)]">
               <div className="border-b border-[var(--health-ui-border)] pb-4">
                 <h3 className="text-lg font-bold text-[var(--foreground)]">
                   Clinical Patient Leaflet: {counselling.brandNames[0]} ({counselling.genericName})
                 </h3>
-                <p className="text-xs text-[var(--muted)] mt-0.5">
+                <p className="text-sm text-[var(--muted)] mt-0.5">
                   Standard 12-Pillar Medication Administration Protocol · Afyvia Pharmacy
                 </p>
               </div>
@@ -632,7 +632,7 @@ export default function DigitalCounsellingCard({
               <Pill className="h-5 w-5 text-[var(--brand)]" />
               {specialFormGuide.title}
             </div>
-            <p className="mt-1 text-xs text-[var(--muted)] leading-relaxed">
+            <p className="mt-1 text-sm text-[var(--muted)] leading-relaxed">
               {specialFormGuide.shortDescription}
             </p>
           </div>
@@ -643,14 +643,14 @@ export default function DigitalCounsellingCard({
               {specialFormGuide.steps.map((st) => (
                 <div key={st.stepNumber} className="rounded-2xl border border-[var(--health-ui-border)] bg-[var(--card)] p-4">
                   <div className="flex items-center gap-2">
-                    <span className="flex h-6 w-6 items-center justify-center rounded-lg bg-[var(--brand)] text-xs font-bold text-white">
+                    <span className="flex h-6 w-6 items-center justify-center rounded-lg bg-[var(--brand)] text-sm font-bold text-white">
                       {st.stepNumber}
                     </span>
-                    <h5 className="font-bold text-xs text-[var(--foreground)]">{st.title}</h5>
+                    <h5 className="font-bold text-sm text-[var(--foreground)]">{st.title}</h5>
                   </div>
-                  <p className="mt-2 text-xs text-[var(--muted)] leading-relaxed">{st.instruction}</p>
+                  <p className="mt-2 text-sm text-[var(--muted)] leading-relaxed">{st.instruction}</p>
                   {st.keyNote && (
-                    <p className="mt-2 rounded-lg bg-teal-500/10 px-2 py-1 text-[11px] font-semibold text-[var(--foreground)] border border-teal-500/20">
+                    <p className="mt-2 rounded-lg bg-teal-500/10 px-2 py-1 text-sm font-semibold text-[var(--foreground)] border border-teal-500/20">
                       💡 {st.keyNote}
                     </p>
                   )}
@@ -661,12 +661,12 @@ export default function DigitalCounsellingCard({
 
           <div className="grid gap-4 md:grid-cols-2">
             <div className="rounded-2xl border border-emerald-500/30 bg-emerald-500/10 p-4">
-              <h5 className="font-bold text-xs text-emerald-800 dark:text-emerald-200 flex items-center gap-1.5">
+              <h5 className="font-bold text-sm text-emerald-800 dark:text-emerald-200 flex items-center gap-2">
                 <CheckCircle2 className="h-4 w-4 text-emerald-600" /> Essential Do&apos;s
               </h5>
-              <ul className="mt-2 space-y-1 text-xs text-[var(--foreground)]">
+              <ul className="mt-2 space-y-1 text-sm text-[var(--foreground)]">
                 {specialFormGuide.crucialDoList.map((d, i) => (
-                  <li key={i} className="flex items-start gap-1.5">
+                  <li key={i} className="flex items-start gap-2">
                     <span className="mt-1 h-1.5 w-1.5 shrink-0 rounded-full bg-emerald-700" />
                     <span>{d}</span>
                   </li>
@@ -675,12 +675,12 @@ export default function DigitalCounsellingCard({
             </div>
 
             <div className="rounded-2xl border border-rose-500/30 bg-rose-500/10 p-4">
-              <h5 className="font-bold text-xs text-rose-800 dark:text-rose-200 flex items-center gap-1.5">
+              <h5 className="font-bold text-sm text-rose-800 dark:text-rose-200 flex items-center gap-2">
                 <AlertOctagon className="h-4 w-4 text-rose-600" /> Crucial Don&apos;ts
               </h5>
-              <ul className="mt-2 space-y-1 text-xs text-[var(--foreground)]">
+              <ul className="mt-2 space-y-1 text-sm text-[var(--foreground)]">
                 {specialFormGuide.crucialDontList.map((d, i) => (
-                  <li key={i} className="flex items-start gap-1.5">
+                  <li key={i} className="flex items-start gap-2">
                     <span className="mt-1 h-1.5 w-1.5 shrink-0 rounded-full bg-rose-600" />
                     <span>{d}</span>
                   </li>
@@ -699,7 +699,7 @@ export default function DigitalCounsellingCard({
               <Sparkles className="h-5 w-5 text-cyan-600" />
               {deviceGuide.title}
             </div>
-            <p className="mt-1 text-xs text-[var(--muted)] leading-relaxed">
+            <p className="mt-1 text-sm text-[var(--muted)] leading-relaxed">
               {deviceGuide.shortDescription}
             </p>
           </div>
@@ -710,14 +710,14 @@ export default function DigitalCounsellingCard({
               {deviceGuide.steps.map((st) => (
                 <div key={st.stepNumber} className="rounded-2xl border border-[var(--health-ui-border)] bg-[var(--card)] p-4">
                   <div className="flex items-center gap-2">
-                    <span className="flex h-6 w-6 items-center justify-center rounded-lg bg-cyan-700 text-xs font-bold text-white">
+                    <span className="flex h-6 w-6 items-center justify-center rounded-lg bg-cyan-700 text-sm font-bold text-white">
                       {st.stepNumber}
                     </span>
-                    <h5 className="font-bold text-xs text-[var(--foreground)]">{st.title}</h5>
+                    <h5 className="font-bold text-sm text-[var(--foreground)]">{st.title}</h5>
                   </div>
-                  <p className="mt-2 text-xs text-[var(--muted)] leading-relaxed">{st.instruction}</p>
+                  <p className="mt-2 text-sm text-[var(--muted)] leading-relaxed">{st.instruction}</p>
                   {st.keyNote && (
-                    <p className="mt-2 rounded-lg bg-cyan-500/10 px-2 py-1 text-[11px] font-semibold text-[var(--foreground)] border border-cyan-500/20">
+                    <p className="mt-2 rounded-lg bg-cyan-500/10 px-2 py-1 text-sm font-semibold text-[var(--foreground)] border border-cyan-500/20">
                       💡 {st.keyNote}
                     </p>
                   )}
@@ -766,10 +766,10 @@ function PillarCard({
     <div className={`group rounded-2xl border p-5 shadow-xs transition-all duration-200 hover:shadow-md ${accentStyles[accent]}`}>
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
-          <span className={`flex h-6 w-6 items-center justify-center rounded-lg text-xs font-black shadow-xs ${badgeStyles[accent]}`}>
+          <span className={`flex h-6 w-6 items-center justify-center rounded-lg text-sm font-black shadow-xs ${badgeStyles[accent]}`}>
             {pillarNumber}
           </span>
-          <h3 className="font-bold text-[var(--foreground)] text-xs sm:text-sm">{title}</h3>
+          <h3 className="font-bold text-[var(--foreground)] text-sm sm:text-sm">{title}</h3>
         </div>
         <span className="text-[var(--muted)] group-hover:scale-110 transition">{icon}</span>
       </div>
