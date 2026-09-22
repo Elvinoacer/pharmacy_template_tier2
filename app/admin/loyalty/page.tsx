@@ -5,6 +5,7 @@ import { prisma } from "@/app/lib/db";
 import { adminCreateCouponAction, adminLoyaltyAdjustAction } from "@/app/actions/admin";
 import { AdminPanel, AdminEmptyState } from "@/app/components/admin/AdminUI";
 import { AdminShell } from "@/app/components/admin/AdminShell";
+import { PremiumFeatureNotice } from "@/app/components/admin/PremiumFeatureNotice";
 import LoyaltyForm from "@/app/components/admin/LoyaltyForm";
 import CouponForm from "@/app/components/admin/CouponForm";
 import { Pagination } from "@/app/components/Pagination";
@@ -24,6 +25,7 @@ import {
 } from "lucide-react";
 import { formatTimeAgo } from "@/app/lib/time";
 import type { Prisma } from "@/app/generated/prisma/client";
+import { hasPremiumPlan } from "@/app/lib/platform/entitlements";
 
 export const metadata = { title: "Loyalty" };
 
@@ -44,6 +46,12 @@ export default async function AdminLoyaltyPage({
   const user = await getSessionUser();
   if (!user) redirect("/login");
   const sp = await searchParams;
+
+  const pharmacyId =
+    user.activePharmacyId ||
+    user.memberships.find((membership) => membership.status === "active")?.pharmacyId;
+  if (!pharmacyId) redirect("/admin/select");
+  const premiumActive = await hasPremiumPlan(pharmacyId);
 
   const accountWhere: Prisma.LoyaltyAccountWhereInput = sp.q
     ? {
@@ -132,6 +140,14 @@ export default async function AdminLoyaltyPage({
       subtitle="Operate member balances and coupons first, then review automation rules."
     >
       <div className="mx-auto w-full max-w-7xl space-y-5 sm:space-y-6">
+        {!premiumActive && (
+          <PremiumFeatureNotice
+            title="Turn loyalty into a repeat-business engine"
+            description="Member balances and manual point adjustments stay available on Free. Premium runs birthday, refill and purchase rewards automatically and unlocks promotional coupon management."
+            benefits={["Birthday rewards", "Refill rewards", "Order rewards", "Promotional coupons"]}
+          />
+        )}
+
         <div className="grid grid-cols-2 gap-2 sm:grid-cols-4 sm:gap-3">
           <div className="admin-stat min-w-0 p-3 sm:p-4">
             <div className="flex items-center justify-between gap-2">
@@ -179,26 +195,34 @@ export default async function AdminLoyaltyPage({
           </AdminPanel>
 
           <AdminPanel
-            title={couponCodes.length > 0 ? "Create or manage coupon" : "Create coupon"}
-            description="Issue a redeemable coupon, update it, or archive it."
+            title={premiumActive ? (couponCodes.length > 0 ? "Create or manage coupon" : "Create coupon") : "Promotional coupons"}
+            description={premiumActive ? "Issue a redeemable coupon, update it, or archive it." : "Coupon automation is part of the Premium growth toolkit."}
           >
-            <CouponForm
-              action={adminCreateCouponAction}
-              coupons={couponCodes.map((c) => ({
-                id: c.id,
-                code: c.code,
-                description: c.description,
-                discountType: c.discountType,
-                discountValue: String(c.discountValue),
-                pointsCost: c.pointsCost,
-                maxRedemptions: c.maxRedemptions,
-                redemptions: c.redemptions,
-                validFrom: c.validFrom?.toISOString() ?? null,
-                validUntil: c.validUntil?.toISOString() ?? null,
-                active: c.active,
-                updatedAt: c.updatedAt.toISOString(),
-              }))}
-            />
+            {premiumActive ? (
+              <CouponForm
+                action={adminCreateCouponAction}
+                coupons={couponCodes.map((c) => ({
+                  id: c.id,
+                  code: c.code,
+                  description: c.description,
+                  discountType: c.discountType,
+                  discountValue: String(c.discountValue),
+                  pointsCost: c.pointsCost,
+                  maxRedemptions: c.maxRedemptions,
+                  redemptions: c.redemptions,
+                  validFrom: c.validFrom?.toISOString() ?? null,
+                  validUntil: c.validUntil?.toISOString() ?? null,
+                  active: c.active,
+                  updatedAt: c.updatedAt.toISOString(),
+                }))}
+              />
+            ) : (
+              <PremiumFeatureNotice
+                compact
+                title="Reward customers without running the programme by hand"
+                description="Premium lets you create promotional coupons and combines them with automatic loyalty earning rules."
+              />
+            )}
           </AdminPanel>
         </div>
 
@@ -350,8 +374,12 @@ export default async function AdminLoyaltyPage({
           title="Automation rules"
           description="Background earning rules. Review these after the member-facing operations above."
           action={
-            <span className="inline-flex items-center gap-1 rounded-full bg-emerald-500/10 px-2.5 py-1 text-[11px] font-bold text-emerald-700 dark:text-emerald-300">
-              <Zap className="h-3 w-3" /> Cron-backed
+            <span className={`inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-[11px] font-bold ${
+              premiumActive
+                ? "bg-emerald-500/10 text-emerald-700 dark:text-emerald-300"
+                : "bg-[var(--admin-accent-soft)] admin-accent-text"
+            }`}>
+              <Zap className="h-3 w-3" /> {premiumActive ? "Cron-backed" : "Premium automation"}
             </span>
           }
         >
@@ -364,7 +392,13 @@ export default async function AdminLoyaltyPage({
               <div key={r.trigger} className="rounded-xl border border-[var(--admin-border)] bg-[var(--admin-inset)] p-3.5">
                 <div className="flex items-start justify-between gap-2">
                   <p className="text-sm font-bold admin-text">{r.label}</p>
-                  <span className="rounded-full bg-emerald-500/10 px-2 py-0.5 text-[11px] font-bold text-emerald-700 dark:text-emerald-300">Active</span>
+                  <span className={`rounded-full px-2 py-0.5 text-[11px] font-bold ${
+                    premiumActive
+                      ? "bg-emerald-500/10 text-emerald-700 dark:text-emerald-300"
+                      : "bg-[var(--admin-accent-soft)] admin-accent-text"
+                  }`}>
+                    {premiumActive ? "Active" : "Premium"}
+                  </span>
                 </div>
                 <p className="mt-1 text-xs leading-5 admin-soft">{r.desc}</p>
                 <p className="mt-3 text-sm font-black admin-accent-text">{r.points > 0 ? `+${r.points} pts` : r.multiplier}</p>
@@ -384,7 +418,9 @@ export default async function AdminLoyaltyPage({
             ))}
           </div>
           <p className="mt-3 break-words text-xs leading-5 admin-soft">
-            Schedule the daily worker for 06:00 against <code className="md-code break-all">/api/cron/loyalty</code> with the configured secret.
+            {premiumActive
+              ? <>The daily worker runs these loyalty automations for this pharmacy.</>
+              : <>Automation is paused on Free; existing balances and manual adjustments remain available.</>}
           </p>
         </AdminPanel>
       </div>
