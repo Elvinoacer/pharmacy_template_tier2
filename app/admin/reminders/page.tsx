@@ -229,7 +229,7 @@ export default async function AdminRemindersPage() {
                         <div className="min-w-0 flex-1">
                           <p className="break-words font-semibold admin-text">{r.title}</p>
                           <p className="break-words text-sm admin-muted">{r.customer.fullName}</p>
-                          <div className="mt-1.5 flex flex-wrap items-center gap-x-2 gap-y-1 text-base leading-6 admin-soft">
+                          <div className="mt-2 flex flex-wrap items-center gap-x-2 gap-y-1 text-base leading-6 admin-soft">
                             <span className="inline-flex items-center gap-1 capitalize">
                               <ChannelIcon className="h-3 w-3" /> {r.channel}
                             </span>
