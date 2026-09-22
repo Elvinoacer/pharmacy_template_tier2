@@ -532,13 +532,13 @@ async function createIntasendBillingCheckoutInPharmacy(
     return { ok: true as const, alreadyPaid: true, waived: true, invoiceId };
   }
 
+  const pendingCutoff = new Date(Date.now() - 30 * 60 * 1000);
   const existing = await prismaUnscoped.billingPayment.findFirst({
     where: {
       invoiceId,
-      provider: "intasend",
       status: { in: ["pending", "processing"] },
-      createdAt: { gte: new Date(Date.now() - 30 * 60 * 1000) },
     },
+    orderBy: { createdAt: "desc" },
   });
 
   const intasendConfig = getIntasendConfig();
@@ -550,14 +550,45 @@ async function createIntasendBillingCheckoutInPharmacy(
   const defaultRedirect = `${intasendConfig.appBaseUrl}/onboard?payment=returned`;
   const redirectUrl = opts?.redirectUrl || defaultRedirect;
 
-  if (existing?.checkoutUrl) {
+  if (existing && existing.createdAt >= pendingCutoff) {
+    if (existing.provider === "intasend" && existing.checkoutUrl) {
+      return {
+        ok: true as const,
+        alreadyPaid: false,
+        checkoutUrl: existing.checkoutUrl,
+        paymentId: existing.id,
+        invoiceId: invoice.id,
+      };
+    }
+
     return {
-      ok: true as const,
-      alreadyPaid: false,
-      checkoutUrl: existing.checkoutUrl,
-      paymentId: existing.id,
-      invoiceId: invoice.id,
+      ok: false as const,
+      error: "billing_payment_in_progress",
+      message:
+        "A payment for this invoice is already awaiting confirmation. Refresh shortly before starting another checkout.",
     };
+  }
+
+  // The database intentionally permits only one pending/processing payment per
+  // invoice. Older attempts must be closed before replacing them, otherwise a
+  // new hosted checkout succeeds at IntaSend but the local insert fails with P2002.
+  if (existing) {
+    await prismaUnscoped.billingPayment.updateMany({
+      where: {
+        invoiceId,
+        status: { in: ["pending", "processing"] },
+      },
+      data: {
+        status: "failed",
+        failureReason: "Stale payment attempt replaced by a new checkout.",
+      },
+    });
+    logIntasend("warn", "billing.payment.stale_replaced", {
+      invoiceId,
+      pharmacyId: invoice.pharmacyId,
+      previousPaymentId: existing.id,
+      previousProvider: existing.provider,
+    });
   }
 
   const apiRef = invoice.number;
@@ -587,19 +618,48 @@ async function createIntasendBillingCheckoutInPharmacy(
     };
   }
 
-  const payment = await prismaUnscoped.billingPayment.create({
-    data: {
-      pharmacyId: invoice.pharmacyId,
-      invoiceId: invoice.id,
-      provider: "intasend",
-      status: "pending",
-      amountKes: invoice.totalKes,
-      phone: invoice.pharmacy.phone,
-      checkoutUrl: checkoutRes.url,
-      checkoutRequestId: checkoutRes.id || checkoutRes.invoiceId,
-      providerRef: checkoutRes.invoiceId,
-    },
-  });
+  let payment;
+  try {
+    payment = await prismaUnscoped.billingPayment.create({
+      data: {
+        pharmacyId: invoice.pharmacyId,
+        invoiceId: invoice.id,
+        provider: "intasend",
+        status: "pending",
+        amountKes: invoice.totalKes,
+        phone: invoice.pharmacy.phone,
+        checkoutUrl: checkoutRes.url,
+        checkoutRequestId: checkoutRes.id || checkoutRes.invoiceId,
+        providerRef: checkoutRes.invoiceId,
+      },
+    });
+  } catch (error) {
+    // Two rapid clicks can both reach IntaSend before either request writes its
+    // local payment row. The partial unique index then lets only one survive.
+    // Reuse that winning checkout instead of surfacing a generic billing error.
+    const concurrent = await prismaUnscoped.billingPayment.findFirst({
+      where: {
+        invoiceId,
+        status: { in: ["pending", "processing"] },
+      },
+      orderBy: { createdAt: "desc" },
+    });
+    if (concurrent?.provider === "intasend" && concurrent.checkoutUrl) {
+      logIntasend("warn", "billing.payment.concurrent_checkout_reused", {
+        invoiceId,
+        pharmacyId: invoice.pharmacyId,
+        paymentId: concurrent.id,
+      });
+      return {
+        ok: true as const,
+        alreadyPaid: false,
+        checkoutUrl: concurrent.checkoutUrl,
+        paymentId: concurrent.id,
+        invoiceId: invoice.id,
+      };
+    }
+    throw error;
+  }
 
   logIntasend("info", "billing.payment.pending", {
     invoiceId: invoice.id,
