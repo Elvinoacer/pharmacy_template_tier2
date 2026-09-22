@@ -2,6 +2,7 @@
 
 import { useState, useTransition } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { useRouter } from "next/navigation";
 import {
   AlertCircle,
@@ -356,12 +357,23 @@ export function PlatformImportFlow() {
                         <tr key={row.rowNumber} className="hover:bg-[var(--admin-hover)]">
                           <td className="py-2 px-3 font-mono font-medium">{row.rowNumber}</td>
                           <td className="py-2 px-3 font-semibold text-[var(--admin-text)]">
-                            {row.data.name}
-                            {row.data.brandName && (
-                              <span className="block text-[10px] text-[var(--admin-text-soft)]">
-                                {row.data.brandName}
+                            <div className="flex min-w-[180px] items-center gap-2.5">
+                              <span className="relative h-10 w-10 shrink-0 overflow-hidden rounded-lg border border-[var(--admin-border)] bg-[var(--admin-panel)]">
+                                {row.data.imageUrl ? (
+                                  <Image unoptimized src={row.data.imageUrl} alt={row.data.name} fill sizes="40px" className="object-contain p-1" />
+                                ) : (
+                                  <span className="flex h-full w-full items-center justify-center"><Pill className="h-3.5 w-3.5 text-[var(--admin-text-soft)]" /></span>
+                                )}
                               </span>
-                            )}
+                              <span className="min-w-0">
+                                {row.data.name}
+                                {row.data.brandName && (
+                                  <span className="block text-[10px] text-[var(--admin-text-soft)]">
+                                    {row.data.brandName}
+                                  </span>
+                                )}
+                              </span>
+                            </div>
                           </td>
                           <td className="py-2 px-3">
                             {row.data.genericName}
