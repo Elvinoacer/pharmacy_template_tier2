@@ -68,7 +68,7 @@ export function RefillManagementView({
   return (
     <div className="space-y-6">
       {/* ── Top KPI Stat Grid ── */}
-      <div className="grid grid-cols-2 gap-3 sm:grid-cols-4 lg:grid-cols-4">
+      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
         {/* Active Queue */}
         <button
           type="button"
@@ -80,13 +80,13 @@ export function RefillManagementView({
           }`}
         >
           <div className="flex items-center justify-between">
-            <span className="text-xs font-semibold admin-soft">Refill Queue</span>
+            <span className="text-sm font-semibold admin-soft">Refill Queue</span>
             <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-emerald-500/15 text-emerald-600">
               <RefreshCw className="h-4 w-4" />
             </div>
           </div>
           <p className="mt-2 text-xl font-extrabold admin-text">{stats.activeRequestsCount}</p>
-          <span className="text-xs text-emerald-700 dark:text-emerald-400 font-semibold">
+          <span className="text-sm text-emerald-700 dark:text-emerald-400 font-semibold">
             {stats.submittedCount} new · {stats.underReviewCount} in review
           </span>
         </button>
@@ -105,13 +105,13 @@ export function RefillManagementView({
           }`}
         >
           <div className="flex items-center justify-between">
-            <span className="text-xs font-semibold text-blue-700 dark:text-blue-300">Due (Next 7 Days)</span>
+            <span className="text-sm font-semibold text-blue-700 dark:text-blue-300">Due (Next 7 Days)</span>
             <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-blue-500/15 text-blue-600">
               <Calendar className="h-4 w-4" />
             </div>
           </div>
           <p className="mt-2 text-xl font-extrabold text-blue-900 dark:text-blue-200">{stats.dueInNext7DaysCount}</p>
-          <span className="text-xs text-blue-700/80 dark:text-blue-300/80 font-medium">
+          <span className="text-sm text-blue-700/80 dark:text-blue-300/80 font-medium">
             Active maintenance schedules
           </span>
         </button>
@@ -130,13 +130,13 @@ export function RefillManagementView({
           }`}
         >
           <div className="flex items-center justify-between">
-            <span className="text-xs font-semibold text-amber-700 dark:text-amber-300">Overdue Refills</span>
+            <span className="text-sm font-semibold text-amber-700 dark:text-amber-300">Overdue Refills</span>
             <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-amber-500/15 text-amber-600">
               <Clock className="h-4 w-4" />
             </div>
           </div>
           <p className="mt-2 text-xl font-extrabold text-amber-900 dark:text-amber-200">{stats.overdueRefillsCount}</p>
-          <span className="text-xs text-amber-700/80 dark:text-amber-300/80 font-medium">
+          <span className="text-sm text-amber-700/80 dark:text-amber-300/80 font-medium">
             Supply run out · Needs reminder
           </span>
         </button>
@@ -152,25 +152,25 @@ export function RefillManagementView({
           }`}
         >
           <div className="flex items-center justify-between">
-            <span className="text-xs font-semibold text-rose-700 dark:text-rose-300">Missing Refills (&gt;14d)</span>
+            <span className="text-sm font-semibold text-rose-700 dark:text-rose-300">Missing Refills (&gt;14d)</span>
             <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-rose-500/15 text-rose-600">
               <ShieldAlert className="h-4 w-4" />
             </div>
           </div>
           <p className="mt-2 text-xl font-extrabold text-rose-900 dark:text-rose-200">{missingPatients.length}</p>
-          <span className="text-xs text-rose-700/80 dark:text-rose-300/80 font-semibold">
+          <span className="text-sm text-rose-700/80 dark:text-rose-300/80 font-semibold">
             High non-adherence risk
           </span>
         </button>
       </div>
 
       {/* ── Main Tab Navigation & Record Refill Button ── */}
-      <div className="flex flex-wrap items-center justify-between gap-3 border-b border-[var(--admin-border)] pb-3">
-        <div className="flex flex-wrap items-center gap-2">
+      <div className="flex flex-col items-stretch gap-3 border-b border-[var(--admin-border)] pb-3 sm:flex-row sm:flex-wrap sm:items-center sm:justify-between">
+        <div className="grid w-full grid-cols-1 gap-2 sm:flex sm:w-auto sm:flex-wrap sm:items-center">
           <button
             type="button"
             onClick={() => setActiveTab("queue")}
-            className={`inline-flex items-center gap-2 rounded-xl px-4 py-2 text-xs font-bold transition ${
+            className={`inline-flex items-center gap-2 rounded-xl px-4 py-2 text-sm font-bold transition ${
               activeTab === "queue"
                 ? "bg-[var(--admin-accent)] text-[var(--admin-btn-fg)] shadow-sm"
                 : "bg-[var(--admin-inset)] admin-text hover:bg-[var(--admin-inset-2)]"
@@ -178,13 +178,13 @@ export function RefillManagementView({
           >
             <RefreshCw className="h-3.5 w-3.5" />
             Active Refill Queue
-            <span className="rounded-full bg-black/15 px-1.5 py-0.2 text-xs">{stats.activeRequestsCount}</span>
+            <span className="rounded-full bg-black/15 px-1.5 py-0.2 text-sm">{stats.activeRequestsCount}</span>
           </button>
 
           <button
             type="button"
             onClick={() => setActiveTab("schedules")}
-            className={`inline-flex items-center gap-2 rounded-xl px-4 py-2 text-xs font-bold transition ${
+            className={`inline-flex items-center gap-2 rounded-xl px-4 py-2 text-sm font-bold transition ${
               activeTab === "schedules"
                 ? "bg-[var(--admin-accent)] text-[var(--admin-btn-fg)] shadow-sm"
                 : "bg-[var(--admin-inset)] admin-text hover:bg-[var(--admin-inset-2)]"
@@ -192,13 +192,13 @@ export function RefillManagementView({
           >
             <Calendar className="h-3.5 w-3.5" />
             Refill Schedules &amp; Due Patients
-            <span className="rounded-full bg-black/15 px-1.5 py-0.2 text-xs">{schedules.length}</span>
+            <span className="rounded-full bg-black/15 px-1.5 py-0.2 text-sm">{schedules.length}</span>
           </button>
 
           <button
             type="button"
             onClick={() => setActiveTab("missing")}
-            className={`inline-flex items-center gap-2 rounded-xl px-4 py-2 text-xs font-bold transition ${
+            className={`inline-flex items-center gap-2 rounded-xl px-4 py-2 text-sm font-bold transition ${
               activeTab === "missing"
                 ? "bg-rose-600 text-white shadow-sm ring-2 ring-rose-600/30"
                 : "bg-rose-500/10 text-rose-800 dark:text-rose-300 hover:bg-rose-500/20"
@@ -207,7 +207,7 @@ export function RefillManagementView({
             <ShieldAlert className="h-3.5 w-3.5" />
             Missing Refills &amp; Non-Adherence
             {missingPatients.length > 0 && (
-              <span className="rounded-full bg-rose-700 text-white px-1.5 py-0.2 text-xs font-extrabold">
+              <span className="rounded-full bg-rose-700 text-white px-1.5 py-0.2 text-sm font-extrabold">
                 {missingPatients.length}
               </span>
             )}
@@ -216,7 +216,7 @@ export function RefillManagementView({
           <button
             type="button"
             onClick={() => setActiveTab("history")}
-            className={`inline-flex items-center gap-2 rounded-xl px-4 py-2 text-xs font-bold transition ${
+            className={`inline-flex items-center gap-2 rounded-xl px-4 py-2 text-sm font-bold transition ${
               activeTab === "history"
                 ? "bg-[var(--admin-accent)] text-[var(--admin-btn-fg)] shadow-sm"
                 : "bg-[var(--admin-inset)] admin-text hover:bg-[var(--admin-inset-2)]"
@@ -224,14 +224,14 @@ export function RefillManagementView({
           >
             <Clock className="h-3.5 w-3.5" />
             Refill History &amp; Dispense Ledgers
-            <span className="rounded-full bg-black/15 px-1.5 py-0.2 text-xs">{historyRows.length}</span>
+            <span className="rounded-full bg-black/15 px-1.5 py-0.2 text-sm">{historyRows.length}</span>
           </button>
         </div>
 
         <button
           type="button"
           onClick={() => setShowNewRefillModal(true)}
-          className="inline-flex items-center gap-1.5 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-700 px-4 py-2 text-xs font-bold text-white shadow-sm hover:brightness-110 active:scale-95 transition"
+          className="inline-flex min-h-11 w-full items-center justify-center gap-1.5 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-700 px-4 py-2 text-sm font-bold text-white shadow-sm transition hover:brightness-110 active:scale-95 sm:w-auto"
         >
           <Plus className="h-4 w-4" /> Record Inbound Refill
         </button>
@@ -246,11 +246,74 @@ export function RefillManagementView({
             <div className="rounded-2xl border border-[var(--admin-border)] bg-[var(--admin-card)] p-12 text-center space-y-3">
               <Pill className="h-10 w-10 mx-auto text-emerald-600/60" />
               <h3 className="text-sm font-bold admin-text">No active refill requests matching filter</h3>
-              <p className="text-xs admin-soft">When customers submit refills online or staff record inbound requests, they appear here.</p>
+              <p className="text-sm admin-soft">When customers submit refills online or staff record inbound requests, they appear here.</p>
             </div>
           ) : (
-            <div tabIndex={0} role="region" aria-label="Scrollable records" className="admin-table-region overflow-x-auto scroll-admin rounded-2xl border border-[var(--admin-border)] bg-[var(--admin-card)] shadow-sm">
-              <table className="table-admin">
+            <>
+              <div className="grid gap-3 sm:hidden">
+                {activeRefills.map((r) => (
+                  <article
+                    key={r.id}
+                    className="min-w-0 rounded-2xl border border-[var(--admin-border)] bg-[var(--admin-card)] p-4 shadow-sm"
+                  >
+                    <div className="flex min-w-0 items-start justify-between gap-3">
+                      <div className="min-w-0">
+                        <p className="break-words text-base font-bold admin-text">
+                          {r.customerName || r.customerFullName || "Guest"}
+                        </p>
+                        <div className="mt-1 space-y-1 text-sm admin-soft">
+                          {r.phone && <p className="break-all font-mono">{r.phone}</p>}
+                          {r.email && <p className="break-all">{r.email}</p>}
+                        </div>
+                      </div>
+                      <span className="shrink-0 rounded-full bg-[var(--admin-inset)] px-2.5 py-1 text-sm font-bold capitalize admin-text">
+                        {r.status.replaceAll("_", " ")}
+                      </span>
+                    </div>
+
+                    <div className="mt-4 rounded-xl bg-[var(--admin-inset)] p-3">
+                      <p className="text-sm font-semibold uppercase tracking-wide admin-soft">
+                        Medication
+                      </p>
+                      <p className="mt-1 break-words text-base font-bold admin-text">
+                        {r.medicineName}
+                      </p>
+                      <p className="mt-1 break-words text-sm admin-muted">
+                        Rx {r.rxReference || "on file"} · {r.source.replaceAll("_", " ")}
+                      </p>
+                    </div>
+
+                    <div className="mt-3 text-sm admin-soft">
+                      Submitted{" "}
+                      <span className="font-semibold admin-text">
+                        {new Date(r.createdAt).toLocaleString()}
+                      </span>
+                    </div>
+
+                    {r.notes && (
+                      <p className="mt-3 whitespace-normal break-words rounded-xl bg-amber-500/10 p-3 text-sm text-amber-900 dark:text-amber-200">
+                        {r.notes}
+                      </p>
+                    )}
+
+                    <button
+                      type="button"
+                      onClick={() => setReviewCockpitId(r.id)}
+                      className="mt-4 inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-700 px-4 py-2 text-sm font-bold text-white shadow-sm transition hover:brightness-110 active:scale-[0.98]"
+                    >
+                      <ShieldAlert className="h-4 w-4" /> Review refill request
+                    </button>
+                  </article>
+                ))}
+              </div>
+
+              <div
+                tabIndex={0}
+                role="region"
+                aria-label="Scrollable refill records"
+                className="admin-table-region hidden overflow-x-auto scroll-admin rounded-2xl border border-[var(--admin-border)] bg-[var(--admin-card)] shadow-sm sm:block"
+              >
+                <table className="table-admin">
                 <thead>
                   <tr>
                     <th>Customer / Patient</th>
