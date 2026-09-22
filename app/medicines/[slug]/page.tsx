@@ -563,7 +563,7 @@ export default async function CategoryOrMedicinePage({ params }: Props) {
               <div className="grid grid-cols-4 gap-2 sm:gap-3">
                 {gallery.map((src, index) => (
                   <div key={`${src}-${index}`} className="relative aspect-square overflow-hidden rounded-2xl border border-[var(--medicine-ui-border)] bg-[var(--card)]/80 backdrop-blur-md transition hover:border-[var(--brand)]">
-                    <Image src={src} alt={`${med.medicationMaster.name} view ${index + 2}`} fill className="object-contain p-2" sizes="140px" />
+                    <Image unoptimized src={src} alt={`${med.medicationMaster.name} view ${index + 2}`} fill className="object-contain p-2" sizes="140px" />
                   </div>
                 ))}
               </div>
