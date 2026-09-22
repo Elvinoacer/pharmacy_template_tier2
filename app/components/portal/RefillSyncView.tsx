@@ -105,17 +105,17 @@ export function RefillSyncView({
   const totalMonthlyCost = selectedMedications.reduce((acc, m) => acc + m.syncedMonthlyCost, 0);
 
   return (
-    <div className="space-y-8">
+    <div className="min-w-0 space-y-8">
       {/* ── HERO BANNER ── */}
       <div className="rounded-3xl border border-teal-200/80 bg-gradient-to-br from-teal-900 via-[#0d6e5a] to-emerald-950 p-6 sm:p-8 text-white shadow-md relative overflow-hidden">
         <div className="relative z-10 max-w-3xl space-y-3">
           <div className="flex items-center gap-2">
-            <span className="inline-flex items-center gap-1.5 rounded-full bg-white/15 px-3 py-1 text-xs font-bold text-teal-100 backdrop-blur-xs">
+            <span className="inline-flex items-center gap-2 rounded-full bg-white/15 px-3 py-1 text-sm font-bold text-teal-100 backdrop-blur-xs">
               <Sparkles className="h-3.5 w-3.5 text-teal-300" />
               Med Sync · Refill Synchronization Program
             </span>
             {plan.isEnrolled && (
-              <span className="inline-flex items-center gap-1 rounded-full bg-emerald-400/20 border border-emerald-300/40 px-3 py-1 text-xs font-bold text-emerald-200 backdrop-blur-xs">
+              <span className="inline-flex items-center gap-1 rounded-full bg-emerald-400/20 border border-emerald-300/40 px-3 py-1 text-sm font-bold text-emerald-200 backdrop-blur-xs">
                 <CheckCircle2 className="h-3.5 w-3.5 text-emerald-300" />
                 Active Enrollment
               </span>
@@ -140,7 +140,7 @@ export function RefillSyncView({
             <XCircle className="h-4 w-4 text-rose-600" />
             <span>Without Med Sync (Fragmented)</span>
           </div>
-          <ul className="space-y-1.5 text-xs text-[#5a6b62]">
+          <ul className="space-y-2 text-sm text-[#5a6b62]">
             <li className="flex items-center gap-2">
               <span className="h-1.5 w-1.5 rounded-full bg-rose-500" />
               <span>3 to 4 separate pharmacy trips or deliveries every month</span>
@@ -161,7 +161,7 @@ export function RefillSyncView({
             <CheckCircle2 className="h-4 w-4 text-emerald-600" />
             <span>With Med Sync (Synchronized)</span>
           </div>
-          <ul className="space-y-1.5 text-xs text-[#5a6b62]">
+          <ul className="space-y-2 text-sm text-[#5a6b62]">
             <li className="flex items-center gap-2">
               <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
               <span>1 single scheduled monthly pickup or delivery on your chosen day</span>
@@ -184,27 +184,27 @@ export function RefillSyncView({
         <div className="lg:col-span-2 space-y-6">
           {/* STEP 1: CHOOSE ANCHOR DAY */}
           <div className="rounded-3xl border border-[#e3ebe6] bg-white p-5 sm:p-6 shadow-xs space-y-4">
-            <div className="flex items-center gap-2.5">
-              <span className="flex h-8 w-8 items-center justify-center rounded-2xl bg-[#0d6e5a] text-xs font-extrabold text-white shadow-2xs">
+            <div className="flex items-center gap-3">
+              <span className="flex h-8 w-8 items-center justify-center rounded-2xl bg-[#0d6e5a] text-sm font-extrabold text-white shadow-2xs">
                 1
               </span>
               <div>
                 <h3 className="text-base font-bold text-[#0c1a14]">
                   Select your Monthly Anchor Day
                 </h3>
-                <p className="text-xs text-[#5a6b62]">
+                <p className="text-sm text-[#5a6b62]">
                   Choose which day of the month is most convenient for pickup or delivery.
                 </p>
               </div>
             </div>
 
-            <div className="grid grid-cols-3 sm:grid-cols-6 gap-2.5">
+            <div className="grid grid-cols-3 sm:grid-cols-6 gap-3">
               {anchorDays.map((day) => {
                 const isSelected = selectedAnchorDay === day;
                 return (
                   <button
                     key={day}
-                    onClick={() => handleAnchorChange(day)}
+                    onClick={() = className="min-h-11 min-w-11"> handleAnchorChange(day)}
                     disabled={loading}
                     className={`rounded-2xl p-3 text-center transition border ${
                       isSelected
@@ -213,13 +213,13 @@ export function RefillSyncView({
                     }`}
                   >
                     <span className="block text-lg font-bold">Day {day}</span>
-                    <span className="block text-[10px] text-[#5a6b62]">of month</span>
+                    <span className="block text-sm text-[#5a6b62]">of month</span>
                   </button>
                 );
               })}
             </div>
 
-            <div className="flex items-center gap-2 rounded-2xl bg-[#fafcfb] p-3.5 text-xs text-[#5a6b62] border border-[#e3ebe6]">
+            <div className="flex items-center gap-2 rounded-2xl bg-[#fafcfb] p-4 text-sm text-[#5a6b62] border border-[#e3ebe6]">
               <Calendar className="h-4 w-4 text-[#0d6e5a] shrink-0" />
               <span>
                 Target first synchronized refill date:{" "}
@@ -233,15 +233,15 @@ export function RefillSyncView({
           {/* STEP 2: SELECT MEDICATIONS */}
           <div className="rounded-3xl border border-[#e3ebe6] bg-white p-5 sm:p-6 shadow-xs space-y-4">
             <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2.5">
-                <span className="flex h-8 w-8 items-center justify-center rounded-2xl bg-[#0d6e5a] text-xs font-extrabold text-white shadow-2xs">
+              <div className="flex items-center gap-3">
+                <span className="flex h-8 w-8 items-center justify-center rounded-2xl bg-[#0d6e5a] text-sm font-extrabold text-white shadow-2xs">
                   2
                 </span>
                 <div>
                   <h3 className="text-base font-bold text-[#0c1a14]">
                     Select Maintenance Medications
                   </h3>
-                  <p className="text-xs text-[#5a6b62]">
+                  <p className="text-sm text-[#5a6b62]">
                     Choose which ongoing prescriptions to bundle together.
                   </p>
                 </div>
@@ -249,7 +249,7 @@ export function RefillSyncView({
 
               <button
                 onClick={selectAllPrescriptions}
-                className="text-xs font-bold text-[#0d6e5a] hover:underline"
+                className="min-h-11 min-w-11 text-sm font-bold text-[#0d6e5a] hover:underline"
               >
                 Select All
               </button>
@@ -257,7 +257,7 @@ export function RefillSyncView({
 
             <div className="space-y-3">
               {plan.medications.length === 0 ? (
-                <div className="rounded-2xl border border-dashed border-[#e3ebe6] p-8 text-center text-xs text-[#8a9a92]">
+                <div className="rounded-2xl border border-dashed border-[#e3ebe6] p-8 text-center text-sm text-[#8a9a92]">
                   No active prescriptions found. Contact your pharmacy to add ongoing medications.
                 </div>
               ) : (
@@ -278,22 +278,22 @@ export function RefillSyncView({
                         <input
                           type="checkbox"
                           checked={isChecked}
-                          onChange={() => {}}
+                          onChange={() = className="min-h-11 min-w-11"> {}}
                           className="mt-1 h-4 w-4 rounded text-[#0d6e5a] focus:ring-[#0d6e5a]"
                         />
                         <div>
                           <div className="flex items-center gap-2">
                             <h4 className="font-bold text-sm text-[#0c1a14]">{med.medicineName}</h4>
                             {med.isSynced && (
-                              <span className="rounded-full bg-teal-100 px-2 py-0.5 text-[10px] font-bold text-[#0d6e5a]">
+                              <span className="rounded-full bg-teal-100 px-2 py-0.5 text-sm font-bold text-[#0d6e5a]">
                                 Synced
                               </span>
                             )}
                           </div>
                           {med.dosage && (
-                            <p className="text-xs text-[#5a6b62] mt-0.5">{med.dosage}</p>
+                            <p className="text-sm text-[#5a6b62] mt-0.5">{med.dosage}</p>
                           )}
-                          <div className="mt-2 flex flex-wrap items-center gap-3 text-xs text-[#5a6b62]">
+                          <div className="mt-2 flex flex-wrap items-center gap-3 text-sm text-[#5a6b62]">
                             <span>
                               Current Supply:{" "}
                               <strong className="text-[#0c1a14]">
@@ -303,7 +303,7 @@ export function RefillSyncView({
                               </strong>
                             </span>
                             {med.bridgeDaysNeeded > 0 && (
-                              <span className="text-amber-800 bg-amber-100/80 px-2 py-0.5 rounded-md font-bold text-[11px]">
+                              <span className="text-amber-800 bg-amber-100/80 px-2 py-0.5 rounded-md font-bold text-sm">
                                 Bridge short-fill: +{med.bridgeQuantity} units ({med.bridgeDaysNeeded} days)
                               </span>
                             )}
@@ -312,12 +312,12 @@ export function RefillSyncView({
                       </div>
 
                       <div className="text-right">
-                        <span className="text-xs font-bold text-[#0c1a14]">
+                        <span className="text-sm font-bold text-[#0c1a14]">
                           ${med.syncedMonthlyCost.toFixed(2)}
                         </span>
-                        <span className="block text-[10px] text-[#8a9a92]">per month (30d)</span>
+                        <span className="block text-sm text-[#8a9a92]">per month (30d)</span>
                         {med.bridgeCost > 0 && (
-                          <span className="block text-[10px] text-amber-700 font-semibold mt-1">
+                          <span className="block text-sm text-amber-700 font-semibold mt-1">
                             +${med.bridgeCost.toFixed(2)} bridge
                           </span>
                         )}
@@ -331,15 +331,15 @@ export function RefillSyncView({
 
           {/* STEP 3: PICKUP OR DELIVERY */}
           <div className="rounded-3xl border border-[#e3ebe6] bg-white p-5 sm:p-6 shadow-xs space-y-4">
-            <div className="flex items-center gap-2.5">
-              <span className="flex h-8 w-8 items-center justify-center rounded-2xl bg-[#0d6e5a] text-xs font-extrabold text-white shadow-2xs">
+            <div className="flex items-center gap-3">
+              <span className="flex h-8 w-8 items-center justify-center rounded-2xl bg-[#0d6e5a] text-sm font-extrabold text-white shadow-2xs">
                 3
               </span>
               <div>
                 <h3 className="text-base font-bold text-[#0c1a14]">
                   Fulfillment Preference
                 </h3>
-                <p className="text-xs text-[#5a6b62]">
+                <p className="text-sm text-[#5a6b62]">
                   How would you like to receive your monthly synchronized order?
                 </p>
               </div>
@@ -348,7 +348,7 @@ export function RefillSyncView({
             <div className="grid sm:grid-cols-2 gap-3">
               <button
                 type="button"
-                onClick={() => setPreferredPickup("pickup")}
+                onClick={() = className="min-h-11 min-w-11"> setPreferredPickup("pickup")}
                 className={`rounded-2xl p-4 text-left border transition flex items-start gap-3 ${
                   preferredPickup === "pickup"
                     ? "border-[#0d6e5a] bg-teal-50/40 text-[#0c1a14] ring-2 ring-[#0d6e5a]/25 shadow-2xs"
@@ -358,7 +358,7 @@ export function RefillSyncView({
                 <Package className="h-5 w-5 text-[#0d6e5a] shrink-0 mt-0.5" />
                 <div>
                   <span className="block font-bold text-sm text-[#0c1a14]">Pharmacy Pickup</span>
-                  <span className="block text-xs text-[#5a6b62]">
+                  <span className="block text-sm text-[#5a6b62]">
                     Ready at main branch counter on day {selectedAnchorDay}
                   </span>
                 </div>
@@ -366,7 +366,7 @@ export function RefillSyncView({
 
               <button
                 type="button"
-                onClick={() => setPreferredPickup("delivery")}
+                onClick={() = className="min-h-11 min-w-11"> setPreferredPickup("delivery")}
                 className={`rounded-2xl p-4 text-left border transition flex items-start gap-3 ${
                   preferredPickup === "delivery"
                     ? "border-[#0d6e5a] bg-teal-50/40 text-[#0c1a14] ring-2 ring-[#0d6e5a]/25 shadow-2xs"
@@ -376,7 +376,7 @@ export function RefillSyncView({
                 <Truck className="h-5 w-5 text-[#0d6e5a] shrink-0 mt-0.5" />
                 <div>
                   <span className="block font-bold text-sm text-[#0c1a14]">Free Monthly Delivery</span>
-                  <span className="block text-xs text-[#5a6b62]">
+                  <span className="block text-sm text-[#5a6b62]">
                     Dispatched automatically to your address on day {selectedAnchorDay}
                   </span>
                 </div>
@@ -393,7 +393,7 @@ export function RefillSyncView({
               <Sparkles className="h-4 w-4 text-[#0d6e5a]" />
             </div>
 
-            <div className="space-y-3.5 text-xs text-[#5a6b62]">
+            <div className="space-y-4 text-sm text-[#5a6b62]">
               <div className="flex items-center justify-between">
                 <span>Selected Medications</span>
                 <span className="font-bold text-[#0c1a14]">{selectedMedications.length}</span>
@@ -425,12 +425,12 @@ export function RefillSyncView({
               </div>
             </div>
 
-            <div className="rounded-2xl bg-teal-50/70 p-4 border border-teal-100 text-xs text-[#0d6e5a] space-y-1.5">
-              <div className="flex items-center gap-1.5 font-bold">
+            <div className="rounded-2xl bg-teal-50/70 p-4 border border-teal-100 text-sm text-[#0d6e5a] space-y-2">
+              <div className="flex items-center gap-2 font-bold">
                 <ShieldCheck className="h-4 w-4 shrink-0" />
                 <span>Pharmacy Clinical Guarantee</span>
               </div>
-              <p className="text-[11px] text-[#5a6b62] leading-normal">
+              <p className="text-sm text-[#5a6b62] leading-normal">
                 Our clinical pharmacist monitors drug interactions, safety, and contacts your physician before refills expire so you never miss a treatment cycle.
               </p>
             </div>
@@ -439,7 +439,7 @@ export function RefillSyncView({
               type="button"
               onClick={handleEnroll}
               disabled={submitting || selectedMedications.length === 0}
-              className="btn-primary w-full justify-center text-sm py-3.5 font-bold shadow-xs"
+              className="min-h-11 min-w-11 btn-primary w-full justify-center text-sm py-4 font-bold shadow-xs"
             >
               {submitting ? (
                 "Saving Enrollment…"
