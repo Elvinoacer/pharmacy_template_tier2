@@ -140,7 +140,7 @@ export function AiImportFlow() {
               >
                 <div className="flex items-center gap-2">
                   <span
-                    className={`inline-flex h-6 w-6 shrink-0 items-center justify-center rounded-full text-[11px] font-bold ${
+                    className={`inline-flex h-6 w-6 shrink-0 items-center justify-center rounded-full text-sm font-bold ${
                       current
                         ? "bg-[var(--admin-accent)] text-white"
                         : complete
@@ -150,9 +150,9 @@ export function AiImportFlow() {
                   >
                     {complete ? <Check className="h-3.5 w-3.5" /> : index + 1}
                   </span>
-                  <span className={`truncate text-[11px] font-semibold sm:text-xs ${current ? "admin-text" : "admin-muted"}`}>{item.label}</span>
+                  <span className={`break-words text-sm font-semibold sm:text-sm ${current ? "admin-text" : "admin-muted"}`}>{item.label}</span>
                 </div>
-                <p className="mt-1.5 hidden text-[10px] leading-4 admin-soft sm:block">{item.detail}</p>
+                <p className="mt-1.5 hidden text-sm leading-4 admin-soft sm:block">{item.detail}</p>
               </li>
             );
           })}
@@ -165,17 +165,17 @@ export function AiImportFlow() {
             <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
               <div>
                 <p className="text-sm font-semibold admin-text">Extraction prompt</p>
-                <p className="mt-0.5 text-[11px] admin-muted">Version {PROMPT_VERSION} · optimized for medicine pack extraction</p>
+                <p className="mt-0.5 text-sm admin-muted">Version {PROMPT_VERSION} · optimized for medicine pack extraction</p>
               </div>
               <button
                 type="button"
                 onClick={copyPrompt}
-                className="inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-xl bg-[var(--admin-accent-soft)] px-4 text-xs font-semibold admin-accent-text transition hover:opacity-80 sm:min-h-0 sm:w-auto sm:rounded-full sm:py-2"
+                className="inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-xl bg-[var(--admin-accent-soft)] px-4 text-sm font-semibold admin-accent-text transition hover:opacity-80 sm:w-auto sm:rounded-full sm:py-2"
               >
                 <Copy className="h-3.5 w-3.5" /> Copy prompt
               </button>
             </div>
-            <pre className="mt-3 max-h-[18rem] overflow-auto rounded-xl border border-[var(--admin-border-2)] bg-[var(--admin-inset)] p-3 text-[11px] leading-5 admin-text whitespace-pre-wrap sm:max-h-80 sm:p-4 sm:text-xs">
+            <pre className="mt-3 max-h-[18rem] overflow-auto rounded-xl border border-[var(--admin-border-2)] bg-[var(--admin-inset)] p-3 text-sm leading-5 admin-text whitespace-pre-wrap sm:max-h-80 sm:p-4 sm:text-sm">
               {MEDICATION_AI_PROMPT}
             </pre>
           </section>
@@ -192,8 +192,8 @@ export function AiImportFlow() {
                 ["Patient leaflet", "Indications, cautions and side effects"],
               ].map(([title, description]) => (
                 <div key={title} className="rounded-xl bg-[var(--admin-inset)] p-3">
-                  <p className="text-xs font-semibold admin-text">{title}</p>
-                  <p className="mt-1 text-[11px] leading-4 admin-muted">{description}</p>
+                  <p className="text-sm font-semibold admin-text">{title}</p>
+                  <p className="mt-1 text-sm leading-4 admin-muted">{description}</p>
                 </div>
               ))}
             </div>
@@ -218,7 +218,7 @@ export function AiImportFlow() {
               </div>
               <div>
                 <label htmlFor="ai-medication-json" className="text-sm font-semibold admin-text">Paste the AI&apos;s JSON response</label>
-                <p className="mt-0.5 text-[11px] leading-4 admin-muted">Markdown code fences are okay; the parser strips them automatically.</p>
+                <p className="mt-0.5 text-sm leading-4 admin-muted">Markdown code fences are okay; the parser strips them automatically.</p>
               </div>
             </div>
             <textarea
@@ -228,7 +228,7 @@ export function AiImportFlow() {
               rows={14}
               spellCheck={false}
               placeholder='{"name":"Panadol 500mg","genericName":"Paracetamol",...}'
-              className="input-admin min-h-64 resize-y font-mono text-[11px] leading-5 sm:text-xs"
+              className="input-admin min-h-64 resize-y font-mono text-base leading-6 sm:text-sm sm:leading-5"
             />
             {parseError && (
               <div className="admin-alert-error mt-3 items-start">
@@ -242,7 +242,7 @@ export function AiImportFlow() {
             <button
               type="button"
               onClick={() => setStep("prompt")}
-              className="inline-flex min-h-11 items-center justify-center gap-1.5 rounded-xl bg-[var(--admin-inset)] px-4 text-xs font-semibold admin-muted transition hover:bg-[var(--admin-inset-2)] hover:text-[var(--admin-text)] sm:rounded-full"
+              className="inline-flex min-h-11 items-center justify-center gap-1.5 rounded-xl bg-[var(--admin-inset)] px-4 text-sm font-semibold admin-muted transition hover:bg-[var(--admin-inset-2)] hover:text-[var(--admin-text)] sm:rounded-full"
             >
               <ArrowLeft className="h-3.5 w-3.5" /> Back to prompt
             </button>
@@ -256,7 +256,7 @@ export function AiImportFlow() {
             </button>
           </div>
 
-          <p className="text-center text-[11px] admin-muted">
+          <p className="text-center text-sm admin-muted">
             Prefer a form?{" "}
             <Link href="/admin/medications/new" className="font-semibold admin-accent-text hover:underline">Use manual entry</Link>
           </p>
@@ -269,15 +269,15 @@ export function AiImportFlow() {
             <div className="mb-3 flex items-start justify-between gap-3">
               <div>
                 <p className="text-sm font-semibold admin-text">Parsed medicine data</p>
-                <p className="mt-0.5 text-[11px] admin-muted">Review high-impact fields before creating the record.</p>
+                <p className="mt-0.5 text-sm admin-muted">Review high-impact fields before creating the record.</p>
               </div>
-              <span className="rounded-full bg-emerald-500/10 px-2.5 py-1 text-[10px] font-semibold text-emerald-700 dark:text-emerald-300">Schema valid</span>
+              <span className="rounded-full bg-emerald-500/10 px-2.5 py-1 text-sm font-semibold text-emerald-700 dark:text-emerald-300">Schema valid</span>
             </div>
-            <dl className="grid gap-2 md:grid-cols-2">
+            <dl className="grid gap-2 lg:grid-cols-2">
               {Object.entries(parsed).map(([key, value]) => (
                 <div key={key} className="min-w-0 rounded-xl bg-[var(--admin-inset)] p-3">
-                  <dt className="text-[10px] font-semibold uppercase tracking-wide admin-soft">{key}</dt>
-                  <dd className="mt-1 break-words text-xs leading-5 admin-text">
+                  <dt className="text-sm font-semibold uppercase tracking-wide admin-soft">{key}</dt>
+                  <dd className="mt-1 break-words text-sm leading-5 admin-text">
                     {Array.isArray(value)
                       ? value.join(", ") || "—"
                       : value == null || value === false
@@ -291,7 +291,7 @@ export function AiImportFlow() {
             </dl>
           </section>
 
-          <div className="flex items-start gap-2 rounded-2xl border border-amber-500/25 bg-amber-500/[0.06] p-3.5 text-xs leading-5 text-amber-800 dark:text-amber-200">
+          <div className="flex items-start gap-2 rounded-2xl border border-amber-500/25 bg-amber-500/[0.06] p-3.5 text-sm leading-5 text-amber-800 dark:text-amber-200">
             <ShieldCheck className="mt-0.5 h-4 w-4 shrink-0" />
             <p>Saving runs duplicate and barcode checks through the shared validation layer. Failed checks stop the create operation.</p>
           </div>
@@ -301,7 +301,7 @@ export function AiImportFlow() {
               type="button"
               onClick={() => setStep("paste")}
               disabled={submitting}
-              className="inline-flex min-h-11 items-center justify-center gap-1.5 rounded-xl bg-[var(--admin-inset)] px-4 text-xs font-semibold admin-muted transition hover:bg-[var(--admin-inset-2)] hover:text-[var(--admin-text)] disabled:opacity-50 sm:rounded-full"
+              className="inline-flex min-h-11 items-center justify-center gap-1.5 rounded-xl bg-[var(--admin-inset)] px-4 text-sm font-semibold admin-muted transition hover:bg-[var(--admin-inset-2)] hover:text-[var(--admin-text)] disabled:opacity-50 sm:rounded-full"
             >
               <Pencil className="h-3.5 w-3.5" /> Edit JSON
             </button>
