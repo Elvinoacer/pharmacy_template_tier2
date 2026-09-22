@@ -331,11 +331,11 @@ export function AdminPlanStatusButton() {
                 Current plan
               </p>
               <h2 className="mt-1 text-lg font-bold text-[var(--admin-text)]">
-                {status.premium ? "Afyvia Premium" : "Afyvia Free"}
+                {attention ? "Afyvia Premium" : status.premium ? "Afyvia Premium" : "Afyvia Free"}
               </h2>
             </div>
             <span className="rounded-full bg-[var(--admin-inset)] px-2.5 py-1 text-[10px] font-semibold text-[var(--admin-text-muted)]">
-              {status.premium ? "Active" : "KES 0/month"}
+              {attention ? "Payment due" : status.premium ? "Active" : "KES 0/month"}
             </span>
           </div>
 
@@ -398,11 +398,13 @@ export function AdminPlanStatusButton() {
             className="flex min-h-10 w-full items-center justify-center gap-1.5 rounded-xl bg-[var(--admin-accent)] px-3 text-xs font-semibold text-white transition hover:brightness-105"
           >
             <Sparkles className="h-3.5 w-3.5" />
-            {status.premium
-              ? "Manage plan & billing"
-              : status.isOwner
-                ? `Explore Premium · KES ${status.price.premiumMonthlyKes}/month`
-                : "View plan details"}
+            {attention
+              ? "Review billing"
+              : status.premium
+                ? "Manage plan & billing"
+                : status.isOwner
+                  ? `Explore Premium · KES ${status.price.premiumMonthlyKes}/month`
+                  : "View plan details"}
             <ArrowRight className="h-3.5 w-3.5" />
           </Link>
 
@@ -477,8 +479,22 @@ export function AdminPlanStatusMobileCard() {
 export function AdminPlanDashboardCard() {
   const { status, loading } = useAdminPlanStatus();
   const pathname = usePathname();
+  const [introPending, setIntroPending] = useState(false);
 
-  if (pathname !== "/admin") return null;
+  useEffect(() => {
+    if (!status || status.premium || status.subscription.paymentAttention || !status.pharmacy.setupCompleted) {
+      setIntroPending(false);
+      return;
+    }
+    const key = `afyvia-plan-intro:${status.pharmacy.id}:v1`;
+    try {
+      setIntroPending(window.localStorage.getItem(key) !== "dismissed");
+    } catch {
+      setIntroPending(true);
+    }
+  }, [status]);
+
+  if (pathname !== "/admin" || introPending) return null;
 
   if (loading) {
     return (
@@ -524,7 +540,11 @@ export function AdminPlanDashboardCard() {
                     : "Afyvia Free"}
               </h2>
               <span className="rounded-full bg-[var(--admin-inset)] px-2 py-0.5 text-[10px] font-semibold text-[var(--admin-text-muted)]">
-                {status.premium ? "Active" : "KES 0/month"}
+                {status.subscription.paymentAttention
+                  ? "Payment due"
+                  : status.premium
+                    ? "Active"
+                    : "KES 0/month"}
               </span>
             </div>
             <p className="mt-1 max-w-2xl text-xs leading-5 text-[var(--admin-text-muted)]">
@@ -577,7 +597,11 @@ export function AdminPlanDashboardCard() {
           href="/admin/billing"
           className="inline-flex min-h-9 items-center gap-1.5 text-xs font-semibold text-[var(--admin-accent-text)] hover:underline"
         >
-          {status.premium ? "Manage plan & billing" : "View plan & limits"}
+          {status.subscription.paymentAttention
+            ? "Review billing"
+            : status.premium
+              ? "Manage plan & billing"
+              : "View plan & limits"}
           <ArrowRight className="h-3.5 w-3.5" />
         </Link>
       </div>
@@ -688,7 +712,12 @@ export function AdminPlanWelcomeBanner() {
   const [visible, setVisible] = useState(false);
 
   useEffect(() => {
-    if (!status || status.premium || !status.pharmacy.setupCompleted) {
+    if (
+      !status ||
+      status.premium ||
+      status.subscription.paymentAttention ||
+      !status.pharmacy.setupCompleted
+    ) {
       setVisible(false);
       return;
     }
@@ -701,7 +730,12 @@ export function AdminPlanWelcomeBanner() {
     }
   }, [status]);
 
-  if (!status || status.premium || !visible) return null;
+  if (
+    !status ||
+    status.premium ||
+    status.subscription.paymentAttention ||
+    !visible
+  ) return null;
 
   const dismiss = () => {
     const key = `afyvia-plan-intro:${status.pharmacy.id}:v1`;
