@@ -1,5 +1,6 @@
 export const FREE_MEDICINE_LIMIT = 5;
 export const FREE_SERVICE_LIMIT = 2;
+export const FREE_MONTHLY_PRESCRIPTION_REFERRAL_LIMIT = 10;
 export const PREMIUM_FEATURES = new Set(["analytics", "ai_import", "pos_sync"]);
 
 export function listingLimitMessage(error: unknown): string | null {
