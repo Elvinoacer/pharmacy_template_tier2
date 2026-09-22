@@ -16,24 +16,31 @@ export default function PortalError({
   }, [error]);
 
   return (
-    <div className="flex min-h-[60vh] items-center justify-center px-4">
-      <div className="max-w-md rounded-3xl border border-[#e3ebe6] bg-white p-8 text-center shadow-sm">
-        <p className="text-xs font-bold uppercase tracking-[0.2em] text-rose-600">Something broke</p>
-        <h1 className="mt-2 text-xl font-semibold text-[#0c1a14]" style={{ fontFamily: "var(--font-display), serif" }}>
+    <div className="flex min-h-[60vh] w-full min-w-0 items-start justify-center overflow-x-clip px-4 py-6 sm:items-center sm:px-6 sm:py-8 lg:px-8">
+      <div className="w-full max-w-md rounded-2xl border border-[var(--line-2)] bg-[var(--card)] p-4 text-center shadow-sm sm:rounded-3xl sm:p-6 lg:p-8">
+        <p className="text-sm font-bold uppercase tracking-[0.16em] text-rose-700 dark:text-rose-300">
+          Something broke
+        </p>
+        <h1
+          className="mt-2 text-2xl font-semibold leading-tight text-[var(--foreground)] sm:text-3xl"
+          style={{ fontFamily: "var(--font-display), serif" }}
+        >
           We couldn&apos;t load this page
         </h1>
-        <p className="mt-2 text-sm text-[#5a6b62]">
+        <p className="mt-3 text-base leading-6 text-[var(--muted)]">
           Your data is safe. Try again, or head back to the dashboard. If it keeps happening, message
           your pharmacy team.
         </p>
-        <div className="mt-6 flex flex-wrap justify-center gap-2">
+        <div className="mt-6 flex w-full flex-col gap-3 sm:flex-row sm:flex-wrap sm:justify-center">
           <button
+            type="button"
             onClick={reset}
-            className="btn-primary btn-primary-sm"
+            className="btn-primary min-h-11 w-full sm:w-auto"
           >
-            <RefreshCw className="h-4 w-4" aria-hidden /> Try again
+            <RefreshCw className="h-4 w-4 shrink-0" aria-hidden="true" />
+            <span>Try again</span>
           </button>
-          <Link href="/portal" className="btn-ghost btn-ghost-sm">
+          <Link href="/portal" className="btn-ghost min-h-11 w-full sm:w-auto">
             Dashboard
           </Link>
         </div>

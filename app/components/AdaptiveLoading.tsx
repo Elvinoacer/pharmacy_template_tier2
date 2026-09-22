@@ -35,14 +35,14 @@ export default function AdaptiveLoading({
         <div className={styles.heading}>
           {title ? (
             <div>
-              <p className="text-[11px] font-bold uppercase tracking-wider text-[var(--admin-accent-text,#0d6e5a)]">
+              <p className="text-sm font-bold uppercase tracking-wider text-[var(--admin-accent-text,#0d6e5a)]">
                 {eyebrow || "Afyvia Workspace"}
               </p>
-              <h2 className="mt-1 text-2xl font-bold tracking-tight text-[var(--admin-text,#0c1a14)]">
+              <h2 className="mt-1 text-2xl font-bold tracking-tight text-[var(--admin-text,#0c1a14)] sm:text-3xl">
                 {title}
               </h2>
               {subtitle && (
-                <p className="mt-1 text-sm text-[var(--admin-text-muted,#465e53)]">
+                <p className="mt-2 text-base leading-6 text-[var(--admin-text-muted,#465e53)]">
                   {subtitle}
                 </p>
               )}
