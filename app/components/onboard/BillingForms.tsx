@@ -161,8 +161,8 @@ export function PharmacyEnrolmentPricingSelector({
   const amount = Math.max(0, (verificationPaid ? 500 : 100) - discount);
   return <section className="space-y-4 rounded-2xl border border-[var(--line-2)] p-5">
     <h3 className="font-semibold">{verificationPaid ? "Free plan included · Premium is optional" : "One-time verification fee"}</h3>
-    <p className="text-sm">Launch with 5 public medicine listings and 2 active services, reservations, bookings and your own M-Pesa connection. No monthly fee is required.</p>
-    {verificationPaid && <p className="text-sm">Premium costs KES 500/month and unlocks more listings, AI-assisted imports, advanced analytics and POS synchronization.</p>}
+    <p className="text-sm">Launch with 5 public medicine listings, 2 active services, 10 direct Afyvia prescription referrals per month, reservations, bookings and your own M-Pesa connection. No monthly fee is required.</p>
+    {verificationPaid && <p className="text-sm">Premium costs KES 500/month and unlocks unlimited direct Afyvia prescription referrals, more listings, AI-assisted imports, advanced analytics and POS synchronization.</p>}
     {subscriptionActive ? <p role="status">Premium is active.</p> : <form action={action}>
       <input type="hidden" name="pharmacyId" value={pharmacyId} />
       <input type="hidden" name="intent" value={verificationPaid ? "activate" : "verification_checkout"} />
