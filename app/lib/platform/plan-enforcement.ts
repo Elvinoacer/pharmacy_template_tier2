@@ -2,12 +2,87 @@ import "server-only";
 
 import { prismaUnscoped } from "@/app/lib/db";
 import { hasPremiumPlan } from "@/app/lib/platform/entitlements";
-import { FREE_MEDICINE_LIMIT, FREE_SERVICE_LIMIT } from "@/app/lib/platform/plan-policy";
+import {
+  FREE_MEDICINE_LIMIT,
+  FREE_MONTHLY_CAMPAIGN_LAUNCH_LIMIT,
+  FREE_SERVICE_LIMIT,
+  type PremiumGrowthFeature,
+} from "@/app/lib/platform/plan-policy";
 
-function limitError(code: "FREE_MEDICINE_LIMIT" | "FREE_SERVICE_LIMIT") {
+function paymentRequiredError(code: string) {
   const error = new Error(code);
   (error as Error & { status?: number }).status = 402;
   return error;
+}
+
+function limitError(code: "FREE_MEDICINE_LIMIT" | "FREE_SERVICE_LIMIT" | "FREE_MONTHLY_CAMPAIGN_LAUNCH_LIMIT") {
+  return paymentRequiredError(code);
+}
+
+function monthBoundsUtc(reference = new Date()) {
+  const start = new Date(Date.UTC(reference.getUTCFullYear(), reference.getUTCMonth(), 1));
+  const end = new Date(Date.UTC(reference.getUTCFullYear(), reference.getUTCMonth() + 1, 1));
+  return { start, end };
+}
+
+export async function assertPremiumGrowthFeature(
+  pharmacyId: string,
+  feature: PremiumGrowthFeature,
+) {
+  if (await hasPremiumPlan(pharmacyId)) return;
+  throw paymentRequiredError(`PREMIUM_REQUIRED:${feature}`);
+}
+
+export async function assertCampaignConfiguration(
+  pharmacyId: string,
+  options: {
+    scheduledFor?: Date | null;
+    channel?: string | null;
+    segmentId?: string | null;
+  },
+) {
+  if (await hasPremiumPlan(pharmacyId)) return;
+
+  if (options.scheduledFor) {
+    throw paymentRequiredError("PREMIUM_REQUIRED:campaign_scheduling");
+  }
+  if (options.channel === "multi") {
+    throw paymentRequiredError("PREMIUM_REQUIRED:multi_channel_campaigns");
+  }
+
+  if (options.segmentId) {
+    const segment = await prismaUnscoped.segment.findFirst({
+      where: { id: options.segmentId, pharmacyId },
+      select: { isSystem: true },
+    });
+    if (!segment?.isSystem) {
+      throw paymentRequiredError("PREMIUM_REQUIRED:custom_segments");
+    }
+  }
+}
+
+export async function assertMonthlyCampaignLaunchSlot(
+  pharmacyId: string,
+  reference = new Date(),
+) {
+  if (await hasPremiumPlan(pharmacyId)) return;
+
+  const { start, end } = monthBoundsUtc(reference);
+  const launched = await prismaUnscoped.campaign.count({
+    where: {
+      pharmacyId,
+      OR: [
+        { sentAt: { gte: start, lt: end } },
+        {
+          status: "sending",
+          updatedAt: { gte: start, lt: end },
+        },
+      ],
+    },
+  });
+  if (launched >= FREE_MONTHLY_CAMPAIGN_LAUNCH_LIMIT) {
+    throw limitError("FREE_MONTHLY_CAMPAIGN_LAUNCH_LIMIT");
+  }
 }
 
 /** Premium is an active paid period or an unexpired trial. A past-due renewal is not premium. */
