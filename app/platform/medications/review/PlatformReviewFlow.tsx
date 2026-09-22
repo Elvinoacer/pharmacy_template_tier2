@@ -2,6 +2,7 @@
 
 import { useState, useTransition } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { useRouter } from "next/navigation";
 import {
   AlertCircle,
@@ -33,6 +34,7 @@ export type ReviewItem = {
   packSize: string | null;
   category: string;
   barcode: string | null;
+  imageUrl: string | null;
   status: string;
   controlledDrug: boolean;
   controlledDrugSchedule: string | null;
@@ -58,6 +60,7 @@ export type ReviewItem = {
     dosageForm: { value: string } | null;
     manufacturer: { name: string } | null;
     barcode: string | null;
+    imageUrl: string | null;
     status: string;
     pharmacyCount: number;
   }>;
@@ -247,7 +250,19 @@ export function PlatformReviewFlow({ items, total }: Props) {
                 {/* Header & Main Info */}
                 <div className="p-4 sm:p-5">
                   <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
-                    <div className="space-y-1.5">
+                    <div className="flex min-w-0 items-start gap-3">
+                      <Link
+                        href={`/platform/medications/${item.id}`}
+                        className="relative h-20 w-20 shrink-0 overflow-hidden rounded-2xl border border-[var(--admin-border)] bg-[var(--admin-bg)]"
+                        aria-label={`Open ${item.name}`}
+                      >
+                        {item.imageUrl ? (
+                          <Image unoptimized src={item.imageUrl} alt={item.name} fill sizes="80px" className="object-contain p-2" />
+                        ) : (
+                          <span className="flex h-full w-full items-center justify-center"><Pill className="h-5 w-5 text-[var(--admin-muted)]" /></span>
+                        )}
+                      </Link>
+                      <div className="min-w-0 space-y-1.5">
                       <div className="flex flex-wrap items-center gap-2">
                         <span className="inline-flex items-center gap-1 rounded-md border border-amber-500/30 bg-amber-500/10 px-2 py-0.5 text-[11px] font-semibold text-amber-800 dark:text-amber-200">
                           Needs Review
@@ -315,6 +330,7 @@ export function PlatformReviewFlow({ items, total }: Props) {
                           ))}
                         </div>
                       )}
+                      </div>
                     </div>
 
                     {/* Actions toolbar */}
@@ -373,7 +389,15 @@ export function PlatformReviewFlow({ items, total }: Props) {
                           key={cand.id}
                           className="flex flex-col gap-2 rounded-xl border border-[var(--admin-border)] bg-[var(--admin-card)] p-3 sm:flex-row sm:items-center sm:justify-between"
                         >
-                          <div className="text-xs">
+                          <div className="flex min-w-0 items-start gap-2.5 text-xs">
+                            <span className="relative h-12 w-12 shrink-0 overflow-hidden rounded-xl border border-[var(--admin-border)] bg-[var(--admin-bg)]">
+                              {cand.imageUrl ? (
+                                <Image unoptimized src={cand.imageUrl} alt={cand.name} fill sizes="48px" className="object-contain p-1" />
+                              ) : (
+                                <span className="flex h-full w-full items-center justify-center"><Pill className="h-4 w-4 text-[var(--admin-muted)]" /></span>
+                              )}
+                            </span>
+                            <div className="min-w-0">
                             <div className="flex items-center gap-2 font-medium text-[var(--admin-text)]">
                               <span>{cand.name}</span>
                               <span className="rounded-md bg-emerald-500/10 px-1.5 py-0.2 text-[10px] font-semibold text-emerald-700 dark:text-emerald-300">
@@ -391,6 +415,7 @@ export function PlatformReviewFlow({ items, total }: Props) {
                               {cand.dosageForm && <span>Form: {cand.dosageForm.value}</span>}
                               {cand.manufacturer && <span>Mfr: {cand.manufacturer.name}</span>}
                               {cand.barcode && <span>Barcode: {cand.barcode}</span>}
+                            </div>
                             </div>
                           </div>
 
