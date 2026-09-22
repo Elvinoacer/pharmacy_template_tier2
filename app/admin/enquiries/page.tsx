@@ -81,10 +81,11 @@ export default async function AdminEnquiriesPage({
       title="Patient enquiries"
       subtitle={`${total} enquir${total === 1 ? "y" : "ies"} from website, portal, and AI`}
     >
-      <div className="mb-6 grid grid-cols-2 gap-3 md:grid-cols-4">
+      <div className="mx-auto w-full max-w-[1280px]">
+      <div className="mb-6 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
         {(["new", "in_progress", "resolved", "closed"] as const).map((s) => (
           <div key={s} className="admin-stat min-h-24 p-4 transition-[border-color,box-shadow] duration-200 hover:shadow-sm">
-            <p className="text-[11px] font-semibold uppercase tracking-[0.08em] admin-muted">
+            <p className="text-sm font-semibold uppercase tracking-[0.08em] admin-muted">
               {s.replace("_", " ")}
             </p>
             <p className="mt-1 text-2xl font-bold admin-text">{counts[s]}</p>
@@ -100,14 +101,14 @@ export default async function AdminEnquiriesPage({
               name="q"
               defaultValue={sp.q || ""}
               placeholder="Search name, email, subject, message…"
-              className="w-full rounded-xl border border-[var(--admin-border)] bg-[var(--admin-inset)] py-2.5 pl-9 pr-3 text-sm admin-text placeholder:admin-soft transition focus:border-[var(--admin-accent)] focus:bg-[var(--admin-card)] focus:outline-none"
+              className="min-h-11 w-full rounded-xl border border-[var(--admin-border)] bg-[var(--admin-inset)] py-3 pl-9 pr-3 text-base admin-text placeholder:admin-soft transition focus:border-[var(--admin-accent)] focus:bg-[var(--admin-card)] focus:outline-none sm:text-sm"
             />
           </div>
-          <button type="submit" className="btn-admin-sm w-full justify-center sm:w-auto">
+          <button type="submit" className="btn-admin-sm min-h-11 w-full justify-center !text-sm sm:w-auto">
             <Search className="h-3.5 w-3.5" /> Search
           </button>
           {sp.q && (
-            <Link href="/admin/enquiries" className="btn-admin-sm w-full justify-center !bg-[var(--admin-inset-2)] sm:w-auto">
+            <Link href="/admin/enquiries" className="btn-admin-sm min-h-11 w-full justify-center !bg-[var(--admin-inset-2)] !text-sm sm:w-auto">
               <X className="h-3.5 w-3.5" /> Clear
             </Link>
           )}
@@ -133,31 +134,31 @@ export default async function AdminEnquiriesPage({
                         {TYPE_ICON[e.type] || "💬"}
                       </span>
                       <div className="min-w-0 flex-1">
-                        <p className="break-words font-semibold admin-text">{e.name}</p>
-                        <p className="text-xs capitalize admin-muted">{e.type.replace("_", " ")}</p>
+                        <p className="break-words text-base font-semibold admin-text">{e.name}</p>
+                        <p className="text-sm capitalize admin-muted">{e.type.replace("_", " ")}</p>
                       </div>
-                      <span className={`shrink-0 rounded-full px-2.5 py-1 text-[11px] font-semibold capitalize ${STATUS_COLOR[e.status]}`}>
+                      <span className={`shrink-0 rounded-full px-3 py-1 text-sm font-semibold capitalize ${STATUS_COLOR[e.status]}`}>
                         {e.status.replace("_", " ")}
                       </span>
                     </div>
 
-                    <div className="mt-3 grid gap-1.5 text-xs admin-muted sm:grid-cols-2">
-                      <span className="inline-flex min-w-0 items-center gap-1.5">
+                    <div className="mt-3 grid gap-2 text-sm admin-muted sm:grid-cols-2">
+                      <span className="inline-flex min-w-0 items-center gap-2">
                         <Mail className="h-3.5 w-3.5 shrink-0" />
-                        <span className="truncate">{e.email || "No email"}</span>
+                        <span className="break-all">{e.email || "No email"}</span>
                       </span>
                       {e.phone && (
-                        <span className="inline-flex items-center gap-1.5">
+                        <span className="inline-flex items-center gap-2">
                           <Phone className="h-3.5 w-3.5 shrink-0" /> {e.phone}
                         </span>
                       )}
-                      <span className="inline-flex items-center gap-1.5 sm:col-span-2">
+                      <span className="inline-flex items-center gap-2 sm:col-span-2">
                         <Clock className="h-3.5 w-3.5 shrink-0" /> {formatDateTime(e.createdAt)}
                       </span>
                     </div>
 
                     {e.customer && (
-                      <div className="mt-3 inline-flex items-center gap-1.5 rounded-full bg-[var(--admin-accent-soft)] px-2.5 py-1 text-[11px] font-medium admin-accent-text">
+                      <div className="mt-3 inline-flex items-center gap-2 rounded-full bg-[var(--admin-accent-soft)] px-3 py-1 text-sm font-medium admin-accent-text">
                         <User className="h-3 w-3" /> Registered customer
                       </div>
                     )}
@@ -165,9 +166,9 @@ export default async function AdminEnquiriesPage({
                     {e.subject && (
                       <p className="mt-4 text-sm font-semibold admin-text">{e.subject}</p>
                     )}
-                    <p className="mt-1 whitespace-pre-wrap break-words text-sm leading-6 admin-text">{e.message}</p>
+                    <p className="mt-1 whitespace-pre-wrap break-words text-base leading-6 admin-text">{e.message}</p>
                     {e.staffNotes && (
-                      <p className="mt-3 rounded-xl border border-[var(--admin-border)] bg-[var(--admin-card)] px-3 py-2 text-xs leading-5 admin-muted">
+                      <p className="mt-3 rounded-xl border border-[var(--admin-border)] bg-[var(--admin-card)] px-3 py-2 text-sm leading-5 admin-muted">
                         <strong className="admin-accent-text">Staff notes:</strong> {e.staffNotes}
                       </p>
                     )}
@@ -191,6 +192,7 @@ export default async function AdminEnquiriesPage({
           variant="admin"
         />
       </AdminPanel>
+      </div>
     </AdminShell>
   );
 }
