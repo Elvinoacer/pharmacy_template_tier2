@@ -230,7 +230,7 @@ export default async function AdminOrdersPage({
       title="Sales & orders"
       subtitle="Record counter sales, manage reservations, and follow payments and deliveries."
       actions={
-        <div className="flex items-center gap-2">
+        <div className="w-full sm:w-auto [&_select]:w-full [&_select]:text-base sm:[&_select]:w-auto sm:[&_select]:text-sm">
           <PeriodSelect period={period} status={status} />
         </div>
       }
@@ -241,31 +241,31 @@ export default async function AdminOrdersPage({
         </div>
       )}
 
-      <div className="mb-6 grid grid-cols-2 gap-3 sm:grid-cols-4">
+      <div className="mb-6 grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
         <div className="admin-stat p-4">
           <div className="flex items-center justify-between">
-            <p className="text-xs font-semibold uppercase tracking-wide admin-muted">Total revenue ({period})</p>
+            <p className="text-sm font-semibold uppercase tracking-wide admin-muted">Total revenue ({period})</p>
             <DollarSign className="h-3.5 w-3.5 admin-accent-text" />
           </div>
           <p className="mt-1 text-2xl font-bold admin-text">KES {totalRevenue.toLocaleString(undefined, { maximumFractionDigits: 0 })}</p>
         </div>
         <div className="admin-stat p-4">
           <div className="flex items-center justify-between">
-            <p className="text-xs font-semibold uppercase tracking-wide admin-muted">Orders</p>
+            <p className="text-sm font-semibold uppercase tracking-wide admin-muted">Orders</p>
             <ShoppingCart className="h-3.5 w-3.5 admin-accent-text" />
           </div>
           <p className="mt-1 text-2xl font-bold admin-text">{orderCount}</p>
         </div>
         <div className="admin-stat p-4">
           <div className="flex items-center justify-between">
-            <p className="text-xs font-semibold uppercase tracking-wide admin-muted">Avg order value</p>
+            <p className="text-sm font-semibold uppercase tracking-wide admin-muted">Avg order value</p>
             <TrendingUp className="h-3.5 w-3.5 admin-accent-text" />
           </div>
           <p className="mt-1 text-2xl font-bold admin-text">KES {avgOrderValue.toLocaleString(undefined, { maximumFractionDigits: 0 })}</p>
         </div>
         <div className="admin-stat p-4">
           <div className="flex items-center justify-between">
-            <p className="text-xs font-semibold uppercase tracking-wide admin-muted">Waived</p>
+            <p className="text-sm font-semibold uppercase tracking-wide admin-muted">Waived</p>
             <AlertTriangle className="h-3.5 w-3.5 text-amber-700" />
           </div>
           <p className="mt-1 text-2xl font-bold text-amber-700">{waivedOrders}</p>
@@ -274,7 +274,7 @@ export default async function AdminOrdersPage({
 
       {dayKeys.length > 1 && (
         <div className="mb-6 rounded-2xl border border-[var(--admin-border)] bg-[var(--admin-card)] p-4">
-          <p className="mb-2 text-xs font-semibold uppercase tracking-wide admin-muted">Daily revenue</p>
+          <p className="mb-2 text-sm font-semibold uppercase tracking-wide admin-muted">Daily revenue</p>
           <div className="flex h-20 items-end gap-1">
             {dayKeys.slice(-30).map((d) => {
               const v = byDay[d];
@@ -289,7 +289,7 @@ export default async function AdminOrdersPage({
               );
             })}
           </div>
-          <p className="mt-2 text-xs admin-soft">{dayKeys.length} days with sales</p>
+          <p className="mt-2 text-sm admin-soft">{dayKeys.length} days with sales</p>
         </div>
       )}
 
@@ -299,11 +299,13 @@ export default async function AdminOrdersPage({
           title="Record a counter sale"
           description="Accept cash or M-Pesa. Turn off automatic dispatch if the customer will collect later."
         >
-          <OrderForm
-            action={adminCreateOrderAction}
-            medications={medications}
-            customers={customers}
-          />
+          <div className="[&_button]:min-h-11 [&_button]:text-sm [&_label]:text-sm [&_legend]:text-sm [&_p]:text-sm [&_select]:text-base [&_span]:text-sm [&_textarea]:text-base [&_input:not([type='checkbox']):not([type='radio']):not([type='hidden'])]:text-base sm:[&_select]:text-sm sm:[&_textarea]:text-sm sm:[&_input:not([type='checkbox']):not([type='radio']):not([type='hidden'])]:text-sm">
+            <OrderForm
+              action={adminCreateOrderAction}
+              medications={medications}
+              customers={customers}
+            />
+          </div>
         </AdminPanel>
 
         <AdminPanel title="Recent orders" description={`${total} total`}>
@@ -324,11 +326,11 @@ export default async function AdminOrdersPage({
                     key={o.id}
                     className="rounded-xl border border-[var(--admin-border)] bg-[var(--admin-inset)] p-3"
                   >
-                    <div className="flex items-start justify-between gap-2">
-                      <div className="min-w-0 flex-1">
+                    <div className="flex flex-col gap-3 lg:flex-row lg:items-start lg:justify-between">
+                      <div className="min-w-0 w-full flex-1">
                         <div className="flex flex-wrap items-center gap-2">
                           <p className="font-semibold admin-text">{displayName}</p>
-                          <span className={`rounded-full px-2 py-0.5 text-xs font-semibold capitalize ${
+                          <span className={`rounded-full px-2 py-0.5 text-sm font-semibold capitalize ${
                             o.status === "paid" ? "bg-emerald-500/15 text-emerald-700"
                             : o.status === "waived" ? "bg-amber-500/15 text-amber-700"
                             : o.status === "fulfilled" ? "bg-blue-500/15 text-blue-700"
@@ -338,37 +340,37 @@ export default async function AdminOrdersPage({
                             {o.status}
                           </span>
                           {isDispatched ? (
-                            <span className="rounded-full bg-blue-500/10 px-2 py-0.5 text-xs font-semibold text-blue-700">
+                            <span className="rounded-full bg-blue-500/10 px-2 py-0.5 text-sm font-semibold text-blue-700">
                               dispatched
                             </span>
                           ) : o.status === "paid" ? (
-                            <span className="rounded-full bg-amber-500/10 px-2 py-0.5 text-xs font-semibold text-amber-700">
+                            <span className="rounded-full bg-amber-500/10 px-2 py-0.5 text-sm font-semibold text-amber-700">
                               await dispatch
                             </span>
                           ) : null}
-                          <span className="rounded-full bg-[var(--admin-inset-2)] px-2 py-0.5 text-xs admin-muted">
+                          <span className="rounded-full bg-[var(--admin-inset-2)] px-2 py-0.5 text-sm admin-muted">
                             {o.source}
                           </span>
                           {o.fulfillment && o.fulfillment !== "reserve" && (
-                            <span className="rounded-full bg-[var(--admin-inset-2)] px-2 py-0.5 text-xs admin-muted">
+                            <span className="rounded-full bg-[var(--admin-inset-2)] px-2 py-0.5 text-sm admin-muted">
                               {o.fulfillment}
                             </span>
                           )}
                         </div>
-                        <p className="mt-0.5 text-xs admin-muted">
+                        <p className="mt-1 break-words text-sm admin-muted">
                           {o.items.map((i) => `${i.quantity}× ${i.name}`).join(", ")}
                         </p>
                         {o.reason && (
-                          <p className="mt-0.5 text-xs text-amber-800/90">
+                          <p className="mt-0.5 text-sm text-amber-800/90">
                             Reason: {o.reason}
                           </p>
                         )}
                         {o.dispenserNote && (
-                          <p className="mt-0.5 text-xs text-emerald-800/90">
+                          <p className="mt-0.5 text-sm text-emerald-800/90">
                             Dispenser: {o.dispenserNote}
                           </p>
                         )}
-                        <p className="mt-1 text-xs admin-soft">
+                        <p className="mt-1 text-sm admin-soft">
                           {formatDateTime(o.createdAt)}
                           {o.guestPhone && <> · {o.guestPhone}</>}
                           {o.payments[0] && o.payments[0].providerRef && (
@@ -376,18 +378,20 @@ export default async function AdminOrdersPage({
                           )}
                         </p>
                       </div>
-                      <div className="text-right">
+                      <div className="w-full text-left lg:w-auto lg:min-w-[12rem] lg:text-right">
                         <p className="font-bold admin-text">KES {o.total.toLocaleString()}</p>
-                        <OrderSettleActions
-                          orderId={o.id}
-                          status={o.status}
-                          guestPhone={o.guestPhone}
-                          defaultPhone={o.customer?.phone || o.guestPhone}
-                          dispatched={isDispatched}
-                          hasRxItem={o.hasRxItem}
-                          existingDispenserNote={o.dispenserNote}
-                          customerReason={o.reason}
-                        />
+                        <div className="mt-3 w-full text-left [&_button]:min-h-11 [&_button]:px-3 [&_button]:py-2 [&_button]:text-sm [&_input]:min-h-11 [&_input]:text-base [&_select]:min-h-11 [&_select]:text-base [&_textarea]:min-h-11 [&_textarea]:text-base lg:mt-1 lg:text-right sm:[&_input]:text-sm sm:[&_select]:text-sm sm:[&_textarea]:text-sm">
+                          <OrderSettleActions
+                            orderId={o.id}
+                            status={o.status}
+                            guestPhone={o.guestPhone}
+                            defaultPhone={o.customer?.phone || o.guestPhone}
+                            dispatched={isDispatched}
+                            hasRxItem={o.hasRxItem}
+                            existingDispenserNote={o.dispenserNote}
+                            customerReason={o.reason}
+                          />
+                        </div>
                       </div>
                     </div>
                   </li>
@@ -398,14 +402,16 @@ export default async function AdminOrdersPage({
         </AdminPanel>
       </div>
 
-      <Pagination
-        page={page}
-        total={total}
-        pageSize={PAGE_SIZE}
-        basePath="/admin/orders"
-        queryParams={{ status, period }}
-        variant="admin"
-      />
+      <div className="[&_a]:min-h-11 [&_a]:min-w-11 [&_a]:text-sm [&_span]:min-h-11 [&_span]:min-w-11 [&_span]:text-sm">
+        <Pagination
+          page={page}
+          total={total}
+          pageSize={PAGE_SIZE}
+          basePath="/admin/orders"
+          queryParams={{ status, period }}
+          variant="admin"
+        />
+      </div>
     </AdminShell>
   );
 }
