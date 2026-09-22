@@ -43,7 +43,13 @@ const SYSTEM_FIELDS: SystemField[] = [
 
 type Step = "upload" | "map" | "preview" | "importing" | "done";
 
-type Summary = { created: number; matched: number; flagged: number };
+type Summary = {
+  created: number;
+  matched: number;
+  alreadyStocked: number;
+  flagged: number;
+  errors: Array<{ row: number; message: string }>;
+};
 
 const STEP_META: Array<{ key: Exclude<Step, "importing" | "done">; label: string }> = [
   { key: "upload", label: "Upload" },
@@ -197,7 +203,15 @@ export function CsvImportFlow() {
       const payload = (await response.json()) as Summary;
       setSummary(payload);
       setStep("done");
-      toast.success(`Imported ${payload.created + payload.matched} medications (${payload.matched} matched existing).`);
+      if (payload.errors.length > 0) {
+        toast.warning(
+          `Processed ${payload.created + payload.matched} medicines; ${payload.errors.length} row(s) need attention.`,
+        );
+      } else {
+        toast.success(
+          `Imported ${payload.created + payload.matched} medications (${payload.matched} matched existing).`,
+        );
+      }
       router.refresh();
     } catch (importError) {
       setError(importError instanceof Error ? importError.message : "Import failed.");
@@ -390,21 +404,49 @@ export function CsvImportFlow() {
           <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-2xl bg-emerald-500/10 text-emerald-700 dark:text-emerald-300">
             <Check className="h-6 w-6" />
           </div>
-          <h2 className="mt-4 text-lg font-bold admin-text">Import complete</h2>
-          <p className="mt-1 text-xs admin-muted">Your catalogue has been refreshed with the processed rows.</p>
+          <h2 className="mt-4 text-lg font-bold admin-text">
+            {summary?.errors.length ? "Import finished with rows to review" : "Import complete"}
+          </h2>
+          <p className="mt-1 text-xs admin-muted">
+            {summary?.errors.length
+              ? "Successful rows were saved. Failed rows were left unchanged so you can correct and retry them safely."
+              : "Your catalogue has been refreshed with the processed rows."}
+          </p>
 
           {summary && (
-            <div className="mx-auto mt-5 grid max-w-xl grid-cols-3 gap-2 sm:gap-3">
+            <div className="mx-auto mt-5 grid max-w-2xl grid-cols-2 gap-2 sm:grid-cols-5 sm:gap-3">
               {[
                 [summary.created, "New masters", "text-emerald-700 dark:text-emerald-300"],
                 [summary.matched, "Matched", "text-blue-700 dark:text-blue-300"],
+                [summary.alreadyStocked, "Already stocked", "admin-text"],
                 [summary.flagged, "Needs enrichment", "text-amber-700 dark:text-amber-300"],
+                [summary.errors.length, "Failed rows", summary.errors.length ? "text-rose-700 dark:text-rose-300" : "admin-text"],
               ].map(([value, label, className]) => (
                 <div key={label as string} className="rounded-xl bg-[var(--admin-card)] p-3 sm:p-4">
                   <p className={`text-xl font-black sm:text-2xl ${className as string}`}>{value as number}</p>
                   <p className="mt-1 text-[10px] leading-4 admin-muted sm:text-xs">{label as string}</p>
                 </div>
               ))}
+            </div>
+          )}
+
+          {summary && summary.errors.length > 0 && (
+            <div className="mx-auto mt-5 max-w-2xl rounded-2xl border border-rose-500/20 bg-rose-500/[0.05] p-3 text-left sm:p-4">
+              <p className="text-xs font-bold text-rose-700 dark:text-rose-300">
+                Rows to correct ({summary.errors.length})
+              </p>
+              <ul className="mt-2 space-y-1.5">
+                {summary.errors.slice(0, 10).map((item) => (
+                  <li key={`${item.row}:${item.message}`} className="text-xs leading-5 text-rose-700/90 dark:text-rose-200/90">
+                    <span className="font-semibold">Row {item.row}:</span> {item.message}
+                  </li>
+                ))}
+              </ul>
+              {summary.errors.length > 10 && (
+                <p className="mt-2 text-[11px] text-rose-700/75 dark:text-rose-200/75">
+                  +{summary.errors.length - 10} more failed row(s). Correct the source file and import again.
+                </p>
+              )}
             </div>
           )}
 
