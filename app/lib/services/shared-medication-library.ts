@@ -367,6 +367,9 @@ export async function createOrReuseMedicationForPharmacy(
 ): Promise<SharedMedicationResult> {
   if (!clean(input.name)) throw new Error("Medication name is required.");
 
+  const pharmacyId = peekTenant()?.pharmacyId;
+  if (!pharmacyId) throw new Error("PHARMACY_CONTEXT_REQUIRED");
+
   const incomingEnrichment = enrichmentFor(input);
   const identityLock = lockKey(input);
 
@@ -436,7 +439,7 @@ export async function createOrReuseMedicationForPharmacy(
     }
 
     const existing = await tx.pharmacyInventory.findFirst({
-      where: { medicationMasterId: masterId },
+      where: { pharmacyId, medicationMasterId: masterId },
       select: { id: true },
     });
     if (existing) {
@@ -458,7 +461,7 @@ export async function createOrReuseMedicationForPharmacy(
     const slug = await uniqueInventorySlug(tx, seed.slug || input.slug, masterName, masterId);
     await reservePublicListing(seed);
     const inventory = await tx.pharmacyInventory.create({
-      data: { ...inventoryData(seed, slug), medicationMasterId: masterId },
+      data: { pharmacyId, ...inventoryData(seed, slug), medicationMasterId: masterId },
       select: { id: true },
     });
     const master = await tx.medicationMaster.findUniqueOrThrow({
