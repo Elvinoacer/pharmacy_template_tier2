@@ -2,6 +2,7 @@
 
 import { useMemo, useState, useCallback } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import {
   ArrowRight,
   CheckCircle2,
@@ -270,7 +271,18 @@ export default function NetworkMedicineComparison({
                 className="care-glass relative flex flex-col gap-3 rounded-3xl border !border-[var(--medicine-ui-border)] bg-[var(--card-elev)] p-4 shadow-sm transition hover:!border-[var(--brand)] sm:p-5"
               >
                 <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-                  <div className="min-w-0">
+                  <div className="flex min-w-0 items-start gap-3">
+                    <Link href={item.href} className="relative h-20 w-20 shrink-0 overflow-hidden rounded-2xl border border-[var(--medicine-ui-border)] bg-[var(--card)]" aria-label={`View ${masterName}`}>
+                      <Image
+                        unoptimized
+                        src={item.medicationMaster.imageUrl || "/images/care/medicine-still-life.png"}
+                        alt={item.medicationMaster.imageUrl ? item.medicationMaster.name : ""}
+                        fill
+                        sizes="80px"
+                        className={item.medicationMaster.imageUrl ? "object-contain p-2" : "object-cover"}
+                      />
+                    </Link>
+                    <div className="min-w-0">
                     <div className="flex flex-wrap items-center gap-2">
                       <p className="font-bold text-base text-[var(--foreground)]">{item.pharmacy.name}</p>
                       {isNearest && (
