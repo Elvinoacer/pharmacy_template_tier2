@@ -116,7 +116,7 @@ export default async function AddMedicationChooserPage() {
       title="Add a medicine"
       subtitle="Choose the fastest safe acquisition path for the medicine you are adding."
     >
-      <div className="mx-auto w-full max-w-5xl space-y-5 sm:space-y-6">
+      <div className="mx-auto w-full min-w-0 max-w-5xl space-y-5 sm:space-y-6">
         <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
           <Link
             href="/admin/medications"
@@ -125,13 +125,13 @@ export default async function AddMedicationChooserPage() {
             <ArrowLeft className="h-4 w-4 transition-transform group-hover:-translate-x-0.5" />
             Back to catalogue
           </Link>
-          <div className="inline-flex items-center gap-2 rounded-xl border border-emerald-500/20 bg-emerald-500/10 px-3 py-2 text-xs font-semibold text-emerald-700 dark:text-emerald-300">
+          <div className="inline-flex items-center gap-2 rounded-xl border border-emerald-500/20 bg-emerald-500/10 px-3 py-2 text-sm font-semibold text-emerald-700 dark:text-emerald-300">
             <Zap className="h-3.5 w-3.5" />
             Start with the shared library whenever possible
           </div>
         </div>
 
-        <div className="grid gap-3 sm:grid-cols-2 sm:gap-4">
+        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 sm:gap-4 lg:grid-cols-3">
           {METHODS.map((m) => {
             const Icon = m.icon;
             const premiumMethod = m.href === "/admin/medications/import/ai";
@@ -147,19 +147,19 @@ export default async function AddMedicationChooserPage() {
                 <div
                   key={m.title}
                   aria-disabled="true"
-                  className="relative flex min-h-[190px] flex-col rounded-2xl border border-dashed border-[var(--admin-border-2)] bg-[var(--admin-inset)] p-4 opacity-70 sm:p-5"
+                  className="relative flex min-h-48 flex-col rounded-2xl border border-dashed border-[var(--admin-border-2)] bg-[var(--admin-inset)] p-4 opacity-70 sm:p-5"
                 >
                   <div className="flex items-start justify-between gap-3">
                     <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border border-[var(--admin-border)] bg-[var(--admin-card)] admin-soft">
                       <Icon className="h-5 w-5" />
                     </div>
-                    <span className="inline-flex items-center gap-1 rounded-full bg-[var(--admin-inset-2)] px-2.5 py-1 text-[11px] font-bold admin-muted">
+                    <span className="inline-flex items-center gap-1 rounded-full bg-[var(--admin-inset-2)] px-2.5 py-1 text-sm font-bold admin-muted">
                       <Lock className="h-3 w-3" /> Coming soon
                     </span>
                   </div>
                   <h3 className="mt-4 text-base font-bold admin-text">{m.title}</h3>
                   <p className="mt-1.5 text-sm leading-6 admin-muted">{m.description}</p>
-                  <p className="mt-auto pt-4 text-xs font-semibold admin-soft">{m.helper}</p>
+                  <p className="mt-auto pt-4 text-sm font-semibold admin-soft">{m.helper}</p>
                 </div>
               );
             }
@@ -168,7 +168,7 @@ export default async function AddMedicationChooserPage() {
               <Link
                 key={m.title}
                 href={m.href}
-                className="group relative flex min-h-[190px] flex-col overflow-hidden rounded-2xl border border-[var(--admin-border)] bg-[var(--admin-card)] p-4 shadow-sm transition duration-200 hover:-translate-y-0.5 hover:border-emerald-500/35 hover:shadow-lg hover:shadow-emerald-500/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/50 sm:p-5"
+                className="group relative flex min-h-48 flex-col overflow-hidden rounded-2xl border border-[var(--admin-border)] bg-[var(--admin-card)] p-4 shadow-sm transition duration-200 hover:-translate-y-0.5 hover:border-emerald-500/35 hover:shadow-lg hover:shadow-emerald-500/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/50 sm:p-5"
               >
                 <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-emerald-500/60 to-transparent opacity-0 transition-opacity group-hover:opacity-100" />
                 <div className="flex items-start justify-between gap-3">
@@ -177,13 +177,13 @@ export default async function AddMedicationChooserPage() {
                       <Icon className="h-5 w-5" />
                     </div>
                     {m.priority && (
-                      <span className="text-[11px] font-bold uppercase tracking-[0.16em] admin-soft">
+                      <span className="text-sm font-bold uppercase tracking-[0.16em] admin-soft">
                         Option {m.priority}
                       </span>
                     )}
                   </div>
                   {badge && (
-                    <span className={`rounded-full px-2.5 py-1 text-[11px] font-bold shadow-sm ${
+                    <span className={`rounded-full px-2.5 py-1 text-sm font-bold shadow-sm ${
                       premiumMethod && !premiumActive
                         ? "bg-violet-500/15 text-violet-700 ring-1 ring-violet-500/20 dark:text-violet-300"
                         : "bg-emerald-500 text-white"
@@ -197,7 +197,7 @@ export default async function AddMedicationChooserPage() {
                 <p className="mt-1.5 text-sm leading-6 admin-muted">{m.description}</p>
 
                 <div className="mt-auto flex items-center justify-between gap-3 pt-4">
-                  <span className="text-xs font-semibold admin-soft">{helper}</span>
+                  <span className="text-sm font-semibold admin-soft">{helper}</span>
                   <span className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-[var(--admin-inset)] admin-text transition group-hover:bg-emerald-500 group-hover:text-white">
                     <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
                   </span>
@@ -210,7 +210,7 @@ export default async function AddMedicationChooserPage() {
         <div className="rounded-2xl border border-sky-500/20 bg-sky-500/10 p-4 sm:p-5">
           <div className="flex items-start gap-3">
             <div className="mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-sky-500/15 text-sky-700 dark:text-sky-300">
-              <CheckCircle2 className="h-4.5 w-4.5" />
+              <CheckCircle2 className="h-5 w-5" />
             </div>
             <div className="min-w-0">
               <p className="text-sm font-bold text-sky-800 dark:text-sky-200">Every method ends with the same validation gate</p>
