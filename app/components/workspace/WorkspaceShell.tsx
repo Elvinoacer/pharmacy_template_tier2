@@ -156,7 +156,7 @@ export function WorkspaceShell({
           />
 
           {/* 2. Workspace Content Layout */}
-          <div className="flex min-h-0 min-w-0 flex-1 flex-col pb-[calc(var(--afyvia-dock-height)+env(safe-area-inset-bottom)+1rem)] lg:pb-8">
+          <div className="flex min-h-0 min-w-0 flex-1 flex-col pb-[calc(var(--afyvia-dock-height)_+_env(safe-area-inset-bottom)_+_1rem)] lg:pb-8">
             {/* Universal Workspace Header */}
             <header className="sticky top-0 z-20 flex min-h-16 items-center justify-between gap-2 border-b border-[var(--admin-border)] bg-[var(--admin-panel)]/95 px-4 backdrop-blur sm:gap-3 sm:px-6 lg:px-8">
               {/* Mobile: keep location context without squeezing full breadcrumbs. */}
@@ -340,7 +340,7 @@ export function WorkspaceShell({
           />
 
           {/* Push Notifications & Realtime Alerts */}
-          <div className="[&_button]:min-h-11 [&_button]:min-w-11 [&_button]:text-sm [&_p]:text-sm [&_[role=alertdialog]]:!bottom-[calc(var(--afyvia-dock-height)+env(safe-area-inset-bottom)+0.75rem)] [&_[role=alertdialog]]:!max-h-[70dvh] [&_[role=alertdialog]]:!overflow-y-auto lg:[&_[role=alertdialog]]:!bottom-4 lg:[&_[role=alertdialog]]:!max-h-[80dvh]">
+          <div className="[&_button]:min-h-11 [&_button]:min-w-11 [&_button]:text-sm [&_p]:text-sm [&_[role=alertdialog]]:!bottom-[calc(var(--afyvia-dock-height)_+_env(safe-area-inset-bottom)_+_0.75rem)] [&_[role=alertdialog]]:!max-h-[70dvh] [&_[role=alertdialog]]:!overflow-y-auto lg:[&_[role=alertdialog]]:!bottom-4 lg:[&_[role=alertdialog]]:!max-h-[80dvh]">
             <PushNotificationCenter
               audience={role === "admin" ? "admin" : "portal"}
             />
