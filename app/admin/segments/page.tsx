@@ -4,14 +4,22 @@ import { prisma } from "@/app/lib/db";
 import { adminCreateSegmentAction } from "@/app/actions/admin";
 import { AdminPanel, AdminEmptyState } from "@/app/components/admin/AdminUI";
 import { AdminShell } from "@/app/components/admin/AdminShell";
+import { PremiumFeatureNotice } from "@/app/components/admin/PremiumFeatureNotice";
 import SegmentForm from "@/app/components/admin/SegmentForm";
 import { Layers, Settings2, Building2, Users } from "lucide-react";
+import { hasPremiumPlan } from "@/app/lib/platform/entitlements";
 
 export const metadata = { title: "Segments" };
 
 export default async function AdminSegmentsPage() {
   const user = await getSessionUser();
   if (!user) redirect("/login");
+
+  const pharmacyId =
+    user.activePharmacyId ||
+    user.memberships.find((membership) => membership.status === "active")?.pharmacyId;
+  if (!pharmacyId) redirect("/admin/select");
+  const premiumActive = await hasPremiumPlan(pharmacyId);
 
   const segments = await prisma.segment.findMany({
     include: { _count: { select: { members: true } } },
@@ -27,6 +35,16 @@ export default async function AdminSegmentsPage() {
       title="Patient groups"
       subtitle="Build clear patient audiences for reminders and outreach, with membership volume visible at a glance."
     >
+      {!premiumActive && (
+        <div className="mb-5">
+          <PremiumFeatureNotice
+            title="Build your own patient audiences"
+            description="System-managed patient groups stay available on Free. Premium lets you create custom segments for targeted campaigns, reminders and retention workflows."
+            benefits={["Custom patient groups", "Targeted outreach", "Reusable audiences"]}
+          />
+        </div>
+      )}
+
       <div className="mb-5 grid grid-cols-2 gap-3 sm:grid-cols-3">
         <div className="admin-stat min-w-0 p-4">
           <div className="flex items-start justify-between gap-2">
@@ -106,9 +124,19 @@ export default async function AdminSegmentsPage() {
           )}
         </AdminPanel>
 
-        <AdminPanel title="Create custom segment" description="Add a focused audience for targeting">
-          <SegmentForm action={adminCreateSegmentAction} />
-        </AdminPanel>
+        {premiumActive ? (
+          <AdminPanel title="Create custom segment" description="Add a focused audience for targeting">
+            <SegmentForm action={adminCreateSegmentAction} />
+          </AdminPanel>
+        ) : (
+          <AdminPanel title="Custom audiences" description="Preview what unlocks with Premium">
+            <PremiumFeatureNotice
+              compact
+              title="Create audiences around the customers you want to reach"
+              description="Examples include customers due for refill, diabetes care customers, inactive customers, high-value customers and frequent OTC buyers."
+            />
+          </AdminPanel>
+        )}
       </div>
     </AdminShell>
   );
