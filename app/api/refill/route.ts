@@ -233,9 +233,54 @@ async function submitRefill(raw: Record<string, unknown>) {
     });
   }
 
+  let referralSlotEventId: string | null = null;
+  if (raw.requestKind === "prescription_referral") {
+    const {
+      findPrescriptionReferralAlternative,
+      recordPrescriptionReferralOverflow,
+      reservePrescriptionReferralSlot,
+    } = await import("@/app/lib/platform/prescription-referrals");
+
+    const reservation = await reservePrescriptionReferralSlot(tenant.pharmacyId);
+    if (!reservation.accepted) {
+      const [selectedPharmacy, alternative] = await Promise.all([
+        prisma.pharmacy.findUnique({
+          where: { id: tenant.pharmacyId },
+          select: { id: true, name: true, slug: true },
+        }),
+        findPrescriptionReferralAlternative(tenant.pharmacyId),
+      ]);
+
+      await recordPrescriptionReferralOverflow(
+        tenant.pharmacyId,
+        reservation.eventId,
+      ).catch((error) => {
+        console.error("[prescription referral overflow notification]", error);
+      });
+
+      return NextResponse.json(
+        {
+          error: "prescription_referral_limit",
+          message:
+            "This pharmacy has used its free monthly direct prescription referral allowance. Your prescription has not been shared with another pharmacy.",
+          selectedPharmacy: selectedPharmacy
+            ? { id: selectedPharmacy.id, name: selectedPharmacy.name, slug: selectedPharmacy.slug }
+            : null,
+          alternative,
+          limit: reservation.usage.limit,
+          used: reservation.usage.used,
+          patientDataShared: false,
+        },
+        { status: 409 },
+      );
+    }
+    referralSlotEventId = reservation.eventId;
+  }
+
   let prescriptionId: string | undefined = undefined;
   let targetCustomerId = session?.customerId ?? null;
 
+  try {
   if (parsed.data.prescriptionPhoto) {
     if (!targetCustomerId) {
       const guestEmail = `guest-${randomUUID()}@guest.afyvia.internal`;
@@ -297,4 +342,16 @@ async function submitRefill(raw: Record<string, unknown>) {
     reference: publicReference(refill.id),
     trackingToken: createRefillTrackingToken(refill.id, tenant.pharmacyId),
   });
+  } catch (error) {
+    if (referralSlotEventId) {
+      const { releasePrescriptionReferralSlot } = await import(
+        "@/app/lib/platform/prescription-referrals"
+      );
+      await releasePrescriptionReferralSlot(
+        tenant.pharmacyId,
+        referralSlotEventId,
+      ).catch(() => undefined);
+    }
+    throw error;
+  }
 }
