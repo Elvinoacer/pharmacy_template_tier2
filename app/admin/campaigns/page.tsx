@@ -117,7 +117,7 @@ export default async function AdminCampaignsPage({
         </div>
       )}
 
-      <div className="mb-6 grid grid-cols-2 gap-3 md:grid-cols-4">
+      <div className="mb-6 grid grid-cols-2 gap-3 sm:grid-cols-4">
         {[
           { label: "Total", value: stats.total, color: "admin-text" },
           { label: "Drafts", value: stats.drafts, color: "text-slate-700 dark:text-slate-300" },
@@ -125,17 +125,17 @@ export default async function AdminCampaignsPage({
           { label: "Sent", value: stats.sent, color: "text-emerald-700 dark:text-emerald-300" },
         ].map((s) => (
           <div key={s.label} className="admin-stat min-h-24 p-4 transition-[border-color,box-shadow] duration-200 hover:shadow-sm">
-            <p className="text-[11px] font-semibold uppercase tracking-[0.08em] admin-muted">{s.label}</p>
+            <p className="text-sm font-semibold uppercase tracking-[0.08em] admin-muted">{s.label}</p>
             <p className={`mt-1 text-2xl font-bold ${s.color}`}>{s.value}</p>
           </div>
         ))}
       </div>
 
-      <div className="grid items-start gap-6 xl:grid-cols-[minmax(320px,0.86fr)_minmax(0,1.14fr)]">
+      <div className="grid items-start gap-6 lg:grid-cols-[minmax(320px,0.86fr)_minmax(0,1.14fr)]">
         <AdminPanel
           title="All campaigns"
           description={`${total} matching`}
-          className="order-1 xl:order-2"
+          className="order-1 lg:order-2"
         >
           <form className="mb-4 grid gap-2 sm:grid-cols-[minmax(0,1fr)_auto_auto]">
             <div className="relative min-w-0">
@@ -144,14 +144,14 @@ export default async function AdminCampaignsPage({
                 name="q"
                 defaultValue={sp.q || ""}
                 placeholder="Search campaigns…"
-                className="w-full rounded-xl border border-[var(--admin-border)] bg-[var(--admin-inset)] py-2.5 pl-9 pr-3 text-sm admin-text placeholder:admin-soft transition focus:border-[var(--admin-accent)] focus:bg-[var(--admin-card)] focus:outline-none"
+                className="min-h-11 w-full rounded-xl border border-[var(--admin-border)] bg-[var(--admin-inset)] py-2 pl-9 pr-3 text-base admin-text placeholder:admin-soft transition focus:border-[var(--admin-accent)] focus:bg-[var(--admin-card)] focus:outline-none sm:text-sm"
               />
             </div>
-            <button type="submit" className="btn-admin-sm w-full justify-center sm:w-auto">
+            <button type="submit" className="btn-admin-sm min-h-11 w-full justify-center text-sm sm:w-auto">
               <Search className="h-3.5 w-3.5" /> Search
             </button>
             {sp.q && (
-              <Link href="/admin/campaigns" className="btn-admin-sm w-full justify-center !bg-[var(--admin-inset-2)] sm:w-auto">
+              <Link href="/admin/campaigns" className="btn-admin-sm min-h-11 w-full justify-center !bg-[var(--admin-inset-2)] text-sm sm:w-auto">
                 <X className="h-3.5 w-3.5" /> Clear
               </Link>
             )}
@@ -189,11 +189,11 @@ export default async function AdminCampaignsPage({
                             <ChannelIcon className="h-4 w-4" />
                           </span>
                           <p className="min-w-0 flex-1 break-words font-semibold admin-text">{c.name}</p>
-                          <span className={`shrink-0 rounded-full px-2 py-0.5 text-xs font-semibold capitalize ${STATUS_COLOR[c.status]}`}>
+                          <span className={`shrink-0 rounded-full px-2 py-1 text-sm font-semibold capitalize ${STATUS_COLOR[c.status]}`}>
                             {c.status}
                           </span>
                         </div>
-                        <div className="mt-2 flex flex-wrap items-center gap-x-2 gap-y-1 text-xs admin-muted">
+                        <div className="mt-2 flex flex-wrap items-center gap-x-2 gap-y-1 text-sm admin-muted">
                           <span className="inline-flex items-center gap-1">
                             <Users className="h-3 w-3" />
                             {c.segment?.name || "All customers"}
@@ -211,11 +211,11 @@ export default async function AdminCampaignsPage({
                           )}
                         </div>
                         {c.description && (
-                          <p className="mt-2 text-xs leading-5 admin-muted">{c.description}</p>
+                          <p className="mt-2 text-sm leading-5 admin-muted">{c.description}</p>
                         )}
-                        <p className="mt-2 line-clamp-3 text-sm leading-5 admin-text/80">{c.body}</p>
+                        <p className="mt-2 whitespace-pre-wrap break-words text-base leading-6 admin-text/80">{c.body}</p>
                         {cStats && (
-                          <div className="mt-3 flex flex-wrap gap-1.5 text-xs">
+                          <div className="mt-3 flex flex-wrap gap-2 text-sm">
                             {typeof cStats.sent === "number" && (
                               <span className="rounded-full border border-[var(--admin-border)] bg-[var(--admin-card)] px-2 py-1 admin-muted">Sent {cStats.sent}</span>
                             )}
@@ -244,7 +244,7 @@ export default async function AdminCampaignsPage({
                                   ? "Free monthly campaign launch already used."
                                   : undefined
                             }
-                            className="btn-admin-sm w-full justify-center disabled:cursor-not-allowed disabled:opacity-50 sm:w-auto"
+                            className="btn-admin-sm min-h-11 w-full justify-center text-sm disabled:cursor-not-allowed disabled:opacity-50 sm:w-auto"
                           >
                             <Rocket className="h-3.5 w-3.5" /> {launchBlocked ? "Premium" : "Launch"}
                           </button>
@@ -269,7 +269,7 @@ export default async function AdminCampaignsPage({
         <AdminPanel
           title="Create campaign"
           description="Build, target and schedule the next outreach"
-          className="order-2 xl:order-1 xl:sticky xl:top-24"
+          className="order-2 lg:order-1 lg:sticky lg:top-24"
         >
           <CampaignForm
             action={adminCreateCampaignAction}
