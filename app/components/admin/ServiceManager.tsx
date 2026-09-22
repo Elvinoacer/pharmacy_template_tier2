@@ -242,7 +242,7 @@ export function ServiceManager({ initial }: { initial: ServiceRow[] }) {
             >
               <div className="relative h-12 w-16 shrink-0 overflow-hidden rounded-xl bg-[var(--admin-inset-2)]">
                 {s.imageUrl ? (
-                  <Image src={s.imageUrl} alt="" fill className="object-cover" sizes="64px" />
+                  <Image unoptimized src={s.imageUrl} alt="" fill className="object-cover" sizes="64px" />
                 ) : (
                   <div className="flex h-full items-center justify-center text-lg">💊</div>
                 )}
@@ -423,7 +423,7 @@ export function ServiceManager({ initial }: { initial: ServiceRow[] }) {
             </div>
           </div>
           <div>
-            <ImageUploadField
+            <Image unoptimizedUploadField
               key={imageFieldKey}
               name="imageUrl"
               label="Image"
