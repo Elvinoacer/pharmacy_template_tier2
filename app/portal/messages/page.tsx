@@ -119,11 +119,13 @@ export default async function PortalMessagesPage({
           description={`${conversations.length} thread${conversations.length === 1 ? "" : "s"}`}
         >
           {conversations.length === 0 ? (
-            <EmptyState
-              icon={Inbox}
-              title="No conversations yet"
-              description="When a pharmacist messages you, the thread will appear here."
-            />
+            <div className="[&_p]:text-sm">
+              <EmptyState
+                icon={Inbox}
+                title="No conversations yet"
+                description="When a pharmacist messages you, the thread will appear here."
+              />
+            </div>
           ) : (
             <div className="min-w-0 space-y-3 sm:space-y-4">
               {conversations.map((c) => {
@@ -194,7 +196,7 @@ export default async function PortalMessagesPage({
           title="Notification feed"
           description={`${total} total · searchable, paginated`}
         >
-          <div className="[&_button]:min-h-11 [&_button]:min-w-11 [&_button]:text-sm [&_input]:min-h-11 [&_input]:text-base [&_a]:min-h-11 [&_a]:min-w-11 [&_a]:text-sm">
+          <div className="[&_button]:min-h-11 [&_button]:min-w-11 [&_button]:text-sm [&_input]:min-h-11 [&_input]:text-base [&_a]:min-h-11 [&_a]:min-w-11 [&_a]:text-sm [&_p]:text-sm [&_span]:text-sm">
             <PortalNotificationsPanel
               initial={notifications}
               total={total}
