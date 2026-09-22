@@ -384,6 +384,20 @@ export default async function PharmacyProfilePage({
                 className="liquid-glass care-glass flex flex-col justify-between rounded-2xl border !border-[color-mix(in_srgb,var(--foreground)_48%,var(--card))] bg-[var(--card-elev)] p-4 shadow-sm backdrop-blur-xl transition hover:!border-[var(--brand)] hover:shadow-md sm:p-5"
               >
                 <div>
+                  <Link
+                    href={`/p/${slug}/medicines/${encodeURIComponent(item.slug)}`}
+                    className="relative mb-4 block aspect-[4/3] overflow-hidden rounded-xl bg-[var(--card)]"
+                    aria-label={`View ${item.medicationMaster.name}`}
+                  >
+                    <Image
+                      unoptimized
+                      src={item.medicationMaster.imageUrl || "/images/care/medicine-still-life.png"}
+                      alt={item.medicationMaster.imageUrl ? item.medicationMaster.name : ""}
+                      fill
+                      sizes="(max-width: 640px) 100vw, 33vw"
+                      className={item.medicationMaster.imageUrl ? "object-contain p-3" : "object-cover"}
+                    />
+                  </Link>
                   <div className="flex items-start justify-between gap-2">
                     <span className="rounded-full border border-[color-mix(in_srgb,var(--foreground)_48%,var(--card))] bg-[var(--brand-soft)] px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-[var(--brand-deep)]">
                       {item.medicationMaster.category || "Healthcare"}
@@ -407,7 +421,7 @@ export default async function PharmacyProfilePage({
                     KES {Math.round(item.price).toLocaleString("en-KE")}
                   </span>
                   <Link
-                    href={`/p/${slug}/medicines`}
+                    href={`/p/${slug}/medicines/${encodeURIComponent(item.slug)}`}
                     className="inline-flex items-center gap-1 text-xs font-semibold text-[var(--brand)] hover:underline"
                   >
                     View details
@@ -465,6 +479,20 @@ export default async function PharmacyProfilePage({
                 className="liquid-glass care-glass flex flex-col justify-between rounded-2xl border !border-[color-mix(in_srgb,var(--foreground)_48%,var(--card))] bg-[var(--card-elev)] p-4 shadow-sm backdrop-blur-xl transition hover:!border-[var(--brand)] hover:shadow-md sm:p-5"
               >
                 <div>
+                  <Link
+                    href={`/p/${slug}/services/${encodeURIComponent(service.slug)}`}
+                    className="relative mb-4 block aspect-[4/3] overflow-hidden rounded-xl bg-[var(--card)]"
+                    aria-label={`View ${service.title}`}
+                  >
+                    <Image
+                      unoptimized
+                      src={service.imageUrl || "/images/care/editorial-pharmacy.png"}
+                      alt={service.imageUrl ? service.title : ""}
+                      fill
+                      sizes="(max-width: 640px) 100vw, 33vw"
+                      className="object-cover"
+                    />
+                  </Link>
                   <div className="flex items-center justify-between gap-2">
                     <span className="rounded-full border border-teal-800/40 bg-teal-500/15 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-teal-800 dark:border-teal-200/45 dark:text-teal-100">
                       Clinical Care
@@ -488,7 +516,7 @@ export default async function PharmacyProfilePage({
                     {service.price ? `KES ${Number(service.price).toLocaleString("en-KE")}` : "Free Consultation"}
                   </span>
                   <Link
-                    href={`/p/${slug}/services`}
+                    href={`/p/${slug}/services/${encodeURIComponent(service.slug)}`}
                     className="inline-flex items-center gap-1 text-xs font-semibold text-[var(--brand)] hover:underline"
                   >
                     Book / Learn more
