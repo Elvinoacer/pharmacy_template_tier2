@@ -113,7 +113,7 @@ export default async function PortalProfilePage() {
             <div className="[&_button]:min-h-11 [&_button]:min-w-11 [&_button]:text-sm [&_input]:min-h-11 [&_input]:text-base [&_select]:min-h-11 [&_select]:text-base [&_legend]:text-sm [&_.label-premium]:text-sm [&_fieldset>p]:text-sm [&_section_p]:text-sm">
               <ProfileForm
                 action={updateProfileAction}
-              profile={{
+                profile={{
                 fullName: profile.fullName,
                 phone: profile.phone || "",
                 dateOfBirth: profile.dateOfBirth
