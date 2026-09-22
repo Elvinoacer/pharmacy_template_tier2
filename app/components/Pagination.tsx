@@ -108,8 +108,8 @@ export function Pagination({
         <strong>{Math.min(current * pageSize, total)}</strong> of <strong>{total}</strong>
       </p>
 
-      <div className="-mx-1 overflow-x-auto px-1 pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
-        <div className="flex w-max items-center gap-1">
+      <div className="min-w-0">
+        <div className="flex flex-wrap items-center gap-1">
           {current > 1 ? (
             <Link href={buildUrl(current - 1)} className={`${btnBase} ${btnIdle}`}>
               ← Prev
