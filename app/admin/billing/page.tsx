@@ -71,7 +71,7 @@ function UsageMeter({
           {icon}
           {label}
         </div>
-        <span className="text-xs font-semibold text-[var(--admin-text-muted)]">
+        <span className="text-sm font-semibold text-[var(--admin-text-muted)]">
           {used} / {limit}
         </span>
       </div>
@@ -81,7 +81,7 @@ function UsageMeter({
           style={{ width: `${percent}%` }}
         />
       </div>
-      <p className="mt-2 text-xs text-[var(--admin-text-soft)]">
+      <p className="mt-2 text-sm text-[var(--admin-text-soft)]">
         {used >= limit
           ? "Free-plan allowance reached."
           : `${Math.max(0, limit - used)} remaining on Free.`}
@@ -383,7 +383,7 @@ export default async function AdminBillingPage() {
           <div className="grid gap-0 lg:grid-cols-[1.35fr_0.65fr]">
             <div className="p-5 sm:p-7">
               <div className="flex flex-wrap items-center gap-2">
-                <span className="inline-flex items-center gap-1.5 rounded-full border border-[var(--admin-border)] bg-[var(--admin-inset)] px-2.5 py-1 text-xs font-semibold text-[var(--admin-text-muted)]">
+                <span className="inline-flex items-center gap-2 rounded-full border border-[var(--admin-border)] bg-[var(--admin-inset)] px-3 py-1 text-sm font-semibold text-[var(--admin-text-muted)]">
                   {premiumActive ? (
                     <BadgeCheck className="h-3.5 w-3.5 text-[var(--admin-accent)]" />
                   ) : (
@@ -392,7 +392,7 @@ export default async function AdminBillingPage() {
                   {premiumActive ? "Premium active" : "Free plan"}
                 </span>
                 {tenantData.subscription?.status && (
-                  <span className="rounded-full bg-[var(--admin-inset)] px-2.5 py-1 text-[11px] font-semibold capitalize text-[var(--admin-text-soft)]">
+                  <span className="rounded-full bg-[var(--admin-inset)] px-3 py-1 text-sm font-semibold capitalize text-[var(--admin-text-soft)]">
                     {tenantData.subscription.status.replace(/_/g, " ")}
                   </span>
                 )}
@@ -407,18 +407,18 @@ export default async function AdminBillingPage() {
                 Free keeps the pharmacy operating and visible. Premium removes growth limits and adds automation: unlimited campaigns and referrals, custom audiences, automatic follow-up, loyalty automation, inventory intelligence, AI-assisted imports, advanced analytics and POS synchronization.
               </p>
 
-              <div className="mt-5 flex flex-wrap gap-2 text-xs text-[var(--admin-text-muted)]">
-                <span className="inline-flex items-center gap-1.5 rounded-full bg-[var(--admin-inset)] px-3 py-1.5">
+              <div className="mt-5 flex flex-wrap gap-2 text-sm text-[var(--admin-text-muted)]">
+                <span className="inline-flex items-center gap-2 rounded-full bg-[var(--admin-inset)] px-3 py-2">
                   <Store className="h-3.5 w-3.5" /> Storefront stays available on Free
                 </span>
-                <span className="inline-flex items-center gap-1.5 rounded-full bg-[var(--admin-inset)] px-3 py-1.5">
+                <span className="inline-flex items-center gap-2 rounded-full bg-[var(--admin-inset)] px-3 py-2">
                   <CreditCard className="h-3.5 w-3.5" /> Month-to-month Premium
                 </span>
               </div>
             </div>
 
             <div className="border-t border-[var(--admin-border)] bg-[var(--admin-inset)]/70 p-5 sm:p-7 lg:border-l lg:border-t-0">
-              <p className="text-xs font-bold uppercase tracking-[0.14em] text-[var(--admin-accent-text)]">
+              <p className="text-sm font-bold uppercase tracking-[0.14em] text-[var(--admin-accent-text)]">
                 {premiumActive ? "Current plan" : "Upgrade"}
               </p>
               <div className="mt-2 flex items-end gap-2">
@@ -444,11 +444,11 @@ export default async function AdminBillingPage() {
                   ) : null}
                   {isOwner && !tenantData.subscription?.cancelAt ? (
                     <details className="rounded-xl border border-[var(--admin-border)] bg-[var(--admin-card)]">
-                      <summary className="cursor-pointer list-none px-3 py-2.5 text-xs font-semibold text-[var(--admin-text-muted)]">
+                      <summary className="cursor-pointer list-none px-3 py-3 text-sm font-semibold text-[var(--admin-text-muted)]">
                         Manage Premium renewal
                       </summary>
                       <div className="border-t border-[var(--admin-border)] p-3">
-                        <p className="text-xs leading-5 text-[var(--admin-text-soft)]">
+                        <p className="text-sm leading-5 text-[var(--admin-text-soft)]">
                           Cancelling stops automatic renewal. Premium remains available through the current paid period.
                         </p>
                         <CancelServiceForm pharmacyId={pharmacy.id} />
@@ -463,7 +463,7 @@ export default async function AdminBillingPage() {
                       <p className="text-sm font-semibold text-[var(--admin-text)]">
                         Premium payment needs attention
                       </p>
-                      <p className="mt-1 text-xs leading-5 text-[var(--admin-text-muted)]">
+                      <p className="mt-1 text-sm leading-5 text-[var(--admin-text-muted)]">
                         Settle the outstanding monthly invoice to restore Premium entitlements. Your Free plan remains available.
                       </p>
                       <RetryOverdueForm
@@ -489,7 +489,7 @@ export default async function AdminBillingPage() {
 
               <Link
                 href="/onboard/billing"
-                className="mt-4 inline-flex items-center gap-1.5 text-xs font-semibold text-[var(--admin-accent-text)] hover:underline"
+                className="mt-4 inline-flex items-center gap-2 text-sm font-semibold text-[var(--admin-accent-text)] hover:underline"
               >
                 Billing history & payment management
                 <ArrowRight className="h-3.5 w-3.5" />
@@ -502,7 +502,7 @@ export default async function AdminBillingPage() {
           <section>
             <div className="mb-3 flex items-end justify-between gap-4">
               <div>
-                <p className="text-xs font-bold uppercase tracking-[0.12em] text-[var(--admin-accent-text)]">
+                <p className="text-sm font-bold uppercase tracking-[0.12em] text-[var(--admin-accent-text)]">
                   Free plan usage
                 </p>
                 <h2 className="mt-1 text-lg font-bold text-[var(--admin-text)]">
@@ -510,7 +510,7 @@ export default async function AdminBillingPage() {
                 </h2>
               </div>
             </div>
-            <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-4">
+            <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
               <UsageMeter
                 label="Public medicine listings"
                 used={tenantData.publicMedicines}
@@ -536,34 +536,34 @@ export default async function AdminBillingPage() {
                 icon={<Megaphone className="h-4 w-4 text-[var(--admin-accent)]" />}
               />
             </div>
-            <p className="mt-3 text-xs leading-5 text-[var(--admin-text-soft)]">
+            <p className="mt-3 text-sm leading-5 text-[var(--admin-text-soft)]">
               The prescription allowance applies only to new referrals generated through the Afyvia marketplace. Existing patients, pharmacy storefront requests, staff-entered prescriptions and in-person care are never blocked by this limit.
             </p>
           </section>
         )}
 
         <section className="rounded-3xl border border-[var(--admin-border)] bg-[var(--admin-card)] p-4 sm:p-6">
-          <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
+          <div className="flex flex-col gap-2 md:flex-row md:items-end md:justify-between">
             <div>
-              <p className="text-xs font-bold uppercase tracking-[0.12em] text-[var(--admin-accent-text)]">
+              <p className="text-sm font-bold uppercase tracking-[0.12em] text-[var(--admin-accent-text)]">
                 Compare plans
               </p>
               <h2 className="mt-1 text-xl font-bold text-[var(--admin-text)]">
                 Free vs Premium
               </h2>
             </div>
-            <p className="max-w-lg text-xs leading-5 text-[var(--admin-text-muted)]">
+            <p className="max-w-lg text-sm leading-5 text-[var(--admin-text-muted)]">
               Compare the essential operating, storefront, patient-growth, retention and intelligence capabilities. Core pharmacy and clinical work stays usable on Free; Premium is for scale, automation and deeper growth tools.
             </p>
           </div>
 
           <div className="mt-5 overflow-hidden rounded-2xl border border-[var(--admin-border)]">
-            <div className="grid grid-cols-[1.3fr_0.85fr_0.85fr] bg-[var(--admin-inset)] text-xs font-bold text-[var(--admin-text)]">
-              <div className="p-3 sm:p-4">Capability</div>
-              <div className="border-l border-[var(--admin-border)] p-3 sm:p-4">Free</div>
-              <div className="border-l border-[var(--admin-border)] p-3 sm:p-4">
-                <span className="inline-flex items-center gap-1.5">
-                  <Sparkles className="h-3.5 w-3.5 text-[var(--admin-accent)]" />
+            <div className="hidden grid-cols-[1.3fr_0.85fr_0.85fr] bg-[var(--admin-inset)] text-sm font-bold text-[var(--admin-text)] sm:grid">
+              <div className="p-4">Capability</div>
+              <div className="border-l border-[var(--admin-border)] p-4">Free</div>
+              <div className="border-l border-[var(--admin-border)] p-4">
+                <span className="inline-flex items-center gap-2">
+                  <Sparkles className="h-4 w-4 text-[var(--admin-accent)]" />
                   Premium
                 </span>
               </div>
@@ -574,32 +574,34 @@ export default async function AdminBillingPage() {
               return (
                 <div key={row.feature}>
                   {startsGroup ? (
-                    <div className="border-t border-[var(--admin-border)] bg-[var(--admin-inset)]/60 px-3 py-2 text-[10px] font-bold uppercase tracking-[0.12em] text-[var(--admin-accent-text)] sm:px-4">
+                    <div className="border-t border-[var(--admin-border)] bg-[var(--admin-inset)]/60 px-3 py-2 text-sm font-bold uppercase tracking-[0.12em] text-[var(--admin-accent-text)] sm:px-4">
                       {row.group}
                     </div>
                   ) : null}
-                  <div className="grid grid-cols-[1.3fr_0.85fr_0.85fr] border-t border-[var(--admin-border)] text-xs sm:text-sm">
+                  <div className="grid grid-cols-1 border-t border-[var(--admin-border)] text-sm sm:grid-cols-[1.3fr_0.85fr_0.85fr]">
                     <div className="p-3 font-semibold text-[var(--admin-text)] sm:p-4">
                       {row.feature}
                     </div>
-                    <div className="border-l border-[var(--admin-border)] p-3 text-[var(--admin-text-muted)] sm:p-4">
+                    <div className="border-t border-[var(--admin-border)] p-3 text-[var(--admin-text-muted)] sm:border-l sm:border-t-0 sm:p-4">
+                      <span className="mb-2 block font-bold text-[var(--admin-text)] sm:hidden">Free</span>
                       {row.free === "Not included" ? (
-                        <span className="inline-flex items-center gap-1.5">
-                          <X className="h-3.5 w-3.5 shrink-0 text-[var(--admin-text-soft)]" />
+                        <span className="inline-flex items-center gap-2">
+                          <X className="h-4 w-4 shrink-0 text-[var(--admin-text-soft)]" />
                           {row.free}
                         </span>
                       ) : row.free === "Included" ? (
-                        <span className="inline-flex items-center gap-1.5">
-                          <Check className="h-3.5 w-3.5 shrink-0 text-emerald-600 dark:text-emerald-300" />
+                        <span className="inline-flex items-center gap-2">
+                          <Check className="h-4 w-4 shrink-0 text-emerald-600 dark:text-emerald-300" />
                           Included
                         </span>
                       ) : (
                         row.free
                       )}
                     </div>
-                    <div className="border-l border-[var(--admin-border)] p-3 font-medium text-[var(--admin-text)] sm:p-4">
-                      <span className="inline-flex items-start gap-1.5">
-                        <Check className="mt-0.5 h-3.5 w-3.5 shrink-0 text-emerald-600 dark:text-emerald-300" />
+                    <div className="border-t border-[var(--admin-border)] p-3 font-medium text-[var(--admin-text)] sm:border-l sm:border-t-0 sm:p-4">
+                      <span className="mb-2 block font-bold sm:hidden">Premium</span>
+                      <span className="inline-flex items-start gap-2">
+                        <Check className="mt-1 h-4 w-4 shrink-0 text-emerald-600 dark:text-emerald-300" />
                         {row.premium}
                       </span>
                     </div>
@@ -610,7 +612,7 @@ export default async function AdminBillingPage() {
           </div>
         </section>
 
-        <section className="grid gap-3 md:grid-cols-3">
+        <section className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
           {[
             {
               icon: <Megaphone className="h-5 w-5" />,
@@ -638,7 +640,7 @@ export default async function AdminBillingPage() {
               <h3 className="mt-4 text-sm font-bold text-[var(--admin-text)]">
                 {benefit.title}
               </h3>
-              <p className="mt-1 text-xs leading-5 text-[var(--admin-text-muted)]">
+              <p className="mt-1 text-sm leading-5 text-[var(--admin-text-muted)]">
                 {benefit.body}
               </p>
             </article>
@@ -647,17 +649,17 @@ export default async function AdminBillingPage() {
 
         {isOwner && (
           <details className="group rounded-2xl border border-[var(--admin-border)] bg-[var(--admin-card)]">
-            <summary className="flex cursor-pointer list-none items-center justify-between gap-4 px-4 py-3.5 text-sm font-semibold text-[var(--admin-text)]">
+            <summary className="flex cursor-pointer list-none items-center justify-between gap-4 px-4 py-3 text-sm font-semibold text-[var(--admin-text)]">
               <span className="inline-flex items-center gap-2">
                 <Tag className="h-4 w-4 text-[var(--admin-accent)]" />
                 Have a voucher or promotional code?
               </span>
-              <span className="text-xs font-medium text-[var(--admin-text-soft)] group-open:hidden">
+              <span className="text-sm font-medium text-[var(--admin-text-soft)] group-open:hidden">
                 Optional
               </span>
             </summary>
             <div className="border-t border-[var(--admin-border)] p-4">
-              <p className="mb-3 text-xs leading-5 text-[var(--admin-text-muted)]">
+              <p className="mb-3 text-sm leading-5 text-[var(--admin-text-muted)]">
                 Vouchers are optional. Apply one here only if the platform team gave your pharmacy a code.
               </p>
               <PromoCardForm pharmacyId={pharmacy.id} />
@@ -672,12 +674,12 @@ export default async function AdminBillingPage() {
                 <CircleGauge className="h-4 w-4 text-[var(--admin-accent)]" />
                 Billing snapshot
               </div>
-              <p className="mt-1 text-xs text-[var(--admin-text-muted)]">
+              <p className="mt-1 text-sm text-[var(--admin-text-muted)]">
                 Latest platform invoice activity for {pharmacy.name}.
               </p>
             </div>
             {latestInvoice ? (
-              <span className="rounded-full bg-[var(--admin-inset)] px-2.5 py-1 text-[11px] font-semibold capitalize text-[var(--admin-text-muted)]">
+              <span className="rounded-full bg-[var(--admin-inset)] px-3 py-1 text-sm font-semibold capitalize text-[var(--admin-text-muted)]">
                 Latest: {latestInvoice.status}
               </span>
             ) : null}
@@ -688,11 +690,11 @@ export default async function AdminBillingPage() {
               {tenantData.invoices.map((invoice) => (
                 <div
                   key={invoice.id}
-                  className="flex flex-col gap-2 bg-[var(--admin-panel)] px-3.5 py-3 text-xs sm:flex-row sm:items-center sm:justify-between"
+                  className="flex flex-col gap-2 bg-[var(--admin-panel)] px-4 py-3 text-sm sm:flex-row sm:items-center sm:justify-between"
                 >
                   <div>
                     <p className="font-semibold text-[var(--admin-text)]">{invoice.number}</p>
-                    <p className="mt-0.5 text-[var(--admin-text-soft)]">
+                    <p className="mt-1 text-[var(--admin-text-soft)]">
                       {formatDate(invoice.createdAt)}
                       {invoice.dueAt ? ` · due ${formatDate(invoice.dueAt)}` : ""}
                     </p>
