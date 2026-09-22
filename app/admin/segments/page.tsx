@@ -49,7 +49,7 @@ export default async function AdminSegmentsPage() {
         <div className="admin-stat min-w-0 p-4">
           <div className="flex items-start justify-between gap-2">
             <div className="min-w-0">
-              <p className="text-[11px] font-semibold uppercase tracking-wide admin-muted sm:text-xs">Segments</p>
+              <p className="text-sm font-semibold uppercase tracking-wide admin-muted">Segments</p>
               <p className="mt-1 text-2xl font-bold admin-text">{segments.length}</p>
             </div>
             <span className="admin-icon-well flex h-9 w-9 shrink-0 items-center justify-center rounded-xl">
@@ -60,7 +60,7 @@ export default async function AdminSegmentsPage() {
         <div className="admin-stat min-w-0 p-4">
           <div className="flex items-start justify-between gap-2">
             <div className="min-w-0">
-              <p className="text-[11px] font-semibold uppercase tracking-wide admin-muted sm:text-xs">System</p>
+              <p className="text-sm font-semibold uppercase tracking-wide admin-muted">System</p>
               <p className="mt-1 text-2xl font-bold admin-text">{systemSegments}</p>
             </div>
             <span className="admin-icon-well flex h-9 w-9 shrink-0 items-center justify-center rounded-xl">
@@ -71,7 +71,7 @@ export default async function AdminSegmentsPage() {
         <div className="admin-stat col-span-2 min-w-0 p-4 sm:col-span-1">
           <div className="flex items-start justify-between gap-2">
             <div className="min-w-0">
-              <p className="text-[11px] font-semibold uppercase tracking-wide admin-muted sm:text-xs">Memberships</p>
+              <p className="text-sm font-semibold uppercase tracking-wide admin-muted">Memberships</p>
               <p className="mt-1 text-2xl font-bold admin-text">{totalMembers}</p>
             </div>
             <span className="admin-icon-well flex h-9 w-9 shrink-0 items-center justify-center rounded-xl">
@@ -94,26 +94,26 @@ export default async function AdminSegmentsPage() {
               {segments.map((s) => (
                 <li
                   key={s.id}
-                  className="rounded-xl border border-[var(--admin-border)] bg-[var(--admin-inset)] p-3.5 transition-colors hover:border-[var(--admin-border-2)]"
+                  className="rounded-xl border border-[var(--admin-border)] bg-[var(--admin-inset)] p-4 transition-colors hover:border-[var(--admin-border-2)]"
                 >
                   <div className="flex min-w-0 items-start gap-3">
                     <span className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-xl ${s.isSystem ? "bg-[var(--admin-accent-soft)] admin-accent-text" : "bg-amber-500/10 text-amber-700"}`}>
                       {s.isSystem ? <Building2 className="h-4 w-4" /> : <Settings2 className="h-4 w-4" />}
                     </span>
                     <div className="min-w-0 flex-1">
-                      <div className="flex min-w-0 flex-col gap-2 min-[430px]:flex-row min-[430px]:items-start min-[430px]:justify-between">
+                      <div className="flex min-w-0 flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
                         <div className="min-w-0 flex-1">
                           <p className="break-words font-semibold admin-text">{s.name}</p>
-                          <p className="mt-0.5 line-clamp-2 text-xs leading-5 admin-muted">
+                          <p className="mt-1 break-words text-sm leading-5 admin-muted">
                             {s.description || "No description"}
                           </p>
                         </div>
-                        <div className="flex w-fit shrink-0 items-center gap-1.5 rounded-full border border-[var(--admin-border)] bg-[var(--admin-card)] px-2.5 py-1 text-xs">
+                        <div className="flex w-fit shrink-0 items-center gap-2 rounded-full border border-[var(--admin-border)] bg-[var(--admin-card)] px-3 py-1 text-sm">
                           <span className="font-bold admin-text">{s._count.members}</span>
                           <span className="admin-soft">members</span>
                         </div>
                       </div>
-                      <p className="mt-2 text-[11px] font-semibold uppercase tracking-wide admin-soft">
+                      <p className="mt-2 text-sm font-semibold uppercase tracking-wide admin-soft">
                         {s.isSystem ? "System managed" : "Custom audience"}
                       </p>
                     </div>
