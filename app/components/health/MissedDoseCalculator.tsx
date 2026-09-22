@@ -256,7 +256,7 @@ export default function MissedDoseCalculator() {
                 <button
                   key={preset.id}
                   type="button"
-                  onClick={() = className="min-h-11 min-w-11"> setSchedule(preset.id)}
+                  onClick={() => setSchedule(preset.id)}
                   className={`text-left rounded-2xl p-4 border transition-all duration-150 ${
                     isSelected
                       ? "border-teal-700 bg-teal-50/80 shadow-xs ring-1 ring-teal-700"
@@ -293,7 +293,7 @@ export default function MissedDoseCalculator() {
                 min={1}
                 max={20}
                 value={hoursAgo}
-                onChange={(e) = className="min-h-11 min-w-11"> setHoursAgo(Number(e.target.value))}
+                onChange={(e) => setHoursAgo(Number(e.target.value))}
                 className="mt-3 w-full accent-teal-800 cursor-pointer"
               />
               <div className="flex justify-between text-sm text-[var(--muted)] font-semibold mt-1">
@@ -318,7 +318,7 @@ export default function MissedDoseCalculator() {
                 min={1}
                 max={24}
                 value={hoursUntilNext}
-                onChange={(e) = className="min-h-11 min-w-11"> setHoursUntilNext(Number(e.target.value))}
+                onChange={(e) => setHoursUntilNext(Number(e.target.value))}
                 className="mt-3 w-full accent-teal-800 cursor-pointer"
               />
               <div className="flex justify-between text-sm text-[var(--muted)] font-semibold mt-1">
