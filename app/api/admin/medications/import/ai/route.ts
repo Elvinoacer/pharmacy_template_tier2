@@ -1,5 +1,7 @@
 import { NextResponse } from "next/server";
-import { getSessionUser, isStaff, writeAuditLog } from "@/app/lib/auth";
+import { AuthError, getSessionUser, isStaff, writeAuditLog } from "@/app/lib/auth";
+import { requireMedicationWriteContext } from "@/app/lib/services/medication-access";
+import { withPharmacy } from "@/app/lib/tenant-context";
 import { isFeatureEnabled } from "@/app/lib/platform/entitlements";
 import { prisma } from "@/app/lib/db";
 import { MedicationAiSchema } from "@/app/lib/medication-ai-schema";
@@ -21,8 +23,33 @@ export async function POST(req: Request) {
       { status: 403 },
     );
   }
+  let pharmacyId: string;
+  try {
+    pharmacyId = await requireMedicationWriteContext(user);
+  } catch (error) {
+    const status =
+      error instanceof AuthError
+        ? error.status
+        : Number((error as { status?: number })?.status || 403);
+    const code = error instanceof Error ? error.message : "forbidden";
+    return NextResponse.json(
+      {
+        error: code,
+        message:
+          code === "PHARMACY_BILLING_SUSPENDED"
+            ? "This pharmacy workspace is paused because billing needs attention."
+            : code === "PHARMACY_WORKSPACE_PAUSED"
+              ? "This pharmacy workspace is paused. Restore access before importing medicines."
+              : code.includes("permission")
+                ? "You do not have permission to import medicines into this inventory."
+                : "Choose an active pharmacy workspace before importing medicines.",
+      },
+      { status },
+    );
+  }
+
   if (!user.platformAdmin) {
-    const allowed = user.activePharmacyId ? await isFeatureEnabled(user.activePharmacyId, "ai_import") : false;
+    const allowed = await isFeatureEnabled(pharmacyId, "ai_import");
     if (!allowed) {
       return NextResponse.json(
         {
@@ -132,7 +159,7 @@ export async function POST(req: Request) {
   };
 
   const exactSharedMatch = await findSharedMedicationMatch(sharedInput);
-  const validation = await validateMedication(
+  const validation = await withPharmacy(pharmacyId, () => validateMedication(
     {
       id: exactSharedMatch?.id,
       name: data.name,
@@ -155,7 +182,7 @@ export async function POST(req: Request) {
       prescriptionRequired: true,
     },
     { existingMasterId: exactSharedMatch?.id },
-  );
+  ));
 
   if (validation.counts.fail > 0) {
     return NextResponse.json(
@@ -170,7 +197,7 @@ export async function POST(req: Request) {
   }
 
   try {
-    const result = await createOrReuseMedicationForPharmacy(sharedInput, {
+    const result = await withPharmacy(pharmacyId, () => createOrReuseMedicationForPharmacy(sharedInput, {
       slug: medicationSlug(data.name),
       price: 0,
       currentStock: 0,
@@ -179,9 +206,9 @@ export async function POST(req: Request) {
       prescriptionRequired: true,
       publicListing: false,
       active: true,
-    });
+    }));
 
-    await writeAuditLog(
+    await withPharmacy(pharmacyId, () => writeAuditLog(
       user.id,
       result.masterCreated ? "shared_medication_created" : "shared_medication_reused",
       "medication_master",
@@ -193,7 +220,7 @@ export async function POST(req: Request) {
         alreadyStocked: result.alreadyStocked,
         enrichmentScore: result.enrichmentScore,
       },
-    );
+    ));
 
     return NextResponse.json({
       ok: true,
