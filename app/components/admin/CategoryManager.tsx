@@ -383,8 +383,8 @@ export function CategoryManager({ initial }: { initial: CategoryRow[] }) {
   return (
     <div className="space-y-5">
       {/* Toolbar */}
-      <div className="flex flex-wrap items-center gap-2">
-        <div className="relative min-w-[200px] flex-1">
+      <div className="grid grid-cols-2 gap-2 sm:flex sm:flex-wrap sm:items-center">
+        <div className="relative col-span-2 min-w-0 flex-1">
           <Search className="pointer-events-none absolute left-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 admin-soft" />
           <input
             value={q}
@@ -393,7 +393,7 @@ export function CategoryManager({ initial }: { initial: CategoryRow[] }) {
               setPage(1);
             }}
             placeholder="Search name, slug, description…"
-            className="input-admin w-full pl-9 pr-9"
+            className="input-admin min-h-11 w-full pl-9 pr-12 text-base sm:text-sm"
           />
           {q && (
             <button
@@ -402,7 +402,7 @@ export function CategoryManager({ initial }: { initial: CategoryRow[] }) {
                 setQ("");
                 setPage(1);
               }}
-              className="absolute right-2 top-1/2 -translate-y-1/2 rounded-full p-1 admin-soft hover:bg-[var(--admin-inset-2)]"
+              className="absolute right-0 top-1/2 inline-flex min-h-11 min-w-11 -translate-y-1/2 items-center justify-center rounded-full admin-soft hover:bg-[var(--admin-inset-2)]"
             >
               <X className="h-3.5 w-3.5" />
             </button>
@@ -415,7 +415,7 @@ export function CategoryManager({ initial }: { initial: CategoryRow[] }) {
             setShowInactive((v) => !v);
             setPage(1);
           }}
-          className="btn-admin-ghost inline-flex items-center gap-1.5 text-xs"
+          className="btn-admin-ghost inline-flex min-h-11 w-full items-center justify-center gap-1.5 text-sm sm:w-auto"
           title={showInactive ? "Hide inactive" : "Show inactive"}
         >
           {showInactive ? <Eye className="h-3.5 w-3.5" /> : <EyeOff className="h-3.5 w-3.5" />}
@@ -426,7 +426,7 @@ export function CategoryManager({ initial }: { initial: CategoryRow[] }) {
           type="button"
           onClick={openMerge}
           disabled={rows.length < 2}
-          className="btn-admin-ghost inline-flex items-center gap-1.5 text-xs disabled:opacity-40"
+          className="btn-admin-ghost inline-flex min-h-11 w-full items-center justify-center gap-1.5 text-sm disabled:opacity-40 sm:w-auto"
         >
           <Merge className="h-3.5 w-3.5" /> Merge
         </button>
@@ -434,7 +434,7 @@ export function CategoryManager({ initial }: { initial: CategoryRow[] }) {
         <button
           type="button"
           onClick={openCreate}
-          className="btn-admin inline-flex items-center gap-1.5 !rounded-xl px-3 py-2 text-xs"
+          className="btn-admin col-span-2 inline-flex min-h-11 w-full items-center justify-center gap-1.5 !rounded-xl px-3 py-2 text-sm sm:w-auto"
         >
           <Plus className="h-3.5 w-3.5" /> New category
         </button>
@@ -449,7 +449,7 @@ export function CategoryManager({ initial }: { initial: CategoryRow[] }) {
           <p className="mt-3 text-sm font-semibold admin-text">
             {q ? "No categories match your search" : "No categories yet"}
           </p>
-          <p className="mt-1 max-w-sm text-xs admin-muted">
+          <p className="mt-1 max-w-sm text-sm admin-muted">
             {q
               ? "Try a different term, or clear the search."
               : "Create your first category to organize the catalogue."}
@@ -458,7 +458,7 @@ export function CategoryManager({ initial }: { initial: CategoryRow[] }) {
             <button
               type="button"
               onClick={openCreate}
-              className="btn-admin mt-4 inline-flex items-center gap-1.5 !rounded-xl px-3 py-2 text-xs"
+              className="btn-admin mt-4 inline-flex items-center gap-1.5 !rounded-xl px-3 py-2 text-sm"
             >
               <Plus className="h-3.5 w-3.5" /> Create category
             </button>
@@ -487,35 +487,35 @@ export function CategoryManager({ initial }: { initial: CategoryRow[] }) {
                 <div className="flex flex-wrap items-center gap-2">
                   <p className="font-semibold admin-text">{c.name}</p>
                   {!c.active && (
-                    <span className="rounded-full bg-amber-500/15 px-2 py-0.5 text-xs font-semibold text-amber-600 dark:text-amber-400">
+                    <span className="rounded-full bg-amber-500/15 px-2 py-0.5 text-sm font-semibold text-amber-600 dark:text-amber-400">
                       Inactive
                     </span>
                   )}
                   {c.publicVisible === false && (
-                    <span className="rounded-full bg-[var(--admin-inset-2)] px-2 py-0.5 text-xs font-semibold admin-muted">
+                    <span className="rounded-full bg-[var(--admin-inset-2)] px-2 py-0.5 text-sm font-semibold admin-muted">
                       Hidden on site
                     </span>
                   )}
                   {c.slug === "general" && (
-                    <span className="rounded-full bg-[var(--admin-inset-2)] px-2 py-0.5 text-xs font-semibold admin-muted">
+                    <span className="rounded-full bg-[var(--admin-inset-2)] px-2 py-0.5 text-sm font-semibold admin-muted">
                       Default
                     </span>
                   )}
                 </div>
-                <div className="mt-0.5 flex flex-wrap items-center gap-x-3 gap-y-0.5 text-xs admin-soft">
+                <div className="mt-0.5 flex flex-wrap items-center gap-x-3 gap-y-0.5 text-sm admin-soft">
                   <span className="inline-flex items-center gap-1 font-mono">
                     <Hash className="h-3 w-3" />
                     {c.slug}
                   </span>
                   {c.description && (
-                    <span className="truncate max-w-[280px]">{c.description}</span>
+                    <span className="min-w-0 break-words">{c.description}</span>
                   )}
                 </div>
               </div>
 
               <Link
                 href={`/admin/medications?category=${encodeURIComponent(c.slug)}`}
-                className="inline-flex items-center gap-1.5 rounded-full bg-[var(--admin-inset-2)] px-2.5 py-1 text-xs font-semibold admin-muted transition hover:text-[var(--admin-text)]"
+                className="inline-flex min-h-11 items-center gap-1.5 rounded-full bg-[var(--admin-inset-2)] px-3 py-2 text-sm font-semibold admin-muted transition hover:text-[var(--admin-text)]"
                 title="View medications in this category"
               >
                 <Package className="h-3 w-3" />
@@ -528,7 +528,7 @@ export function CategoryManager({ initial }: { initial: CategoryRow[] }) {
                   type="button"
                   onClick={() => toggleActive(c)}
                   disabled={pending || c.slug === "general"}
-                  className="rounded-lg p-2 admin-soft transition hover:bg-[var(--admin-inset-2)] hover:text-[var(--admin-text)] disabled:opacity-30"
+                  className="inline-flex min-h-11 min-w-11 items-center justify-center rounded-lg admin-soft transition hover:bg-[var(--admin-inset-2)] hover:text-[var(--admin-text)] disabled:opacity-30"
                   title={c.active ? "Deactivate" : "Activate"}
                 >
                   {c.active ? <Eye className="h-3.5 w-3.5" /> : <EyeOff className="h-3.5 w-3.5" />}
@@ -546,7 +546,7 @@ export function CategoryManager({ initial }: { initial: CategoryRow[] }) {
                   type="button"
                   onClick={() => openDelete(c)}
                   disabled={pending || c.slug === "general"}
-                  className="rounded-lg p-2 admin-soft transition hover:bg-red-500/10 hover:text-red-500 disabled:opacity-30"
+                  className="inline-flex min-h-11 min-w-11 items-center justify-center rounded-lg admin-soft transition hover:bg-red-500/10 hover:text-red-500 disabled:opacity-30"
                   title="Delete"
                 >
                   <Trash2 className="h-3.5 w-3.5" />
@@ -560,18 +560,18 @@ export function CategoryManager({ initial }: { initial: CategoryRow[] }) {
       {/* Client pagination */}
       {total > PAGE_SIZE && (
         <div className="flex flex-wrap items-center justify-between gap-3 border-t border-[var(--admin-border)] pt-4">
-          <p className="text-xs admin-muted">
+          <p className="text-sm admin-muted">
             Showing{" "}
             <strong>{(currentPage - 1) * PAGE_SIZE + 1}</strong>–
             <strong>{Math.min(currentPage * PAGE_SIZE, total)}</strong> of{" "}
             <strong>{total}</strong>
           </p>
-          <div className="flex items-center gap-1">
+          <div className="flex w-full items-center gap-1 overflow-x-auto pb-1 sm:w-auto">
             <button
               type="button"
               disabled={currentPage <= 1}
               onClick={() => setPage((p) => Math.max(1, p - 1))}
-              className="inline-flex h-8 min-w-8 items-center justify-center rounded-lg bg-[var(--admin-inset)] px-2.5 text-xs font-semibold admin-muted transition hover:bg-[var(--admin-inset-2)] disabled:opacity-40"
+              className="inline-flex min-h-11 min-w-11 items-center justify-center rounded-lg bg-[var(--admin-inset)] px-2.5 text-sm font-semibold admin-muted transition hover:bg-[var(--admin-inset-2)] disabled:opacity-40"
             >
               ← Prev
             </button>
@@ -589,7 +589,7 @@ export function CategoryManager({ initial }: { initial: CategoryRow[] }) {
               }, [])
               .map((p, i) =>
                 p === "…" ? (
-                  <span key={`e-${i}`} className="px-1 text-xs opacity-50">
+                  <span key={`e-${i}`} className="px-1 text-sm opacity-50">
                     …
                   </span>
                 ) : (
@@ -597,7 +597,7 @@ export function CategoryManager({ initial }: { initial: CategoryRow[] }) {
                     key={p}
                     type="button"
                     onClick={() => setPage(p as number)}
-                    className={`inline-flex h-8 min-w-8 items-center justify-center rounded-lg px-2.5 text-xs font-semibold transition ${
+                    className={`inline-flex min-h-11 min-w-11 items-center justify-center rounded-lg px-2.5 text-sm font-semibold transition ${
                       p === currentPage
                         ? "bg-[var(--admin-accent)] text-[var(--admin-btn-fg)]"
                         : "bg-[var(--admin-inset)] admin-muted hover:bg-[var(--admin-inset-2)]"
@@ -611,7 +611,7 @@ export function CategoryManager({ initial }: { initial: CategoryRow[] }) {
               type="button"
               disabled={currentPage >= totalPages}
               onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
-              className="inline-flex h-8 min-w-8 items-center justify-center rounded-lg bg-[var(--admin-inset)] px-2.5 text-xs font-semibold admin-muted transition hover:bg-[var(--admin-inset-2)] disabled:opacity-40"
+              className="inline-flex min-h-11 min-w-11 items-center justify-center rounded-lg bg-[var(--admin-inset)] px-2.5 text-sm font-semibold admin-muted transition hover:bg-[var(--admin-inset-2)] disabled:opacity-40"
             >
               Next →
             </button>
@@ -620,7 +620,7 @@ export function CategoryManager({ initial }: { initial: CategoryRow[] }) {
       )}
 
       {pending && (
-        <p className="flex items-center gap-1.5 text-xs admin-soft">
+        <p className="flex items-center gap-1.5 text-sm admin-soft">
           <Loader2 className="h-3 w-3 animate-spin" /> Saving…
         </p>
       )}
@@ -642,7 +642,7 @@ export function CategoryManager({ initial }: { initial: CategoryRow[] }) {
         }
         footer={
           <>
-            <button type="button" onClick={closeModal} className="btn-admin-ghost text-xs" disabled={pending}>
+            <button type="button" onClick={closeModal} className="btn-admin-ghost min-h-11 text-sm" disabled={pending}>
               Cancel
             </button>
             <button
@@ -652,7 +652,7 @@ export function CategoryManager({ initial }: { initial: CategoryRow[] }) {
                 if (modal?.type === "edit") updateCategory(modal.row);
                 else createCategory();
               }}
-              className="btn-admin inline-flex items-center gap-1.5 !rounded-xl px-3 py-2 text-xs disabled:opacity-50"
+              className="btn-admin inline-flex min-h-11 items-center gap-1.5 !rounded-xl px-3 py-2 text-sm disabled:opacity-50"
             >
               {pending ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Check className="h-3.5 w-3.5" />}
               {modal?.type === "edit" ? "Save changes" : "Create"}
@@ -680,9 +680,9 @@ export function CategoryManager({ initial }: { initial: CategoryRow[] }) {
                 setFormSlug(slugify(e.target.value));
               }}
               placeholder="pain-relief"
-              className="input-admin font-mono text-xs"
+              className="input-admin min-h-11 font-mono text-base sm:text-sm"
             />
-            <p className="mt-1 text-xs admin-soft">
+            <p className="mt-1 text-sm admin-soft">
               Stored on each medication. Renaming the slug re-tags all meds in this category.
             </p>
           </div>
@@ -728,7 +728,7 @@ export function CategoryManager({ initial }: { initial: CategoryRow[] }) {
             />
           </div>
           <div className="flex flex-wrap gap-4 pt-1">
-            <label className="flex cursor-pointer items-center gap-2 text-sm admin-muted">
+            <label className="flex min-h-11 cursor-pointer items-center gap-2 text-sm admin-muted">
               <input
                 type="checkbox"
                 checked={formPublicVisible}
@@ -739,7 +739,7 @@ export function CategoryManager({ initial }: { initial: CategoryRow[] }) {
               Show on public medicines page
             </label>
             {modal?.type === "edit" && (
-              <label className="flex cursor-pointer items-center gap-2 text-sm admin-muted">
+              <label className="flex min-h-11 cursor-pointer items-center gap-2 text-sm admin-muted">
                 <input
                   type="checkbox"
                   checked={formActive}
@@ -764,14 +764,14 @@ export function CategoryManager({ initial }: { initial: CategoryRow[] }) {
         }
         footer={
           <>
-            <button type="button" onClick={closeModal} className="btn-admin-ghost text-xs" disabled={pending}>
+            <button type="button" onClick={closeModal} className="btn-admin-ghost min-h-11 text-sm" disabled={pending}>
               Cancel
             </button>
             <button
               type="button"
               disabled={pending || modal?.type !== "delete"}
               onClick={() => modal?.type === "delete" && deleteCategory(modal.row)}
-              className="inline-flex items-center gap-1.5 rounded-xl bg-red-600 px-3 py-2 text-xs font-semibold text-white hover:bg-red-700 disabled:opacity-50"
+              className="inline-flex min-h-11 items-center gap-1.5 rounded-xl bg-red-600 px-3 py-2 text-sm font-semibold text-white hover:bg-red-700 disabled:opacity-50"
             >
               {pending ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Trash2 className="h-3.5 w-3.5" />}
               Delete
@@ -783,10 +783,10 @@ export function CategoryManager({ initial }: { initial: CategoryRow[] }) {
           <div className="space-y-3">
             <p className="text-sm admin-muted">
               Delete <strong className="admin-text">{modal.row.name}</strong>
-              <span className="font-mono text-xs admin-soft"> ({modal.row.slug})</span>?
+              <span className="font-mono text-sm admin-soft"> ({modal.row.slug})</span>?
             </p>
             {modal.row.count > 0 ? (
-              <div className="rounded-xl border border-amber-500/30 bg-amber-500/10 p-3 text-xs text-amber-800 dark:text-amber-200">
+              <div className="rounded-xl border border-amber-500/30 bg-amber-500/10 p-3 text-sm text-amber-800 dark:text-amber-200">
                 <p className="font-semibold">
                   {modal.row.count} medication{modal.row.count === 1 ? "" : "s"} use this category.
                 </p>
@@ -809,7 +809,7 @@ export function CategoryManager({ initial }: { initial: CategoryRow[] }) {
                 </div>
               </div>
             ) : (
-              <p className="text-xs admin-soft">No medications use this category — safe to remove.</p>
+              <p className="text-sm admin-soft">No medications use this category — safe to remove.</p>
             )}
           </div>
         )}
@@ -826,14 +826,14 @@ export function CategoryManager({ initial }: { initial: CategoryRow[] }) {
         }
         footer={
           <>
-            <button type="button" onClick={closeModal} className="btn-admin-ghost text-xs" disabled={pending}>
+            <button type="button" onClick={closeModal} className="btn-admin-ghost min-h-11 text-sm" disabled={pending}>
               Cancel
             </button>
             <button
               type="button"
               disabled={pending || !mergeFromId || !mergeToId || mergeFromId === mergeToId}
               onClick={mergeCategories}
-              className="btn-admin inline-flex items-center gap-1.5 !rounded-xl px-3 py-2 text-xs disabled:opacity-50"
+              className="btn-admin inline-flex min-h-11 items-center gap-1.5 !rounded-xl px-3 py-2 text-sm disabled:opacity-50"
             >
               {pending ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Merge className="h-3.5 w-3.5" />}
               Merge
@@ -842,7 +842,7 @@ export function CategoryManager({ initial }: { initial: CategoryRow[] }) {
         }
       >
         <div className="space-y-3">
-          <p className="text-xs admin-muted">
+          <p className="text-sm admin-muted">
             Move all medications from one category into another, then remove the source.
           </p>
           <div>
