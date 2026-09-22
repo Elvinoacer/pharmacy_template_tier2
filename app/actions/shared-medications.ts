@@ -2,9 +2,10 @@
 
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
-import { getSessionUser, requireStaff, writeAuditLog } from "@/app/lib/auth";
+import { AuthError, getSessionUser, requireStaff, writeAuditLog } from "@/app/lib/auth";
 import { publicErrorMessage } from "@/app/lib/public-error";
-import { assertPharmacyWorkspaceOperable } from "@/app/lib/platform/tenant-access";
+import { requireMedicationWriteContext } from "@/app/lib/services/medication-access";
+import { withPharmacy } from "@/app/lib/tenant-context";
 import { parseMedicationFormData } from "@/app/lib/services/medication-form-data";
 import { validateMedication } from "@/app/lib/services/medication-validation";
 import {
@@ -62,13 +63,19 @@ export async function adminCreateSharedMedicationAction(
   formData: FormData,
 ): Promise<SharedMedicationActionState> {
   const user = requireStaff(await getSessionUser());
-  if (!user.platformAdmin) {
-    if (!user.activePharmacyId) return { error: "Choose a pharmacy first." };
-    try {
-      await assertPharmacyWorkspaceOperable(user.activePharmacyId);
-    } catch {
+  let pharmacyId: string;
+  try {
+    pharmacyId = await requireMedicationWriteContext(user);
+  } catch (error) {
+    if (error instanceof AuthError) return { error: error.message };
+    const code = error instanceof Error ? error.message : "";
+    if (code === "PHARMACY_BILLING_SUSPENDED") {
+      return { error: "This pharmacy workspace is paused because billing needs attention." };
+    }
+    if (code === "PHARMACY_WORKSPACE_PAUSED") {
       return { error: "This pharmacy workspace is paused. Restore access before changing inventory." };
     }
+    return { error: "You do not have permission to change this pharmacy inventory." };
   }
 
   const parsed = parseMedicationFormData(formData);
@@ -81,7 +88,7 @@ export async function adminCreateSharedMedicationAction(
   const sharedInput = masterInput(parsed);
   const existing = await findSharedMedicationMatch(sharedInput);
 
-  const validation = await validateMedication(
+  const validation = await withPharmacy(pharmacyId, () => validateMedication(
     {
       id: existing?.id,
       name: parsed.master.name,
@@ -106,7 +113,7 @@ export async function adminCreateSharedMedicationAction(
       prescriptionRequired: parsed.inventory.prescriptionRequired,
     },
     { existingMasterId: existing?.id },
-  );
+  ));
 
   if (validation.counts.fail > 0) {
     return {
@@ -126,9 +133,11 @@ export async function adminCreateSharedMedicationAction(
   }
 
   try {
-    const result = await createOrReuseMedicationForPharmacy(sharedInput, parsed.inventory);
+    const result = await withPharmacy(pharmacyId, () =>
+      createOrReuseMedicationForPharmacy(sharedInput, parsed.inventory),
+    );
 
-    await writeAuditLog(
+    await withPharmacy(pharmacyId, () => writeAuditLog(
       user.id,
       result.masterCreated ? "shared_medication_created" : "shared_medication_reused",
       "medication_master",
@@ -140,10 +149,11 @@ export async function adminCreateSharedMedicationAction(
         acquisitionMethod: parsed.master.acquisitionMethod || "manual",
         enrichmentScore: result.enrichmentScore,
       },
-    );
+    ));
 
     revalidatePath("/admin/medications");
     revalidatePath("/admin/medications/library");
+    revalidatePath("/admin/inventory");
     revalidatePath("/medicines");
     redirect(`/admin/medications/${result.inventoryId}`);
   } catch (error) {
