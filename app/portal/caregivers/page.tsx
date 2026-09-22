@@ -3,9 +3,7 @@ import { requireOnboarded } from "@/app/lib/require-onboarded";
 import { getSessionUser } from "@/app/lib/auth";
 import { prisma } from "@/app/lib/db";
 import { PortalShell } from "@/app/components/portal/PortalShell";
-import { EmptyState } from "@/app/components/portal/PortalWidgets";
 import { CaregiversView } from "@/app/components/portal/CaregiversView";
-import { HeartHandshake } from "lucide-react";
 
 export const metadata = { title: "Caregivers" };
 
@@ -43,34 +41,26 @@ export default async function PortalCaregiversPage() {
       title="Caregivers"
       subtitle="Authorise family members or carers to manage refills on your behalf."
     >
-      {caregivers.length === 0 ? (
-        <EmptyState
-          icon={HeartHandshake}
-          title="No caregivers yet"
-          description="Add a trusted family member or carer so they can request refills and receive pickup notifications for you."
-          action={<CaregiversView caregivers={[]} />}
-        />
-      ) : (
-        <>
-          <div className="mb-4 grid gap-3 sm:grid-cols-3">
-            <div className="card-premium p-4">
-              <p className="text-xs font-semibold uppercase tracking-wide text-[#5a6b62]">Total caregivers</p>
-              <p className="mt-1 text-2xl font-bold text-[#0c1a14]">{caregivers.length}</p>
-            </div>
-            <div className="card-premium p-4">
-              <p className="text-xs font-semibold uppercase tracking-wide text-[#5a6b62]">Active</p>
-              <p className="mt-1 text-2xl font-bold text-emerald-700">{active.length}</p>
-            </div>
-            <div className="card-premium p-4">
-              <p className="text-xs font-semibold uppercase tracking-wide text-[#5a6b62]">Can request refills</p>
-              <p className="mt-1 text-2xl font-bold text-[#0d6e5a]">
-                {active.filter((caregiver) => caregiver.canRequestRefills).length}
-              </p>
-            </div>
-          </div>
-          <CaregiversView caregivers={caregiverRows} />
-        </>
-      )}
+      <div className="mb-4 grid min-w-0 gap-3 sm:grid-cols-3">
+        <div className="card-premium min-w-0 p-4">
+          <p className="text-sm font-semibold uppercase tracking-wide text-[#5a6b62]">Total caregivers</p>
+          <p className="mt-1 text-2xl font-bold text-[#0c1a14]">{caregivers.length}</p>
+        </div>
+        <div className="card-premium min-w-0 p-4">
+          <p className="text-sm font-semibold uppercase tracking-wide text-[#5a6b62]">Active</p>
+          <p className="mt-1 text-2xl font-bold text-emerald-700">{active.length}</p>
+        </div>
+        <div className="card-premium min-w-0 p-4">
+          <p className="text-sm font-semibold uppercase tracking-wide text-[#5a6b62]">Can request refills</p>
+          <p className="mt-1 text-2xl font-bold text-[#0d6e5a]">
+            {active.filter((caregiver) => caregiver.canRequestRefills).length}
+          </p>
+        </div>
+      </div>
+
+      <div className="min-w-0 max-w-full [&_.input-premium]:min-h-11 [&_.input-premium]:text-base [&_button]:min-h-11 [&_button]:min-w-11 [&_button]:text-sm [&_button]:opacity-100 [&_label]:min-h-11 [&_label_span]:text-base [&_p]:text-base [&_span]:text-sm">
+        <CaregiversView caregivers={caregiverRows} />
+      </div>
     </PortalShell>
   );
 }
