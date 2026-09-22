@@ -1874,29 +1874,68 @@ textarea.input-admin, textarea.input-premium { padding-top: 0.75rem; }
    Modal primitive
    ============================================================ */
 .modal-backdrop {
-  position: fixed; inset: 0; z-index: 150;
-  background: rgba(8, 28, 22, 0.55);
-  backdrop-filter: blur(4px);
-  display: flex; align-items: center; justify-content: center;
-  padding: 1rem;
+  position: fixed;
+  inset: 0;
+  z-index: 250;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  padding: max(0.75rem, env(safe-area-inset-top)) max(0.75rem, env(safe-area-inset-right))
+    max(0.75rem, env(safe-area-inset-bottom)) max(0.75rem, env(safe-area-inset-left));
+  background: rgba(5, 18, 15, 0.62);
+  backdrop-filter: blur(5px);
   animation: fade-in 0.15s ease-out;
 }
+
 .modal-card {
-  background: white;
-  border-radius: 1.25rem;
-  box-shadow: 0 24px 80px rgba(0, 0, 0, 0.32);
-  max-width: 560px;
   width: 100%;
-  max-height: 88vh;
+  min-width: 0;
+  min-height: 0;
+  max-height: min(92dvh, 920px);
   overflow: hidden;
   display: flex;
   flex-direction: column;
+  border: 1px solid var(--admin-border);
+  border-radius: 1.25rem;
+  background: var(--admin-card);
+  color: var(--admin-text);
+  box-shadow: 0 24px 80px rgba(0, 0, 0, 0.34);
   animation: modal-in 0.2s ease-out;
 }
-@keyframes fade-in { from { opacity: 0; } to { opacity: 1; } }
+
+@keyframes fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
 @keyframes modal-in {
-  from { opacity: 0; transform: scale(0.96) translateY(8px); }
+  from { opacity: 0; transform: scale(0.98) translateY(8px); }
   to { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+@media (max-width: 639px) {
+  .modal-backdrop {
+    align-items: flex-end;
+    padding: env(safe-area-inset-top) 0 0;
+  }
+
+  .modal-card {
+    max-width: none !important;
+    max-height: calc(100dvh - env(safe-area-inset-top));
+    border-right: 0;
+    border-bottom: 0;
+    border-left: 0;
+    border-radius: 1.25rem 1.25rem 0 0;
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .modal-backdrop,
+  .modal-card {
+    animation: none;
+  }
 }
 
 /* Badges */
@@ -1925,13 +1964,6 @@ textarea.input-admin, textarea.input-premium { padding-top: 0.75rem; }
 .note-drag-handle:active { cursor: grabbing; }
 .note-dragging { opacity: 0.4; }
 .note-drag-over { border-top: 2px solid var(--admin-accent) !important; }
-
-@media (prefers-color-scheme: dark){
- .modal-card{background:#111827;color:#f3f4f6;border:1px solid #374151;}
- .modal-card h3,.modal-card .label-admin,.modal-card .text-sm{color:#f3f4f6;}
- .modal-card>div:first-child,.modal-card>div:last-child{border-color:#374151;}
- .modal-card button:hover{background:#1f2937;color:#fff;}
-}
 
 /* ============================================================
    Pharmacy Receipt & Container Label Printing (POS 80mm & A4)
