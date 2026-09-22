@@ -144,14 +144,14 @@ export default async function PortalPrescriptionsPage() {
         <div className="grid w-full grid-cols-2 gap-2 sm:flex sm:w-auto sm:flex-wrap sm:items-center">
           <Link
             href="/portal/calendar"
-            className="inline-flex min-h-11 items-center justify-center gap-1.5 rounded-xl border border-[#e3ebe6] bg-white px-3 py-2 text-sm font-semibold text-[#0d6e5a] shadow-2xs transition hover:bg-[#f2f7f4] dark:border-white/10 dark:bg-white/[0.035] dark:text-teal-300 dark:hover:bg-white/[0.07]"
+            className="inline-flex min-h-11 items-center justify-center gap-2 rounded-xl border border-[#e3ebe6] bg-white px-3 py-2 text-sm font-semibold text-[#0d6e5a] shadow-2xs transition hover:bg-[#f2f7f4] dark:border-white/10 dark:bg-white/[0.035] dark:text-teal-300 dark:hover:bg-white/[0.07]"
           >
             <CalendarClock className="h-4 w-4" />
             <span>Med Calendar</span>
           </Link>
           <Link
             href="/portal/sync"
-            className="inline-flex min-h-11 items-center justify-center gap-1.5 rounded-xl border border-[#e3ebe6] bg-white px-3 py-2 text-sm font-semibold text-[#0d6e5a] shadow-2xs transition hover:bg-[#f2f7f4] dark:border-white/10 dark:bg-white/[0.035] dark:text-teal-300 dark:hover:bg-white/[0.07]"
+            className="inline-flex min-h-11 items-center justify-center gap-2 rounded-xl border border-[#e3ebe6] bg-white px-3 py-2 text-sm font-semibold text-[#0d6e5a] shadow-2xs transition hover:bg-[#f2f7f4] dark:border-white/10 dark:bg-white/[0.035] dark:text-teal-300 dark:hover:bg-white/[0.07]"
           >
             <RefreshCw className="h-4 w-4" />
             <span>Med Sync</span>
@@ -161,7 +161,7 @@ export default async function PortalPrescriptionsPage() {
           </div>
           <Link
             href="/portal/refills/new"
-            className="btn-primary inline-flex min-h-11 items-center justify-center gap-1.5"
+            className="btn-primary inline-flex min-h-11 items-center justify-center gap-2"
           >
             <Plus className="h-4 w-4" /> Request refill
           </Link>
@@ -172,7 +172,7 @@ export default async function PortalPrescriptionsPage() {
 
       <DoseReminderBanner pendingDoses={pendingDoseItems} />
 
-      <div className="mb-5 grid grid-cols-2 gap-2.5 sm:mb-6 sm:gap-4 lg:grid-cols-4">
+      <div className="mb-5 grid grid-cols-2 gap-3 sm:mb-6 sm:gap-4 lg:grid-cols-4">
         <StatCard
           label="Adherence"
           value={`${overallAdherence}%`}
@@ -223,7 +223,7 @@ export default async function PortalPrescriptionsPage() {
               return (
                 <div
                   key={dose.scheduleId}
-                  className={`flex min-w-0 flex-col rounded-2xl border p-3.5 sm:p-4 ${
+                  className={`flex min-w-0 flex-col rounded-2xl border p-4 sm:p-4 ${
                     status === "taken" || status === "late"
                       ? "border-emerald-200 bg-emerald-50/50 dark:border-emerald-500/30 dark:bg-emerald-500/10"
                       : status === "missed"
@@ -241,7 +241,7 @@ export default async function PortalPrescriptionsPage() {
                       </span>
                       <h4 className="mt-1 break-words font-bold text-[#0c1a14] dark:text-slate-100">{dose.medicineName}</h4>
                       {dose.dosage && (
-                        <p className="mt-0.5 break-words text-sm text-[#5a6b62] dark:text-slate-400">{dose.dosage}</p>
+                        <p className="mt-1 break-words text-sm text-[#5a6b62] dark:text-slate-400">{dose.dosage}</p>
                       )}
                     </div>
                     <StatusPill status={status} />
@@ -317,7 +317,7 @@ export default async function PortalPrescriptionsPage() {
                             {p.medicineName}
                           </h3>
                           {p.lifecycleStatus ? (
-                            <span className="rounded-full bg-emerald-500/15 px-2.5 py-0.5 text-sm font-bold capitalize text-emerald-800 dark:text-emerald-300">
+                            <span className="rounded-full bg-emerald-500/15 px-3 py-1 text-sm font-bold capitalize text-emerald-800 dark:text-emerald-300">
                               {p.lifecycleStatus.replace("_", " ")}
                             </span>
                           ) : (
@@ -326,23 +326,23 @@ export default async function PortalPrescriptionsPage() {
                             </Badge>
                           )}
                           {p.intakeChannel && (
-                            <span className="rounded-full border border-slate-200 bg-slate-50 px-2 py-0.5 text-sm font-medium capitalize text-slate-600 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-300">
+                            <span className="rounded-full border border-slate-200 bg-slate-50 px-2 py-1 text-sm font-medium capitalize text-slate-600 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-300">
                               {p.intakeChannel.replace("_", " ")}
                             </span>
                           )}
                         </div>
-                        <p className="mt-0.5 break-words text-sm font-medium text-[#0d6e5a] dark:text-teal-300">
+                        <p className="mt-1 break-words text-sm font-medium text-[#0d6e5a] dark:text-teal-300">
                           {formula.formulaLabel}
                         </p>
                         {p.schedule && (
-                          <p className="mt-0.5 break-words text-sm text-[#8a9a92] dark:text-slate-500">{p.schedule}</p>
+                          <p className="mt-1 break-words text-sm text-[#8a9a92] dark:text-slate-500">{p.schedule}</p>
                         )}
                         {p.doseSchedule.length > 0 && (
-                          <p className="mt-1.5 flex flex-wrap gap-1">
+                          <p className="mt-2 flex flex-wrap gap-1">
                             {p.doseSchedule.map((s) => (
                               <span
                                 key={s.id}
-                                className="rounded-md bg-[#e6f4ef] px-1.5 py-0.5 font-mono text-sm font-semibold text-[#0d6e5a] dark:bg-teal-500/15 dark:text-teal-300"
+                                className="rounded-md bg-[#e6f4ef] px-2 py-1 font-mono text-sm font-semibold text-[#0d6e5a] dark:bg-teal-500/15 dark:text-teal-300"
                               >
                                 {s.timeOfDay}
                                 {s.label ? ` ${s.label}` : ""}
@@ -355,7 +355,7 @@ export default async function PortalPrescriptionsPage() {
 
                     <div className="shrink-0 sm:text-right">
                       <span
-                        className={`inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-sm font-bold ${
+                        className={`inline-flex items-center gap-1 rounded-full px-3 py-1 text-sm font-bold ${
                           metrics.adherenceRate >= 85
                             ? "bg-emerald-100 text-emerald-800 dark:bg-emerald-500/15 dark:text-emerald-300"
                             : metrics.adherenceRate >= 70
@@ -400,25 +400,25 @@ export default async function PortalPrescriptionsPage() {
                     </div>
                   </div>
 
-                  <div className="mt-3 grid grid-cols-1 gap-1.5 text-sm sm:grid-cols-2 lg:grid-cols-4">
+                  <div className="mt-3 grid grid-cols-1 gap-2 text-sm sm:grid-cols-2 lg:grid-cols-4">
                     {p.rxReference && (
-                      <div className="flex min-w-0 items-center gap-1.5 text-[#5a6b62] dark:text-slate-400">
+                      <div className="flex min-w-0 items-center gap-2 text-[#5a6b62] dark:text-slate-400">
                         <Hash className="h-3.5 w-3.5 shrink-0 text-[#8a9a92] dark:text-slate-500" />
                         <span className="break-words font-mono">{p.rxReference}</span>
                       </div>
                     )}
                     {p.prescriber && (
-                      <div className="flex min-w-0 items-center gap-1.5 text-[#5a6b62] dark:text-slate-400">
+                      <div className="flex min-w-0 items-center gap-2 text-[#5a6b62] dark:text-slate-400">
                         <User className="h-3.5 w-3.5 shrink-0 text-[#8a9a92] dark:text-slate-500" />
                         <span className="break-words">{p.prescriber}</span>
                       </div>
                     )}
-                    <div className="flex items-center gap-1.5 text-[#5a6b62] dark:text-slate-400">
+                    <div className="flex items-center gap-2 text-[#5a6b62] dark:text-slate-400">
                       <Activity className="h-3.5 w-3.5 shrink-0 text-[#8a9a92] dark:text-slate-500" />
                       <span>{p.refillsRemaining ?? 0} refills left</span>
                     </div>
                     {p.nextRefillDue && (
-                      <div className="flex items-center gap-1.5 text-[#0d6e5a] dark:text-teal-300">
+                      <div className="flex items-center gap-2 text-[#0d6e5a] dark:text-teal-300">
                         <CalendarClock className="h-3.5 w-3.5 shrink-0" />
                         <span>Due {formatDate(p.nextRefillDue)}</span>
                       </div>
@@ -439,7 +439,7 @@ export default async function PortalPrescriptionsPage() {
                     </div>
                     <Link
                       href={`/portal/refills/new?prescriptionId=${p.id}&medicine=${encodeURIComponent(p.medicineName)}&rx=${encodeURIComponent(p.rxReference || "")}`}
-                      className={`inline-flex min-h-11 w-full items-center justify-center gap-1.5 rounded-full px-4 py-2 text-sm font-bold shadow-xs transition sm:w-auto ${
+                      className={`inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-full px-4 py-2 text-sm font-bold shadow-xs transition sm:w-auto ${
                         (p.refillsRemaining ?? 0) > 0
                           ? "bg-gradient-to-r from-[#0d6e5a] to-[#084c3f] text-white hover:brightness-110"
                           : "cursor-not-allowed bg-slate-200 text-slate-500 dark:bg-slate-700 dark:text-slate-400"
@@ -466,14 +466,14 @@ export default async function PortalPrescriptionsPage() {
             {otcCourseItems.map((item, idx) => (
               <div
                 key={`${item.orderId}-${idx}`}
-                className="min-w-0 rounded-2xl border border-[#e3ebe6] bg-[#fafbfa] p-3.5 dark:border-white/10 dark:bg-white/[0.025] sm:p-4"
+                className="min-w-0 rounded-2xl border border-[#e3ebe6] bg-[#fafbfa] p-4 dark:border-white/10 dark:bg-white/[0.025] sm:p-4"
               >
                 <div className="flex min-w-0 items-start justify-between gap-2">
                   <div className="flex min-w-0 items-center gap-2">
                     <ShoppingBag className="h-4 w-4 shrink-0 text-[#0d6e5a] dark:text-teal-300" />
                     <span className="break-words text-sm font-bold text-[#0c1a14] dark:text-slate-100">{item.name}</span>
                   </div>
-                  <span className="shrink-0 rounded-full bg-blue-100 px-2 py-0.5 text-sm font-semibold capitalize text-blue-800 dark:bg-blue-500/15 dark:text-blue-300">
+                  <span className="shrink-0 rounded-full bg-blue-100 px-2 py-1 text-sm font-semibold capitalize text-blue-800 dark:bg-blue-500/15 dark:text-blue-300">
                     {item.source}
                   </span>
                 </div>
@@ -492,7 +492,7 @@ export default async function PortalPrescriptionsPage() {
             {others.map((p) => (
               <li
                 key={p.id}
-                className="flex min-w-0 flex-col gap-2 rounded-2xl border border-[#e3ebe6] bg-[#fafbfa] px-3.5 py-3 dark:border-white/10 dark:bg-white/[0.025] sm:flex-row sm:items-center sm:justify-between sm:gap-3 sm:px-4"
+                className="flex min-w-0 flex-col gap-2 rounded-2xl border border-[#e3ebe6] bg-[#fafbfa] px-4 py-3 dark:border-white/10 dark:bg-white/[0.025] sm:flex-row sm:items-center sm:justify-between sm:gap-3 sm:px-4"
               >
                 <div className="min-w-0">
                   <p className="break-words text-sm font-bold text-[#0c1a14] dark:text-slate-100">{p.medicineName}</p>
@@ -547,7 +547,7 @@ function StatCard({
 
   return (
     <div className="min-w-0 rounded-xl border border-white/60 bg-gradient-to-br from-white to-[#f4f7f4] p-3 shadow-sm dark:border-white/10 dark:from-white/[0.05] dark:to-white/[0.02] sm:rounded-2xl sm:p-5">
-      <div className="flex min-w-0 items-center justify-between gap-1.5">
+      <div className="flex min-w-0 items-center justify-between gap-2">
         <span className="break-words text-sm font-bold uppercase tracking-wider text-[#5a6b62] dark:text-slate-400 sm:text-sm">
           {label}
         </span>
@@ -558,7 +558,7 @@ function StatCard({
       <div className="mt-2 flex min-w-0 flex-wrap items-baseline gap-1 sm:mt-3 sm:gap-2">
         <span className={`break-words text-xl font-extrabold sm:text-3xl ${valueColor}`}>{value}</span>
       </div>
-      <p className="mt-0.5 break-words text-sm leading-snug text-[#5a6b62] dark:text-slate-400 sm:mt-1 sm:text-sm">{hint}</p>
+      <p className="mt-1 break-words text-sm leading-snug text-[#5a6b62] dark:text-slate-400 sm:mt-1 sm:text-sm">{hint}</p>
     </div>
   );
 }
