@@ -348,7 +348,37 @@ export function CsvImportFlow() {
               </div>
               <span className="w-fit rounded-full bg-[var(--admin-inset)] px-2.5 py-1 text-sm font-semibold admin-muted">{mappedCount} columns included</span>
             </div>
-            <div tabIndex={0} role="region" aria-label="Scrollable medication import preview" className="admin-table-region overflow-x-auto">
+            <div className="grid gap-3 p-3.5 sm:hidden">
+              {rows.slice(0, 10).map((row, index) => (
+                <article
+                  key={index}
+                  className="min-w-0 rounded-xl border border-[var(--admin-border-2)] bg-[var(--admin-inset)] p-3"
+                >
+                  <div className="mb-3 flex items-center justify-between gap-3">
+                    <p className="text-sm font-semibold admin-text">Row {index + 1}</p>
+                    <span className="rounded-full bg-[var(--admin-card)] px-2.5 py-1 text-sm font-semibold admin-muted">
+                      {mappedCount} fields
+                    </span>
+                  </div>
+                  <dl className="space-y-3">
+                    {SYSTEM_FIELDS.filter((field) => mapping[field.key]).map((field) => (
+                      <div key={field.key} className="min-w-0">
+                        <dt className="text-sm font-semibold admin-muted">{field.label}</dt>
+                        <dd className="mt-1 break-words text-base leading-6 admin-text">
+                          {fieldFor(row, field.key) || <span className="text-sm admin-soft">—</span>}
+                        </dd>
+                      </div>
+                    ))}
+                  </dl>
+                </article>
+              ))}
+            </div>
+            <div
+              tabIndex={0}
+              role="region"
+              aria-label="Scrollable medication import preview"
+              className="admin-table-region hidden overflow-x-auto sm:block"
+            >
               <table className="min-w-[720px] w-full text-sm">
                 <thead className="bg-[var(--admin-inset)]">
                   <tr className="border-b border-[var(--admin-border-2)]">
