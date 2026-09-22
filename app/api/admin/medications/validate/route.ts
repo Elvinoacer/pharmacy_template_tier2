@@ -1,5 +1,7 @@
 import { NextResponse } from "next/server";
-import { getSessionUser, isStaff } from "@/app/lib/auth";
+import { AuthError, getSessionUser, isStaff } from "@/app/lib/auth";
+import { requireMedicationWriteContext } from "@/app/lib/services/medication-access";
+import { withPharmacy } from "@/app/lib/tenant-context";
 import { parseMedicationFormData } from "@/app/lib/services/medication-form-data";
 import { validateMedication } from "@/app/lib/services/medication-validation";
 
@@ -7,10 +9,24 @@ export const runtime = "nodejs";
 
 export async function POST(req: Request) {
   const user = await getSessionUser();
-  if (!user || !isStaff(user.role)) {
+  if (!user || (!isStaff(user.role) && !user.platformAdmin)) {
     return NextResponse.json(
       { error: "forbidden", message: "You do not have permission to validate medications." },
       { status: 403 },
+    );
+  }
+
+  let pharmacyId: string;
+  try {
+    pharmacyId = await requireMedicationWriteContext(user);
+  } catch (error) {
+    const status =
+      error instanceof AuthError
+        ? error.status
+        : Number((error as { status?: number })?.status || 403);
+    return NextResponse.json(
+      { error: "forbidden", message: "You do not have permission to change this pharmacy inventory." },
+      { status },
     );
   }
 
@@ -20,7 +36,7 @@ export async function POST(req: Request) {
     const inventoryId = String(formData.get("inventoryId") || "") || undefined;
     const masterId = String(formData.get("masterId") || "") || undefined;
 
-    const result = await validateMedication(
+    const result = await withPharmacy(pharmacyId, () => validateMedication(
       {
         id: masterId,
         name: parsed.master.name,
@@ -46,7 +62,7 @@ export async function POST(req: Request) {
         prescriptionRequired: parsed.inventory.prescriptionRequired,
       },
       { existingMasterId: masterId, existingInventoryId: inventoryId },
-    );
+    ));
 
     return NextResponse.json({ ok: true, validation: result });
   } catch (e) {
