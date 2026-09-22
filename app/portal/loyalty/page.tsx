@@ -83,7 +83,7 @@ export default async function PortalLoyaltyPage() {
         />
       </div>
 
-      <div className="mx-auto grid w-full max-w-[1280px] min-w-0 gap-4 sm:gap-6 lg:grid-cols-2 [&_.card-premium>div:first-child>div>p]:text-sm">
+      <div className="mx-auto grid w-full max-w-[1280px] min-w-0 gap-4 sm:gap-6 md:grid-cols-2 [&_.card-premium>div:first-child>div>p]:text-sm">
         {/* Tier progress */}
         <Panel title="Your tier" description="Climb the tiers for richer rewards">
           <div className={`mb-4 flex flex-col items-start gap-3 rounded-2xl p-4 ring-2 sm:flex-row sm:items-center sm:gap-4 sm:p-5 ${tierMeta.bg} ${tierMeta.ring}`}>
@@ -141,7 +141,7 @@ export default async function PortalLoyaltyPage() {
         <Panel
           title="Available coupons"
           description={`${availableCoupons.length} available · ${balance} pts to spend`}
-          className="lg:col-span-2"
+          className="md:col-span-2"
         >
           {availableCoupons.length === 0 ? (
             <div className="[&_p]:text-sm">
@@ -200,7 +200,7 @@ export default async function PortalLoyaltyPage() {
         <Panel
           title="Points history"
           description="Your last 20 transactions"
-          className="lg:col-span-2"
+          className="md:col-span-2"
         >
           {!account?.transactions.length ? (
             <div className="[&_p]:text-sm">
