@@ -44,13 +44,15 @@ export default async function AdminDispensingPage({
       title="Dispensing register"
       subtitle="Find completed fills, sales, and substitutions in one searchable record."
     >
-      <DispensingRegisterTable
-        initialRecords={data.records}
-        metrics={data.metrics}
-        total={data.total}
-        initialPage={data.page}
-        pageSize={pageSize}
-      />
+      <div className="mx-auto w-full min-w-0 max-w-[1280px]">
+        <DispensingRegisterTable
+          initialRecords={data.records}
+          metrics={data.metrics}
+          total={data.total}
+          initialPage={data.page}
+          pageSize={pageSize}
+        />
+      </div>
     </AdminShell>
   );
 }
