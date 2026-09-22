@@ -203,7 +203,7 @@ export default function DigitalCounsellingCard({
         <div className="flex flex-wrap items-center gap-2">
           <button
             type="button"
-            onClick={() = className="min-h-11 min-w-11"> setActiveTab("pillars")}
+            onClick={() => setActiveTab("pillars")}
             className={`flex items-center gap-2 rounded-xl px-4 py-2 font-bold transition ${
               activeTab === "pillars"
                 ? "bg-[var(--brand)] text-[var(--background)] shadow-xs"
@@ -217,7 +217,7 @@ export default function DigitalCounsellingCard({
           {specialFormGuide && (
             <button
               type="button"
-              onClick={() = className="min-h-11 min-w-11"> setActiveTab("form")}
+              onClick={() => setActiveTab("form")}
               className={`flex items-center gap-2 rounded-xl px-4 py-2 font-bold transition ${
                 activeTab === "form"
                   ? "bg-[var(--brand)] text-[var(--background)] shadow-xs"
@@ -232,7 +232,7 @@ export default function DigitalCounsellingCard({
           {deviceGuide && (
             <button
               type="button"
-              onClick={() = className="min-h-11 min-w-11"> setActiveTab("device")}
+              onClick={() => setActiveTab("device")}
               className={`flex items-center gap-2 rounded-xl px-4 py-2 font-bold transition ${
                 activeTab === "device"
                   ? "bg-[var(--brand)] text-[var(--background)] shadow-xs"
@@ -250,7 +250,7 @@ export default function DigitalCounsellingCard({
           <div className="flex items-center gap-1 rounded-xl border border-[var(--health-ui-border)] bg-[var(--card-elev)] p-1">
             <button
               type="button"
-              onClick={() = className="min-h-11 min-w-11"> setViewMode("grid")}
+              onClick={() => setViewMode("grid")}
               className={`flex items-center gap-1 rounded-lg px-3 py-1 text-sm font-bold transition ${
                 viewMode === "grid"
                   ? "bg-[var(--brand)] text-[var(--background)] shadow-xs"
@@ -262,7 +262,7 @@ export default function DigitalCounsellingCard({
             </button>
             <button
               type="button"
-              onClick={() = className="min-h-11 min-w-11"> setViewMode("leaflet")}
+              onClick={() => setViewMode("leaflet")}
               className={`flex items-center gap-1 rounded-lg px-3 py-1 text-sm font-bold transition ${
                 viewMode === "leaflet"
                   ? "bg-[var(--brand)] text-[var(--background)] shadow-xs"
@@ -441,7 +441,7 @@ export default function DigitalCounsellingCard({
                     </p>
                     <button
                       type="button"
-                      onClick={() = className="min-h-11 min-w-11"> setActiveTab("form")}
+                      onClick={() => setActiveTab("form")}
                       className="mt-3 inline-flex items-center gap-1 text-sm font-bold text-teal-800 hover:underline"
                     >
                       Open Full Step-by-Step Guide →
@@ -537,7 +537,7 @@ export default function DigitalCounsellingCard({
                     </p>
                     <button
                       type="button"
-                      onClick={() = className="min-h-11 min-w-11"> setActiveTab("device")}
+                      onClick={() => setActiveTab("device")}
                       className="mt-3 inline-flex items-center gap-1 text-sm font-bold text-teal-800 hover:underline"
                     >
                       View Illustrated Device Protocol →
