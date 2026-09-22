@@ -14,6 +14,8 @@ import {
 } from "@/app/lib/services/refills";
 import { formatTime, toLocalDateInputValue } from "@/app/lib/time";
 import { withPlatformBypass } from "@/app/lib/tenant-context";
+import { assertCampaignConfiguration } from "@/app/lib/platform/plan-enforcement";
+import { growthLimitMessage } from "@/app/lib/platform/plan-policy";
 
 export const runtime = "nodejs";
 
@@ -44,12 +46,36 @@ async function processScheduledCampaigns(): Promise<number> {
   let launched = 0;
   for (const c of due) {
     try {
+      await assertCampaignConfiguration(c.pharmacyId, {
+        scheduledFor: c.scheduledFor,
+        channel: c.channel,
+        segmentId: c.segmentId,
+      });
       await launchCampaign(c.id, c.createdById ?? "system");
       launched++;
     } catch (err) {
+      const planMessage = growthLimitMessage(err);
+      if (planMessage) {
+        // Premium may have lapsed after the campaign was scheduled. Preserve the
+        // draft instead of repeatedly retrying a paid automation every five minutes.
+        await prisma.campaign.update({
+          where: { id: c.id },
+          data: { status: "draft", scheduledFor: null },
+        });
+        await recordAdminNotification({
+          type: "campaign_failed",
+          title: "Scheduled campaign paused",
+          body: `Campaign "${c.name}" returned to draft because its Premium automation is no longer active. ${planMessage}`,
+          severity: "warning",
+          relatedType: "campaign",
+          relatedId: c.id,
+        });
+        continue;
+      }
+
       await recordAdminNotification({
         type: "campaign_failed",
-        title: `Scheduled campaign failed to launch`,
+        title: "Scheduled campaign failed to launch",
         body: `Campaign "${c.name}" could not be launched: ${err instanceof Error ? err.message : "unknown error"}`,
         severity: "critical",
         relatedType: "campaign",
