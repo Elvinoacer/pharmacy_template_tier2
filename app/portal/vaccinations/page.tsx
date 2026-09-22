@@ -32,13 +32,14 @@ export default async function PortalVaccinationsPage() {
       actions={
         <Link
           href={shopBase ? `${shopBase}/vaccinations/book` : "/vaccinations/book"}
-          className="btn-primary min-h-11 w-full sm:w-auto"
+          className="min-w-11 btn-primary min-h-11 w-full sm:w-auto"
         >
           <Syringe className="h-4 w-4 shrink-0" /> Book a vaccine
         </Link>
       }
     >
-      <PortalVaccinationsView
+      <div className="mx-auto w-full max-w-7xl min-w-0">
+        <PortalVaccinationsView
         records={data.records.map((r) => ({
           id: r.id,
           certificateCode: r.certificateCode,
@@ -62,15 +63,16 @@ export default async function PortalVaccinationsPage() {
           vaccine: a.vaccine,
           screening: a.screening ? { outcome: a.screening.outcome } : null,
         }))}
-        counselling={data.counselling.map((c) => ({
+          counselling={data.counselling.map((c) => ({
           id: c.id,
           topic: c.topic,
           status: c.status,
           preferredDate: c.preferredDate,
           summary: c.summary,
           createdAt: c.createdAt.toISOString(),
-        }))}
-      />
+          }))}
+        />
+      </div>
     </PortalShell>
   );
 }
