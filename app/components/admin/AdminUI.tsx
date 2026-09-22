@@ -66,7 +66,7 @@ export function AdminPanel({
         <div className="admin-panel-heading flex min-w-0 flex-col items-start justify-between gap-3 sm:flex-row">
           <div className="min-w-0 flex-1">
             {title && <h2 className="break-words text-sm font-semibold admin-text">{title}</h2>}
-            {description && <p className="mt-0.5 break-words text-sm admin-muted">{description}</p>}
+            {description && <p className="mt-1 break-words !text-sm leading-5 admin-muted">{description}</p>}
           </div>
           {action && <div className="w-full shrink-0 sm:w-auto">{action}</div>}
         </div>
