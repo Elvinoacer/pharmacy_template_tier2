@@ -128,7 +128,7 @@ export default async function AdminCustomersPage({
                       <div className="min-w-0 flex-1">
                         <Link
                           href={`/admin/customers/${c.id}`}
-                          className="block break-words text-sm font-semibold admin-text hover:admin-accent-text"
+                          className="flex min-h-11 items-center break-words text-sm font-semibold admin-text hover:admin-accent-text"
                         >
                           {c.fullName}
                         </Link>
@@ -218,7 +218,7 @@ export default async function AdminCustomersPage({
                             <div className="min-w-0">
                               <Link
                                 href={`/admin/customers/${c.id}`}
-                                className="font-semibold admin-text hover:admin-accent-text hover:underline"
+                                className="inline-flex min-h-11 items-center font-semibold admin-text hover:admin-accent-text hover:underline"
                               >
                                 {c.fullName}
                               </Link>
