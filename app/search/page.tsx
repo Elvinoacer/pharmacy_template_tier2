@@ -27,9 +27,9 @@ export default async function SearchPage({ searchParams }: Props) {
     slug: string;
     overTheCounter: boolean;
     prescriptionRequired: boolean;
-    medicationMaster: { name: string; description: string | null };
+    medicationMaster: { name: string; description: string | null; imageUrl: string | null };
   }> = [];
-  let rawServices: Array<{ slug: string; title: string; short: string }> = [];
+  let rawServices: Array<{ slug: string; title: string; short: string; imageUrl: string | null }> = [];
   let rawVaccines: Array<{ slug: string; name: string; visSummary: string | null; category: string }> = [];
   let rawCategories: Array<{ slug: string; name: string; description: string | null }> = [];
 
@@ -51,7 +51,7 @@ export default async function SearchPage({ searchParams }: Props) {
               slug: true,
               overTheCounter: true,
               prescriptionRequired: true,
-              medicationMaster: { select: { name: true, description: true } },
+              medicationMaster: { select: { name: true, description: true, imageUrl: true } },
             },
             take: 30,
           })
@@ -61,7 +61,7 @@ export default async function SearchPage({ searchParams }: Props) {
               slug: true,
               overTheCounter: true,
               prescriptionRequired: true,
-              medicationMaster: { select: { name: true, description: true } },
+              medicationMaster: { select: { name: true, description: true, imageUrl: true } },
             },
             take: 12,
           }),
@@ -75,7 +75,7 @@ export default async function SearchPage({ searchParams }: Props) {
                 { description: { contains: query, mode: "insensitive" } },
               ],
             },
-            select: { slug: true, title: true, short: true },
+            select: { slug: true, title: true, short: true, imageUrl: true },
             take: 12,
           })
         : listPublicServices().then((list) => list.slice(0, 8)),
@@ -124,8 +124,9 @@ export default async function SearchPage({ searchParams }: Props) {
       title: m.medicationMaster.name,
       body: m.medicationMaster.description || "",
       meta: m.prescriptionRequired && !m.overTheCounter ? "Prescription" : "OTC",
+      imageUrl: m.medicationMaster.imageUrl,
     })),
-    services: rawServices.map((s) => ({ slug: s.slug, title: s.title, body: s.short })),
+    services: rawServices.map((s) => ({ slug: s.slug, title: s.title, body: s.short, imageUrl: s.imageUrl })),
     vaccines: rawVaccines.map((v) => ({
       slug: v.slug,
       title: v.name,
