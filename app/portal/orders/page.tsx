@@ -74,13 +74,16 @@ export default async function PortalOrdersPage({
         </div>
       )}
 
-      <Panel title="Your orders" description={`${orders.length} recent`}>
+      <Panel title="Your orders">
+        <p className="mb-4 text-sm text-[var(--muted)]">{orders.length} recent</p>
         {orders.length === 0 ? (
-          <EmptyState
-            icon={ShoppingCart}
-            title="No orders yet"
-            description="Order OTC products online or pay for approved refills here."
-          />
+          <div className="[&_p]:text-base">
+            <EmptyState
+              icon={ShoppingCart}
+              title="No orders yet"
+              description="Order OTC products online or pay for approved refills here."
+            />
+          </div>
         ) : (
           <ul className="space-y-2.5 sm:space-y-3">
             {orders.map((o) => {
