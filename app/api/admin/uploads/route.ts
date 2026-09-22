@@ -10,7 +10,7 @@ export const runtime = "nodejs";
 
 export async function POST(req: Request) {
   const user = await getSessionUser();
-  if (!user || !isStaff(user.role)) {
+  if (!user || (!isStaff(user.role) && !user.platformAdmin)) {
     return NextResponse.json(
       { error: "forbidden", message: "You do not have permission to upload files." },
       { status: 403 },
@@ -88,7 +88,7 @@ export async function POST(req: Request) {
 
 export async function GET() {
   const user = await getSessionUser();
-  if (!user || !isStaff(user.role)) {
+  if (!user || (!isStaff(user.role) && !user.platformAdmin)) {
     return NextResponse.json(
       { error: "forbidden", message: "You do not have permission to view upload settings." },
       { status: 403 },
