@@ -228,7 +228,7 @@ export default function ImageUploadField(props: Props) {
         type="button"
         disabled={uploading || !canAddMore}
         onClick={() => fileRef.current?.click()}
-        className="inline-flex items-center gap-1.5 rounded-lg border border-[var(--admin-border-2)] bg-[var(--admin-panel)] px-3 py-1.5 text-xs font-medium admin-muted transition hover:border-[var(--admin-accent)] hover:text-[var(--admin-text)] disabled:opacity-50"
+        className="inline-flex min-h-11 items-center gap-1.5 rounded-lg border border-[var(--admin-border-2)] bg-[var(--admin-panel)] px-3 py-1.5 text-sm font-medium admin-muted transition hover:border-[var(--admin-accent)] hover:text-[var(--admin-text)] disabled:opacity-50"
       >
         {uploading ? (
           <Loader2 className="h-3.5 w-3.5 animate-spin" />
@@ -247,7 +247,7 @@ export default function ImageUploadField(props: Props) {
         type="button"
         disabled={uploading}
         onClick={() => setShowUrlInput((v) => !v)}
-        className="inline-flex items-center gap-1.5 rounded-lg border border-[var(--admin-border-2)] bg-[var(--admin-panel)] px-3 py-1.5 text-xs font-medium admin-muted transition hover:border-[var(--admin-accent)] hover:text-[var(--admin-text)] disabled:opacity-50"
+        className="inline-flex min-h-11 items-center gap-1.5 rounded-lg border border-[var(--admin-border-2)] bg-[var(--admin-panel)] px-3 py-1.5 text-sm font-medium admin-muted transition hover:border-[var(--admin-accent)] hover:text-[var(--admin-text)] disabled:opacity-50"
       >
         <Link2 className="h-3.5 w-3.5" />
         {urls.length && !multi ? "Change URL" : "Paste URL"}
@@ -257,7 +257,7 @@ export default function ImageUploadField(props: Props) {
           type="button"
           disabled={uploading}
           onClick={() => setUrls([])}
-          className="inline-flex items-center gap-1.5 rounded-lg border border-[var(--admin-border-2)] bg-[var(--admin-panel)] px-3 py-1.5 text-xs font-medium text-red-400 transition hover:border-red-500/50 disabled:opacity-50"
+          className="inline-flex min-h-11 items-center gap-1.5 rounded-lg border border-[var(--admin-border-2)] bg-[var(--admin-panel)] px-3 py-1.5 text-sm font-medium text-red-400 transition hover:border-red-500/50 disabled:opacity-50"
         >
           <X className="h-3.5 w-3.5" />
           Clear
@@ -314,13 +314,13 @@ export default function ImageUploadField(props: Props) {
               <button
                 type="button"
                 onClick={() => removeAt(i)}
-                className="absolute right-1.5 top-1.5 rounded-lg bg-black/60 p-1.5 text-white opacity-0 transition group-hover:opacity-100 hover:bg-red-600"
+                className="absolute right-1.5 top-1.5 inline-flex min-h-11 min-w-11 items-center justify-center rounded-lg bg-black/70 text-white transition hover:bg-red-600"
                 title="Remove"
               >
                 <Trash2 className="h-3.5 w-3.5" />
               </button>
               {!multi && (
-                <div className="truncate border-t border-[var(--admin-border)] px-2 py-1 text-xs admin-soft">
+                <div className="break-all border-t border-[var(--admin-border)] px-2 py-2 text-sm admin-soft">
                   {url}
                 </div>
               )}
@@ -340,7 +340,7 @@ export default function ImageUploadField(props: Props) {
           className="rounded-xl border border-dashed border-[var(--admin-border-2)] bg-[var(--admin-inset)]/50 p-4 text-center transition hover:border-[var(--admin-accent)]"
         >
           <ImagePlus className="mx-auto mb-2 h-6 w-6 admin-soft" />
-          <p className="text-xs admin-muted">
+          <p className="text-sm admin-muted">
             Drag &amp; drop {multi ? "images" : "an image"}, or choose a file
           </p>
           <div className="mt-3">{actionButtons}</div>
@@ -368,14 +368,14 @@ export default function ImageUploadField(props: Props) {
                   style={{ width: `${progress}%` }}
                 />
               </div>
-              <span className="text-xs admin-soft">{progress}%</span>
+              <span className="text-sm admin-soft">{progress}%</span>
             </div>
           )}
         </div>
       )}
 
       {showUrlInput && (
-        <div className="flex gap-2">
+        <div className="grid gap-2 sm:grid-cols-[minmax(0,1fr)_auto_auto]">
           <input
             type="text"
             inputMode="url"
@@ -392,13 +392,13 @@ export default function ImageUploadField(props: Props) {
                 ? "https://… or comma-separated URLs"
                 : "https://cdn.example.com/image.webp"
             }
-            className="input-admin flex-1"
+            className="input-admin min-h-11 w-full text-base sm:text-sm"
             autoFocus
           />
           <button
             type="button"
             onClick={submitUrlDraft}
-            className="btn-admin !rounded-lg px-3 py-1.5 text-xs"
+            className="btn-admin min-h-11 !rounded-lg px-3 py-2 text-sm"
           >
             Add
           </button>
@@ -408,7 +408,7 @@ export default function ImageUploadField(props: Props) {
               setShowUrlInput(false);
               setUrlDraft("");
             }}
-            className="rounded-lg border border-[var(--admin-border-2)] px-2 py-1.5 admin-soft hover:text-[var(--admin-text)]"
+            className="inline-flex min-h-11 min-w-11 items-center justify-center rounded-lg border border-[var(--admin-border-2)] admin-soft hover:text-[var(--admin-text)]"
             title="Cancel"
           >
             <X className="h-3.5 w-3.5" />
@@ -417,13 +417,13 @@ export default function ImageUploadField(props: Props) {
       )}
 
       {error && (
-        <div className="flex items-start gap-1.5 text-xs text-red-400">
+        <div className="flex items-start gap-1.5 text-sm text-red-400">
           <AlertCircle className="mt-0.5 h-3 w-3 shrink-0" />
           <span>{error}</span>
         </div>
       )}
 
-      <p className="text-xs admin-soft">{hint}</p>
+      <p className="text-sm admin-soft">{hint}</p>
     </div>
   );
 }
