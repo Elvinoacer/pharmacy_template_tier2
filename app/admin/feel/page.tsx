@@ -82,32 +82,32 @@ export default async function AdminFeelInboxPage({
       title="Symptom check-ins"
       subtitle="Triage worsening and escalated cases first, then work through active monitoring sessions."
     >
-      <div className="mb-5 grid grid-cols-2 gap-2.5 sm:mb-6 sm:gap-3 lg:grid-cols-4">
-        <div className="admin-stat border-rose-500/25 bg-rose-500/[0.04] p-3.5 dark:border-rose-400/20 dark:bg-rose-400/[0.04] sm:p-4">
+      <div className="mb-4 grid grid-cols-1 gap-3 sm:mb-6 sm:grid-cols-2 lg:grid-cols-4">
+        <div className="admin-stat border-rose-500/25 bg-rose-500/[0.04] p-4 dark:border-rose-400/20 dark:bg-rose-400/[0.04] sm:p-4">
           <div className="flex items-center justify-between gap-2">
-            <p className="text-[11px] font-semibold uppercase tracking-[0.08em] text-rose-700 dark:text-rose-300 sm:text-xs">
+            <p className="text-sm font-semibold uppercase tracking-[0.08em] text-rose-700 dark:text-rose-300 sm:text-sm">
               Feeling worse
             </p>
             <AlertCircle className="h-4 w-4 shrink-0 text-rose-600 dark:text-rose-300" />
           </div>
           <p className="mt-1 text-xl font-bold text-rose-700 dark:text-rose-300 sm:text-2xl">{worseCount}</p>
-          <p className="mt-1 text-[11px] leading-4 admin-soft">Review these first</p>
+          <p className="mt-1 text-sm leading-4 admin-soft">Review these first</p>
         </div>
-        <div className="admin-stat p-3.5 sm:p-4">
+        <div className="admin-stat p-4 sm:p-4">
           <div className="flex items-center justify-between gap-2">
-            <p className="text-[11px] font-semibold uppercase tracking-[0.08em] text-amber-800 dark:text-amber-300 sm:text-xs">
+            <p className="text-sm font-semibold uppercase tracking-[0.08em] text-amber-800 dark:text-amber-300 sm:text-sm">
               Needs pharmacist
             </p>
             <AlertCircle className="h-4 w-4 shrink-0 text-amber-700 dark:text-amber-300" />
           </div>
           <p className="mt-1 text-xl font-bold text-amber-800 dark:text-amber-300 sm:text-2xl">{escalatedCount}</p>
-          <p className="mt-1 text-[11px] leading-4 admin-soft">Escalated cases</p>
+          <p className="mt-1 text-sm leading-4 admin-soft">Escalated cases</p>
         </div>
         {(["active", "monitoring"] as const).map((s) => (
-          <div key={s} className="admin-stat p-3.5 sm:p-4">
-            <p className="text-[11px] font-semibold uppercase tracking-[0.08em] admin-muted sm:text-xs">{s}</p>
+          <div key={s} className="admin-stat p-4 sm:p-4">
+            <p className="text-sm font-semibold uppercase tracking-[0.08em] admin-muted sm:text-sm">{s}</p>
             <p className="mt-1 text-xl font-bold admin-text sm:text-2xl">{byStatus[s] || 0}</p>
-            <p className="mt-1 text-[11px] leading-4 admin-soft">Open follow-up</p>
+            <p className="mt-1 text-sm leading-4 admin-soft">Open follow-up</p>
           </div>
         ))}
       </div>
@@ -116,7 +116,7 @@ export default async function AdminFeelInboxPage({
         <div className="flex min-w-max items-center gap-2">
           <Link
             href="/admin/feel"
-            className={`min-h-10 rounded-full px-3.5 py-2 text-xs font-semibold transition ${
+            className={`min-h-11 rounded-full px-4 py-2 text-sm font-semibold transition ${
               !statusFilter ? "bg-teal-700 text-white shadow-sm dark:bg-teal-500 dark:text-slate-950" : "admin-chip"
             }`}
           >
@@ -126,7 +126,7 @@ export default async function AdminFeelInboxPage({
             <Link
               key={s}
               href={`/admin/feel?status=${s}`}
-              className={`min-h-10 rounded-full px-3.5 py-2 text-xs font-semibold capitalize transition ${
+              className={`min-h-11 rounded-full px-4 py-2 text-sm font-semibold capitalize transition ${
                 statusFilter === s
                   ? "bg-teal-700 text-white shadow-sm dark:bg-teal-500 dark:text-slate-950"
                   : "admin-chip"
@@ -158,51 +158,51 @@ export default async function AdminFeelInboxPage({
                 s.status !== "closed";
 
               return (
-                <li key={s.id} className="py-1.5 first:pt-0 last:pb-0 sm:py-0">
+                <li key={s.id} className="py-2 first:pt-0 last:pb-0 sm:py-0">
                   <Link
                     href={`/admin/feel/${s.id}`}
-                    className={`group flex min-w-0 flex-col gap-3 rounded-xl px-2.5 py-3.5 transition-[background-color,border-color,box-shadow] hover:bg-[var(--admin-inset)] sm:flex-row sm:items-center sm:justify-between sm:rounded-none sm:px-1 sm:py-4 ${
+                    className={`group flex min-w-0 flex-col gap-3 rounded-xl px-3 py-4 transition-[background-color,border-color,box-shadow] hover:bg-[var(--admin-inset)] sm:flex-row sm:items-center sm:justify-between sm:rounded-none sm:px-1 sm:py-4 ${
                       isWorse
                         ? "border border-rose-500/20 bg-rose-500/[0.05] shadow-sm dark:border-rose-400/20 dark:bg-rose-400/[0.04] sm:my-1 sm:rounded-xl sm:px-3"
                         : "border border-transparent"
                     }`}
                   >
                     <div className="min-w-0 flex-1">
-                      <div className="flex flex-wrap items-center gap-1.5 sm:gap-2">
+                      <div className="flex flex-wrap items-center gap-2 sm:gap-2">
                         <span
-                          className={`rounded-full px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.06em] sm:text-[11px] ${
+                          className={`rounded-full px-3 py-1 text-sm font-semibold uppercase tracking-[0.06em] sm:text-sm ${
                             STATUS_STYLE[s.status] || STATUS_STYLE.active
                           }`}
                         >
                           {s.status}
                         </span>
                         {isWorse && (
-                          <span className="inline-flex items-center gap-1 rounded-full bg-rose-500/12 px-2.5 py-1 text-[10px] font-bold uppercase tracking-[0.06em] text-rose-700 ring-1 ring-inset ring-rose-500/20 dark:bg-rose-400/10 dark:text-rose-300 dark:ring-rose-400/20 sm:text-[11px]">
+                          <span className="inline-flex items-center gap-1 rounded-full bg-rose-500/12 px-3 py-1 text-sm font-bold uppercase tracking-[0.06em] text-rose-700 ring-1 ring-inset ring-rose-500/20 dark:bg-rose-400/10 dark:text-rose-300 dark:ring-rose-400/20 sm:text-sm">
                             <AlertCircle className="h-3 w-3" />
                             feeling worse
                           </span>
                         )}
                         {s.severity && (
-                          <span className="text-[10px] font-semibold uppercase tracking-[0.06em] admin-muted sm:text-[11px]">
+                          <span className="text-sm font-semibold uppercase tracking-[0.06em] admin-muted sm:text-sm">
                             {s.severity}
                           </span>
                         )}
                         {s.feelingTrend && !isWorse && (
-                          <span className="inline-flex items-center gap-1 text-[10px] font-semibold admin-muted sm:text-[11px]">
+                          <span className="inline-flex items-center gap-1 text-sm font-semibold admin-muted sm:text-sm">
                             <Activity className="h-3 w-3" />
                             felt {s.feelingTrend}
                           </span>
                         )}
                       </div>
 
-                      <p className="mt-2 line-clamp-2 text-sm font-semibold leading-5 admin-text sm:truncate sm:text-[15px]">
+                      <p className="mt-2 line-clamp-2 text-sm font-semibold leading-5 admin-text  sm:text-[15px]">
                         {s.provisionalLabel || s.chiefComplaint || s.category || "Symptom check-in"}
                       </p>
 
-                      <div className="mt-1.5 flex flex-wrap items-center gap-x-2 gap-y-1 text-[11px] admin-muted sm:text-xs">
+                      <div className="mt-2 flex flex-wrap items-center gap-x-2 gap-y-1 text-sm admin-muted sm:text-sm">
                         <span className="inline-flex min-w-0 items-center gap-1">
                           <User className="h-3 w-3 shrink-0" />
-                          <span className="max-w-40 truncate sm:max-w-none">{s.customer?.fullName || "Guest"}</span>
+                          <span className="break-words">{s.customer?.fullName || "Guest"}</span>
                         </span>
                         <span aria-hidden="true">·</span>
                         <span>{s.messageCount} messages</span>
@@ -215,14 +215,14 @@ export default async function AdminFeelInboxPage({
                       </div>
 
                       {s.aiSummary && (
-                        <p className="mt-2 line-clamp-2 text-xs leading-5 admin-soft">
+                        <p className="mt-2 line-clamp-2 text-sm leading-5 admin-soft">
                           <Sparkles className="mr-1 inline h-3 w-3 admin-accent-text" />
                           {s.aiSummary}
                         </p>
                       )}
 
                       {last && (
-                        <p className="mt-1.5 flex min-w-0 items-start gap-1.5 text-xs admin-muted">
+                        <p className="mt-2 flex min-w-0 items-start gap-2 text-sm admin-muted">
                           <MessageSquare className="mt-0.5 h-3 w-3 shrink-0" />
                           <span className="line-clamp-1 min-w-0">
                             {last.role}: {last.content}
@@ -231,7 +231,7 @@ export default async function AdminFeelInboxPage({
                       )}
                     </div>
 
-                    <span className="inline-flex min-h-10 shrink-0 items-center justify-between gap-2 self-stretch rounded-lg bg-[var(--admin-inset)] px-3 text-xs font-semibold admin-accent-text sm:min-h-0 sm:self-auto sm:bg-transparent sm:px-0">
+                    <span className="inline-flex min-h-11 shrink-0 items-center justify-between gap-2 self-stretch rounded-lg bg-[var(--admin-inset)] px-3 text-sm font-semibold admin-accent-text sm:min-h-0 sm:self-auto sm:bg-transparent sm:px-0">
                       Open case
                       <ChevronRight className="h-4 w-4 transition-transform duration-200 group-hover:translate-x-0.5" />
                     </span>
