@@ -132,7 +132,7 @@ function Section({
         type="button"
         onClick={() => setOpen((o) => !o)}
         aria-expanded={open}
-        className="flex w-full items-center gap-2 px-4 py-3 text-left text-sm font-semibold admin-text hover:bg-[var(--admin-hover)]"
+        className="flex min-h-11 w-full items-center gap-2 px-4 py-3 text-left text-sm font-semibold admin-text hover:bg-[var(--admin-hover)]"
       >
         <Icon className="h-4 w-4 admin-accent-text" />
         <span className="flex-1">{title}</span>
@@ -220,7 +220,7 @@ export default function MedicationForm({
           <div className="mb-2 flex items-center gap-2 text-sm font-bold text-amber-700 dark:text-amber-400">
             <AlertTriangle className="h-4 w-4" /> Review before saving
           </div>
-          <p className="mb-3 text-xs text-amber-700/80 dark:text-amber-400/80">
+          <p className="mb-3 text-sm text-amber-700/80 dark:text-amber-400/80">
             The validation layer flagged {validation.counts.flag} issue(s). Review them below and click
             &ldquo;Confirm &amp; Save&rdquo; to proceed, or edit the form and resubmit.
           </p>
@@ -228,7 +228,7 @@ export default function MedicationForm({
             {validation.checks
               .filter((c) => c.severity === "flag")
               .map((c) => (
-                <li key={c.rule} className="flex items-start gap-2 text-xs">
+                <li key={c.rule} className="flex items-start gap-2 text-sm">
                   <span className="mt-0.5 inline-block h-1.5 w-1.5 shrink-0 rounded-full bg-amber-500" />
                   <span className="text-[var(--admin-text)]">
                     <strong>{c.label}:</strong> {c.message}
@@ -243,7 +243,7 @@ export default function MedicationForm({
       <Section title="1. Identification" icon={Pill}>
         <div className="grid gap-4 sm:grid-cols-2">
           <div>
-            <label htmlFor={`${fieldPrefix}-1`} className="label-admin">Medicine name *</label>
+            <label htmlFor={`${fieldPrefix}-1`} className="label-admin !text-sm">Medicine name *</label>
             <div className="relative">
               <Pill className="pointer-events-none absolute left-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 admin-soft" />
               <input id={`${fieldPrefix}-1`}
@@ -257,7 +257,7 @@ export default function MedicationForm({
             </div>
           </div>
           <div>
-            <label htmlFor={`${fieldPrefix}-2`} className="label-admin">Generic name (INN) *</label>
+            <label htmlFor={`${fieldPrefix}-2`} className="label-admin !text-sm">Generic name (INN) *</label>
             <input id={`${fieldPrefix}-2`}
               name="genericName"
               required
@@ -270,17 +270,17 @@ export default function MedicationForm({
 
         <div className="grid gap-4 sm:grid-cols-2">
           <div>
-            <label htmlFor={`${fieldPrefix}-3`} className="label-admin">Brand name(s)</label>
+            <label htmlFor={`${fieldPrefix}-3`} className="label-admin !text-sm">Brand name(s)</label>
             <input id={`${fieldPrefix}-3`}
               name="brandName"
               defaultValue={defaults?.brandName || ""}
               placeholder="Panadol, Calpol, Tylenol"
               className="input-admin"
             />
-            <p className="mt-1 text-xs admin-soft">Comma-separated. One generic often has many brand equivalents.</p>
+            <p className="mt-1 text-sm admin-soft">Comma-separated. One generic often has many brand equivalents.</p>
           </div>
           <div>
-            <label htmlFor={`${fieldPrefix}-4`} className="label-admin">Barcode (EAN/GTIN)</label>
+            <label htmlFor={`${fieldPrefix}-4`} className="label-admin !text-sm">Barcode (EAN/GTIN)</label>
             <div className="relative">
               <Hash className="pointer-events-none absolute left-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 admin-soft" />
               <input id={`${fieldPrefix}-4`}
@@ -290,13 +290,13 @@ export default function MedicationForm({
                 className="input-admin pl-9 font-mono"
               />
             </div>
-            <p className="mt-1 text-xs admin-soft">Unique across the shared library. Used for barcode lookup.</p>
+            <p className="mt-1 text-sm admin-soft">Unique across the shared library. Used for barcode lookup.</p>
           </div>
         </div>
 
         <div className="grid gap-4 sm:grid-cols-2">
           <div>
-            <label htmlFor={`${fieldPrefix}-5`} className="label-admin">Slug (pharmacy-specific)</label>
+            <label htmlFor={`${fieldPrefix}-5`} className="label-admin !text-sm">Slug (pharmacy-specific)</label>
             <input id={`${fieldPrefix}-5`}
               name="slug"
               value={slug}
@@ -309,7 +309,7 @@ export default function MedicationForm({
             />
           </div>
           <div>
-            <label htmlFor={`${fieldPrefix}-6`} className="label-admin">Category</label>
+            <label htmlFor={`${fieldPrefix}-6`} className="label-admin !text-sm">Category</label>
             <select id={`${fieldPrefix}-6`} name="category" className="input-admin" defaultValue={defaults?.category || "general"}>
               {categoryOptions.map((c) => (
                 <option key={c.slug} value={c.slug}>{c.name}</option>
@@ -323,18 +323,18 @@ export default function MedicationForm({
       <Section title="2. Clinical information" icon={Beaker}>
         <div className="grid gap-4 sm:grid-cols-2">
           <div>
-            <label className="label-admin">Active ingredient(s) *</label>
+            <label className="label-admin !text-sm">Active ingredient(s) *</label>
             <ActiveIngredientPicker
               options={activeIngredients}
               selected={selectedIngredientIds}
               onChange={setSelectedIngredientIds}
             />
-            <p className="mt-1 text-xs admin-soft">
+            <p className="mt-1 text-sm admin-soft">
               Relational, multi-value. {selectedIngredientIds.length} selected.
             </p>
           </div>
           <div>
-            <label htmlFor={`${fieldPrefix}-7`} className="label-admin">Manufacturer</label>
+            <label htmlFor={`${fieldPrefix}-7`} className="label-admin !text-sm">Manufacturer</label>
             <select id={`${fieldPrefix}-7`} name="manufacturerId" className="input-admin" defaultValue={defaults?.manufacturerId || ""}>
               <option value="">— Select manufacturer —</option>
               {manufacturers.map((m) => (
@@ -346,7 +346,7 @@ export default function MedicationForm({
 
         <div className="grid gap-4 sm:grid-cols-3">
           <div>
-            <label htmlFor={`${fieldPrefix}-8`} className="label-admin">Strength value</label>
+            <label htmlFor={`${fieldPrefix}-8`} className="label-admin !text-sm">Strength value</label>
             <input id={`${fieldPrefix}-8`}
               name="strengthValue"
               type="number"
@@ -357,7 +357,7 @@ export default function MedicationForm({
             />
           </div>
           <div>
-            <label htmlFor={`${fieldPrefix}-9`} className="label-admin">Strength unit</label>
+            <label htmlFor={`${fieldPrefix}-9`} className="label-admin !text-sm">Strength unit</label>
             <input id={`${fieldPrefix}-9`}
               name="strengthUnit"
               defaultValue={defaults?.strengthUnit || ""}
@@ -366,7 +366,7 @@ export default function MedicationForm({
             />
           </div>
           <div>
-            <label htmlFor={`${fieldPrefix}-10`} className="label-admin">Strength (display)</label>
+            <label htmlFor={`${fieldPrefix}-10`} className="label-admin !text-sm">Strength (display)</label>
             <input id={`${fieldPrefix}-10`}
               name="strengthDisplay"
               defaultValue={defaults?.strengthDisplay || ""}
@@ -378,7 +378,7 @@ export default function MedicationForm({
 
         <div className="grid gap-4 sm:grid-cols-2">
           <div>
-            <label htmlFor={`${fieldPrefix}-11`} className="label-admin">Dosage form *</label>
+            <label htmlFor={`${fieldPrefix}-11`} className="label-admin !text-sm">Dosage form *</label>
             <select id={`${fieldPrefix}-11`} name="dosageFormId" className="input-admin" defaultValue={defaults?.dosageFormId || ""} required>
               <option value="">— Select dosage form —</option>
               {dosageForms.map((d) => (
@@ -387,7 +387,7 @@ export default function MedicationForm({
             </select>
           </div>
           <div>
-            <label htmlFor={`${fieldPrefix}-12`} className="label-admin">Route of administration</label>
+            <label htmlFor={`${fieldPrefix}-12`} className="label-admin !text-sm">Route of administration</label>
             <select id={`${fieldPrefix}-12`} name="routeId" className="input-admin" defaultValue={defaults?.routeId || ""}>
               <option value="">— Select route —</option>
               {routes.map((r) => (
@@ -398,24 +398,24 @@ export default function MedicationForm({
         </div>
 
         <div>
-          <label htmlFor={`${fieldPrefix}-13`} className="label-admin">Indications (what it treats)</label>
+          <label htmlFor={`${fieldPrefix}-13`} className="label-admin !text-sm">Indications (what it treats)</label>
           <textarea id={`${fieldPrefix}-13`} name="indications" rows={3} defaultValue={defaults?.indications || ""} placeholder="Markdown supported. e.g. 'Used for mild to moderate pain, fever, headaches…'" className="input-admin resize-y" />
         </div>
 
         <div className="grid gap-4 sm:grid-cols-2">
           <div>
-            <label htmlFor={`${fieldPrefix}-14`} className="label-admin">Side effects</label>
+            <label htmlFor={`${fieldPrefix}-14`} className="label-admin !text-sm">Side effects</label>
             <textarea id={`${fieldPrefix}-14`} name="sideEffects" rows={2} defaultValue={defaults?.sideEffects || ""} placeholder="Nausea, rash, liver issues with prolonged use…" className="input-admin resize-y" />
           </div>
           <div>
-            <label htmlFor={`${fieldPrefix}-15`} className="label-admin">Contraindications</label>
+            <label htmlFor={`${fieldPrefix}-15`} className="label-admin !text-sm">Contraindications</label>
             <textarea id={`${fieldPrefix}-15`} name="contraindications" rows={2} defaultValue={defaults?.contraindications || ""} placeholder="Not for patients with liver disease or taking warfarin…" className="input-admin resize-y" />
           </div>
         </div>
 
         <div className="grid gap-4 sm:grid-cols-2">
           <div>
-            <label htmlFor={`${fieldPrefix}-16`} className="label-admin">Pregnancy category</label>
+            <label htmlFor={`${fieldPrefix}-16`} className="label-admin !text-sm">Pregnancy category</label>
             <select id={`${fieldPrefix}-16`} name="pregnancyCategoryId" className="input-admin" defaultValue={defaults?.pregnancyCategoryId || ""}>
               <option value="">— Select category —</option>
               {pregnancyCategories.map((p) => (
@@ -424,8 +424,8 @@ export default function MedicationForm({
             </select>
           </div>
           <div>
-            <label className="label-admin">Pediatric use</label>
-            <label className="flex cursor-pointer items-center gap-2.5 text-sm admin-muted hover:text-[var(--admin-text)] mt-2">
+            <label className="label-admin !text-sm">Pediatric use</label>
+            <label className="flex min-h-11 cursor-pointer items-center gap-2.5 text-sm admin-muted hover:text-[var(--admin-text)] mt-2">
               <input
                 type="checkbox"
                 name="pediatricUse"
@@ -438,7 +438,7 @@ export default function MedicationForm({
         </div>
 
         <div className="rounded-xl bg-[var(--admin-inset)] p-3">
-          <label className="flex cursor-pointer items-center gap-2.5 text-sm admin-muted hover:text-[var(--admin-text)]">
+          <label className="flex min-h-11 cursor-pointer items-center gap-2.5 text-sm admin-muted hover:text-[var(--admin-text)]">
             <input
               type="checkbox"
               name="controlledDrug"
@@ -450,7 +450,7 @@ export default function MedicationForm({
           </label>
           {controlledDrug && (
             <div className="mt-3">
-              <label htmlFor={`${fieldPrefix}-17`} className="label-admin">Controlled drug schedule *</label>
+              <label htmlFor={`${fieldPrefix}-17`} className="label-admin !text-sm">Controlled drug schedule *</label>
               <select id={`${fieldPrefix}-17`}
                 name="controlledDrugSchedule"
                 className="input-admin"
@@ -464,24 +464,24 @@ export default function MedicationForm({
                 <option value="schedule_4">Schedule 4</option>
                 <option value="schedule_5">Schedule 5</option>
               </select>
-              <p className="mt-1 text-xs admin-soft">Kenya Pharmacy &amp; Poisons Board schedule. Required when controlled drug is checked.</p>
+              <p className="mt-1 text-sm admin-soft">Kenya Pharmacy &amp; Poisons Board schedule. Required when controlled drug is checked.</p>
             </div>
           )}
         </div>
 
         <div className="grid gap-4 sm:grid-cols-2">
           <div>
-            <label htmlFor={`${fieldPrefix}-18`} className="label-admin">Dosage instructions</label>
+            <label htmlFor={`${fieldPrefix}-18`} className="label-admin !text-sm">Dosage instructions</label>
             <input id={`${fieldPrefix}-18`} name="dosage" defaultValue={defaults?.dosage || ""} placeholder="1-2 tablets every 4-6 hours, max 8 in 24h" className="input-admin" />
           </div>
           <div>
-            <label htmlFor={`${fieldPrefix}-19`} className="label-admin">Storage instructions</label>
+            <label htmlFor={`${fieldPrefix}-19`} className="label-admin !text-sm">Storage instructions</label>
             <input id={`${fieldPrefix}-19`} name="storage" defaultValue={defaults?.storage || ""} placeholder="Store below 25°C, keep dry" className="input-admin" />
           </div>
         </div>
 
         <div>
-          <label htmlFor={`${fieldPrefix}-20`} className="label-admin">Clinical notes</label>
+          <label htmlFor={`${fieldPrefix}-20`} className="label-admin !text-sm">Clinical notes</label>
           <textarea id={`${fieldPrefix}-20`} name="clinicalNotes" rows={2} defaultValue={defaults?.clinicalNotes || ""} placeholder="Extra pharmacology notes, bioavailability, half-life, etc." className="input-admin resize-y" />
         </div>
       </Section>
@@ -490,38 +490,38 @@ export default function MedicationForm({
       <Section title="3. Commercial information" icon={DollarSign}>
         <div className="grid gap-4 sm:grid-cols-3">
           <div>
-            <label htmlFor={`${fieldPrefix}-21`} className="label-admin">Selling price (KES) *</label>
+            <label htmlFor={`${fieldPrefix}-21`} className="label-admin !text-sm">Selling price (KES) *</label>
             <div className="relative">
               <DollarSign className="pointer-events-none absolute left-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 admin-soft" />
               <input id={`${fieldPrefix}-21`} name="price" type="number" min="0" step="0.01" required defaultValue={defaults?.price || "0"} className="input-admin pl-9" />
             </div>
           </div>
           <div>
-            <label htmlFor={`${fieldPrefix}-22`} className="label-admin">Purchase price (KES)</label>
+            <label htmlFor={`${fieldPrefix}-22`} className="label-admin !text-sm">Purchase price (KES)</label>
             <input id={`${fieldPrefix}-22`} name="purchasePrice" type="number" min="0" step="0.01" defaultValue={defaults?.purchasePrice || ""} className="input-admin" />
           </div>
           <div>
-            <label htmlFor={`${fieldPrefix}-23`} className="label-admin">Pack size</label>
+            <label htmlFor={`${fieldPrefix}-23`} className="label-admin !text-sm">Pack size</label>
             <input id={`${fieldPrefix}-23`} name="packSize" defaultValue={defaults?.packSize || ""} placeholder="10 tablets, 100ml bottle" className="input-admin" />
           </div>
         </div>
 
         <div className="grid gap-4 sm:grid-cols-2">
           <div>
-            <label htmlFor={`${fieldPrefix}-24`} className="label-admin">Country of origin</label>
+            <label htmlFor={`${fieldPrefix}-24`} className="label-admin !text-sm">Country of origin</label>
             <div className="relative">
               <Globe className="pointer-events-none absolute left-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 admin-soft" />
               <input id={`${fieldPrefix}-24`} name="countryOfOrigin" defaultValue={defaults?.countryOfOrigin || ""} placeholder="Kenya" className="input-admin pl-9" />
             </div>
           </div>
           <div>
-            <label htmlFor={`${fieldPrefix}-25`} className="label-admin">Supplier</label>
+            <label htmlFor={`${fieldPrefix}-25`} className="label-admin !text-sm">Supplier</label>
             <input id={`${fieldPrefix}-25`} name="supplier" defaultValue={defaults?.supplier || ""} placeholder="Nairobi Pharma Distributors" className="input-admin" />
           </div>
         </div>
 
         <div>
-          <label className="flex cursor-pointer items-center gap-2.5 text-sm admin-muted hover:text-[var(--admin-text)]">
+          <label className="flex min-h-11 cursor-pointer items-center gap-2.5 text-sm admin-muted hover:text-[var(--admin-text)]">
             <input type="checkbox" name="publicListing" defaultChecked={defaults?.publicListing} className="h-4 w-4 rounded border-[var(--admin-border-2)] bg-[var(--admin-inset)] admin-accent-text" />
             <Tag className="h-4 w-4" /> Show on public catalog (no login required)
           </label>
@@ -532,18 +532,18 @@ export default function MedicationForm({
       <Section title="4. Inventory settings" icon={Package}>
         <div className="grid gap-4 sm:grid-cols-3">
           <div>
-            <label htmlFor={`${fieldPrefix}-26`} className="label-admin">Current stock</label>
+            <label htmlFor={`${fieldPrefix}-26`} className="label-admin !text-sm">Current stock</label>
             <div className="relative">
               <Package className="pointer-events-none absolute left-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 admin-soft" />
               <input id={`${fieldPrefix}-26`} name="currentStock" type="number" min="0" defaultValue={defaults?.currentStock || "0"} className="input-admin pl-9" />
             </div>
           </div>
           <div>
-            <label htmlFor={`${fieldPrefix}-27`} className="label-admin">Low stock threshold</label>
+            <label htmlFor={`${fieldPrefix}-27`} className="label-admin !text-sm">Low stock threshold</label>
             <input id={`${fieldPrefix}-27`} name="lowStockThreshold" type="number" min="0" defaultValue={defaults?.lowStockThreshold || "10"} className="input-admin" />
           </div>
           <div>
-            <label htmlFor={`${fieldPrefix}-28`} className="label-admin">SKU</label>
+            <label htmlFor={`${fieldPrefix}-28`} className="label-admin !text-sm">SKU</label>
             <div className="relative">
               <Hash className="pointer-events-none absolute left-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 admin-soft" />
               <input id={`${fieldPrefix}-28`} name="sku" defaultValue={defaults?.sku || ""} placeholder="PARA-500" className="input-admin pl-9 font-mono" />
@@ -553,33 +553,33 @@ export default function MedicationForm({
 
         <div className="grid gap-4 sm:grid-cols-2">
           <div>
-            <label htmlFor={`${fieldPrefix}-29`} className="label-admin">Shelf location</label>
+            <label htmlFor={`${fieldPrefix}-29`} className="label-admin !text-sm">Shelf location</label>
             <div className="relative">
               <MapPin className="pointer-events-none absolute left-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 admin-soft" />
               <input id={`${fieldPrefix}-29`} name="shelfLocation" defaultValue={defaults?.shelfLocation || ""} placeholder="Aisle 3, Shelf B-12" className="input-admin pl-9" />
             </div>
           </div>
           <div>
-            <label htmlFor={`${fieldPrefix}-30`} className="label-admin">Promotions</label>
+            <label htmlFor={`${fieldPrefix}-30`} className="label-admin !text-sm">Promotions</label>
             <input id={`${fieldPrefix}-30`} name="promotions" defaultValue={defaults?.promotions || ""} placeholder="Buy 2 get 1 free" className="input-admin" />
           </div>
         </div>
 
         <div className="space-y-2 rounded-xl bg-[var(--admin-inset)] p-3">
-          <label className="flex cursor-pointer items-center gap-2.5 text-sm admin-muted hover:text-[var(--admin-text)]">
+          <label className="flex min-h-11 cursor-pointer items-center gap-2.5 text-sm admin-muted hover:text-[var(--admin-text)]">
             <input type="checkbox" name="overTheCounter" checked={otc} onChange={(e) => setOtcChecked(e.target.checked)} className="h-4 w-4 rounded border-[var(--admin-border-2)] bg-[var(--admin-inset)] admin-accent-text" />
             <Boxes className="h-4 w-4" /> Available over the counter (no prescription needed)
           </label>
-          <label className="flex cursor-pointer items-center gap-2.5 text-sm admin-muted hover:text-[var(--admin-text)]">
+          <label className="flex min-h-11 cursor-pointer items-center gap-2.5 text-sm admin-muted hover:text-[var(--admin-text)]">
             <input type="checkbox" name="prescriptionRequired" checked={rxRequired} onChange={(e) => setRxChecked(e.target.checked)} className="h-4 w-4 rounded border-[var(--admin-border-2)] bg-[var(--admin-inset)] admin-accent-text" />
             <FileText className="h-4 w-4" /> Prescription required
           </label>
-          <label className="flex cursor-pointer items-center gap-2.5 text-sm admin-muted hover:text-[var(--admin-text)]">
+          <label className="flex min-h-11 cursor-pointer items-center gap-2.5 text-sm admin-muted hover:text-[var(--admin-text)]">
             <input type="hidden" name="active" value="off" />
             <input type="checkbox" name="active" value="on" defaultChecked={defaults?.active ?? true} className="h-4 w-4 rounded border-[var(--admin-border-2)] bg-[var(--admin-inset)] admin-accent-text" />
             Active (visible in catalog)
           </label>
-          <label className="flex cursor-pointer items-center gap-2.5 text-sm admin-muted hover:text-[var(--admin-text)]">
+          <label className="flex min-h-11 cursor-pointer items-center gap-2.5 text-sm admin-muted hover:text-[var(--admin-text)]">
             <input type="checkbox" name="requiresRefrigeration" defaultChecked={defaults?.requiresRefrigeration} className="h-4 w-4 rounded border-[var(--admin-border-2)] bg-[var(--admin-inset)] admin-accent-text" />
             <Snowflake className="h-4 w-4" /> Requires refrigeration
           </label>
@@ -606,7 +606,7 @@ export default function MedicationForm({
         />
 
         <div>
-          <label className="label-admin">Equivalent / alternative medications</label>
+          <label className="label-admin !text-sm">Equivalent / alternative medications</label>
           <AlternativeMedicationPicker
             excludeMasterId={defaults?.masterId}
             initialSelected={
@@ -621,26 +621,26 @@ export default function MedicationForm({
                 : [])
             }
           />
-          <p className="mt-1 text-xs admin-soft">
+          <p className="mt-1 text-sm admin-soft">
             Search and pick medicines shown as alternatives on the public product page
             (e.g. brand equivalents of the same generic).
           </p>
         </div>
 
         <div>
-          <label className="label-admin">Clinical tags</label>
+          <label className="label-admin !text-sm">Clinical tags</label>
           <ClinicalTagPicker
             options={clinicalTags}
             selected={selectedTagIds}
             onChange={setSelectedTagIds}
           />
-          <p className="mt-1 text-xs admin-soft">
+          <p className="mt-1 text-sm admin-soft">
             Multi-select (Antibiotic, NSAID, etc.). {selectedTagIds.length} selected.
           </p>
         </div>
 
         <div>
-          <label htmlFor={`${fieldPrefix}-31`} className="label-admin">Description (short summary)</label>
+          <label htmlFor={`${fieldPrefix}-31`} className="label-admin !text-sm">Description (short summary)</label>
           <textarea id={`${fieldPrefix}-31`} name="description" rows={2} defaultValue={defaults?.description || ""} placeholder="Short one-line summary shown on the catalog card." className="input-admin resize-y" />
         </div>
       </Section>
@@ -648,7 +648,7 @@ export default function MedicationForm({
       <button
         type="submit"
         disabled={pending}
-        className="btn-admin w-full !rounded-xl py-2.5 disabled:opacity-50"
+        className="btn-admin !text-sm w-full !rounded-xl py-2.5 disabled:opacity-50"
       >
         {pending ? (
           <><span className="typing-dot" /> {needsConfirmation ? "Confirming…" : "Saving…"}</>
@@ -696,9 +696,9 @@ function ActiveIngredientPicker({
             const opt = options.find((o) => o.id === id);
             if (!opt) return null;
             return (
-              <span key={id} className="inline-flex items-center gap-1 rounded-full bg-[var(--admin-accent-soft)] px-2 py-0.5 text-xs font-semibold admin-accent-text">
+              <span key={id} className="inline-flex items-center gap-1 rounded-full bg-[var(--admin-accent-soft)] px-2 py-0.5 text-sm font-semibold admin-accent-text">
                 {opt.name}
-                <button type="button" onClick={() => toggle(id)} className="hover:opacity-70">
+                <button type="button" onClick={() => toggle(id)} className="inline-flex h-11 w-11 items-center justify-center rounded-full hover:opacity-70">
                   <X className="h-3 w-3" />
                 </button>
               </span>
@@ -708,14 +708,14 @@ function ActiveIngredientPicker({
       )}
       <div className="max-h-32 overflow-y-auto rounded-lg border border-[var(--admin-border-2)] bg-[var(--admin-inset)]">
         {filtered.length === 0 ? (
-          <p className="px-3 py-2 text-xs admin-soft">No active ingredients found. Add some via the lookup admin.</p>
+          <p className="px-3 py-2 text-sm admin-soft">No active ingredients found. Add some via the lookup admin.</p>
         ) : (
           filtered.map((o) => (
             <button
               key={o.id}
               type="button"
               onClick={() => toggle(o.id)}
-              className={`flex w-full items-center justify-between px-3 py-1.5 text-left text-xs transition hover:bg-[var(--admin-hover)] ${
+              className={`flex min-h-11 w-full items-center justify-between px-3 py-1.5 text-left text-sm transition hover:bg-[var(--admin-hover)] ${
                 selected.includes(o.id) ? "admin-accent-text font-semibold" : "admin-muted"
               }`}
             >
@@ -753,7 +753,7 @@ function ClinicalTagPicker({
               key={t.id}
               type="button"
               onClick={() => onChange(active ? selected.filter((x) => x !== t.id) : [...selected, t.id])}
-              className={`inline-flex items-center gap-1 rounded-full border px-2.5 py-1 text-xs font-semibold transition ${
+              className={`inline-flex min-h-11 items-center gap-1 rounded-full border px-3 py-2 text-sm font-semibold transition ${
                 active
                   ? "border-[var(--admin-accent)] bg-[var(--admin-accent-soft)] admin-accent-text"
                   : "border-[var(--admin-border-2)] admin-muted hover:border-[var(--admin-accent)]"
@@ -876,17 +876,17 @@ function AlternativeMedicationPicker({
           {selected.map((m) => (
             <span
               key={m.id}
-              className="inline-flex max-w-full items-center gap-1 rounded-full bg-[var(--admin-accent-soft)] px-2.5 py-1 text-xs font-semibold admin-accent-text"
+              className="inline-flex max-w-full items-center gap-1 rounded-full bg-[var(--admin-accent-soft)] px-2.5 py-1 text-sm font-semibold admin-accent-text"
             >
               <Pill className="h-3 w-3 shrink-0" />
-              <span className="truncate">
+              <span className="break-words">
                 {m.name}
                 {m.strengthDisplay ? ` · ${m.strengthDisplay}` : ""}
               </span>
               <button
                 type="button"
                 onClick={() => remove(m.id)}
-                className="shrink-0 hover:opacity-70"
+                className="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-full hover:opacity-70"
                 aria-label={`Remove ${m.name}`}
               >
                 <X className="h-3 w-3" />
@@ -921,10 +921,10 @@ function AlternativeMedicationPicker({
           <div className="absolute z-50 mt-1 w-full overflow-hidden rounded-xl border border-[var(--admin-border-2)] bg-[var(--admin-card)] shadow-xl">
             <ul className="max-h-56 overflow-y-auto">
               {loading && (
-                <li className="px-3 py-2 text-xs admin-soft">Searching…</li>
+                <li className="px-3 py-2 text-sm admin-soft">Searching…</li>
               )}
               {!loading && options.length === 0 && (
-                <li className="px-3 py-3 text-xs admin-soft">
+                <li className="px-3 py-3 text-sm admin-soft">
                   {query.trim()
                     ? "No medications match your search."
                     : "Type to search the medication library."}
@@ -937,12 +937,12 @@ function AlternativeMedicationPicker({
                       type="button"
                       onMouseDown={(e) => e.preventDefault()}
                       onClick={() => add(m)}
-                      className="flex w-full items-start gap-2 px-3 py-2 text-left text-xs transition hover:bg-[var(--admin-hover)] admin-text"
+                      className="flex min-h-11 w-full items-start gap-2 px-3 py-2 text-left text-sm transition hover:bg-[var(--admin-hover)] admin-text"
                     >
                       <Pill className="mt-0.5 h-3 w-3 shrink-0 admin-accent-text" />
                       <span className="min-w-0">
-                        <span className="block truncate font-semibold">{m.name}</span>
-                        <span className="block truncate text-xs admin-soft">
+                        <span className="block break-words font-semibold">{m.name}</span>
+                        <span className="block break-words text-sm admin-soft">
                           {[m.genericName, m.strengthDisplay, m.category?.replace(/-/g, " ")]
                             .filter(Boolean)
                             .join(" · ")}
@@ -956,7 +956,7 @@ function AlternativeMedicationPicker({
         )}
       </div>
 
-      <p className="text-xs admin-soft">
+      <p className="text-sm admin-soft">
         {selected.length === 0
           ? "None selected — the public page will fall back to same-category suggestions."
           : `${selected.length} alternative${selected.length === 1 ? "" : "s"} linked.`}
