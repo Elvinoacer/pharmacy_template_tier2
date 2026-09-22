@@ -123,7 +123,7 @@ export function WorkspaceShell({
       >
       <NavigationProgressProvider>
         <div
-          className="afyvia-workspace-root min-h-screen shell-grid-admin admin-workspace"
+          className="afyvia-workspace-root min-h-screen shell-grid-admin admin-workspace [&_.afyvia-dock-label]:text-sm [&_.afyvia-mobile-sheet-close]:!h-11 [&_.afyvia-mobile-sheet-close]:!w-11 [&_.afyvia-mobile-sheet_button]:min-h-11 [&_.afyvia-mobile-sheet_button]:text-sm [&_.afyvia-mobile-sheet_a]:min-h-11 [&_.afyvia-mobile-sheet_a]:text-sm [&_.afyvia-mobile-sheet_select]:min-h-11 [&_.afyvia-mobile-sheet_select]:text-sm"
           data-role={role}
           data-theme={theme.hydrated ? theme.resolved : undefined}
           data-admin-theme={theme.hydrated ? theme.resolved : undefined}
@@ -160,7 +160,7 @@ export function WorkspaceShell({
             {/* Universal Workspace Header */}
             <header className="sticky top-0 z-20 flex min-h-16 items-center justify-between gap-2 border-b border-[var(--admin-border)] bg-[var(--admin-panel)]/95 px-4 backdrop-blur sm:gap-3 sm:px-6 lg:px-8">
               {/* Mobile: keep location context without squeezing full breadcrumbs. */}
-              <div className="flex min-w-0 items-center sm:hidden">
+              <div className="flex min-w-0 max-w-[132px] items-center sm:hidden">
                 <Link
                   href={workspaceHomeHref}
                   aria-label={
@@ -171,20 +171,24 @@ export function WorkspaceShell({
                   className="inline-flex min-h-11 min-w-11 items-center gap-2 rounded-xl px-2 text-sm font-semibold text-[var(--admin-accent-text)] hover:bg-[var(--admin-hover)]"
                 >
                   {!isWorkspaceHome && <ArrowLeft size={18} aria-hidden="true" />}
-                  <span>{workspaceLabel}</span>
+                  <span className="truncate" title={defaultBrand.name}>
+                    {role === "admin" ? defaultBrand.name : workspaceLabel}
+                  </span>
                 </Link>
               </div>
 
               {/* Tablet/Desktop: full breadcrumb trail. */}
               <nav
                 aria-label="Breadcrumbs"
-                className="hidden min-w-0 items-center gap-2 sm:flex sm:max-w-[220px] lg:max-w-[300px]"
+                className="hidden min-w-0 items-center gap-2 sm:flex sm:max-w-[180px] lg:max-w-[300px]"
               >
                 <Link
                   href={workspaceHomeHref}
                   className="inline-flex min-h-11 shrink-0 items-center text-sm font-semibold uppercase tracking-wider text-[var(--admin-accent-text)] hover:underline"
                 >
-                  {workspaceLabel}
+                  <span className="max-w-[132px] truncate lg:max-w-[180px]" title={defaultBrand.name}>
+                    {role === "admin" ? defaultBrand.name : workspaceLabel}
+                  </span>
                 </Link>
 
                 {currentGroup && (
@@ -223,21 +227,21 @@ export function WorkspaceShell({
                   user={user}
                   currentPath={pathname}
                   placeholder={commandPlaceholder}
-                  triggerClassName="workspace-command-trigger-responsive"
+                  triggerClassName="workspace-command-trigger-responsive !h-11 !w-11 !min-h-11 !max-w-11 !justify-center !gap-0 !px-0 [&_.afyvia-command-bar-text]:hidden [&_.afyvia-command-bar-kbd]:hidden sm:!w-full sm:!max-w-[320px] sm:!justify-start sm:!gap-2 sm:!px-3 sm:[&_.afyvia-command-bar-text]:block lg:!max-w-[440px] lg:!gap-2.5 lg:!px-3.5 lg:[&_.afyvia-command-bar-kbd]:flex"
                 />
               </div>
 
               {/* Right: only essential actions remain in the mobile header. */}
               <div className="flex shrink-0 items-center gap-2">
-                <div className="hidden items-center gap-2 sm:flex">{headerExtra}</div>
+                <div className="hidden items-center gap-2 lg:flex">{headerExtra}</div>
 
                 {role === "admin" && (
-                  <div className="hidden sm:block">
+                  <div className="hidden lg:block">
                     <AdminPlanStatusButton />
                   </div>
                 )}
 
-                <div className="hidden sm:block">
+                <div className="hidden lg:block">
                   <WorkspaceThemeToggle
                     mode={theme.mode}
                     resolved={theme.resolved}
@@ -247,7 +251,7 @@ export function WorkspaceShell({
 
                 <WorkspaceBellButton role={role} unread={attention.count} />
 
-                <div className="hidden sm:block">
+                <div className="hidden lg:block">
                   <WorkspaceHeaderUserMenu
                     user={user}
                     role={role}
@@ -263,12 +267,18 @@ export function WorkspaceShell({
               tabIndex={-1}
               className="workspace-main-scroll mx-auto min-h-0 w-full max-w-[1280px] flex-1 overflow-x-hidden overflow-y-auto px-4 py-6 sm:px-6 lg:px-8"
             >
-              {role === "admin" && <AdminPlanWelcomeBanner />}
-              {role === "admin" && <AdminPlanDashboardCard />}
+              {role === "admin" && (
+                <div className="hidden sm:block">
+                  <AdminPlanWelcomeBanner />
+                  <AdminPlanDashboardCard />
+                </div>
+              )}
               {role === "admin" && <AdminPlanContextNotice />}
 
               {/* Contextual Task Surface (Surfacing nearby actions for medicines, patients, applications) */}
-              <ContextualTaskSurface role={role} user={user} />
+              <div className="[&_.afyvia-context-chip]:min-h-11 [&_.afyvia-context-chip]:text-sm [&_.afyvia-context-dropdown-item]:min-h-11 [&_.afyvia-context-dropdown-item]:text-sm">
+                <ContextualTaskSurface role={role} user={user} />
+              </div>
 
               {/* Page Title & Action Bar */}
               {(title || currentDest) && (
@@ -281,7 +291,7 @@ export function WorkspaceShell({
                       {title || currentDest?.label}
                     </h1>
                     {(subtitle || currentDest?.description) && (
-                      <p className="mt-1 text-sm text-[var(--admin-text-muted)] max-w-3xl">
+                      <p className="mt-1 max-w-3xl text-base text-[var(--admin-text-muted)] sm:text-sm">
                         {subtitle || currentDest?.description}
                       </p>
                     )}
@@ -364,7 +374,7 @@ export function WorkspaceThemeToggle({
     <button
       type="button"
       onClick={onCycle}
-      className={`theme-toggle inline-flex h-11 w-11 min-h-11 min-w-11 items-center justify-center rounded-xl border border-[var(--admin-border)] bg-[var(--admin-card)] text-[var(--admin-text-muted)] transition hover:bg-[var(--admin-hover)] hover:text-[var(--admin-text)] lg:h-9 lg:w-9 lg:min-h-9 lg:min-w-9 ${className}`}
+      className={`inline-flex h-11 w-11 min-h-11 min-w-11 items-center justify-center rounded-xl border border-[var(--admin-border)] bg-[var(--admin-card)] text-[var(--admin-text-muted)] transition hover:bg-[var(--admin-hover)] hover:text-[var(--admin-text)] lg:h-9 lg:w-9 lg:min-h-9 lg:min-w-9 ${className}`}
       aria-label={label}
       title={label}
     >
