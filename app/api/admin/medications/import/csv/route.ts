@@ -1,10 +1,16 @@
 import { NextResponse } from "next/server";
+import { revalidatePath } from "next/cache";
 import { z } from "zod";
-import { getSessionUser, isStaff, writeAuditLog } from "@/app/lib/auth";
+import { AuthError, getSessionUser, isStaff, writeAuditLog } from "@/app/lib/auth";
+import { requireMedicationWriteContext } from "@/app/lib/services/medication-access";
+import { withPharmacy } from "@/app/lib/tenant-context";
+import { listingLimitMessage } from "@/app/lib/platform/plan-policy";
+import { validateMedication } from "@/app/lib/services/medication-validation";
 import { prisma } from "@/app/lib/db";
 import { publicErrorMessage } from "@/app/lib/public-error";
 import {
   createOrReuseMedicationForPharmacy,
+  findSharedMedicationMatch,
   medicationSlug,
   type SharedMedicationMasterInput,
 } from "@/app/lib/services/shared-medication-library";
@@ -45,6 +51,31 @@ export async function POST(req: Request) {
     );
   }
 
+  let pharmacyId: string;
+  try {
+    pharmacyId = await requireMedicationWriteContext(user);
+  } catch (error) {
+    const status =
+      error instanceof AuthError
+        ? error.status
+        : Number((error as { status?: number })?.status || 403);
+    const code = error instanceof Error ? error.message : "forbidden";
+    return NextResponse.json(
+      {
+        error: code,
+        message:
+          code === "PHARMACY_BILLING_SUSPENDED"
+            ? "This pharmacy workspace is paused because billing needs attention."
+            : code === "PHARMACY_WORKSPACE_PAUSED"
+              ? "This pharmacy workspace is paused. Restore access before importing medicines."
+              : code.includes("permission")
+                ? "You do not have permission to import medicines into this inventory."
+                : "Choose an active pharmacy workspace before importing medicines.",
+      },
+      { status },
+    );
+  }
+
   let body: z.infer<typeof Body>;
   try {
     body = Body.parse(await req.json());
@@ -73,7 +104,8 @@ export async function POST(req: Request) {
     errors: [] as Array<{ row: number; message: string }>,
   };
 
-  for (let i = 0; i < body.rows.length; i++) {
+  await withPharmacy(pharmacyId, async () => {
+    for (let i = 0; i < body.rows.length; i++) {
     const row = body.rows[i];
     try {
       const genericName = (row.genericName || "").trim() || row.name.trim();
@@ -106,6 +138,39 @@ export async function POST(req: Request) {
         acquisitionMethod: "csv_import",
       };
 
+      const prescriptionRequired = row.overTheCounter ? false : row.prescriptionRequired;
+      const existing = await findSharedMedicationMatch(sharedInput);
+      const validation = await validateMedication(
+        {
+          id: existing?.id,
+          name: row.name,
+          genericName,
+          brandName: row.brandName || null,
+          strengthDisplay: row.strengthDisplay || null,
+          dosageFormId,
+          barcode: row.barcode || null,
+          controlledDrug: false,
+          controlledDrugSchedule: null,
+        },
+        {
+          medicationMasterId: existing?.id,
+          slug,
+          sku: row.sku || null,
+          price: row.price,
+          overTheCounter: row.overTheCounter,
+          prescriptionRequired,
+        },
+        { existingMasterId: existing?.id },
+      );
+      if (validation.counts.fail > 0) {
+        throw new Error(
+          validation.checks
+            .filter((check) => check.severity === "fail")
+            .map((check) => check.message)
+            .join(" "),
+        );
+      }
+
       const result = await createOrReuseMedicationForPharmacy(sharedInput, {
         slug,
         sku: row.sku || null,
@@ -114,7 +179,7 @@ export async function POST(req: Request) {
         lowStockThreshold: row.lowStockThreshold,
         supplier: row.supplier || null,
         overTheCounter: row.overTheCounter,
-        prescriptionRequired: row.prescriptionRequired,
+        prescriptionRequired,
         publicListing: row.publicListing,
         active: true,
       });
@@ -130,22 +195,29 @@ export async function POST(req: Request) {
       console.error(`[medication csv import] row ${i + 1}`, error);
       summary.errors.push({
         row: i + 1,
-        message: publicErrorMessage(
-          error,
-          "This row could not be imported. Review the medication details and try it again.",
-        ),
+        message:
+          listingLimitMessage(error) ||
+          publicErrorMessage(
+            error,
+            "This row could not be imported. Review the medication details and try it again.",
+          ),
       });
     }
   }
 
-  await writeAuditLog(user.id, "medication_csv_import", "medication_master", undefined, {
+    await writeAuditLog(user.id, "medication_csv_import", "medication_master", undefined, {
     matched: summary.matched,
     created: summary.created,
     alreadyStocked: summary.alreadyStocked,
     flagged: summary.flagged,
     errors: summary.errors.length,
-    sharedLibrary: true,
+      sharedLibrary: true,
+    });
   });
+
+  revalidatePath("/admin/medications");
+  revalidatePath("/admin/inventory");
+  revalidatePath("/admin/medications/library");
 
   return NextResponse.json({ ok: true, ...summary });
 }
