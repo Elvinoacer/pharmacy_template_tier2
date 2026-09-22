@@ -242,60 +242,123 @@ export function PharmacySetupStep({ snapshot, initialStep }: Props) {
             <span>Care & Services</span>
           </div>
 
-          <p className="text-xs text-[var(--muted)] leading-relaxed">
-            Add at least one service patients can book. The free plan includes 2 active services, with an optional image and a choice to pay online or at the visit.
-          </p>
+          <div className="rounded-2xl border border-[var(--line-2)] bg-[var(--card-elev)] p-4">
+            <p className="text-sm font-semibold text-[var(--foreground)]">
+              Add one service to get started
+            </p>
+            <p className="mt-1 text-xs leading-relaxed text-[var(--muted)]">
+              Keep it simple: name the service, explain what the patient gets, and choose whether it can be booked online. You can add more details later from the pharmacy workspace.
+            </p>
+          </div>
 
-          <form action={saveSetupServiceAction} className="space-y-3">
+          <form action={saveSetupServiceAction} className="space-y-4">
             <input type="hidden" name="source" value="onboard" />
             <input type="hidden" name="pharmacyId" value={pharmacy.id} />
 
-            <label className="block text-xs font-semibold text-[var(--foreground)]">
-              Service Name
-              <input
-                name="title"
-                required
-                placeholder="e.g. Blood Pressure Monitoring & Health Check"
-                className="input-admin mt-1"
-              />
-            </label>
-            <label className="block text-xs font-semibold text-[var(--foreground)]">
-              Service Description
-              <textarea
-                name="description"
-                required
-                minLength={12}
-                rows={3}
-                placeholder="e.g. Quick blood pressure check with licensed pharmacist consultation."
-                className="input-admin mt-1"
-              />
-            </label>
-            <label className="block text-xs font-semibold text-[var(--foreground)]">
-              Price (KES) · Optional
-              <input
-                name="price"
-                type="number"
-                min="1"
-                placeholder="e.g. 200 (or leave blank if free)"
-                className="input-admin mt-1"
-              />
-            </label>
+            <section className="rounded-2xl border border-[var(--line-2)] bg-[var(--card-elev)] p-4 sm:p-5">
+              <div className="mb-4">
+                <h3 className="text-sm font-semibold text-[var(--foreground)]">Service details</h3>
+                <p className="mt-1 text-xs text-[var(--muted)]">
+                  This is what patients will read before they decide to book.
+                </p>
+              </div>
 
-            <ImageUploadField name="imageUrl" label="Service image (optional)" folder="services" />
-            <label className="block text-xs font-semibold">
-              Booking payment
-              <select name="paymentTiming" defaultValue="auto" className="input-admin mt-1">
-                <option value="auto">Online when available, otherwise pay at visit</option>
-                <option value="after">Reserve now, pay at visit</option>
-                <option value="before">Require online payment</option>
-              </select>
-            </label>
-            <p className="text-xs text-[var(--muted)]">Online payment requires your pharmacy’s M-Pesa connection. You can configure it in payment settings.</p>
+              <div className="space-y-4">
+                <label className="block text-xs font-semibold text-[var(--foreground)]" htmlFor="setup-service-title">
+                  Service name
+                  <input
+                    id="setup-service-title"
+                    name="title"
+                    required
+                    maxLength={100}
+                    placeholder="e.g. Blood pressure check"
+                    className="input-admin mt-1 min-h-11"
+                  />
+                </label>
+
+                <label className="block text-xs font-semibold text-[var(--foreground)]" htmlFor="setup-service-description">
+                  What does the patient get?
+                  <textarea
+                    id="setup-service-description"
+                    name="description"
+                    required
+                    minLength={12}
+                    maxLength={600}
+                    rows={4}
+                    placeholder="e.g. A quick blood pressure check followed by guidance from the pharmacy team."
+                    className="input-admin mt-1 min-h-[7rem] resize-y"
+                  />
+                </label>
+              </div>
+            </section>
+
+            <div className="grid gap-4 lg:grid-cols-2">
+              <section className="rounded-2xl border border-[var(--line-2)] bg-[var(--card-elev)] p-4 sm:p-5">
+                <div className="mb-4">
+                  <h3 className="text-sm font-semibold text-[var(--foreground)]">Booking & price</h3>
+                  <p className="mt-1 text-xs text-[var(--muted)]">
+                    You can leave the price blank when the service is free or priced after assessment.
+                  </p>
+                </div>
+
+                <div className="space-y-4">
+                  <label className="block text-xs font-semibold text-[var(--foreground)]" htmlFor="setup-service-price">
+                    Price (KES) · Optional
+                    <input
+                      id="setup-service-price"
+                      name="price"
+                      type="number"
+                      min="1"
+                      inputMode="numeric"
+                      placeholder="e.g. 200"
+                      className="input-admin mt-1 min-h-11"
+                    />
+                  </label>
+
+                  <label className="block text-xs font-semibold text-[var(--foreground)]" htmlFor="setup-service-payment">
+                    Booking payment
+                    <select
+                      id="setup-service-payment"
+                      name="paymentTiming"
+                      defaultValue="auto"
+                      className="input-admin mt-1 min-h-11"
+                    >
+                      <option value="auto">Online when available, otherwise pay at visit</option>
+                      <option value="after">Reserve now and pay at visit</option>
+                      <option value="before">Require online payment</option>
+                    </select>
+                  </label>
+
+                  <p className="rounded-xl bg-[var(--brand-soft)]/50 px-3 py-2 text-xs leading-relaxed text-[var(--muted)]">
+                    Online payment becomes available when your pharmacy’s M-Pesa connection is configured. Patients can still reserve when you choose pay-at-visit.
+                  </p>
+                </div>
+              </section>
+
+              <section className="rounded-2xl border border-[var(--line-2)] bg-[var(--card-elev)] p-4 sm:p-5">
+                <div className="mb-4">
+                  <h3 className="text-sm font-semibold text-[var(--foreground)]">Service image</h3>
+                  <p className="mt-1 text-xs text-[var(--muted)]">
+                    Optional, but recommended for a stronger storefront.
+                  </p>
+                </div>
+                <ImageUploadField
+                  name="imageUrl"
+                  label="Image · Optional"
+                  folder="services"
+                  hint="Upload a clear service image or paste a public image URL."
+                />
+              </section>
+            </div>
+
+            <div className="rounded-2xl border border-emerald-500/20 bg-emerald-500/10 p-3 text-xs leading-relaxed text-emerald-900 dark:text-emerald-100">
+              The free plan includes up to 2 active services. You can edit pricing, images, descriptions and booking settings later from <strong>Clinical → Services</strong>.
+            </div>
 
             <div className={`${styles.actions} ${polish.actionsBar} mt-4`}>
               <button
                 type="submit"
-                className={`btn-primary justify-center ${polish.primaryAction}`}
+                className={`btn-primary min-h-11 justify-center ${polish.primaryAction}`}
               >
                 Save service & continue <ArrowRight className="h-4 w-4" />
               </button>
