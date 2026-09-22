@@ -49,6 +49,18 @@ function parseList(raw?: string): string[] {
     .filter(Boolean);
 }
 
+function isSupportedImageReference(value: string): boolean {
+  const raw = value.trim();
+  if (!raw) return false;
+  if (/^\/(?!\/)/.test(raw)) return true;
+  try {
+    const url = new URL(raw);
+    return url.protocol === "https:" || url.protocol === "http:";
+  } catch {
+    return false;
+  }
+}
+
 function uploadFile(
   file: File,
   folder: string,
@@ -199,11 +211,13 @@ export default function ImageUploadField(props: Props) {
   function submitUrlDraft() {
     const raw = urlDraft.trim();
     if (!raw) return;
-    if (multi) {
-      for (const part of parseList(raw)) addUrl(part);
-    } else {
-      addUrl(raw);
+    const candidates = multi ? parseList(raw) : [raw];
+    const invalid = candidates.find((value) => !isSupportedImageReference(value));
+    if (invalid) {
+      setError("Use an http(s) image URL or a site-relative path beginning with /.");
+      return;
     }
+    for (const candidate of candidates) addUrl(candidate);
     setUrlDraft("");
     setShowUrlInput(false);
   }
@@ -363,7 +377,8 @@ export default function ImageUploadField(props: Props) {
       {showUrlInput && (
         <div className="flex gap-2">
           <input
-            type="url"
+            type="text"
+            inputMode="url"
             value={urlDraft}
             onChange={(e) => setUrlDraft(e.target.value)}
             onKeyDown={(e) => {
