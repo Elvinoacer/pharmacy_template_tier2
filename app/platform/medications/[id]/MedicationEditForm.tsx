@@ -4,6 +4,7 @@ import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { Check, Loader2, Save, ShieldCheck } from "lucide-react";
 import { toast } from "@/app/components/Toaster";
+import ImageUploadField from "@/app/components/admin/ImageUploadField";
 
 type LookupOption = { id: string; value: string };
 type ManufacturerOption = { id: string; name: string };
@@ -448,15 +449,26 @@ export function MedicationEditForm({
             />
           </div>
 
-          <div>
-            <label className="block text-xs font-semibold text-[var(--admin-text)]">Image URL</label>
-            <input
-              type="url"
+          <div className="sm:col-span-2">
+            <ImageUploadField
               name="imageUrl"
-              value={formData.imageUrl}
-              onChange={handleChange}
-              placeholder="https://..."
-              className="mt-1 w-full rounded-xl border border-[var(--admin-border)] bg-[var(--admin-panel)] px-3 py-2 text-xs text-[var(--admin-text)] focus:border-[var(--admin-accent)] focus:outline-none"
+              label="Main medicine image"
+              folder="medications"
+              defaultValue={formData.imageUrl}
+              onChange={(imageUrl) => setFormData((prev) => ({ ...prev, imageUrl }))}
+              hint="Upload a medicine pack image to R2, paste an http(s) image URL, or use a site-relative /images/... path."
+            />
+          </div>
+
+          <div className="sm:col-span-2">
+            <ImageUploadField
+              mode="multi"
+              name="imageUrls"
+              label="Medicine gallery"
+              folder="medications"
+              defaultValue={formData.imageUrls}
+              onChange={(imageUrls) => setFormData((prev) => ({ ...prev, imageUrls }))}
+              hint="Optional additional pack or leaflet images. Up to 8 images."
             />
           </div>
         </div>
