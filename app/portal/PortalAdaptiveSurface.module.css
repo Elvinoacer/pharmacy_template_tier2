@@ -287,10 +287,8 @@
   padding-inline: 12px !important;
 }
 
-.surface
-  :global(.workspace-command-trigger-responsive .afyvia-command-bar-text),
-.surface
-  :global(.workspace-command-trigger-responsive .afyvia-command-bar-kbd) {
+.surface :global(.workspace-command-trigger-responsive) :global(.afyvia-command-bar-text),
+.surface :global(.workspace-command-trigger-responsive) :global(.afyvia-command-bar-kbd) {
   display: none;
 }
 
@@ -331,20 +329,20 @@
   white-space: normal;
 }
 
-.surface :global(.afyvia-mobile-sheet button),
-.surface :global(.afyvia-mobile-sheet a),
-.surface :global(.afyvia-mobile-sheet p),
-.surface :global(.afyvia-mobile-sheet span),
-.surface :global(.afyvia-mobile-sheet kbd),
-.surface :global(.afyvia-contextual-surface button),
-.surface :global(.afyvia-contextual-surface a),
-.surface :global(.afyvia-contextual-surface p),
-.surface :global(.afyvia-contextual-surface span),
-.surface :global(.afyvia-command-dialog button),
-.surface :global(.afyvia-command-dialog a),
-.surface :global(.afyvia-command-dialog p),
-.surface :global(.afyvia-command-dialog span),
-.surface :global(.afyvia-command-dialog kbd),
+.surface :global(.afyvia-mobile-sheet) button,
+.surface :global(.afyvia-mobile-sheet) a,
+.surface :global(.afyvia-mobile-sheet) p,
+.surface :global(.afyvia-mobile-sheet) span,
+.surface :global(.afyvia-mobile-sheet) kbd,
+.surface :global(.afyvia-contextual-surface) button,
+.surface :global(.afyvia-contextual-surface) a,
+.surface :global(.afyvia-contextual-surface) p,
+.surface :global(.afyvia-contextual-surface) span,
+.surface :global(.afyvia-command-dialog) button,
+.surface :global(.afyvia-command-dialog) a,
+.surface :global(.afyvia-command-dialog) p,
+.surface :global(.afyvia-command-dialog) span,
+.surface :global(.afyvia-command-dialog) kbd,
 .surface :global(.afyvia-rail-label),
 .surface :global(.afyvia-flyout-eyebrow),
 .surface :global(.afyvia-flyout-title),
