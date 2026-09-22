@@ -381,6 +381,7 @@ html.dark .afyvia-workspace-root,
 
 /* Contextual Flyout Panel */
 .afyvia-context-flyout {
+  display: none;
   position: fixed;
   top: 0;
   bottom: 0;
@@ -417,10 +418,9 @@ html.dark .afyvia-workspace-root,
   z-index: 20;
 }
 
-@media (max-width: 1023px) {
-  .afyvia-rail,
+@media (min-width: 1024px) {
   .afyvia-context-flyout {
-    display: none !important;
+    display: flex;
   }
 }
 
