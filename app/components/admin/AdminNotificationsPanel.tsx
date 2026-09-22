@@ -225,7 +225,7 @@ export function AdminNotificationsPanel({
         </div>
       ) : (
         <>
-          <div className="space-y-3 sm:hidden">
+          <div className="space-y-3 lg:hidden">
             {initial.map((n) => {
               const ChannelIcon = channelIcon[n.channel] || Bell;
               const TypeIcon = typeIcon[n.type] || Bell;
@@ -275,7 +275,7 @@ export function AdminNotificationsPanel({
             })}
           </div>
 
-          <div tabIndex={0} role="region" aria-label="Notification records" className="admin-table-region hidden overflow-x-auto scroll-admin sm:block">
+          <div tabIndex={0} role="region" aria-label="Notification records" className="admin-table-region hidden overflow-x-auto scroll-admin lg:block">
             <table className="table-admin">
               <thead>
                 <tr>
