@@ -305,6 +305,7 @@ export function ServiceManager({ initial }: { initial: ServiceRow[] }) {
       <Modal
         open={modal?.type === "create" || modal?.type === "edit"}
         onClose={() => !pending && setModal(null)}
+        maxWidth="max-w-4xl"
         title={
           modal?.type === "edit" ? (
             <span className="inline-flex items-center gap-2">
@@ -321,7 +322,7 @@ export function ServiceManager({ initial }: { initial: ServiceRow[] }) {
             <button
               type="button"
               onClick={() => setModal(null)}
-              className="btn-admin-ghost text-xs"
+              className="btn-admin-ghost min-h-11 w-full px-4 text-sm sm:w-auto"
               disabled={pending}
             >
               Cancel
@@ -330,188 +331,261 @@ export function ServiceManager({ initial }: { initial: ServiceRow[] }) {
               type="submit"
               form="service-form"
               disabled={pending || !title.trim() || !short.trim() || !description.trim()}
-              className="btn-admin inline-flex items-center gap-1.5 !rounded-xl px-3 py-2 text-xs disabled:opacity-50"
+              className="btn-admin inline-flex min-h-11 w-full items-center justify-center gap-1.5 !rounded-xl px-5 text-sm disabled:cursor-not-allowed disabled:opacity-50 sm:w-auto"
             >
               {pending ? (
-                <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                <Loader2 className="h-4 w-4 animate-spin" />
               ) : (
-                <Check className="h-3.5 w-3.5" />
+                <Check className="h-4 w-4" />
               )}
-              {modal?.type === "edit" ? "Save changes" : "Create"}
+              {modal?.type === "edit" ? "Save changes" : "Create service"}
             </button>
           </>
         }
       >
-        <form id="service-form" action={saveAction} className="space-y-3 max-h-[65vh] overflow-y-auto pr-1">
+        <form id="service-form" action={saveAction} className="space-y-4">
           {modal?.type === "edit" && <input type="hidden" name="id" value={modal.row.id} />}
-          <div>
-            <label className="label-admin">Title *</label>
-            <input
-              name="title"
-              value={title}
-              onChange={(e) => {
-                setTitle(e.target.value);
-                if (!slugTouched) setSlug(slugify(e.target.value));
-              }}
-              className="input-admin"
-              required
-            />
-          </div>
-          <div>
-            <label className="label-admin">Slug</label>
-            <input
-              name="slug"
-              value={slug}
-              onChange={(e) => {
-                setSlugTouched(true);
-                setSlug(slugify(e.target.value));
-              }}
-              className="input-admin font-mono text-xs"
-            />
-          </div>
-          <div>
-            <label className="label-admin">Short blurb *</label>
-            <textarea
-              name="short"
-              value={short}
-              onChange={(e) => setShort(e.target.value)}
-              rows={2}
-              className="input-admin resize-y"
-              required
-            />
-          </div>
-          <div>
-            <label className="label-admin">Full description *</label>
-            <textarea
-              name="description"
-              value={description}
-              onChange={(e) => setDescription(e.target.value)}
-              rows={4}
-              className="input-admin resize-y"
-              required
-            />
-          </div>
-          <div>
-            <label className="label-admin">Benefits (one per line)</label>
-            <textarea
-              name="benefits"
-              value={benefits}
-              onChange={(e) => setBenefits(e.target.value)}
-              rows={3}
-              className="input-admin resize-y"
-              placeholder="Double-check safety review&#10;Plain-language counselling"
-            />
-          </div>
-          <div className="grid gap-3 sm:grid-cols-2">
-            <div>
-              <label className="label-admin">Eligibility</label>
-              <input
-                name="eligibility"
-                value={eligibility}
-                onChange={(e) => setEligibility(e.target.value)}
-                className="input-admin"
-              />
-            </div>
-            <div>
-              <label className="label-admin">Duration</label>
-              <input
-                name="duration"
-                value={duration}
-                onChange={(e) => setDuration(e.target.value)}
-                className="input-admin"
-              />
-            </div>
-          </div>
-          <div>
-            <ImageUploadField
-              key={imageFieldKey}
-              name="imageUrl"
-              label="Image"
-              folder="services"
-              defaultValue={imageUrl}
-              onChange={setImageUrl}
-              hint="Upload to R2, paste a public image URL, or keep a relative path like /images/services/…"
-            />
-          </div>
-          <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-            <div>
-              <label className="label-admin">Price (KES, optional)</label>
-              <input
-                name="price"
-                type="number"
-                min="0"
-                step="1"
-                value={price}
-                onChange={(e) => setPrice(e.target.value)}
-                placeholder="Leave blank = no fee"
-                className="input-admin"
-              />
-              <p className="mt-1 text-xs admin-soft">
-                Fixed service price in KES.
+
+          <div className="rounded-2xl border border-[var(--admin-border)] bg-[var(--admin-inset)]/55 p-4 sm:p-5">
+            <div className="mb-4">
+              <h4 className="text-sm font-semibold text-[var(--admin-text)]">Service details</h4>
+              <p className="mt-1 text-xs leading-relaxed text-[var(--admin-text-muted)]">
+                Give patients a clear name and enough context to understand the service before they book.
               </p>
             </div>
-            <div>
-              <label className="label-admin">Payment Timing</label>
-              <select
-                name="paymentTiming"
-                value={paymentTiming}
-                onChange={(e) => setPaymentTiming(e.target.value as "auto" | "before" | "after")}
-                className="input-admin"
-              >
-                <option value="auto">Online when available, otherwise pay at visit</option>
-                <option value="before">Payable Before (Online STK)</option>
-                <option value="after">Payable After (At visit)</option>
-              </select>
-              <p className="mt-1 text-xs admin-soft">
-                When customer pays for this service.
-              </p>
-            </div>
-            <div>
-              <label className="label-admin">Icon key</label>
-              <input
-                name="icon"
-                value={icon}
-                onChange={(e) => setIcon(e.target.value)}
-                placeholder="pill, heart…"
-                className="input-admin"
-              />
-            </div>
-            <div>
-              <label className="label-admin">Sort order</label>
-              <input
-                name="sortOrder"
-                type="number"
-                value={sortOrder}
-                onChange={(e) => setSortOrder(e.target.value)}
-                className="input-admin"
-              />
+
+            <div className="space-y-4">
+              <div>
+                <label className="label-admin" htmlFor="service-title">Service name *</label>
+                <input
+                  id="service-title"
+                  name="title"
+                  value={title}
+                  onChange={(e) => {
+                    setTitle(e.target.value);
+                    if (!slugTouched) setSlug(slugify(e.target.value));
+                  }}
+                  className="input-admin min-h-11"
+                  placeholder="e.g. Blood pressure check"
+                  autoFocus
+                  required
+                />
+              </div>
+
+              <div>
+                <label className="label-admin" htmlFor="service-short">Short summary *</label>
+                <textarea
+                  id="service-short"
+                  name="short"
+                  value={short}
+                  onChange={(e) => setShort(e.target.value)}
+                  rows={2}
+                  maxLength={180}
+                  className="input-admin min-h-[5rem] resize-y"
+                  placeholder="A quick summary patients can understand at a glance."
+                  required
+                />
+                <p className="mt-1 text-xs text-[var(--admin-text-soft)]">
+                  {short.length}/180 · Used on service cards and search results.
+                </p>
+              </div>
+
+              <div>
+                <label className="label-admin" htmlFor="service-description">Full description *</label>
+                <textarea
+                  id="service-description"
+                  name="description"
+                  value={description}
+                  onChange={(e) => setDescription(e.target.value)}
+                  rows={4}
+                  className="input-admin min-h-[7rem] resize-y"
+                  placeholder="Explain what happens, what the patient should expect, and any important preparation."
+                  required
+                />
+              </div>
             </div>
           </div>
-          <div className="flex flex-wrap gap-4 pt-1">
-            <label className="flex cursor-pointer items-center gap-2 text-sm admin-muted">
-              <input
-                type="checkbox"
-                name="bookable"
-                checked={bookable}
-                onChange={(e) => setBookable(e.target.checked)}
-                value="true"
-                className="h-4 w-4 rounded"
+
+          <div className="grid gap-4 lg:grid-cols-2">
+            <section className="rounded-2xl border border-[var(--admin-border)] bg-[var(--admin-card-2)] p-4 sm:p-5">
+              <div className="mb-4">
+                <h4 className="text-sm font-semibold text-[var(--admin-text)]">Booking & pricing</h4>
+                <p className="mt-1 text-xs leading-relaxed text-[var(--admin-text-muted)]">
+                  Set the fee, visit duration and how customers pay.
+                </p>
+              </div>
+
+              <div className="grid gap-3 sm:grid-cols-2">
+                <div>
+                  <label className="label-admin" htmlFor="service-price">Price (KES)</label>
+                  <input
+                    id="service-price"
+                    name="price"
+                    type="number"
+                    min="0"
+                    step="1"
+                    value={price}
+                    onChange={(e) => setPrice(e.target.value)}
+                    placeholder="Leave blank if free"
+                    className="input-admin min-h-11"
+                  />
+                </div>
+
+                <div>
+                  <label className="label-admin" htmlFor="service-duration">Duration</label>
+                  <input
+                    id="service-duration"
+                    name="duration"
+                    value={duration}
+                    onChange={(e) => setDuration(e.target.value)}
+                    placeholder="e.g. 15 minutes"
+                    className="input-admin min-h-11"
+                  />
+                </div>
+
+                <div className="sm:col-span-2">
+                  <label className="label-admin" htmlFor="service-payment-timing">Payment timing</label>
+                  <select
+                    id="service-payment-timing"
+                    name="paymentTiming"
+                    value={paymentTiming}
+                    onChange={(e) => setPaymentTiming(e.target.value as "auto" | "before" | "after")}
+                    className="input-admin min-h-11"
+                  >
+                    <option value="auto">Online when available, otherwise pay at visit</option>
+                    <option value="before">Require online payment before the visit</option>
+                    <option value="after">Reserve now and pay at the visit</option>
+                  </select>
+                </div>
+              </div>
+
+              <label className="mt-4 flex min-h-14 cursor-pointer items-center justify-between gap-4 rounded-xl border border-[var(--admin-border)] bg-[var(--admin-inset)] px-3 py-2.5">
+                <span>
+                  <span className="block text-sm font-semibold text-[var(--admin-text)]">Online booking</span>
+                  <span className="mt-0.5 block text-xs text-[var(--admin-text-muted)]">
+                    Let patients request this service from the public storefront.
+                  </span>
+                </span>
+                <input
+                  type="checkbox"
+                  name="bookable"
+                  checked={bookable}
+                  onChange={(e) => setBookable(e.target.checked)}
+                  value="true"
+                  className="h-5 w-5 shrink-0 rounded"
+                />
+              </label>
+            </section>
+
+            <section className="rounded-2xl border border-[var(--admin-border)] bg-[var(--admin-card-2)] p-4 sm:p-5">
+              <div className="mb-4">
+                <h4 className="text-sm font-semibold text-[var(--admin-text)]">Service image</h4>
+                <p className="mt-1 text-xs leading-relaxed text-[var(--admin-text-muted)]">
+                  A clear image makes the service easier to recognise on the storefront.
+                </p>
+              </div>
+              <ImageUploadField
+                key={imageFieldKey}
+                name="imageUrl"
+                label="Image · Optional"
+                folder="services"
+                defaultValue={imageUrl}
+                onChange={setImageUrl}
+                hint="Upload an image or paste a public image URL."
               />
-              Online booking enabled
-            </label>
-            <label className="flex cursor-pointer items-center gap-2 text-sm admin-muted">
-              <input
-                type="checkbox"
-                name="active"
-                checked={active}
-                onChange={(e) => setActive(e.target.checked)}
-                value="true"
-                className="h-4 w-4 rounded"
-              />
-              Active on public site
-            </label>
+            </section>
           </div>
-          {/* Ensure unchecked checkboxes still post as off via hidden defaults when using controlled */}
+
+          <details className="group rounded-2xl border border-[var(--admin-border)] bg-[var(--admin-card-2)]">
+            <summary className="flex min-h-12 cursor-pointer list-none items-center justify-between gap-3 px-4 py-3 text-sm font-semibold text-[var(--admin-text)] outline-none transition hover:bg-[var(--admin-hover)] focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-[var(--admin-accent)] sm:px-5 [&::-webkit-details-marker]:hidden">
+              <span>More service details</span>
+              <span className="text-xs font-medium text-[var(--admin-text-soft)]">Optional</span>
+            </summary>
+            <div className="grid gap-4 border-t border-[var(--admin-border)] px-4 py-4 sm:grid-cols-2 sm:px-5">
+              <div className="sm:col-span-2">
+                <label className="label-admin" htmlFor="service-benefits">Benefits</label>
+                <textarea
+                  id="service-benefits"
+                  name="benefits"
+                  value={benefits}
+                  onChange={(e) => setBenefits(e.target.value)}
+                  rows={3}
+                  className="input-admin resize-y"
+                  placeholder={"One benefit per line\nPersonalised counselling\nQuick in-pharmacy assessment"}
+                />
+              </div>
+
+              <div>
+                <label className="label-admin" htmlFor="service-eligibility">Eligibility</label>
+                <input
+                  id="service-eligibility"
+                  name="eligibility"
+                  value={eligibility}
+                  onChange={(e) => setEligibility(e.target.value)}
+                  placeholder="e.g. Adults 18+"
+                  className="input-admin min-h-11"
+                />
+              </div>
+
+              <div>
+                <label className="label-admin" htmlFor="service-slug">Public URL slug</label>
+                <input
+                  id="service-slug"
+                  name="slug"
+                  value={slug}
+                  onChange={(e) => {
+                    setSlugTouched(true);
+                    setSlug(slugify(e.target.value));
+                  }}
+                  className="input-admin min-h-11 font-mono text-xs"
+                  placeholder="Auto-generated from service name"
+                />
+              </div>
+
+              <div>
+                <label className="label-admin" htmlFor="service-icon">Icon key</label>
+                <input
+                  id="service-icon"
+                  name="icon"
+                  value={icon}
+                  onChange={(e) => setIcon(e.target.value)}
+                  placeholder="pill, heart…"
+                  className="input-admin min-h-11"
+                />
+              </div>
+
+              <div>
+                <label className="label-admin" htmlFor="service-sort-order">Sort order</label>
+                <input
+                  id="service-sort-order"
+                  name="sortOrder"
+                  type="number"
+                  value={sortOrder}
+                  onChange={(e) => setSortOrder(e.target.value)}
+                  className="input-admin min-h-11"
+                  placeholder="Optional"
+                />
+              </div>
+            </div>
+          </details>
+
+          <label className="flex min-h-16 cursor-pointer items-center justify-between gap-4 rounded-2xl border border-[var(--admin-border)] bg-[var(--admin-card-2)] px-4 py-3 sm:px-5">
+            <span>
+              <span className="block text-sm font-semibold text-[var(--admin-text)]">Publish on public site</span>
+              <span className="mt-0.5 block text-xs leading-relaxed text-[var(--admin-text-muted)]">
+                Turn this off if you want to finish preparing the service before patients can see it.
+              </span>
+            </span>
+            <input
+              type="checkbox"
+              name="active"
+              checked={active}
+              onChange={(e) => setActive(e.target.checked)}
+              value="true"
+              className="h-5 w-5 shrink-0 rounded"
+            />
+          </label>
+
           {!bookable && <input type="hidden" name="bookable" value="false" />}
           {!active && <input type="hidden" name="active" value="false" />}
         </form>
