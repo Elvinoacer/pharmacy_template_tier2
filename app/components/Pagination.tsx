@@ -61,7 +61,7 @@ export function Pagination({
   for (let i = start; i <= end; i++) pages.push(i);
 
   const btnBase =
-    "inline-flex min-h-9 min-w-9 items-center justify-center rounded-lg px-2.5 text-xs font-semibold transition active:scale-[0.98] focus:outline-none focus-visible:ring-2";
+    "inline-flex min-h-11 min-w-11 items-center justify-center rounded-lg px-2.5 text-sm font-semibold transition active:scale-[0.98] focus:outline-none focus-visible:ring-2";
 
   const btnIdle =
     variant === "admin"
@@ -103,7 +103,7 @@ export function Pagination({
       aria-label="Pagination"
       className={`mt-5 flex flex-col gap-3 border-t pt-4 sm:flex-row sm:items-center sm:justify-between ${borderClass}`}
     >
-      <p className={`text-xs ${mutedClass}`}>
+      <p className={`text-sm ${mutedClass}`}>
         Showing <strong>{(current - 1) * pageSize + 1}</strong>–
         <strong>{Math.min(current * pageSize, total)}</strong> of <strong>{total}</strong>
       </p>
@@ -123,7 +123,7 @@ export function Pagination({
               <Link href={buildUrl(1)} className={`${btnBase} ${btnIdle}`}>
                 1
               </Link>
-              {start > 2 && <span className="px-1 text-xs opacity-50">…</span>}
+              {start > 2 && <span className="px-1 text-sm opacity-50">…</span>}
             </>
           )}
 
@@ -140,7 +140,7 @@ export function Pagination({
 
           {end < totalPages && (
             <>
-              {end < totalPages - 1 && <span className="px-1 text-xs opacity-50">…</span>}
+              {end < totalPages - 1 && <span className="px-1 text-sm opacity-50">…</span>}
               <Link href={buildUrl(totalPages)} className={`${btnBase} ${btnIdle}`}>
                 {totalPages}
               </Link>
