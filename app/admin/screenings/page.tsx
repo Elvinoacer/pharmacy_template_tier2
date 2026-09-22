@@ -100,7 +100,7 @@ export default async function AdminScreeningsPage() {
       title="Screenings & referrals"
       subtitle="Record vital signs first, surface clinical risk quickly, and move flagged patients into the right referral path."
     >
-      <div className="mb-5 grid grid-cols-2 gap-3 xl:grid-cols-4">
+      <div className="mb-4 grid grid-cols-1 gap-3 sm:mb-6 sm:grid-cols-2 lg:grid-cols-4">
         <AdminCard
           label="Screenings"
           value={totalScreenings}
