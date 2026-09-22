@@ -25,7 +25,7 @@ export function EnquiryUpdateForm({
   }, [state]);
 
   return (
-    <form action={formAction} className="mt-4 grid gap-3 border-t border-[var(--admin-border)] pt-4 sm:grid-cols-[minmax(150px,0.35fr)_minmax(0,1fr)_auto] sm:items-end">
+    <form action={formAction} className="mt-4 grid gap-3 border-t border-[var(--admin-border)] pt-4 sm:grid-cols-[minmax(0,0.35fr)_minmax(0,1fr)_auto] sm:items-end">
       <input type="hidden" name="id" value={id} />
       {state?.error && (
         <div className="admin-alert-error sm:col-span-3">
@@ -38,7 +38,7 @@ export function EnquiryUpdateForm({
         </div>
       )}
       <div className="min-w-0">
-        <label className="mb-1 block text-xs font-semibold uppercase tracking-wide admin-soft">Status</label>
+        <label className="mb-1 block text-sm font-semibold uppercase tracking-wide admin-soft">Status</label>
         <select
           name="status"
           defaultValue={status}
@@ -52,7 +52,7 @@ export function EnquiryUpdateForm({
         </select>
       </div>
       <div className="min-w-0">
-        <label className="mb-1 block text-xs font-semibold uppercase tracking-wide admin-soft">Staff notes</label>
+        <label className="mb-1 block text-sm font-semibold uppercase tracking-wide admin-soft">Staff notes</label>
         <input
           name="staffNotes"
           defaultValue={staffNotes}
@@ -63,7 +63,7 @@ export function EnquiryUpdateForm({
       <button
         type="submit"
         disabled={pending}
-        className="inline-flex min-h-11 w-full items-center justify-center gap-1.5 rounded-xl bg-[var(--admin-accent-soft)] px-4 py-2 text-xs font-semibold admin-accent-text transition hover:brightness-105 disabled:opacity-50 sm:w-auto"
+        className="inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-xl bg-[var(--admin-accent-soft)] px-4 py-2 !text-sm font-semibold admin-accent-text transition hover:brightness-105 disabled:opacity-50 sm:w-auto"
       >
         <Save className="h-3.5 w-3.5" /> {pending ? "Saving…" : "Update"}
       </button>
