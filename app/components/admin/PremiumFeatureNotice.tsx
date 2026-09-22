@@ -14,7 +14,7 @@ export function PremiumFeatureNotice({
 }) {
   return (
     <section
-      className={`rounded-2xl border border-[var(--admin-accent)]/25 bg-[var(--admin-accent-soft)]/45 ${
+      className={`rounded-2xl border border-[var(--admin-border-2)] bg-[var(--admin-accent-soft)] ${
         compact ? "p-4" : "p-5 sm:p-6"
       }`}
     >
