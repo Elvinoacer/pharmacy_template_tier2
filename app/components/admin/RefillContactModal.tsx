@@ -140,14 +140,14 @@ export function PatientContactModal({
             </div>
             <div>
               <h3 className="text-base font-extrabold admin-text">Contact Patient Directly</h3>
-              <p className="text-xs admin-soft">
+              <p className="text-sm admin-soft">
                 {target.customerName} · <strong className="font-mono">{target.phone || target.email || "No phone on file"}</strong>
               </p>
             </div>
           </div>
           <button
             aria-label="Close dialog" onClick={onClose}
-            className="rounded-full p-1.5 admin-soft hover:bg-[var(--admin-inset)] transition"
+            className="min-h-11 rounded-full p-1.5 admin-soft hover:bg-[var(--admin-inset)] transition"
           >
             <X className="h-4 w-4" />
           </button>
@@ -158,13 +158,13 @@ export function PatientContactModal({
           <div className="flex items-center justify-between rounded-xl bg-emerald-500/10 border border-emerald-500/20 px-3.5 py-2">
             <div className="flex items-center gap-2">
               <span className="flex h-2 w-2 rounded-full bg-emerald-500 animate-pulse" />
-              <span className="text-xs font-semibold text-emerald-800 dark:text-emerald-300">
+              <span className="text-sm font-semibold text-emerald-800 dark:text-emerald-300">
                 Direct Line: <strong className="font-mono">{target.phone}</strong>
               </span>
             </div>
             <a
               href={`tel:${target.phone}`}
-              className="inline-flex items-center gap-1.5 rounded-lg bg-emerald-600 px-3 py-1 text-xs font-bold text-white shadow-sm transition hover:bg-emerald-700 active:scale-95"
+              className="inline-flex items-center gap-1.5 rounded-lg bg-emerald-600 px-3 py-1 text-sm font-bold text-white shadow-sm transition hover:bg-emerald-700 active:scale-95"
             >
               <Phone className="h-3 w-3" /> Call Patient
             </a>
@@ -173,7 +173,7 @@ export function PatientContactModal({
 
         {/* Template Selector */}
         <div className="space-y-1.5">
-          <label className="text-xs font-bold uppercase tracking-wider admin-soft flex items-center gap-1">
+          <label className="text-sm font-bold uppercase tracking-wider admin-soft flex items-center gap-1">
             <FileText className="h-3 w-3 text-emerald-600" /> Quick Clinical Templates
           </label>
           <div className="flex flex-wrap gap-1.5">
@@ -182,7 +182,7 @@ export function PatientContactModal({
                 key={tpl.id}
                 type="button"
                 onClick={() => setMessage(tpl.text)}
-                className="rounded-lg border border-[var(--admin-border)] bg-[var(--admin-inset)] px-2.5 py-1 text-xs font-semibold admin-text hover:border-emerald-500/40 hover:bg-emerald-500/10 transition"
+                className="rounded-lg border border-[var(--admin-border)] bg-[var(--admin-inset)] px-2.5 py-1 text-sm font-semibold admin-text hover:border-emerald-500/40 hover:bg-emerald-500/10 transition"
               >
                 {tpl.label}
               </button>
@@ -192,12 +192,12 @@ export function PatientContactModal({
 
         {/* Channel Switcher */}
         <div className="space-y-1.5">
-          <label className="text-xs font-bold uppercase tracking-wider admin-soft">Dispatch Channel</label>
-          <div className="grid grid-cols-3 gap-2">
+          <label className="text-sm font-bold uppercase tracking-wider admin-soft">Dispatch Channel</label>
+          <div className="grid grid-cols-1 gap-2 sm:grid-cols-3">
             <button
               type="button"
               onClick={() => setChannel("whatsapp")}
-              className={`flex items-center justify-center gap-1.5 rounded-xl border p-2.5 text-xs font-bold transition ${
+              className={`flex items-center justify-center gap-1.5 rounded-xl border p-2.5 text-sm font-bold transition ${
                 channel === "whatsapp"
                   ? "border-emerald-500 bg-emerald-500/15 text-emerald-700 dark:text-emerald-300 ring-2 ring-emerald-500/20"
                   : "border-[var(--admin-border)] bg-[var(--admin-inset)] admin-muted"
@@ -208,7 +208,7 @@ export function PatientContactModal({
             <button
               type="button"
               onClick={() => setChannel("sms")}
-              className={`flex items-center justify-center gap-1.5 rounded-xl border p-2.5 text-xs font-bold transition ${
+              className={`flex items-center justify-center gap-1.5 rounded-xl border p-2.5 text-sm font-bold transition ${
                 channel === "sms"
                   ? "border-emerald-500 bg-emerald-500/15 text-emerald-700 dark:text-emerald-300 ring-2 ring-emerald-500/20"
                   : "border-[var(--admin-border)] bg-[var(--admin-inset)] admin-muted"
@@ -219,7 +219,7 @@ export function PatientContactModal({
             <button
               type="button"
               onClick={() => setChannel("email")}
-              className={`flex items-center justify-center gap-1.5 rounded-xl border p-2.5 text-xs font-bold transition ${
+              className={`flex items-center justify-center gap-1.5 rounded-xl border p-2.5 text-sm font-bold transition ${
                 channel === "email"
                   ? "border-emerald-500 bg-emerald-500/15 text-emerald-700 dark:text-emerald-300 ring-2 ring-emerald-500/20"
                   : "border-[var(--admin-border)] bg-[var(--admin-inset)] admin-muted"
@@ -233,15 +233,15 @@ export function PatientContactModal({
         {/* Message Editor */}
         <div className="space-y-1.5">
           <div className="flex items-center justify-between">
-            <label className="text-xs font-bold uppercase tracking-wider admin-soft">Message Body</label>
+            <label className="text-sm font-bold uppercase tracking-wider admin-soft">Message Body</label>
             <div className="flex items-center gap-2">
-              <span className="text-xs admin-soft font-mono">
+              <span className="text-sm admin-soft font-mono">
                 {charCount} chars · {smsSegments} SMS {smsSegments === 1 ? "segment" : "segments"}
               </span>
               <button
                 type="button"
                 onClick={handleCopy}
-                className="text-xs font-bold text-emerald-700 hover:underline inline-flex items-center gap-0.5"
+                className="min-h-11 text-sm font-bold text-emerald-700 hover:underline inline-flex items-center gap-0.5"
               >
                 <Copy className="h-2.5 w-2.5" /> Copy
               </button>
@@ -251,7 +251,7 @@ export function PatientContactModal({
             rows={4}
             value={message}
             onChange={(e) => setMessage(e.target.value)}
-            className="w-full rounded-xl border border-[var(--admin-border)] bg-[var(--admin-inset)] p-3 text-xs admin-text focus:border-[var(--admin-accent)] focus:outline-none"
+            className="w-full rounded-xl border border-[var(--admin-border)] bg-[var(--admin-inset)] p-3 text-sm admin-text focus:border-[var(--admin-accent)] focus:outline-none"
           />
         </div>
 
@@ -262,7 +262,7 @@ export function PatientContactModal({
               href={waUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-1.5 rounded-xl bg-emerald-600 px-4 py-2 text-xs font-bold text-white shadow-sm hover:bg-emerald-700 active:scale-95 transition"
+              className="inline-flex items-center gap-1.5 rounded-xl bg-emerald-600 px-4 py-2 text-sm font-bold text-white shadow-sm hover:bg-emerald-700 active:scale-95 transition"
             >
               <ExternalLink className="h-3.5 w-3.5" /> Open in WhatsApp Web / App
             </a>
@@ -274,7 +274,7 @@ export function PatientContactModal({
             <button
               type="button"
               onClick={onClose}
-              className="rounded-xl border border-[var(--admin-border)] bg-[var(--admin-inset)] px-4 py-2 text-xs font-bold admin-muted hover:bg-[var(--admin-inset-2)]"
+              className="min-h-11 rounded-xl border border-[var(--admin-border)] bg-[var(--admin-inset)] px-4 py-2 text-sm font-bold admin-muted hover:bg-[var(--admin-inset-2)]"
             >
               Cancel
             </button>
@@ -282,7 +282,7 @@ export function PatientContactModal({
               type="button"
               disabled={pending || !message.trim()}
               onClick={onSend}
-              className="inline-flex items-center gap-1.5 rounded-xl bg-[var(--admin-accent)] px-4 py-2 text-xs font-bold text-[var(--admin-btn-fg)] shadow-sm transition hover:brightness-110 disabled:opacity-50"
+              className="min-h-11 inline-flex items-center gap-1.5 rounded-xl bg-[var(--admin-accent)] px-4 py-2 text-sm font-bold text-[var(--admin-btn-fg)] shadow-sm transition hover:brightness-110 disabled:opacity-50"
             >
               {pending ? "Sending…" : <><Send className="h-3.5 w-3.5" /> Dispatch Message</>}
             </button>
@@ -352,19 +352,19 @@ export function PrescriberContactModal({
             </div>
             <div>
               <h3 className="text-base font-extrabold admin-text">Prescriber Refill Authorization</h3>
-              <p className="text-xs admin-soft">{target.prescriber || "Doctor"} · {target.prescriberFacility || "Clinic"}</p>
+              <p className="text-sm admin-soft">{target.prescriber || "Doctor"} · {target.prescriberFacility || "Clinic"}</p>
             </div>
           </div>
           <button
             onClick={onClose}
-            className="rounded-full p-1.5 admin-soft hover:bg-[var(--admin-inset)] transition"
+            className="min-h-11 rounded-full p-1.5 admin-soft hover:bg-[var(--admin-inset)] transition"
           >
             <X className="h-4 w-4" />
           </button>
         </div>
 
         {/* Doctor Info Card */}
-        <div className="rounded-xl border border-[var(--admin-border)] bg-[var(--admin-inset)] p-3 space-y-1.5 text-xs">
+        <div className="rounded-xl border border-[var(--admin-border)] bg-[var(--admin-inset)] p-3 space-y-1.5 text-sm">
           <div className="flex justify-between">
             <span className="admin-soft">Attending Doctor:</span>
             <strong className="admin-text">{target.prescriber || "Doctor on file"}</strong>
@@ -376,7 +376,7 @@ export function PrescriberContactModal({
                 <span className="font-mono admin-text font-bold">{target.prescriberPhone}</span>
                 <a
                   href={`tel:${target.prescriberPhone}`}
-                  className="rounded-lg bg-blue-600 px-2.5 py-0.5 text-xs font-bold text-white shadow-sm hover:bg-blue-700 transition"
+                  className="rounded-lg bg-blue-600 px-2.5 py-0.5 text-sm font-bold text-white shadow-sm hover:bg-blue-700 transition"
                 >
                   Call Now
                 </a>
@@ -393,8 +393,8 @@ export function PrescriberContactModal({
 
         {/* Method Switcher */}
         <div className="space-y-1">
-          <label className="text-xs font-bold uppercase tracking-wider admin-soft">Contact Method</label>
-          <div className="grid grid-cols-4 gap-1.5 text-xs">
+          <label className="text-sm font-bold uppercase tracking-wider admin-soft">Contact Method</label>
+          <div className="grid grid-cols-2 gap-2 text-sm sm:grid-cols-4">
             {(["phone", "whatsapp", "email", "in_person"] as const).map((m) => (
               <button
                 key={m}
@@ -414,23 +414,23 @@ export function PrescriberContactModal({
 
         {/* Inquiry Text */}
         <div className="space-y-1">
-          <label className="text-xs font-bold uppercase tracking-wider admin-soft">Inquiry / Authorization Details</label>
+          <label className="text-sm font-bold uppercase tracking-wider admin-soft">Inquiry / Authorization Details</label>
           <textarea
             rows={5}
             value={inquiry}
             onChange={(e) => setInquiry(e.target.value)}
-            className="w-full rounded-xl border border-[var(--admin-border)] bg-[var(--admin-inset)] p-3 text-xs admin-text focus:border-blue-500 focus:outline-none font-mono"
+            className="w-full rounded-xl border border-[var(--admin-border)] bg-[var(--admin-inset)] p-3 text-sm admin-text focus:border-blue-500 focus:outline-none font-mono"
           />
         </div>
 
         {/* Doctor Response / Resolution */}
         <div className="space-y-1">
-          <label className="text-xs font-bold uppercase tracking-wider admin-soft">Doctor Response / Verbal Authorization Note</label>
+          <label className="text-sm font-bold uppercase tracking-wider admin-soft">Doctor Response / Verbal Authorization Note</label>
           <input
             value={doctorResponse}
             onChange={(e) => setDoctorResponse(e.target.value)}
             placeholder="e.g. Dr. Kamau authorized 3 additional refills via telephone consult"
-            className="w-full rounded-xl border border-[var(--admin-border)] bg-[var(--admin-inset)] px-3 py-2 text-xs admin-text focus:border-blue-500 focus:outline-none"
+            className="w-full rounded-xl border border-[var(--admin-border)] bg-[var(--admin-inset)] px-3 py-2 text-sm admin-text focus:border-blue-500 focus:outline-none"
           />
         </div>
 
@@ -442,7 +442,7 @@ export function PrescriberContactModal({
             onChange={(e) => setResolved(e.target.checked)}
             className="h-4 w-4 rounded border-[var(--admin-border)] text-emerald-600 focus:ring-emerald-500"
           />
-          <span className="text-xs font-bold text-emerald-900 dark:text-emerald-200">
+          <span className="text-sm font-bold text-emerald-900 dark:text-emerald-200">
             Prescriber Renewal Authorized &amp; Resolved
           </span>
         </label>
@@ -454,7 +454,7 @@ export function PrescriberContactModal({
               href={waUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-1.5 rounded-xl bg-emerald-600 px-3.5 py-1.5 text-xs font-bold text-white shadow-sm hover:bg-emerald-700 transition"
+              className="inline-flex items-center gap-1.5 rounded-xl bg-emerald-600 px-3.5 py-1.5 text-sm font-bold text-white shadow-sm hover:bg-emerald-700 transition"
             >
               <ExternalLink className="h-3 w-3" /> Send on WhatsApp
             </a>
@@ -466,7 +466,7 @@ export function PrescriberContactModal({
             <button
               type="button"
               onClick={onClose}
-              className="rounded-xl border border-[var(--admin-border)] bg-[var(--admin-inset)] px-4 py-2 text-xs font-bold admin-muted"
+              className="min-h-11 rounded-xl border border-[var(--admin-border)] bg-[var(--admin-inset)] px-4 py-2 text-sm font-bold admin-muted"
             >
               Cancel
             </button>
@@ -474,7 +474,7 @@ export function PrescriberContactModal({
               type="button"
               disabled={pending || !inquiry.trim()}
               onClick={onSave}
-              className="inline-flex items-center gap-1.5 rounded-xl bg-blue-600 px-5 py-2 text-xs font-bold text-white shadow-md transition hover:bg-blue-700 disabled:opacity-50"
+              className="min-h-11 inline-flex items-center gap-1.5 rounded-xl bg-blue-600 px-5 py-2 text-sm font-bold text-white shadow-md transition hover:bg-blue-700 disabled:opacity-50"
             >
               {pending ? "Saving…" : "Save Clarification Log"}
             </button>
