@@ -1,12 +1,13 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { useEffect, useMemo, useState } from "react";
 import SearchAssistFallback from "./assist/SearchAssistFallback";
 
 export type SearchCorpus = {
-  medicines: Array<{ slug: string; title: string; body: string; meta?: string }>;
-  services: Array<{ slug: string; title: string; body: string }>;
+  medicines: Array<{ slug: string; title: string; body: string; meta?: string; imageUrl?: string | null }>;
+  services: Array<{ slug: string; title: string; body: string; imageUrl?: string | null }>;
   vaccines: Array<{ slug: string; title: string; body: string; meta?: string }>;
   categories: Array<{ slug: string; title: string; body: string }>;
   articles: Array<{ slug: string; title: string; body: string; meta?: string }>;
@@ -14,8 +15,8 @@ export type SearchCorpus = {
 };
 
 export type SearchResults = {
-  medicines: Array<{ slug: string; title: string; body: string; meta?: string; href: string }>;
-  services: Array<{ slug: string; title: string; body: string; href: string }>;
+  medicines: Array<{ slug: string; title: string; body: string; meta?: string; imageUrl?: string | null; href: string }>;
+  services: Array<{ slug: string; title: string; body: string; imageUrl?: string | null; href: string }>;
   vaccines: Array<{ slug: string; title: string; body: string; meta?: string; href: string }>;
   categories: Array<{ slug: string; title: string; body: string; href: string }>;
   articles: Array<{ slug: string; title: string; body: string; meta?: string; href: string }>;
@@ -203,7 +204,7 @@ export default function SearchPanel({
           {results.medicines.length > 0 && (
             <ResultGroup title="Medicines" count={results.medicines.length}>
               {results.medicines.map((m) => (
-                <ResultCard key={m.slug} href={m.href} title={m.title} body={m.body} meta={m.meta} />
+                <ResultCard key={m.slug} href={m.href} title={m.title} body={m.body} meta={m.meta} imageUrl={m.imageUrl} imageKind="medicine" />
               ))}
               {query.trim() && (
                 <div className="pt-2 text-right">
@@ -220,7 +221,7 @@ export default function SearchPanel({
           {results.services.length > 0 && (
             <ResultGroup title="Services" count={results.services.length}>
               {results.services.map((s) => (
-                <ResultCard key={s.slug} href={s.href} title={s.title} body={s.body} />
+                <ResultCard key={s.slug} href={s.href} title={s.title} body={s.body} imageUrl={s.imageUrl} imageKind="service" />
               ))}
             </ResultGroup>
           )}
@@ -285,11 +286,15 @@ function ResultCard({
   title,
   body,
   meta,
+  imageUrl,
+  imageKind,
 }: {
   href: string;
   title: string;
   body: string;
   meta?: string;
+  imageUrl?: string | null;
+  imageKind?: "medicine" | "service";
 }) {
   return (
     <Link
@@ -297,6 +302,18 @@ function ResultCard({
       className="liquid-glass care-glass group block min-w-0 rounded-2xl border !border-[color-mix(in_srgb,var(--foreground)_48%,var(--card))] bg-[var(--card-elev)] p-4 shadow-sm backdrop-blur-xl transition hover:border-[var(--brand)] hover:shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--brand)] sm:p-5"
     >
       <div className="flex min-w-0 items-start justify-between gap-3">
+        {imageKind && (
+          <span className="relative h-16 w-16 shrink-0 overflow-hidden rounded-xl bg-[var(--card)] sm:h-20 sm:w-20">
+            <Image
+              unoptimized
+              src={imageUrl || (imageKind === "medicine" ? "/images/care/medicine-still-life.png" : "/images/care/editorial-pharmacy.png")}
+              alt={imageUrl ? title : ""}
+              fill
+              sizes="80px"
+              className={imageKind === "medicine" && imageUrl ? "object-contain p-2" : "object-cover"}
+            />
+          </span>
+        )}
         <div className="min-w-0 flex-1">
           {meta && <p className="text-[10px] font-bold uppercase tracking-wider text-[var(--brand)]">{meta}</p>}
           <p
