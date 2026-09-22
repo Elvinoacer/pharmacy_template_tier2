@@ -325,25 +325,25 @@ export default async function AdminMedicationsPage({
           >
             <Plus className="h-4 w-4" /> More ways
           </Link>
-          <Link href="/admin/inventory" className="inline-flex min-h-10 items-center justify-center gap-1.5 rounded-xl bg-[var(--admin-inset)] px-3 text-xs font-semibold admin-muted transition hover:text-[var(--admin-text)] sm:rounded-full">
+          <Link href="/admin/inventory" className="inline-flex min-h-11 items-center justify-center gap-1.5 rounded-xl bg-[var(--admin-inset)] px-3 text-sm font-semibold admin-muted transition hover:text-[var(--admin-text)] sm:rounded-full">
             <Package className="h-3.5 w-3.5" /> Inventory
           </Link>
-          <Link href="/admin/medications/incomplete" className="inline-flex min-h-10 items-center justify-center gap-1.5 rounded-xl bg-[var(--admin-inset)] px-3 text-xs font-semibold admin-muted transition hover:text-[var(--admin-text)] sm:rounded-full">
+          <Link href="/admin/medications/incomplete" className="inline-flex min-h-11 items-center justify-center gap-1.5 rounded-xl bg-[var(--admin-inset)] px-3 text-sm font-semibold admin-muted transition hover:text-[var(--admin-text)] sm:rounded-full">
             <AlertTriangle className="h-3.5 w-3.5" /> Incomplete
           </Link>
-          <Link href="/admin/medications/metrics" className="inline-flex min-h-10 items-center justify-center gap-1.5 rounded-xl bg-[var(--admin-inset)] px-3 text-xs font-semibold admin-muted transition hover:text-[var(--admin-text)] sm:rounded-full">
+          <Link href="/admin/medications/metrics" className="inline-flex min-h-11 items-center justify-center gap-1.5 rounded-xl bg-[var(--admin-inset)] px-3 text-sm font-semibold admin-muted transition hover:text-[var(--admin-text)] sm:rounded-full">
             <TrendingUp className="h-3.5 w-3.5" /> Metrics
           </Link>
-          <Link href="/admin/medications/categories" className="inline-flex min-h-10 items-center justify-center gap-1.5 rounded-xl bg-[var(--admin-inset)] px-3 text-xs font-semibold admin-muted transition hover:text-[var(--admin-text)] sm:rounded-full">
+          <Link href="/admin/medications/categories" className="inline-flex min-h-11 items-center justify-center gap-1.5 rounded-xl bg-[var(--admin-inset)] px-3 text-sm font-semibold admin-muted transition hover:text-[var(--admin-text)] sm:rounded-full">
             <Tag className="h-3.5 w-3.5" /> Categories
           </Link>
         </div>
       }
     >
-      <div className="mx-auto w-full max-w-[1500px] space-y-5 sm:space-y-6">
+      <div className="mx-auto w-full min-w-0 max-w-7xl space-y-5 sm:space-y-6">
         {loadError && <div className="admin-alert-error"><span>{loadError}</span></div>}
 
-        <div className="grid grid-cols-2 gap-2 sm:grid-cols-4 sm:gap-3 xl:grid-cols-7">
+        <div className="grid grid-cols-2 gap-2 sm:grid-cols-4 sm:gap-3 lg:grid-cols-7">
           <AdminCard label="Total" value={stats.total} icon={Pill} accent="neutral" />
           <AdminCard label="Active" value={stats.active} icon={Package} accent="accent" />
           <Link href={filterHref({ stock: "low" })} className="block min-w-0">
@@ -371,46 +371,46 @@ export default async function AdminMedicationsPage({
                 name="q"
                 defaultValue={q || ""}
                 placeholder="Search medicine, generic, brand, SKU, barcode or shelf…"
-                className="input-admin min-h-11 pl-10 pr-10"
+                className="input-admin min-h-11 pl-10 pr-14 text-base sm:text-sm"
               />
               {q && (
                 <Link
                   href={filterHref({ q: undefined })}
-                  className="absolute right-1.5 top-1/2 inline-flex h-8 w-8 -translate-y-1/2 items-center justify-center rounded-lg admin-soft transition hover:bg-[var(--admin-inset)] hover:text-[var(--admin-text)]"
+                  className="absolute right-1 top-1/2 inline-flex h-11 w-11 -translate-y-1/2 items-center justify-center rounded-xl admin-soft transition hover:bg-[var(--admin-inset)] hover:text-[var(--admin-text)]"
                   aria-label="Clear search"
                 >
                   <X className="h-4 w-4" />
                 </Link>
               )}
             </div>
-            <button type="submit" className="btn-admin min-h-11 !rounded-xl px-4">
+            <button type="submit" className="btn-admin !text-sm min-h-11 !rounded-xl px-4">
               <Search className="h-4 w-4" /> Search
             </button>
           </div>
 
-          <div className="mt-3 grid grid-cols-2 gap-2 md:grid-cols-5">
-            <select name="category" defaultValue={category || ""} className="input-admin min-h-10 min-w-0 text-xs">
+          <div className="mt-3 grid grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-5">
+            <select name="category" defaultValue={category || ""} className="input-admin min-h-11 min-w-0 text-sm">
               <option value="">All categories</option>
               {categoryList.map((c) => <option key={c.slug} value={c.slug}>{c.name}</option>)}
             </select>
-            <select name="stock" defaultValue={stock || ""} className="input-admin min-h-10 min-w-0 text-xs">
+            <select name="stock" defaultValue={stock || ""} className="input-admin min-h-11 min-w-0 text-sm">
               <option value="">Any stock</option>
               <option value="low">Low stock</option>
               <option value="out">Out of stock</option>
               <option value="healthy">Healthy stock</option>
             </select>
-            <select name="type" defaultValue={type || ""} className="input-admin min-h-10 min-w-0 text-xs">
+            <select name="type" defaultValue={type || ""} className="input-admin min-h-11 min-w-0 text-sm">
               <option value="">OTC & Rx</option>
               <option value="otc">OTC only</option>
               <option value="rx">Prescription only</option>
               <option value="controlled">Controlled drugs</option>
             </select>
-            <select name="status" defaultValue={status || ""} className="input-admin min-h-10 min-w-0 text-xs">
+            <select name="status" defaultValue={status || ""} className="input-admin min-h-11 min-w-0 text-sm">
               <option value="">Any status</option>
               <option value="active">Active only</option>
               <option value="inactive">Inactive only</option>
             </select>
-            <select name="listing" defaultValue={listing || ""} className="input-admin min-h-10 min-w-0 text-xs">
+            <select name="listing" defaultValue={listing || ""} className="input-admin min-h-11 min-w-0 text-sm">
               <option value="">Any listing</option>
               <option value="public">Public catalogue</option>
               <option value="private">Not public</option>
@@ -419,8 +419,8 @@ export default async function AdminMedicationsPage({
 
           {hasFilters && (
             <div className="mt-3 flex items-center justify-between gap-3 border-t border-[var(--admin-border)] pt-3">
-              <p className="text-xs admin-soft">Filters are active</p>
-              <Link href="/admin/medications" className="inline-flex min-h-9 items-center gap-1.5 rounded-lg bg-[var(--admin-inset)] px-3 text-xs font-semibold admin-muted transition hover:text-[var(--admin-text)]">
+              <p className="text-sm admin-soft">Filters are active</p>
+              <Link href="/admin/medications" className="inline-flex min-h-11 items-center gap-1.5 rounded-lg bg-[var(--admin-inset)] px-3 text-sm font-semibold admin-muted transition hover:text-[var(--admin-text)]">
                 <X className="h-3.5 w-3.5" /> Clear all
               </Link>
             </div>
@@ -428,10 +428,10 @@ export default async function AdminMedicationsPage({
         </form>
 
         <details className="rounded-xl border border-indigo-500/20 bg-indigo-500/10 open:pb-3">
-          <summary className="cursor-pointer list-none px-4 py-3 text-xs font-bold text-indigo-800 dark:text-indigo-200">
+          <summary className="flex min-h-11 cursor-pointer list-none items-center px-4 py-3 text-sm font-bold text-indigo-800 dark:text-indigo-200">
             <span className="inline-flex items-center gap-2"><Package className="h-3.5 w-3.5" /> Automate stock with POS integration</span>
           </summary>
-          <p className="break-words px-4 text-xs leading-5 text-indigo-800/80 dark:text-indigo-200/80">
+          <p className="break-words px-4 text-sm leading-5 text-indigo-800/80 dark:text-indigo-200/80">
             Keep inventory synced from your pharmacy POS. Contact <strong>0790670542</strong> for setup. Once configured, POST to <code className="md-code break-all">/api/integrations/pos</code> with your <code className="md-code">POS_API_KEY</code>.
           </p>
         </details>
@@ -439,9 +439,9 @@ export default async function AdminMedicationsPage({
         <div className="flex flex-col gap-1 sm:flex-row sm:items-end sm:justify-between">
           <div>
             <h2 className="text-sm font-bold admin-text">{hasFilters ? "Filtered medicines" : "All medicines"}</h2>
-            <p className="mt-0.5 text-xs admin-muted">Showing {paged.length} of {total}{hasFilters ? " matching" : ""}</p>
+            <p className="mt-0.5 text-sm admin-muted">Showing {paged.length} of {total}{hasFilters ? " matching" : ""}</p>
           </div>
-          <p className="text-xs admin-soft">Mobile uses a touch-first card layout; larger screens can switch views.</p>
+          <p className="text-sm admin-soft">Mobile uses a touch-first card layout; larger screens can switch views.</p>
         </div>
 
         {paged.length === 0 ? (
@@ -451,9 +451,9 @@ export default async function AdminMedicationsPage({
             description={hasFilters ? "Try clearing filters or using a broader search." : "Add your first medication to start building the catalogue."}
             action={
               hasFilters ? (
-                <Link href="/admin/medications" className="btn-admin-ghost text-xs">Clear filters</Link>
+                <Link href="/admin/medications" className="btn-admin-ghost !text-sm text-sm">Clear filters</Link>
               ) : (
-                <Link href="/admin/medications/add" className="btn-admin text-xs"><Plus className="h-3.5 w-3.5" /> Add medication</Link>
+                <Link href="/admin/medications/add" className="btn-admin !text-sm text-sm"><Plus className="h-3.5 w-3.5" /> Add medication</Link>
               )
             }
           />
@@ -463,7 +463,7 @@ export default async function AdminMedicationsPage({
 
         <Pagination page={page} total={total} pageSize={PAGE_SIZE} basePath="/admin/medications" queryParams={queryParams} variant="admin" />
 
-        <p className="text-xs admin-soft">Last POS sync: {lastSynced ? formatDateTime(lastSynced) : "never"}</p>
+        <p className="text-sm admin-soft">Last POS sync: {lastSynced ? formatDateTime(lastSynced) : "never"}</p>
       </div>
     </AdminShell>
   );
