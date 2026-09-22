@@ -122,7 +122,7 @@ export default async function AdminDashboardPage() {
             Performance at a glance
             <span className="!text-sm">Patients, communication, and refill activity</span>
           </summary>
-          <div className="grid grid-cols-2 gap-3 sm:gap-4 xl:grid-cols-4">
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 sm:gap-4 lg:grid-cols-4">
             <AdminCard label="Total customers" value={a.totalCustomers} hint={`+${a.newCustomers} new (30d)`} icon={Users} accent="ai" />
             <AdminCard label="Open refills" value={a.activeRefills} hint={`${a.completedRefills} collected · ${a.cancelledRefills} cancelled`} icon={Pill} accent="accent" />
             <AdminCard label="Messages (30d)" value={a.messagesSent} hint="Outbound notifications" icon={MessageSquare} accent="info" />
