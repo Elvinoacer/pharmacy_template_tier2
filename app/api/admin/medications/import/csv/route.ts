@@ -120,6 +120,7 @@ export async function POST(req: Request) {
     created: 0,
     alreadyStocked: 0,
     flagged: 0,
+    upgradeRequired: false,
     errors: [] as Array<{ row: number; message: string }>,
   };
 
@@ -212,10 +213,12 @@ export async function POST(req: Request) {
       if (result.alreadyStocked) summary.alreadyStocked++;
     } catch (error) {
       console.error(`[medication csv import] row ${i + 1}`, error);
+      const limitMessage = listingLimitMessage(error);
+      if (limitMessage) summary.upgradeRequired = true;
       summary.errors.push({
         row: i + 1,
         message:
-          listingLimitMessage(error) ||
+          limitMessage ||
           publicErrorMessage(
             error,
             "This row could not be imported. Review the medication details and try it again.",
