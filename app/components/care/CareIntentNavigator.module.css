@@ -83,7 +83,7 @@
   min-height: 72px;
   align-items: center;
   gap: 12px;
-  padding: 12px 48px 12px 12px;
+  padding: 12px 44px 12px 12px;
   border: 1px solid var(--line-2);
   border-radius: 16px;
   background: var(--card-elev, var(--background));
@@ -169,13 +169,12 @@
 }
 
 .selectedBadge {
-  position: absolute;
-  right: 8px;
-  top: 8px;
   display: inline-flex;
+  width: fit-content;
   min-height: 28px;
   align-items: center;
   gap: 4px;
+  margin-top: 4px;
   padding: 4px 8px;
   border-radius: 999px;
   background: var(--brand);
