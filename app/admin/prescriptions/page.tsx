@@ -213,7 +213,7 @@ export default async function AdminPrescriptionsPage({
         <div className="flex items-center gap-2">
           <Link
             href="/admin/prescriptions/new"
-            className="inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-700 px-4 py-2 text-xs font-bold text-white shadow-md shadow-emerald-900/20 transition hover:brightness-110 active:scale-[0.98]"
+            className="inline-flex min-h-11 items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-700 px-4 py-2 text-sm font-bold text-white shadow-md shadow-emerald-900/20 transition hover:brightness-110 active:scale-[0.98]"
           >
             <Plus className="h-4 w-4" /> New Prescription Intake
           </Link>
@@ -231,21 +231,21 @@ export default async function AdminPrescriptionsPage({
           <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
             <div className="min-w-0">
               <div className="flex flex-wrap items-center gap-2">
-                <span className="inline-flex items-center gap-1.5 text-xs font-bold uppercase tracking-[0.12em] admin-accent-text">
+                <span className="inline-flex items-center gap-1.5 text-sm font-bold uppercase tracking-[0.12em] admin-accent-text">
                   <Sparkles className="h-3.5 w-3.5" />
                   Direct Afyvia prescription referrals
                 </span>
                 {referralUsage.premium ? (
-                  <span className="rounded-full bg-emerald-500/15 px-2.5 py-1 text-[11px] font-bold text-emerald-700 dark:text-emerald-300">
+                  <span className="rounded-full bg-emerald-500/15 px-2.5 py-1 text-sm font-bold text-emerald-700 dark:text-emerald-300">
                     Unlimited on Premium
                   </span>
                 ) : (
-                  <span className="rounded-full bg-[var(--admin-inset)] px-2.5 py-1 text-[11px] font-bold admin-muted">
+                  <span className="rounded-full bg-[var(--admin-inset)] px-2.5 py-1 text-sm font-bold admin-muted">
                     {referralUsage.used} / {FREE_MONTHLY_PRESCRIPTION_REFERRAL_LIMIT} this month
                   </span>
                 )}
               </div>
-              <p className="mt-2 max-w-3xl text-xs leading-5 admin-muted">
+              <p className="mt-2 max-w-3xl text-sm leading-5 admin-muted">
                 {referralUsage.premium
                   ? "Marketplace prescription referrals can be sent directly to this pharmacy without a monthly cap."
                   : referralUsage.remaining === 0
@@ -253,7 +253,7 @@ export default async function AdminPrescriptionsPage({
                     : `${referralUsage.remaining} direct marketplace referral${referralUsage.remaining === 1 ? "" : "s"} remaining. Existing patients, storefront requests, staff-entered prescriptions and in-person care do not use this allowance.`}
               </p>
               {!referralUsage.premium && referralUsage.overflowed > 0 && (
-                <p className="mt-1 text-xs font-semibold text-violet-700 dark:text-violet-300">
+                <p className="mt-1 text-sm font-semibold text-violet-700 dark:text-violet-300">
                   {referralUsage.overflowed} additional patient selection{referralUsage.overflowed === 1 ? "" : "s"} reached your pharmacy after the allowance was full.
                 </p>
               )}
@@ -261,7 +261,7 @@ export default async function AdminPrescriptionsPage({
             {!referralUsage.premium && (
               <Link
                 href="/admin/billing"
-                className="inline-flex min-h-10 shrink-0 items-center justify-center gap-1.5 rounded-xl bg-violet-600 px-4 text-xs font-bold text-white transition hover:bg-violet-500"
+                className="inline-flex min-h-11 shrink-0 items-center justify-center gap-1.5 rounded-xl bg-violet-600 px-4 text-sm font-bold text-white transition hover:bg-violet-500"
               >
                 View Premium <ArrowRight className="h-3.5 w-3.5" />
               </Link>
@@ -288,16 +288,16 @@ export default async function AdminPrescriptionsPage({
       )}
 
       {/* ── KPI Overview Strip ── */}
-      <div className="mb-6 grid grid-cols-2 gap-3 sm:grid-cols-4 lg:grid-cols-5">
+      <div className="mb-6 grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-5">
         <div className="rounded-2xl border border-[var(--admin-border)] bg-[var(--admin-card)] p-4 shadow-sm">
           <div className="flex items-center justify-between">
-            <span className="text-xs font-semibold admin-soft">Total Prescriptions</span>
+            <span className="text-sm font-semibold admin-soft">Total Prescriptions</span>
             <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-emerald-500/10 text-emerald-600">
               <FileText className="h-4 w-4" />
             </div>
           </div>
           <p className="mt-2 text-xl font-extrabold admin-text">{total}</p>
-          <span className="text-xs admin-soft">Active database records</span>
+          <span className="text-sm admin-soft">Active database records</span>
         </div>
 
         <Link
@@ -305,13 +305,13 @@ export default async function AdminPrescriptionsPage({
           className="group rounded-2xl border border-blue-500/20 bg-blue-500/5 p-4 shadow-sm transition hover:border-blue-500/40 hover:bg-blue-500/10"
         >
           <div className="flex items-center justify-between">
-            <span className="text-xs font-semibold text-blue-700 dark:text-blue-300">Under Review</span>
+            <span className="text-sm font-semibold text-blue-700 dark:text-blue-300">Under Review</span>
             <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-blue-500/15 text-blue-600">
               <Clock className="h-4 w-4" />
             </div>
           </div>
           <p className="mt-2 text-xl font-extrabold text-blue-900 dark:text-blue-200">{totalUnderReview}</p>
-          <span className="text-xs text-blue-700/80 dark:text-blue-300/80 group-hover:underline">
+          <span className="text-sm text-blue-700/80 dark:text-blue-300/80 group-hover:underline">
             Awaiting pharmacist review →
           </span>
         </Link>
@@ -321,13 +321,13 @@ export default async function AdminPrescriptionsPage({
           className="group rounded-2xl border border-emerald-500/20 bg-emerald-500/5 p-4 shadow-sm transition hover:border-emerald-500/40 hover:bg-emerald-500/10"
         >
           <div className="flex items-center justify-between">
-            <span className="text-xs font-semibold text-emerald-700 dark:text-emerald-300">Ready for Dispense</span>
+            <span className="text-sm font-semibold text-emerald-700 dark:text-emerald-300">Ready for Dispense</span>
             <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-emerald-500/15 text-emerald-600">
               <CheckCircle2 className="h-4 w-4" />
             </div>
           </div>
           <p className="mt-2 text-xl font-extrabold text-emerald-900 dark:text-emerald-200">{totalReady}</p>
-          <span className="text-xs text-emerald-700/80 dark:text-emerald-300/80 group-hover:underline">
+          <span className="text-sm text-emerald-700/80 dark:text-emerald-300/80 group-hover:underline">
             Approved &amp; packed →
           </span>
         </Link>
@@ -337,29 +337,29 @@ export default async function AdminPrescriptionsPage({
           className="group rounded-2xl border border-amber-500/20 bg-amber-500/5 p-4 shadow-sm transition hover:border-amber-500/40 hover:bg-amber-500/10"
         >
           <div className="flex items-center justify-between">
-            <span className="text-xs font-semibold text-amber-700 dark:text-amber-300">Unclear Scripts</span>
+            <span className="text-sm font-semibold text-amber-700 dark:text-amber-300">Unclear Scripts</span>
             <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-amber-500/15 text-amber-600">
               <HelpCircle className="h-4 w-4" />
             </div>
           </div>
           <p className="mt-2 text-xl font-extrabold text-amber-900 dark:text-amber-200">{totalUnclear}</p>
-          <span className="text-xs text-amber-700/80 dark:text-amber-300/80 group-hover:underline">
+          <span className="text-sm text-amber-700/80 dark:text-amber-300/80 group-hover:underline">
             Needs doctor clarification →
           </span>
         </Link>
 
         <Link
           href={buildFilterHref({ stage: "on_hold" })}
-          className="group rounded-2xl border border-rose-500/20 bg-rose-500/5 p-4 shadow-sm transition hover:border-rose-500/40 hover:bg-rose-500/10 col-span-2 sm:col-span-1"
+          className="group rounded-2xl border border-rose-500/20 bg-rose-500/5 p-4 shadow-sm transition hover:border-rose-500/40 hover:bg-rose-500/10"
         >
           <div className="flex items-center justify-between">
-            <span className="text-xs font-semibold text-rose-700 dark:text-rose-300">On Hold</span>
+            <span className="text-sm font-semibold text-rose-700 dark:text-rose-300">On Hold</span>
             <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-rose-500/15 text-rose-600">
               <AlertTriangle className="h-4 w-4" />
             </div>
           </div>
           <p className="mt-2 text-xl font-extrabold text-rose-900 dark:text-rose-200">{totalOnHold}</p>
-          <span className="text-xs text-rose-700/80 dark:text-rose-300/80 group-hover:underline">
+          <span className="text-sm text-rose-700/80 dark:text-rose-300/80 group-hover:underline">
             Clinical holds / issues →
           </span>
         </Link>
@@ -368,13 +368,13 @@ export default async function AdminPrescriptionsPage({
       {/* ── Status Lifecycle Pipeline (Primary Progression) ── */}
       <div className="mb-4 rounded-2xl border border-[var(--admin-border)] bg-[var(--admin-card)] p-4 shadow-sm space-y-3.5">
         <div className="flex flex-wrap items-center justify-between gap-2">
-          <span className="text-xs font-bold uppercase tracking-wider text-emerald-800 dark:text-emerald-400 inline-flex items-center gap-1.5">
+          <span className="text-sm font-bold uppercase tracking-wider text-emerald-800 dark:text-emerald-400 inline-flex items-center gap-1.5">
             <Activity className="h-3.5 w-3.5" /> Progression Pipeline
           </span>
           {stage && (
             <Link
               href={buildFilterHref({ stage: null })}
-              className="text-xs font-semibold text-rose-600 hover:underline"
+              className="inline-flex min-h-11 items-center text-sm font-semibold text-rose-600 hover:underline"
             >
               Clear stage filter ✕
             </Link>
@@ -384,13 +384,13 @@ export default async function AdminPrescriptionsPage({
         <div className="flex flex-wrap items-center gap-2">
           <Link
             href={buildFilterHref({ stage: null })}
-            className={`inline-flex items-center gap-1.5 rounded-xl px-3 py-1.5 text-xs font-bold transition shadow-sm ${
+            className={`inline-flex min-h-11 items-center gap-1.5 rounded-xl px-3 py-2 text-sm font-bold transition shadow-sm ${
               !stage
                 ? "bg-[var(--admin-accent)] text-[var(--admin-btn-fg)] ring-2 ring-[var(--admin-accent)]/20"
                 : "bg-[var(--admin-inset)] admin-text hover:bg-[var(--admin-inset-2)] border border-[var(--admin-border)]"
             }`}
           >
-            All Stages <span className="rounded-full bg-black/15 px-1.5 py-0.2 text-xs">{total}</span>
+            All Stages <span className="rounded-full bg-black/15 px-1.5 py-0.2 text-sm">{total}</span>
           </Link>
 
           {PRIMARY_LIFECYCLE_STAGES.map((s) => {
@@ -401,7 +401,7 @@ export default async function AdminPrescriptionsPage({
               <Link
                 key={s}
                 href={buildFilterHref({ stage: s })}
-                className={`inline-flex items-center gap-1.5 rounded-xl px-3 py-1.5 text-xs font-bold transition shadow-sm ${
+                className={`inline-flex min-h-11 items-center gap-1.5 rounded-xl px-3 py-2 text-sm font-bold transition shadow-sm ${
                   isSelected
                     ? "bg-[var(--admin-accent)] text-[var(--admin-btn-fg)] ring-2 ring-[var(--admin-accent)]/20"
                     : "bg-[var(--admin-inset)] admin-text hover:bg-[var(--admin-inset-2)] border border-[var(--admin-border)]"
@@ -409,11 +409,11 @@ export default async function AdminPrescriptionsPage({
               >
                 {info.label}
                 {count > 0 ? (
-                  <span className={`rounded-full px-1.5 py-0.2 text-xs ${isSelected ? "bg-white/25 text-white" : "bg-emerald-500/15 text-emerald-700 dark:text-emerald-300"}`}>
+                  <span className={`rounded-full px-1.5 py-0.2 text-sm ${isSelected ? "bg-white/25 text-white" : "bg-emerald-500/15 text-emerald-700 dark:text-emerald-300"}`}>
                     {count}
                   </span>
                 ) : (
-                  <span className="opacity-40 text-xs">0</span>
+                  <span className="opacity-40 text-sm">0</span>
                 )}
               </Link>
             );
@@ -422,7 +422,7 @@ export default async function AdminPrescriptionsPage({
 
         {/* ── Exception / Terminal Statuses ── */}
         <div className="flex flex-wrap items-center gap-2 pt-3 border-t border-[var(--admin-border)]">
-          <span className="text-xs font-bold uppercase tracking-wider text-amber-700 dark:text-amber-400 mr-1 inline-flex items-center gap-1">
+          <span className="text-sm font-bold uppercase tracking-wider text-amber-700 dark:text-amber-400 mr-1 inline-flex items-center gap-1">
             <AlertTriangle className="h-3 w-3" /> Exceptions:
           </span>
           {EXCEPTION_LIFECYCLE_STATUSES.map((s) => {
@@ -433,14 +433,14 @@ export default async function AdminPrescriptionsPage({
               <Link
                 key={s}
                 href={buildFilterHref({ stage: s })}
-                className={`inline-flex items-center gap-1.5 rounded-xl px-3 py-1 text-xs font-bold transition ${
+                className={`inline-flex min-h-11 items-center gap-1.5 rounded-xl px-3 py-2 text-sm font-bold transition ${
                   isSelected
                     ? "bg-amber-600 text-white shadow-sm ring-2 ring-amber-600/30"
                     : "bg-amber-500/10 text-amber-800 dark:text-amber-300 hover:bg-amber-500/20 border border-amber-500/20"
                 }`}
               >
                 {info.label}
-                <span className="rounded-full bg-black/15 px-1.5 text-xs">{count}</span>
+                <span className="rounded-full bg-black/15 px-1.5 text-sm">{count}</span>
               </Link>
             );
           })}
@@ -450,13 +450,13 @@ export default async function AdminPrescriptionsPage({
       {/* ── 9-Channel Intake Horizontal Selector ── */}
       <div className="mb-5 rounded-2xl border border-[var(--admin-border)] bg-[var(--admin-card)] p-3.5 shadow-sm">
         <div className="flex items-center justify-between mb-2.5">
-          <span className="text-xs font-bold uppercase tracking-wider admin-soft inline-flex items-center gap-1.5">
+          <span className="text-sm font-bold uppercase tracking-wider admin-soft inline-flex items-center gap-1.5">
             <Filter className="h-3 w-3 text-emerald-600" /> Filter by Intake Arrival Channel
           </span>
           {channel && (
             <Link
               href={buildFilterHref({ channel: null })}
-              className="text-xs font-semibold text-rose-600 hover:underline"
+              className="inline-flex min-h-11 items-center text-sm font-semibold text-rose-600 hover:underline"
             >
               All channels ✕
             </Link>
@@ -465,7 +465,7 @@ export default async function AdminPrescriptionsPage({
         <div className="flex flex-wrap items-center gap-1.5">
           <Link
             href={buildFilterHref({ channel: null })}
-            className={`inline-flex items-center gap-1.5 rounded-xl px-2.5 py-1.5 text-xs font-semibold transition ${
+            className={`inline-flex min-h-11 items-center gap-1.5 rounded-xl px-3 py-2 text-sm font-semibold transition ${
               !channel
                 ? "bg-emerald-600 text-white shadow-sm font-bold"
                 : "bg-[var(--admin-inset)] admin-text hover:bg-[var(--admin-inset-2)] border border-[var(--admin-border)]"
@@ -481,7 +481,7 @@ export default async function AdminPrescriptionsPage({
               <Link
                 key={chKey}
                 href={buildFilterHref({ channel: chKey })}
-                className={`inline-flex items-center gap-1.5 rounded-xl px-2.5 py-1.5 text-xs font-semibold transition ${
+                className={`inline-flex min-h-11 items-center gap-1.5 rounded-xl px-3 py-2 text-sm font-semibold transition ${
                   isSelected
                     ? "bg-emerald-600 text-white shadow-sm font-bold ring-2 ring-emerald-600/30"
                     : "bg-[var(--admin-inset)] admin-text hover:bg-[var(--admin-inset-2)] border border-[var(--admin-border)]"
@@ -490,7 +490,7 @@ export default async function AdminPrescriptionsPage({
                 <ChannelIcon className="h-3.5 w-3.5 text-[var(--admin-accent-text)]" />
                 <span>{chInfo.label}</span>
                 {count > 0 && (
-                  <span className={`rounded-full px-1.5 text-xs ${isSelected ? "bg-white/20 text-white" : "bg-black/10 admin-soft"}`}>
+                  <span className={`rounded-full px-1.5 text-sm ${isSelected ? "bg-white/20 text-white" : "bg-black/10 admin-soft"}`}>
                     {count}
                   </span>
                 )}
@@ -501,19 +501,19 @@ export default async function AdminPrescriptionsPage({
       </div>
 
       {/* ── Search & Filter Controls ── */}
-      <form className="mb-5 flex flex-wrap items-center gap-2">
-        <div className="relative flex-1 min-w-[240px]">
+      <form className="mb-5 flex flex-col gap-2 sm:flex-row sm:items-center">
+        <div className="relative w-full min-w-0 flex-1 sm:min-w-[240px]">
           <Search className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 admin-soft" />
           <input
             name="q"
             defaultValue={q || ""}
             placeholder="Search patient name, medicine, Rx ref, doctor, or KMPDC #…"
-            className="input-admin pl-10 text-xs shadow-sm"
+            className="input-admin min-h-11 pl-10 text-base shadow-sm sm:text-sm"
           />
           {q && (
             <Link
               href={buildFilterHref({})}
-              className="absolute right-2.5 top-1/2 -translate-y-1/2 rounded-full p-1 admin-soft hover:bg-[var(--admin-inset-2)] hover:text-[var(--admin-text)]"
+              className="absolute right-1 top-1/2 inline-flex min-h-11 min-w-11 -translate-y-1/2 items-center justify-center rounded-full admin-soft hover:bg-[var(--admin-inset-2)] hover:text-[var(--admin-text)]"
               aria-label="Clear search"
             >
               <X className="h-4 w-4" />
@@ -522,7 +522,7 @@ export default async function AdminPrescriptionsPage({
         </div>
         <button
           type="submit"
-          className="inline-flex items-center gap-1.5 rounded-xl bg-[var(--admin-accent)] px-4 py-2 text-xs font-bold text-[var(--admin-btn-fg)] shadow-sm transition hover:brightness-110"
+          className="inline-flex min-h-11 w-full items-center justify-center gap-1.5 rounded-xl bg-[var(--admin-accent)] px-4 py-2 text-sm font-bold text-[var(--admin-btn-fg)] shadow-sm transition hover:brightness-110 sm:w-auto"
         >
           <Search className="h-3.5 w-3.5" /> Search
         </button>
@@ -537,7 +537,128 @@ export default async function AdminPrescriptionsPage({
             description="No prescriptions match your selected stage, intake channel, or search filter."
           />
         ) : (
-          <div tabIndex={0} role="region" aria-label="Scrollable records" className="admin-table-region overflow-x-auto scroll-admin">
+          <div className="grid gap-3 sm:hidden">
+            {paged.map((p) => {
+              const chInfo =
+                INTAKE_CHANNEL_LABELS[
+                  p.intakeChannel as keyof typeof INTAKE_CHANNEL_LABELS
+                ] || INTAKE_CHANNEL_LABELS.in_person_consultation;
+              const stageKey =
+                p.lifecycleStatus || (p.status === "on_hold" ? "on_hold" : "received");
+              const stageMeta =
+                LIFECYCLE_STATUS_LABELS[
+                  stageKey as keyof typeof LIFECYCLE_STATUS_LABELS
+                ] || LIFECYCLE_STATUS_LABELS.received;
+              const ChannelIcon = getChannelIcon(
+                p.intakeChannel || "in_person_consultation",
+              );
+
+              return (
+                <article
+                  key={p.id}
+                  className="min-w-0 rounded-2xl border border-[var(--admin-border)] bg-[var(--admin-card)] p-4 shadow-sm"
+                >
+                  <div className="flex min-w-0 items-start justify-between gap-3">
+                    <div className="min-w-0">
+                      <p className="break-words text-base font-bold admin-text">
+                        {p.customer?.fullName || "Unassigned patient"}
+                      </p>
+                      {p.customer?.phone && (
+                        <p className="mt-1 break-all font-mono text-sm admin-soft">
+                          {p.customer.phone}
+                        </p>
+                      )}
+                    </div>
+                    <span
+                      className={`inline-flex shrink-0 items-center rounded-full px-2.5 py-1 text-sm font-bold ${stageMeta.badgeClass}`}
+                    >
+                      {stageMeta.label}
+                    </span>
+                  </div>
+
+                  <div className="mt-4 space-y-3">
+                    <div>
+                      <p className="text-sm font-semibold uppercase tracking-wide admin-soft">
+                        Medication
+                      </p>
+                      <p className="mt-1 break-words text-base font-bold admin-text">
+                        {p.medicineName}
+                      </p>
+                      <p className="mt-1 text-sm admin-muted">
+                        {p.dosage || "1 dose"} · {p.quantity ?? 1} units ·{" "}
+                        {p.daysSupply ?? 30}d supply
+                      </p>
+                    </div>
+
+                    <div className="grid grid-cols-1 gap-3 rounded-xl bg-[var(--admin-inset)] p-3">
+                      <div>
+                        <p className="text-sm font-semibold admin-soft">Stock</p>
+                        <p className="mt-1 break-words text-sm font-bold admin-text">
+                          {p.medication
+                            ? `${p.medication.currentStock} in stock`
+                            : p.rxReference || "Not linked to catalogue"}
+                        </p>
+                      </div>
+                      <div>
+                        <p className="text-sm font-semibold admin-soft">Refill</p>
+                        <p className="mt-1 text-sm font-bold admin-text">
+                          {p.refillsRemaining ?? 0} left
+                          {p.nextRefillDue
+                            ? ` · due ${formatDate(p.nextRefillDue)}`
+                            : ""}
+                        </p>
+                      </div>
+                    </div>
+
+                    <div className="space-y-2 text-sm">
+                      <div className="flex flex-col gap-1">
+                        <span className="font-semibold admin-soft">Prescriber</span>
+                        <span className="break-words font-semibold admin-text">
+                          {p.prescriber || "Staff Prescribed"}
+                          {p.prescriberLicense ? ` · ${p.prescriberLicense}` : ""}
+                        </span>
+                      </div>
+                      <div className="flex flex-col gap-1">
+                        <span className="font-semibold admin-soft">Intake channel</span>
+                        <span className="inline-flex items-center gap-2 break-words font-semibold admin-text">
+                          <ChannelIcon className="h-4 w-4 shrink-0 text-emerald-600" />
+                          {chInfo.label}
+                        </span>
+                      </div>
+                      <div className="flex flex-col gap-1">
+                        <span className="font-semibold admin-soft">Clinical status</span>
+                        {p.isUnclear ? (
+                          <span className="font-bold text-amber-700 dark:text-amber-300">
+                            Unclear script
+                          </span>
+                        ) : p._count?.clarificationLogs > 0 ? (
+                          <span className="font-semibold text-blue-600">
+                            {p._count.clarificationLogs} clarification call(s)
+                          </span>
+                        ) : (
+                          <span className="font-semibold text-emerald-600">Verified</span>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+
+                  <Link
+                    href={`/admin/prescriptions/${p.id}`}
+                    className="mt-4 inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-700 px-4 py-2 text-sm font-bold text-white shadow-sm transition hover:brightness-110 active:scale-[0.98]"
+                  >
+                    <ShieldCheck className="h-4 w-4" /> Review prescription
+                  </Link>
+                </article>
+              );
+            })}
+          </div>
+
+          <div
+            tabIndex={0}
+            role="region"
+            aria-label="Scrollable prescription records"
+            className="admin-table-region hidden overflow-x-auto scroll-admin sm:block"
+          >
             <table className="table-admin">
               <thead>
                 <tr>
@@ -568,7 +689,7 @@ export default async function AdminPrescriptionsPage({
                             <div className="flex items-center gap-1.5">
                               <Link
                                 href={`/admin/customers/${p.customer.id}`}
-                                className="font-bold text-xs admin-text hover:admin-accent-text hover:underline"
+                                className="font-bold text-sm admin-text hover:admin-accent-text hover:underline"
                               >
                                 {p.customer.fullName}
                               </Link>
@@ -579,21 +700,21 @@ export default async function AdminPrescriptionsPage({
                               )}
                             </div>
                             {p.customer.phone && (
-                              <p className="text-xs admin-soft font-mono">{p.customer.phone}</p>
+                              <p className="text-sm admin-soft font-mono">{p.customer.phone}</p>
                             )}
                           </div>
                         ) : (
-                          <span className="text-xs admin-soft">—</span>
+                          <span className="text-sm admin-soft">—</span>
                         )}
                       </td>
 
                       {/* Medication & Stock */}
                       <td>
                         <div className="space-y-0.5">
-                          <p className="font-bold text-xs admin-text">{p.medicineName}</p>
+                          <p className="font-bold text-sm admin-text">{p.medicineName}</p>
                           <div className="flex items-center gap-1.5">
                             {p.medication ? (
-                              <span className={`inline-flex items-center gap-1 text-xs font-semibold ${
+                              <span className={`inline-flex items-center gap-1 text-sm font-semibold ${
                                 p.medication.currentStock >= (p.quantity || 1)
                                   ? "text-emerald-600"
                                   : p.medication.currentStock > 0
@@ -610,7 +731,7 @@ export default async function AdminPrescriptionsPage({
                                 {p.medication.currentStock} in stock
                               </span>
                             ) : (
-                              <span className="text-xs admin-soft font-mono">
+                              <span className="text-sm admin-soft font-mono">
                                 {p.rxReference || "Rx"}
                               </span>
                             )}
@@ -622,7 +743,7 @@ export default async function AdminPrescriptionsPage({
                       <td>
                         <div className="space-y-0.5">
                           <div className="flex items-center gap-1">
-                            <p className="text-xs font-semibold admin-text">
+                            <p className="text-sm font-semibold admin-text">
                               {p.prescriber || "Staff Prescribed"}
                             </p>
                             {p.prescriberVerified && (
@@ -632,7 +753,7 @@ export default async function AdminPrescriptionsPage({
                             )}
                           </div>
                           {p.prescriberLicense && (
-                            <p className="text-xs font-mono text-emerald-700 dark:text-emerald-400">
+                            <p className="text-sm font-mono text-emerald-700 dark:text-emerald-400">
                               {p.prescriberLicense}
                             </p>
                           )}
@@ -641,7 +762,7 @@ export default async function AdminPrescriptionsPage({
 
                       {/* Intake Channel */}
                       <td>
-                        <span className="inline-flex items-center gap-1.5 rounded-xl border border-[var(--admin-border)] bg-[var(--admin-inset)] px-2.5 py-1 text-xs font-medium admin-text">
+                        <span className="inline-flex items-center gap-1.5 rounded-xl border border-[var(--admin-border)] bg-[var(--admin-inset)] px-2.5 py-1 text-sm font-medium admin-text">
                           <ChannelIcon className="h-3 w-3 text-emerald-600" />
                           <span>{chInfo.label}</span>
                         </span>
@@ -649,8 +770,8 @@ export default async function AdminPrescriptionsPage({
 
                       {/* Dosage & Supply */}
                       <td>
-                        <p className="text-xs font-semibold admin-text">{p.dosage || "1 dose"}</p>
-                        <p className="text-xs admin-soft">
+                        <p className="text-sm font-semibold admin-text">{p.dosage || "1 dose"}</p>
+                        <p className="text-sm admin-soft">
                           {p.quantity ?? 1} units · {p.daysSupply ?? 30}d supply
                         </p>
                       </td>
@@ -658,11 +779,11 @@ export default async function AdminPrescriptionsPage({
                       {/* Refill status */}
                       <td>
                         <div className="space-y-0.5">
-                          <span className="font-mono text-xs font-bold admin-text">
+                          <span className="font-mono text-sm font-bold admin-text">
                             {p.refillsRemaining ?? 0} left
                           </span>
                           {p.nextRefillDue && (
-                            <p className="text-xs admin-muted">
+                            <p className="text-sm admin-muted">
                               Due: {formatDate(p.nextRefillDue)}
                             </p>
                           )}
@@ -671,14 +792,14 @@ export default async function AdminPrescriptionsPage({
 
                       {/* Lifecycle Stage */}
                       <td>
-                        <span className={`inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-xs font-bold shadow-sm ${stageMeta.badgeClass}`}>
+                        <span className={`inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-sm font-bold shadow-sm ${stageMeta.badgeClass}`}>
                           {stageMeta.label}
                         </span>
                       </td>
 
                       {/* Clinical Status / Flags */}
                       <td>
-                        <div className="flex flex-col gap-1 text-xs">
+                        <div className="flex flex-col gap-1 text-sm">
                           {p.isUnclear ? (
                             <span className="inline-flex items-center gap-1 rounded-md bg-amber-500/15 px-1.5 py-0.5 font-bold text-amber-700 dark:text-amber-300">
                               <HelpCircle className="h-3 w-3" /> Unclear script
@@ -699,7 +820,7 @@ export default async function AdminPrescriptionsPage({
                       <td className="text-right">
                         <Link
                           href={`/admin/prescriptions/${p.id}`}
-                          className="inline-flex items-center gap-1.5 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-700 px-3 py-1.5 text-xs font-bold text-white shadow-sm transition hover:brightness-110 active:scale-95"
+                          className="inline-flex min-h-11 items-center justify-center gap-1.5 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-700 px-3 py-2 text-sm font-bold text-white shadow-sm transition hover:brightness-110 active:scale-95"
                         >
                           <ShieldCheck className="h-3.5 w-3.5" /> Review
                         </Link>
