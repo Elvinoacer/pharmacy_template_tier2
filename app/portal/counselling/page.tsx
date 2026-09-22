@@ -108,20 +108,20 @@ export default async function PortalCounsellingPage() {
         <div className="grid w-full grid-cols-1 gap-2 sm:flex sm:w-auto sm:flex-wrap sm:items-center">
           <Link
             href={shopBase ? `${shopBase}/services/medication-counselling` : "/services/medication-counselling"}
-            className="btn-primary inline-flex w-full items-center justify-center gap-1.5 text-xs sm:w-auto"
+            className="min-h-11 min-w-11 btn-primary inline-flex w-full items-center justify-center gap-2 text-sm sm:w-auto"
           >
             <PhoneCall className="h-4 w-4" /> Book Pharmacist Consult
           </Link>
           <Link
             href={shopBase ? `${shopBase}/health/counselling` : "/health/counselling"}
-            className="btn-ghost inline-flex w-full items-center justify-center gap-1.5 bg-white text-xs sm:w-auto"
+            className="min-h-11 min-w-11 btn-ghost inline-flex w-full items-center justify-center gap-2 bg-white text-sm sm:w-auto"
           >
             <BookOpen className="h-4 w-4" /> Full Public Hub
           </Link>
         </div>
       }
     >
-      <div className="space-y-8">
+      <div className="mx-auto w-full max-w-7xl min-w-0 space-y-8">
         {/* Top Info Banner */}
         <div className="rounded-2xl border border-teal-200 bg-gradient-to-r from-teal-50 via-white to-emerald-50 p-4 shadow-xs sm:p-5">
           <div className="flex items-start gap-3">
@@ -129,10 +129,10 @@ export default async function PortalCounsellingPage() {
               <ShieldCheck className="h-5 w-5" />
             </span>
             <div className="min-w-0 flex-1">
-              <h3 className="text-sm font-bold text-teal-950">
+              <h3 className="text-base font-bold text-teal-950">
                 Your Digital Medication Counselling Leaflets
               </h3>
-              <p className="mt-1 text-xs leading-relaxed text-teal-900">
+              <p className="mt-1 text-base leading-relaxed text-teal-900">
                 Below are the official 12-pillar clinical counselling guides for your current active prescriptions. Review dosage administration, food interactions, missed-dose instructions, and when to seek medical attention.
               </p>
             </div>
@@ -154,19 +154,19 @@ export default async function PortalCounsellingPage() {
               <div key={prescriptionId} className="min-w-0 space-y-3">
                 <div className="flex min-w-0 flex-col gap-2 px-1 sm:flex-row sm:items-center sm:justify-between">
                   <div className="flex min-w-0 flex-wrap items-center gap-2">
-                    <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-lg bg-teal-700 text-xs font-bold text-white">
+                    <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-lg bg-teal-700 text-sm font-bold text-white">
                       💊
                     </span>
                     <h3 className="min-w-0 break-words text-base font-bold text-[#0c1a14]">{medicineName}</h3>
                     {dosage && (
-                      <span className="max-w-full break-words rounded-md bg-slate-100 px-2 py-0.5 text-xs font-semibold text-slate-700">
+                      <span className="max-w-full break-words rounded-md bg-slate-100 px-2 py-0.5 text-sm font-semibold text-slate-700">
                         {dosage}
                       </span>
                     )}
                   </div>
                   <Link
                     href="/portal/prescriptions"
-                    className="inline-flex w-fit shrink-0 text-xs font-bold text-teal-800 hover:underline"
+                    className="min-h-11 min-w-11 inline-flex w-full shrink-0 items-center text-sm font-bold text-teal-800 hover:underline sm:w-fit"
                   >
                     View Dose Tracker →
                   </Link>
