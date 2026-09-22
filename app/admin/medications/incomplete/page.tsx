@@ -89,8 +89,8 @@ export default async function IncompleteMedicationsPage({
               Lowest score first
             </span>
           </div>
-          <div className="-mx-1 overflow-x-auto px-1 pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
-            <nav aria-label="Enrichment status filter" className="flex min-w-max gap-2">
+          <div className="min-w-0">
+            <nav aria-label="Enrichment status filter" className="flex flex-wrap gap-2">
               {[
                 { value: "", label: "Needs work" },
                 { value: "minimal", label: "Minimal" },
