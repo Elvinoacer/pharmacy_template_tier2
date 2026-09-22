@@ -102,7 +102,7 @@ export function AdminInboxPanel({
   return (
     <div className="space-y-4">
       <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
-        <div className="flex items-center gap-2 text-xs admin-muted">
+        <div className="flex items-center gap-2 text-sm admin-muted">
           <BellRing className="h-3.5 w-3.5 admin-accent-text" />
           <span>{unread} unread on this page</span>
         </div>
@@ -110,7 +110,7 @@ export function AdminInboxPanel({
           type="button"
           onClick={markAllRead}
           disabled={initial.length === 0 || unread === 0}
-          className="inline-flex min-h-11 w-full items-center justify-center gap-1.5 rounded-xl bg-[var(--admin-inset)] px-3 py-2 text-xs font-semibold admin-muted transition hover:bg-[var(--admin-inset-2)] hover:text-[var(--admin-text)] disabled:opacity-50 sm:w-auto"
+          className="inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-xl bg-[var(--admin-inset)] px-3 py-2 text-sm font-semibold admin-muted transition hover:bg-[var(--admin-inset-2)] hover:text-[var(--admin-text)] disabled:opacity-50 sm:w-auto"
         >
           <CheckCheck className="h-3.5 w-3.5" /> Mark all read
         </button>
@@ -122,17 +122,17 @@ export function AdminInboxPanel({
             <Inbox className="h-6 w-6" />
           </span>
           <p className="mt-3 text-sm font-semibold admin-text">Your inbox is clear</p>
-          <p className="mt-1 text-xs admin-muted">No admin notifications need attention.</p>
+          <p className="mt-1 text-sm admin-muted">No admin notifications need attention.</p>
         </div>
       ) : (
         <>
-          <div className="space-y-2 md:hidden">
+          <div className="grid gap-3 sm:grid-cols-2 lg:hidden">
             {initial.map((n) => {
               const href = relatedHref(n);
               return (
                 <article
                   key={n.id}
-                  className={`rounded-2xl border p-3.5 transition-[border-color,background-color,box-shadow] ${
+                  className={`rounded-2xl border p-4 transition-[border-color,background-color,box-shadow] sm:p-5 ${
                     n.isRead
                       ? "border-[var(--admin-border)] bg-[var(--admin-card)]"
                       : "border-[var(--admin-border-2)] bg-[var(--admin-inset)] shadow-sm"
@@ -140,22 +140,22 @@ export function AdminInboxPanel({
                 >
                   <div className="flex min-w-0 items-start justify-between gap-3">
                     <div className="min-w-0 flex-1">
-                      <div className="flex flex-wrap items-center gap-1.5">
-                        <span className="text-[10px] font-semibold uppercase tracking-[0.08em] admin-soft">
+                      <div className="flex flex-wrap items-center gap-2">
+                        <span className="text-sm font-semibold uppercase tracking-[0.08em] admin-soft">
                           {n.type.replace(/_/g, " ")}
                         </span>
                         {!n.isRead && <span className="h-2 w-2 rounded-full bg-blue-500 dark:bg-blue-300" />}
                       </div>
-                      <h3 className="mt-1.5 break-words text-sm font-semibold leading-5 admin-text">{n.title}</h3>
+                      <h3 className="mt-2 break-words text-sm font-semibold leading-5 admin-text">{n.title}</h3>
                     </div>
-                    <span className={`shrink-0 rounded-full px-2.5 py-1 text-[10px] font-semibold capitalize ${severityClass(n.severity)}`}>
+                    <span className={`shrink-0 rounded-full px-3 py-1 text-sm font-semibold capitalize ${severityClass(n.severity)}`}>
                       {n.severity}
                     </span>
                   </div>
 
-                  <p className="mt-2 break-words text-xs leading-5 admin-muted">{n.body}</p>
+                  <p className="mt-2 break-words text-base leading-6 admin-muted">{n.body}</p>
 
-                  <div className="mt-3 flex items-center gap-1.5 text-[11px] admin-soft">
+                  <div className="mt-3 flex items-center gap-2 text-sm admin-soft">
                     <Clock3 className="h-3 w-3" />
                     {formatDateTime(n.createdAt)}
                   </div>
@@ -164,7 +164,7 @@ export function AdminInboxPanel({
                     {href && (
                       <Link
                         href={href}
-                        className="inline-flex min-h-11 items-center justify-center gap-1.5 rounded-xl bg-[var(--admin-accent-soft)] px-3 py-2 text-xs font-semibold admin-accent-text"
+                        className="inline-flex min-h-11 items-center justify-center gap-2 rounded-xl bg-[var(--admin-accent-soft)] px-3 py-2 text-sm font-semibold admin-accent-text"
                       >
                         Open item <ExternalLink className="h-3.5 w-3.5" />
                       </Link>
@@ -173,7 +173,7 @@ export function AdminInboxPanel({
                       <button
                         type="button"
                         onClick={() => markRead(n.id)}
-                        className="inline-flex min-h-11 items-center justify-center gap-1.5 rounded-xl border border-[var(--admin-border)] bg-[var(--admin-card)] px-3 py-2 text-xs font-semibold admin-muted transition hover:bg-[var(--admin-hover)] hover:text-[var(--admin-text)]"
+                        className="inline-flex min-h-11 items-center justify-center gap-2 rounded-xl border border-[var(--admin-border)] bg-[var(--admin-card)] px-3 py-2 text-sm font-semibold admin-muted transition hover:bg-[var(--admin-hover)] hover:text-[var(--admin-text)]"
                       >
                         <CheckCheck className="h-3.5 w-3.5" /> Mark read
                       </button>
@@ -184,7 +184,7 @@ export function AdminInboxPanel({
             })}
           </div>
 
-          <div tabIndex={0} role="region" aria-label="Inbox records" className="admin-table-region hidden overflow-x-auto scroll-admin md:block">
+          <div tabIndex={0} role="region" aria-label="Inbox records" className="admin-table-region hidden overflow-x-auto scroll-admin lg:block">
             <table className="table-admin">
               <thead>
                 <tr>
@@ -204,35 +204,35 @@ export function AdminInboxPanel({
                       className={`transition ${!n.isRead ? "bg-[var(--admin-inset)]/50 font-medium" : ""}`}
                     >
                       <td>
-                        <p className="text-xs capitalize admin-soft">{n.type.replace(/_/g, " ")}</p>
+                        <p className="text-sm capitalize admin-soft">{n.type.replace(/_/g, " ")}</p>
                       </td>
                       <td>
-                        <p className="flex items-center gap-1.5 text-sm admin-text">
-                          <span className="max-w-[320px] truncate">{n.title}</span>
+                        <p className="flex items-center gap-2 text-sm admin-text">
+                          <span className="max-w-[420px] whitespace-normal break-words">{n.title}</span>
                           {!n.isRead && <span className="inline-block h-2 w-2 rounded-full bg-blue-500 dark:bg-blue-300" />}
                         </p>
-                        <p className="max-w-[320px] truncate text-xs admin-muted">{n.body}</p>
+                        <p className="max-w-[420px] whitespace-normal break-words text-sm admin-muted">{n.body}</p>
                         {href && (
                           <Link
                             href={href}
-                            className="mt-1 inline-flex items-center gap-1 text-xs font-semibold admin-accent-text hover:underline"
+                            className="mt-1 inline-flex items-center gap-1 text-sm font-semibold admin-accent-text hover:underline"
                           >
                             Open <ExternalLink className="h-3 w-3" />
                           </Link>
                         )}
                       </td>
                       <td>
-                        <span className={`rounded-full px-2.5 py-1 text-xs font-semibold capitalize ${severityClass(n.severity)}`}>
+                        <span className={`rounded-full px-3 py-1 text-sm font-semibold capitalize ${severityClass(n.severity)}`}>
                           {n.severity}
                         </span>
                       </td>
-                      <td className="text-xs admin-muted">{formatDateTime(n.createdAt)}</td>
+                      <td className="text-sm admin-muted">{formatDateTime(n.createdAt)}</td>
                       <td className="text-right">
                         {!n.isRead && (
                           <button
                             type="button"
                             onClick={() => markRead(n.id)}
-                            className="inline-flex items-center gap-1 rounded-full bg-[var(--admin-inset)] px-2.5 py-1.5 text-xs font-medium admin-muted hover:bg-[var(--admin-hover)] hover:text-[var(--admin-text)]"
+                            className="inline-flex min-h-11 items-center gap-2 rounded-full bg-[var(--admin-inset)] px-3 py-2 text-sm font-medium admin-muted hover:bg-[var(--admin-hover)] hover:text-[var(--admin-text)]"
                           >
                             <CheckCheck className="h-3 w-3" /> Mark read
                           </button>
