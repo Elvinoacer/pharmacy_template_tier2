@@ -149,16 +149,18 @@ export default async function AdminRefillsPage({
       title="Refills & schedules"
       subtitle={`${stats.totalPrescriptionsOnRefill} maintenance prescriptions · ${stats.activeRequestsCount} active requests · ${stats.dueInNext7DaysCount} due this week`}
     >
-      <RefillManagementView
-        stats={stats}
-        activeRefills={activeRefills}
-        refillCounts={refillCounts}
-        currentStatusFilter={statusFilter || "all"}
-        searchQuery={sp.q}
-        schedules={schedulesResult.items}
-        missingPatients={missingPatients}
-        historyRows={historyRows}
-      />
+      <div className="mx-auto w-full min-w-0 max-w-[1280px]">
+        <RefillManagementView
+          stats={stats}
+          activeRefills={activeRefills}
+          refillCounts={refillCounts}
+          currentStatusFilter={statusFilter || "all"}
+          searchQuery={sp.q}
+          schedules={schedulesResult.items}
+          missingPatients={missingPatients}
+          historyRows={historyRows}
+        />
+      </div>
     </AdminShell>
   );
 }
