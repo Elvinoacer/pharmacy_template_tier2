@@ -48,6 +48,7 @@ type Summary = {
   matched: number;
   alreadyStocked: number;
   flagged: number;
+  upgradeRequired: boolean;
   errors: Array<{ row: number; message: string }>;
 };
 
@@ -203,7 +204,9 @@ export function CsvImportFlow() {
       const payload = (await response.json()) as Summary;
       setSummary(payload);
       setStep("done");
-      if (payload.errors.length > 0) {
+      if (payload.upgradeRequired) {
+        toast.info("Some public listings reached the free-plan limit. Saved rows remain intact; upgrade or unpublish existing listings to continue.");
+      } else if (payload.errors.length > 0) {
         toast.info(
           `Processed ${payload.created + payload.matched} medicines; ${payload.errors.length} row(s) need attention.`,
         );
@@ -427,6 +430,18 @@ export function CsvImportFlow() {
                   <p className="mt-1 text-[10px] leading-4 admin-muted sm:text-xs">{label as string}</p>
                 </div>
               ))}
+            </div>
+          )}
+
+          {summary?.upgradeRequired && (
+            <div className="mx-auto mt-5 max-w-2xl rounded-2xl border border-violet-500/25 bg-violet-500/[0.06] p-4 text-left">
+              <p className="text-sm font-bold text-violet-800 dark:text-violet-200">Free-plan public listing limit reached</p>
+              <p className="mt-1 text-xs leading-5 text-violet-800/80 dark:text-violet-200/80">
+                CSV import itself remains available on the free plan. Only rows that would exceed the 5 public medicine listing allowance were blocked; private inventory rows can still be imported.
+              </p>
+              <button type="button" onClick={() => router.push("/admin/billing")} className="mt-3 inline-flex min-h-10 items-center justify-center rounded-xl bg-violet-600 px-4 text-xs font-bold text-white transition hover:bg-violet-500">
+                View Premium
+              </button>
             </div>
           )}
 
