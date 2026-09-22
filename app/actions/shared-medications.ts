@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { AuthError, getSessionUser, requireStaff, writeAuditLog } from "@/app/lib/auth";
 import { publicErrorMessage } from "@/app/lib/public-error";
+import { listingLimitMessage } from "@/app/lib/platform/plan-policy";
 import { requireMedicationWriteContext } from "@/app/lib/services/medication-access";
 import { withPharmacy } from "@/app/lib/tenant-context";
 import { parseMedicationFormData } from "@/app/lib/services/medication-form-data";
@@ -159,6 +160,8 @@ export async function adminCreateSharedMedicationAction(
   } catch (error) {
     if (error && typeof error === "object" && "digest" in error) throw error;
     console.error("[adminCreateSharedMedicationAction]", error);
+    const limitMessage = listingLimitMessage(error);
+    if (limitMessage) return { error: limitMessage };
     const rawMessage = error instanceof Error ? error.message : "";
     if (rawMessage.includes("Unique constraint") || rawMessage.includes("P2002")) {
       return { error: "This medicine, SKU, or barcode is already present. Search the shared library and reuse it instead." };
