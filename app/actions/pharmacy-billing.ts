@@ -237,7 +237,10 @@ export async function pharmacyBillingAction(
       const checkout = await createIntasendBillingCheckout(
         pharmacyId,
         invoice.id,
-        { actorId: user.id },
+        {
+          actorId: user.id,
+          redirectPath: "/admin/billing?payment=returned",
+        },
       );
       revalidatePath("/onboard/billing");
       revalidatePath("/admin/billing");
