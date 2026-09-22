@@ -111,6 +111,24 @@ const comparison = [
   },
   {
     group: "Plan & core pharmacy",
+    feature: "Prescriptions, refills & patient requests",
+    free: "Included",
+    premium: "Included",
+  },
+  {
+    group: "Plan & core pharmacy",
+    feature: "Customer portal & patient records",
+    free: "Included",
+    premium: "Included",
+  },
+  {
+    group: "Plan & core pharmacy",
+    feature: "Manual staff messaging & reminders",
+    free: "Included",
+    premium: "Included + automation",
+  },
+  {
+    group: "Plan & core pharmacy",
     feature: "Shared medication library, barcode & manual entry",
     free: "Included",
     premium: "Included",
@@ -148,6 +166,12 @@ const comparison = [
   {
     group: "Storefront & commerce",
     feature: "Online orders, reservations & bookings",
+    free: "Included",
+    premium: "Included",
+  },
+  {
+    group: "Storefront & commerce",
+    feature: "Delivery workflow & customer fulfilment",
     free: "Included",
     premium: "Included",
   },
@@ -529,7 +553,7 @@ export default async function AdminBillingPage() {
               </h2>
             </div>
             <p className="max-w-lg text-xs leading-5 text-[var(--admin-text-muted)]">
-              See exactly what stays Free and what KES 500/month adds. Core pharmacy and clinical work is never locked behind Premium.
+              Compare the essential operating, storefront, patient-growth, retention and intelligence capabilities. Core pharmacy and clinical work stays usable on Free; Premium is for scale, automation and deeper growth tools.
             </p>
           </div>
 
