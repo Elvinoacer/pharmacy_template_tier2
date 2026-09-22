@@ -245,10 +245,12 @@ async function candidateWithCapacity(
     })),
   );
 
-  const premium = withUsage.find((item) => item.usage.premium);
-  const available =
-    premium ||
-    withUsage.find((item) => (item.usage.remaining ?? 0) > 0);
+  // Patient routing should follow the candidate order and available capacity,
+  // not a pharmacy's billing state. Premium's benefit is that its capacity never
+  // runs out; it is not an artificial ranking boost.
+  const available = withUsage.find(
+    (item) => item.usage.premium || (item.usage.remaining ?? 0) > 0,
+  );
   if (!available) return null;
 
   return {
