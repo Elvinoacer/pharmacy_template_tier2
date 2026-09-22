@@ -65,7 +65,7 @@ export default async function PaymentsAnalyticsPage({
 
         <AdminPanel title="Outstanding Aging" description="Open balances grouped by how long they have remained unpaid.">
           <div className="mb-4 rounded-2xl border border-[var(--admin-border)] bg-[var(--admin-inset)] p-4 sm:p-5">
-            <p className="text-[11px] font-semibold uppercase tracking-[0.12em] admin-muted">Total outstanding</p>
+            <p className="text-sm font-semibold uppercase tracking-[0.12em] admin-muted">Total outstanding</p>
             <p className="mt-1 break-words text-2xl font-bold tracking-tight admin-text sm:text-3xl">{formatKES(aging.total)}</p>
           </div>
           <div className="space-y-2 text-sm">
