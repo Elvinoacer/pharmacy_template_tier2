@@ -1,208 +1,196 @@
 .clinicWorkspace {
   min-width: 0;
+  width: 100%;
 }
-
 .clinicWorkspace :global(.admin-card) {
   border-color: var(--admin-border);
   background: var(--admin-card);
   color: var(--admin-text);
+  padding: 16px !important;
+  border-radius: 16px;
   transition: border-color 180ms ease, box-shadow 180ms ease, transform 180ms ease;
 }
-
-.clinicWorkspace :global(.admin-card:hover) {
-  border-color: var(--admin-border-2);
+.clinicWorkspace :global(.admin-card:hover) { border-color: var(--admin-border-2); }
+.clinicWorkspace :global(input:not([type="checkbox"]):not([type="radio"]):not([type="hidden"])),
+.clinicWorkspace :global(select),
+.clinicWorkspace :global(textarea),
+.clinicWorkspace :global(button) {
+  min-height: 44px;
+  font-size: 14px;
+  line-height: 20px;
 }
-
 .clinicWorkspace :global(input:not([type="checkbox"]):not([type="radio"]):not([type="hidden"])),
 .clinicWorkspace :global(select),
 .clinicWorkspace :global(textarea) {
   width: 100%;
-  min-height: 44px;
+  max-width: 100%;
   border-color: var(--admin-border) !important;
   background: var(--admin-input-bg) !important;
   color: var(--admin-text) !important;
   outline: none;
   transition: border-color 160ms ease, box-shadow 160ms ease, background 160ms ease;
 }
-
-.clinicWorkspace :global(textarea) {
-  min-height: 84px;
+.clinicWorkspace :global(textarea) { min-height: 84px; }
+.clinicWorkspace :global(.text-xs) {
+  font-size: 14px !important;
+  line-height: 20px !important;
 }
-
 .clinicWorkspace :global(input::placeholder),
-.clinicWorkspace :global(textarea::placeholder) {
-  color: var(--admin-text-soft);
-}
-
+.clinicWorkspace :global(textarea::placeholder) { color: var(--admin-text-soft); }
 .clinicWorkspace :global(input:focus),
 .clinicWorkspace :global(select:focus),
 .clinicWorkspace :global(textarea:focus) {
   border-color: var(--admin-accent) !important;
   box-shadow: 0 0 0 3px var(--admin-accent-soft);
 }
-
 .clinicWorkspace :global(select option) {
   background: var(--admin-panel);
   color: var(--admin-text);
 }
-
 .clinicWorkspace > :global(.space-y-5) > div:first-child {
+  display: flex;
+  flex-wrap: nowrap;
+  gap: 8px;
+  margin-inline: -4px;
+  overflow-x: auto;
+  padding: 4px 4px 8px;
+  scroll-snap-type: x proximity;
   scrollbar-width: none;
 }
-
-.clinicWorkspace > :global(.space-y-5) > div:first-child::-webkit-scrollbar {
-  display: none;
-}
-
+.clinicWorkspace > :global(.space-y-5) > div:first-child::-webkit-scrollbar { display: none; }
 .clinicWorkspace > :global(.space-y-5) > div:first-child button {
+  flex: 0 0 auto;
+  min-height: 44px;
+  padding-inline: 16px;
+  scroll-snap-align: start;
   transition: transform 160ms ease, background 160ms ease, color 160ms ease, box-shadow 160ms ease;
 }
-
-.clinicWorkspace > :global(.space-y-5) > div:first-child button:active {
-  transform: scale(0.97);
+.clinicWorkspace > :global(.space-y-5) > div:first-child button:active { transform: scale(0.97); }
+.clinicWorkspace :global(.admin-table-region) {
+  max-width: 100%;
+  overflow: visible !important;
 }
-
-@media (max-width: 767px) {
-  .clinicWorkspace > :global(.space-y-5) > div:first-child {
-    display: flex;
-    flex-wrap: nowrap;
-    gap: 0.5rem;
-    margin-inline: -0.25rem;
-    overflow-x: auto;
-    padding: 0.125rem 0.25rem 0.45rem;
-    scroll-snap-type: x proximity;
-  }
-
-  .clinicWorkspace > :global(.space-y-5) > div:first-child button {
-    min-height: 40px;
-    flex: 0 0 auto;
-    scroll-snap-align: start;
-    padding-inline: 0.875rem;
-  }
-
+.clinicWorkspace :global(.admin-table-region table) {
+  display: block;
+  width: 100%;
+  min-width: 0 !important;
+}
+.clinicWorkspace :global(.admin-table-region thead) { display: none; }
+.clinicWorkspace :global(.admin-table-region tbody) {
+  display: grid;
+  gap: 12px;
+}
+.clinicWorkspace :global(.admin-table-region tr) {
+  display: grid;
+  min-width: 0;
+  overflow: hidden;
+  border: 1px solid var(--admin-border) !important;
+  border-radius: 16px;
+  background: var(--admin-inset);
+  padding: 12px;
+  box-shadow: 0 1px 2px rgb(15 23 42 / 0.04);
+}
+.clinicWorkspace :global(.admin-table-region td) {
+  display: grid;
+  grid-template-columns: minmax(96px, 0.4fr) minmax(0, 1fr);
+  gap: 12px;
+  align-items: start;
+  min-width: 0;
+  padding: 8px 0 !important;
+  text-align: left !important;
+  overflow-wrap: anywhere;
+}
+.clinicWorkspace :global(.admin-table-region td + td) { border-top: 1px solid var(--admin-border); }
+.clinicWorkspace :global(.admin-table-region td::before) {
+  color: var(--admin-text-soft);
+  font-size: 14px;
+  font-weight: 700;
+  line-height: 20px;
+}
+.clinicWorkspace :global(table[class*="min-w-[720px]"] td:nth-child(1)::before) { content: "Patient"; }
+.clinicWorkspace :global(table[class*="min-w-[720px]"] td:nth-child(2)::before) { content: "Vaccine"; }
+.clinicWorkspace :global(table[class*="min-w-[720px]"] td:nth-child(3)::before) { content: "Screening"; }
+.clinicWorkspace :global(table[class*="min-w-[720px]"] td:nth-child(4)::before) { content: "When"; }
+.clinicWorkspace :global(table[class*="min-w-[720px]"] td:nth-child(5)::before) { content: "Status"; }
+.clinicWorkspace :global(table[class*="min-w-[720px]"] td:nth-child(6)::before) { content: "Actions"; }
+.clinicWorkspace :global(table[class*="min-w-[800px]"] td:nth-child(1)::before) { content: "Certificate"; }
+.clinicWorkspace :global(table[class*="min-w-[800px]"] td:nth-child(2)::before) { content: "Patient"; }
+.clinicWorkspace :global(table[class*="min-w-[800px]"] td:nth-child(3)::before) { content: "Vaccine"; }
+.clinicWorkspace :global(table[class*="min-w-[800px]"] td:nth-child(4)::before) { content: "Lot / site"; }
+.clinicWorkspace :global(table[class*="min-w-[800px]"] td:nth-child(5)::before) { content: "When"; }
+.clinicWorkspace :global(table[class*="min-w-[800px]"] td:nth-child(6)::before) { content: "Observation"; }
+.clinicWorkspace :global(table[class*="min-w-[680px]"] td:nth-child(1)::before) { content: "Patient"; }
+.clinicWorkspace :global(table[class*="min-w-[680px]"] td:nth-child(2)::before) { content: "Topic"; }
+.clinicWorkspace :global(table[class*="min-w-[680px]"] td:nth-child(3)::before) { content: "When"; }
+.clinicWorkspace :global(table[class*="min-w-[680px]"] td:nth-child(4)::before) { content: "Status"; }
+.clinicWorkspace :global(table[class*="min-w-[680px]"] td:nth-child(5)::before) { content: "Complete"; }
+.clinicWorkspace :global(.admin-table-region td > form),
+.clinicWorkspace :global(.admin-table-region td > div) {
+  min-width: 0;
+  max-width: 100%;
+}
+.clinicWorkspace :global(.admin-table-region td:last-child .flex) {
+  justify-content: flex-start;
+  flex-wrap: wrap;
+}
+.clinicWorkspace :global(form.grid) { grid-template-columns: minmax(0, 1fr) !important; }
+.clinicWorkspace :global(form.grid > *) {
+  grid-column: 1 / -1 !important;
+  min-width: 0;
+}
+.clinicWorkspace :global(.btn-primary) {
+  width: 100%;
+  min-height: 44px;
+  align-items: center;
+  justify-content: center;
+}
+.clinicWorkspace :global(.grid.grid-cols-2) { grid-template-columns: minmax(0, 1fr) !important; }
+@media (min-width: 640px) {
   .clinicWorkspace :global(.admin-card) {
-    padding: 1rem !important;
-    border-radius: 1rem;
+    padding: 24px !important;
+    border-radius: 16px;
   }
-
-  .clinicWorkspace :global(.admin-table-region) {
-    overflow: visible !important;
-  }
-
-  .clinicWorkspace :global(.admin-table-region table) {
-    display: block;
-    width: 100%;
-    min-width: 0 !important;
-  }
-
-  .clinicWorkspace :global(.admin-table-region thead) {
-    display: none;
-  }
-
-  .clinicWorkspace :global(.admin-table-region tbody) {
-    display: grid;
-    gap: 0.75rem;
-  }
-
-  .clinicWorkspace :global(.admin-table-region tr) {
-    display: grid;
-    min-width: 0;
-    overflow: hidden;
-    border: 1px solid var(--admin-border) !important;
-    border-radius: 0.95rem;
-    background: var(--admin-inset);
-    padding: 0.7rem 0.8rem;
-    box-shadow: 0 1px 2px rgb(15 23 42 / 0.04);
-  }
-
-  .clinicWorkspace :global(.admin-table-region td) {
-    display: grid;
-    grid-template-columns: minmax(5.8rem, 0.42fr) minmax(0, 1fr);
-    gap: 0.75rem;
-    align-items: start;
-    min-width: 0;
-    padding: 0.45rem 0 !important;
-    text-align: left !important;
-    overflow-wrap: anywhere;
-  }
-
-  .clinicWorkspace :global(.admin-table-region td + td) {
-    border-top: 1px solid var(--admin-border);
-  }
-
-  .clinicWorkspace :global(.admin-table-region td::before) {
-    color: var(--admin-text-soft);
-    font-size: 0.68rem;
-    font-weight: 700;
-    letter-spacing: 0.04em;
-    line-height: 1.25rem;
-    text-transform: uppercase;
-  }
-
-  .clinicWorkspace :global(table[class*="min-w-[720px]"] td:nth-child(1)::before) { content: "Patient"; }
-  .clinicWorkspace :global(table[class*="min-w-[720px]"] td:nth-child(2)::before) { content: "Vaccine"; }
-  .clinicWorkspace :global(table[class*="min-w-[720px]"] td:nth-child(3)::before) { content: "Screening"; }
-  .clinicWorkspace :global(table[class*="min-w-[720px]"] td:nth-child(4)::before) { content: "When"; }
-  .clinicWorkspace :global(table[class*="min-w-[720px]"] td:nth-child(5)::before) { content: "Status"; }
-  .clinicWorkspace :global(table[class*="min-w-[720px]"] td:nth-child(6)::before) { content: "Actions"; }
-
-  .clinicWorkspace :global(table[class*="min-w-[800px]"] td:nth-child(1)::before) { content: "Certificate"; }
-  .clinicWorkspace :global(table[class*="min-w-[800px]"] td:nth-child(2)::before) { content: "Patient"; }
-  .clinicWorkspace :global(table[class*="min-w-[800px]"] td:nth-child(3)::before) { content: "Vaccine"; }
-  .clinicWorkspace :global(table[class*="min-w-[800px]"] td:nth-child(4)::before) { content: "Lot / site"; }
-  .clinicWorkspace :global(table[class*="min-w-[800px]"] td:nth-child(5)::before) { content: "When"; }
-  .clinicWorkspace :global(table[class*="min-w-[800px]"] td:nth-child(6)::before) { content: "Observation"; }
-
-  .clinicWorkspace :global(table[class*="min-w-[680px]"] td:nth-child(1)::before) { content: "Patient"; }
-  .clinicWorkspace :global(table[class*="min-w-[680px]"] td:nth-child(2)::before) { content: "Topic"; }
-  .clinicWorkspace :global(table[class*="min-w-[680px]"] td:nth-child(3)::before) { content: "When"; }
-  .clinicWorkspace :global(table[class*="min-w-[680px]"] td:nth-child(4)::before) { content: "Status"; }
-  .clinicWorkspace :global(table[class*="min-w-[680px]"] td:nth-child(5)::before) { content: "Complete"; }
-
-  .clinicWorkspace :global(.admin-table-region td > form),
-  .clinicWorkspace :global(.admin-table-region td > div) {
-    min-width: 0;
-    max-width: 100%;
-  }
-
-  .clinicWorkspace :global(.admin-table-region td:last-child .flex) {
-    justify-content: flex-start;
+  .clinicWorkspace > :global(.space-y-5) > div:first-child {
     flex-wrap: wrap;
+    margin-inline: 0;
+    overflow: visible;
+    padding: 0;
   }
-
-  .clinicWorkspace :global(.admin-table-region td button) {
-    min-height: 36px;
-    border-radius: 0.65rem;
-    padding-inline: 0.65rem;
+  .clinicWorkspace :global(.admin-table-region) {
+    overflow-x: auto !important;
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior-x: contain;
+    scrollbar-width: thin;
   }
-
-  .clinicWorkspace :global(form.grid) {
-    grid-template-columns: minmax(0, 1fr) !important;
-  }
-
-  .clinicWorkspace :global(form.grid > *) {
-    grid-column: 1 / -1 !important;
-    min-width: 0;
-  }
-
-  .clinicWorkspace :global(.btn-primary) {
+  .clinicWorkspace :global(.admin-table-region table) {
+    display: table;
     width: 100%;
-    min-height: 46px;
-    align-items: center;
   }
-}
-
-@media (max-width: 420px) {
-  .clinicWorkspace :global(.grid.grid-cols-2) {
-    grid-template-columns: minmax(0, 1fr) !important;
+  .clinicWorkspace :global(table[class*="min-w-[720px]"]) { min-width: 720px !important; }
+  .clinicWorkspace :global(table[class*="min-w-[800px]"]) { min-width: 800px !important; }
+  .clinicWorkspace :global(table[class*="min-w-[680px]"]) { min-width: 680px !important; }
+  .clinicWorkspace :global(.admin-table-region thead) { display: table-header-group; }
+  .clinicWorkspace :global(.admin-table-region tbody) { display: table-row-group; }
+  .clinicWorkspace :global(.admin-table-region tr) {
+    display: table-row;
+    border-radius: 0;
+    background: transparent;
+    padding: 0;
+    box-shadow: none;
   }
-
   .clinicWorkspace :global(.admin-table-region td) {
-    grid-template-columns: minmax(4.9rem, 0.36fr) minmax(0, 1fr);
-    gap: 0.55rem;
+    display: table-cell;
+    padding: 12px 8px !important;
+    border-top: 0;
+    text-align: left !important;
   }
+  .clinicWorkspace :global(.admin-table-region td::before) { content: none !important; }
+  .clinicWorkspace :global(form.grid) { grid-template-columns: repeat(2, minmax(0, 1fr)) !important; }
+  .clinicWorkspace :global(form.grid > *) { grid-column: auto; }
+  .clinicWorkspace :global(form.grid > .sm\:col-span-2) { grid-column: span 2 / span 2 !important; }
+  .clinicWorkspace :global(.btn-primary) { width: auto; }
+  .clinicWorkspace :global(.grid.grid-cols-2) { grid-template-columns: repeat(2, minmax(0, 1fr)) !important; }
 }
-
 @media (prefers-reduced-motion: reduce) {
   .clinicWorkspace *,
   .clinicWorkspace *::before,
