@@ -423,13 +423,14 @@ export function ServiceManager({ initial }: { initial: ServiceRow[] }) {
             </div>
           </div>
           <div>
-            <Image unoptimizedUploadField
+            <ImageUploadField
               key={imageFieldKey}
               name="imageUrl"
               label="Image"
               folder="services"
               defaultValue={imageUrl}
-              hint="Upload to R2 or keep a relative path like /images/services/…"
+              onChange={setImageUrl}
+              hint="Upload to R2, paste a public image URL, or keep a relative path like /images/services/…"
             />
           </div>
           <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
