@@ -572,7 +572,7 @@ function MedicineCard({
     <article className="care-glass group flex flex-col overflow-hidden rounded-[22px] border !border-[var(--medicine-ui-border)] bg-[var(--card-elev)] transition duration-200 hover:-translate-y-0.5 hover:!border-[var(--brand)] shadow-sm">
       {/* Product Image Frame */}
       <Link href={item.href} className="relative block aspect-[4/3] w-full overflow-hidden border-b border-[var(--medicine-ui-border)] bg-[var(--card)]">
-        <Image
+        <Image unoptimized
           src={master.imageUrl || "/images/care/medicine-still-life.png"}
           alt={master.imageUrl ? master.name : ""}
           fill
