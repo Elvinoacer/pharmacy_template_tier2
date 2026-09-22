@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
-import { getSessionUser, isStaff } from "@/app/lib/auth";
+import { AuthError, getSessionUser, isStaff } from "@/app/lib/auth";
+import { requireMedicationReadContext } from "@/app/lib/services/medication-access";
 import { prisma } from "@/app/lib/db";
 import { withPharmacy } from "@/app/lib/tenant-context";
 
@@ -19,20 +20,19 @@ export async function GET(req: Request) {
     );
   }
 
-  const pharmacyId = user.activePharmacyId;
-  const activeMembership = pharmacyId
-    ? user.memberships.some(
-        (membership) => membership.pharmacyId === pharmacyId && membership.status === "active",
-      )
-    : false;
-
-  if (!pharmacyId || !activeMembership) {
+  let pharmacyId: string;
+  try {
+    pharmacyId = await requireMedicationReadContext(user);
+  } catch (error) {
+    const status = error instanceof AuthError ? error.status : 403;
     return NextResponse.json(
       {
-        error: "pharmacy_required",
-        message: "Choose an active pharmacy workspace before searching inventory status.",
+        error: "forbidden",
+        message: status === 409
+          ? "Choose an active pharmacy workspace before searching inventory status."
+          : "You do not have permission to search this pharmacy inventory.",
       },
-      { status: 409 },
+      { status },
     );
   }
 
