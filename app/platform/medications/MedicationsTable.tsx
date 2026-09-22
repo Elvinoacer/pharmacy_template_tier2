@@ -2,6 +2,7 @@
 
 import { useState, useTransition } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { useRouter, usePathname, useSearchParams } from "next/navigation";
 import {
   AlertCircle,
@@ -33,6 +34,7 @@ type MedicationItem = {
   packSize: string | null;
   category: string;
   barcode: string | null;
+  imageUrl: string | null;
   status: string;
   controlledDrug: boolean;
   controlledDrugSchedule: string | null;
@@ -419,22 +421,37 @@ export function MedicationsTable({
                         />
                       </td>
                       <td className="px-3 py-3">
-                        <Link
-                          href={`/platform/medications/${item.id}`}
-                          className="font-semibold text-[var(--admin-text)] hover:text-[var(--admin-accent)] hover:underline"
-                        >
-                          {item.name}
-                        </Link>
-                        {item.brandName && (
-                          <span className="block text-[11px] text-[var(--admin-text-soft)]">
-                            Brand: {item.brandName}
+                        <div className="flex min-w-[230px] items-start gap-3">
+                          <Link
+                            href={`/platform/medications/${item.id}`}
+                            className="relative h-12 w-12 shrink-0 overflow-hidden rounded-xl border border-[var(--admin-border)] bg-[var(--admin-panel)]"
+                            aria-label={`Open ${item.name}`}
+                          >
+                            {item.imageUrl ? (
+                              <Image unoptimized src={item.imageUrl} alt={item.name} fill sizes="48px" className="object-contain p-1" />
+                            ) : (
+                              <span className="flex h-full w-full items-center justify-center"><Pill className="h-4 w-4 text-[var(--admin-text-soft)]" /></span>
+                            )}
+                          </Link>
+                          <span className="min-w-0">
+                            <Link
+                              href={`/platform/medications/${item.id}`}
+                              className="font-semibold text-[var(--admin-text)] hover:text-[var(--admin-accent)] hover:underline"
+                            >
+                              {item.name}
+                            </Link>
+                            {item.brandName && (
+                              <span className="block text-[11px] text-[var(--admin-text-soft)]">
+                                Brand: {item.brandName}
+                              </span>
+                            )}
+                            {item.manufacturer && (
+                              <span className="block text-[10px] text-[var(--admin-text-soft)]">
+                                Mfg: {item.manufacturer.name}
+                              </span>
+                            )}
                           </span>
-                        )}
-                        {item.manufacturer && (
-                          <span className="block text-[10px] text-[var(--admin-text-soft)]">
-                            Mfg: {item.manufacturer.name}
-                          </span>
-                        )}
+                        </div>
                       </td>
                       <td className="px-3 py-3">
                         <span className="font-medium text-[var(--admin-text)]">{item.genericName}</span>
