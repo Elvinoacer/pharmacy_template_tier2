@@ -624,7 +624,7 @@ async function createIntasendBillingCheckoutInPharmacy(
     };
   }
 
-  let payment;
+  let payment: { id: string };
   try {
     payment = await prismaUnscoped.billingPayment.create({
       data: {
