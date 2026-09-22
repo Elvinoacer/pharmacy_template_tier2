@@ -6,6 +6,7 @@ import { sendDelivery } from "@/app/lib/services/delivery";
 import { dispatchPushToUser } from "@/app/lib/services/push";
 import { withPharmacy, withPlatformBypass } from "@/app/lib/tenant-context";
 import { isCronAuthorized } from "@/app/lib/cron-auth";
+import { hasPremiumPlan } from "@/app/lib/platform/entitlements";
 
 export const runtime = "nodejs";
 
@@ -242,6 +243,16 @@ async function processOrderBonuses(pharmacyId: string): Promise<number> {
 }
 
 async function processTenant(pharmacyId: string, pharmacyName: string) {
+  if (!(await hasPremiumPlan(pharmacyId))) {
+    return {
+      pharmacyId,
+      birthdays: 0,
+      refills: 0,
+      orders: 0,
+      skipped: "premium_required" as const,
+    };
+  }
+
   return withPharmacy(pharmacyId, async () => {
     const [birthdays, refills, orders] = await Promise.all([
       processBirthdays(pharmacyId, pharmacyName),
@@ -278,6 +289,7 @@ async function runLoyaltyCron(request: NextRequest) {
     birthdays: number;
     refills: number;
     orders: number;
+    skipped?: "premium_required";
     error?: string;
   }> = [];
 
@@ -302,8 +314,9 @@ async function runLoyaltyCron(request: NextRequest) {
       refills: acc.refills + row.refills,
       orders: acc.orders + row.orders,
       failedTenants: acc.failedTenants + (row.error ? 1 : 0),
+      skippedFreeTenants: acc.skippedFreeTenants + (row.skipped === "premium_required" ? 1 : 0),
     }),
-    { birthdays: 0, refills: 0, orders: 0, failedTenants: 0 },
+    { birthdays: 0, refills: 0, orders: 0, failedTenants: 0, skippedFreeTenants: 0 },
   );
 
   return Response.json({ ...totals, tenants: results.length, results });

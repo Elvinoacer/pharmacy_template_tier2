@@ -25,6 +25,7 @@ import {
   Truck,
 } from "lucide-react";
 import Link from "next/link";
+import { hasPremiumPlan } from "@/app/lib/platform/entitlements";
 
 export const metadata = { title: "Pharmacy workspace" };
 
@@ -36,6 +37,10 @@ export default async function AdminDashboardPage() {
     const pharmacy = await prisma.pharmacy.findUnique({ where: { id: user.activePharmacyId }, select: { setupCompletedAt: true } });
     if (pharmacy && !pharmacy.setupCompletedAt) redirect("/admin/setup");
   }
+
+  const premiumActive = user.activePharmacyId
+    ? await hasPremiumPlan(user.activePharmacyId)
+    : false;
 
   const [a, inv, discoverableMedicines, publishedServices] = await Promise.all([
     getAdminAnalytics(),
@@ -98,9 +103,15 @@ export default async function AdminDashboardPage() {
             <Link href="/admin/inventory#expiry" className="block h-full">
               <AdminCard label="Expiring within 30 days" value={inv.counts.expiringLots} hint={`${inv.counts.expiredLots} expired lots`} icon={Clock} accent={inv.counts.expiredLots > 0 || inv.counts.expiringLots > 0 ? "danger" : "neutral"} />
             </Link>
-            <Link href="/admin/inventory#reorder" className="block h-full">
-              <AdminCard label="Reorder now" value={inv.counts.reorder} hint="Based on sales and stock levels" icon={Truck} accent={inv.counts.reorder > 0 ? "accent" : "neutral"} />
-            </Link>
+            {premiumActive ? (
+              <Link href="/admin/inventory#reorder" className="block h-full">
+                <AdminCard label="Reorder now" value={inv.counts.reorder} hint="Based on sales and stock levels" icon={Truck} accent={inv.counts.reorder > 0 ? "accent" : "neutral"} />
+              </Link>
+            ) : (
+              <Link href="/admin/billing" className="block h-full">
+                <AdminCard label="Inventory intelligence" value="Premium" hint="Velocity-based reorder guidance" icon={Truck} accent="accent" />
+              </Link>
+            )}
           </div>
         </section>
 

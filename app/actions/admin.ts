@@ -12,8 +12,13 @@ import {
 } from "@/app/lib/auth";
 import { validateCsrfToken } from "@/app/lib/csrf";
 import { prisma } from "@/app/lib/db";
-import { listingLimitMessage } from "@/app/lib/platform/plan-policy";
-import { assertPublicMedicineSlot } from "@/app/lib/platform/plan-enforcement";
+import { growthLimitMessage, listingLimitMessage } from "@/app/lib/platform/plan-policy";
+import {
+  assertCampaignConfiguration,
+  assertMonthlyCampaignLaunchSlot,
+  assertPremiumGrowthFeature,
+  assertPublicMedicineSlot,
+} from "@/app/lib/platform/plan-enforcement";
 import { getTenant } from "@/app/lib/tenant";
 import { requireMedicationWriteContext } from "@/app/lib/services/medication-access";
 import { withPharmacy } from "@/app/lib/tenant-context";
@@ -196,6 +201,9 @@ export async function adminCreateCampaignAction(
 ): Promise<ActionState> {
   try {
     const user = await requireManager(await getSessionUser());
+    const pharmacyId = await activePharmacyId(user);
+    if (!pharmacyId) return { error: "No active pharmacy." };
+
     const name = String(formData.get("name") || "").trim();
     const body = String(formData.get("body") || "").trim();
     if (!name || !body) return { error: "Name and body required." };
@@ -204,6 +212,11 @@ export async function adminCreateCampaignAction(
     const scheduledFor = formData.get("scheduledFor")
       ? parseLocalDatetimeInput(String(formData.get("scheduledFor")))
       : null;
+    const channel = String(formData.get("channel") || "email") as "email" | "sms" | "whatsapp" | "multi";
+    const segmentId = String(formData.get("segmentId") || "") || null;
+
+    await assertCampaignConfiguration(pharmacyId, { scheduledFor, channel, segmentId });
+    if (sendNow) await assertMonthlyCampaignLaunchSlot(pharmacyId);
 
     const status = sendNow ? "sending" : scheduledFor ? "scheduled" : "draft";
 
@@ -211,8 +224,8 @@ export async function adminCreateCampaignAction(
       data: {
         name,
         description: String(formData.get("description") || "") || null,
-        channel: (String(formData.get("channel") || "email") as "email" | "sms" | "whatsapp" | "multi"),
-        segmentId: String(formData.get("segmentId") || "") || null,
+        channel,
+        segmentId,
         subject: String(formData.get("subject") || "") || null,
         body,
         status,
@@ -222,7 +235,6 @@ export async function adminCreateCampaignAction(
     });
     await writeAuditLog(user.id, "campaign_created", "campaign", campaign.id);
 
-    // If "send immediately", launch right away.
     if (sendNow) {
       try {
         await launchCampaign(campaign.id, user.id);
@@ -235,13 +247,35 @@ export async function adminCreateCampaignAction(
     return { success: sendNow ? "Campaign launched." : scheduledFor ? "Campaign scheduled — cron will auto-launch at the right time." : "Campaign saved as draft." };
   } catch (e) {
     if (e instanceof AuthError) return { error: e.message };
+    const planMessage = growthLimitMessage(e);
+    if (planMessage) return { error: planMessage };
     return { error: "Failed to create campaign." };
   }
 }
 
 export async function adminLaunchCampaignAction(formData: FormData) {
   const user = await requireManager(await getSessionUser());
+  const pharmacyId = await activePharmacyId(user);
+  if (!pharmacyId) throw new Error("No active pharmacy.");
+
   const id = String(formData.get("id") || "");
+  const campaign = await prisma.campaign.findUnique({
+    where: { id },
+    select: { channel: true, segmentId: true, scheduledFor: true },
+  });
+  if (!campaign) throw new Error("Campaign not found.");
+
+  try {
+    await assertCampaignConfiguration(pharmacyId, {
+      channel: campaign.channel,
+      segmentId: campaign.segmentId,
+      scheduledFor: campaign.scheduledFor,
+    });
+    await assertMonthlyCampaignLaunchSlot(pharmacyId);
+  } catch (error) {
+    throw new Error(growthLimitMessage(error) || "This campaign is not available on the current plan.");
+  }
+
   await launchCampaign(id, user.id);
   await writeAuditLog(user.id, "campaign_launched", "campaign", id);
   revalidatePath("/admin/campaigns");
@@ -253,6 +287,10 @@ export async function adminCreateSegmentAction(
 ): Promise<ActionState> {
   try {
     const user = await requireManager(await getSessionUser());
+    const pharmacyId = await activePharmacyId(user);
+    if (!pharmacyId) return { error: "No active pharmacy." };
+    await assertPremiumGrowthFeature(pharmacyId, "custom_segments");
+
     const name = String(formData.get("name") || "").trim();
     if (!name) return { error: "Name required." };
     const segment = await prisma.segment.create({
@@ -268,6 +306,8 @@ export async function adminCreateSegmentAction(
     return { success: "Segment created." };
   } catch (e) {
     if (e instanceof AuthError) return { error: e.message };
+    const planMessage = growthLimitMessage(e);
+    if (planMessage) return { error: planMessage };
     return { error: "Could not create segment (name may already exist)." };
   }
 }
@@ -381,6 +421,14 @@ export async function adminCreateTemplateAction(
   formData: FormData,
 ): Promise<ActionState> {
   const user = await staff();
+  const pharmacyId = await activePharmacyId(user);
+  if (!pharmacyId) return { error: "No active pharmacy." };
+  try {
+    await assertPremiumGrowthFeature(pharmacyId, "custom_message_templates");
+  } catch (error) {
+    return { error: growthLimitMessage(error) || "Premium is required to create or edit custom templates." };
+  }
+
   const name = String(formData.get("name") || "").trim();
   const body = String(formData.get("body") || "").trim();
   if (!name || !body) return { error: "Name and body required." };
@@ -493,6 +541,14 @@ export async function adminCreateCouponAction(
   formData: FormData,
 ): Promise<ActionState> {
   const user = await requireManager(await getSessionUser());
+  const pharmacyId = await activePharmacyId(user);
+  if (!pharmacyId) return { error: "No active pharmacy." };
+  try {
+    await assertPremiumGrowthFeature(pharmacyId, "loyalty_automation");
+  } catch (error) {
+    return { error: growthLimitMessage(error) || "Premium is required for promotional loyalty campaigns." };
+  }
+
   const code = String(formData.get("code") || "").trim().toUpperCase();
   const discountType = String(formData.get("discountType") || "percent") as "percent" | "fixed" | "points";
   const discountValue = Number(formData.get("discountValue") || 0);

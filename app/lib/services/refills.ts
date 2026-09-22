@@ -11,6 +11,7 @@ import { screenClinicalSafety } from "@/app/lib/services/clinical-safety";
 import { parseDosageFormula, calculatePrescriptionMetrics } from "@/app/lib/services/medication-schedule";
 import { formatDate, formatDateTime, toLocalDateInputValue } from "@/app/lib/time";
 import { createPrescriptionFill } from "@/app/lib/services/commerce/prescription-fills";
+import { hasPremiumPlan } from "@/app/lib/platform/entitlements";
 
 export type RefillScheduleStatus =
   | "healthy"
@@ -982,8 +983,15 @@ export async function generateUpcomingRefillReminders(): Promise<number> {
   });
 
   let createdCount = 0;
+  const premiumByPharmacy = new Map<string, boolean>();
 
   for (const rx of prescriptions) {
+    let premium = premiumByPharmacy.get(rx.pharmacyId);
+    if (premium === undefined) {
+      premium = await hasPremiumPlan(rx.pharmacyId);
+      premiumByPharmacy.set(rx.pharmacyId, premium);
+    }
+    if (!premium) continue;
     // Check if an open refill request already exists
     const openRequest = await prisma.refillRequest.findFirst({
       where: {

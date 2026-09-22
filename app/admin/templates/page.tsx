@@ -4,9 +4,11 @@ import { prisma } from "@/app/lib/db";
 import { adminCreateTemplateAction } from "@/app/actions/admin";
 import { AdminPanel, AdminEmptyState } from "@/app/components/admin/AdminUI";
 import { AdminShell } from "@/app/components/admin/AdminShell";
+import { PremiumFeatureNotice } from "@/app/components/admin/PremiumFeatureNotice";
 import TemplateForm from "@/app/components/admin/TemplateForm";
 import { FileText, Mail, MessageSquare, MessageCircle, Layout, FolderTree } from "lucide-react";
 import styles from "./templates.module.css";
+import { hasPremiumPlan } from "@/app/lib/platform/entitlements";
 
 export const metadata = { title: "Templates" };
 
@@ -22,6 +24,12 @@ export default async function AdminTemplatesPage() {
   const user = await getSessionUser();
   if (!user) redirect("/login");
 
+  const pharmacyId =
+    user.activePharmacyId ||
+    user.memberships.find((membership) => membership.status === "active")?.pharmacyId;
+  if (!pharmacyId) redirect("/admin/select");
+  const premiumActive = await hasPremiumPlan(pharmacyId);
+
   const templates = await prisma.messageTemplate.findMany({ orderBy: { createdAt: "desc" } });
 
   const byChannel = templates.reduce<Record<string, number>>((acc, t) => {
@@ -36,6 +44,16 @@ export default async function AdminTemplatesPage() {
       subtitle="Create reusable messages for email, SMS, WhatsApp, and the portal."
     >
       <div className={styles.page}>
+        {!premiumActive && (
+          <div className="mb-5">
+            <PremiumFeatureNotice
+              title="Standardise communication at scale"
+              description="Existing templates stay readable on Free. Premium lets the pharmacy create and maintain reusable templates for recurring email, SMS, WhatsApp and portal communication."
+              benefits={["Reusable templates", "Consistent staff messaging", "Faster outreach"]}
+            />
+          </div>
+        )}
+
         <div className="mb-5 grid grid-cols-2 gap-2.5 sm:mb-6 sm:grid-cols-5 sm:gap-3">
           <div className="admin-stat p-4">
             <div className="flex items-center justify-between gap-2">
@@ -60,21 +78,29 @@ export default async function AdminTemplatesPage() {
 
         <div className="grid min-w-0 gap-5 lg:grid-cols-[minmax(0,1.15fr)_minmax(320px,0.85fr)] lg:gap-6">
           <AdminPanel
-            title="Create / manage template"
-            description="Draft, edit, personalise, and save reusable communication copy."
+            title={premiumActive ? "Create / manage template" : "Custom template studio"}
+            description={premiumActive ? "Draft, edit, personalise, and save reusable communication copy." : "Preview the reusable communication layer available on Premium."}
             className={styles.editorPanel}
           >
-            <TemplateForm
-              action={adminCreateTemplateAction}
-              templates={templates.map((t) => ({
-                id: t.id,
-                name: t.name,
-                channel: t.channel,
-                subject: t.subject,
-                body: t.body,
-                category: t.category,
-              }))}
-            />
+            {premiumActive ? (
+              <TemplateForm
+                action={adminCreateTemplateAction}
+                templates={templates.map((t) => ({
+                  id: t.id,
+                  name: t.name,
+                  channel: t.channel,
+                  subject: t.subject,
+                  body: t.body,
+                  category: t.category,
+                }))}
+              />
+            ) : (
+              <PremiumFeatureNotice
+                compact
+                title="Write once, reuse across the team"
+                description="Premium unlocks custom reusable messages and prepares the communication layer for campaigns and automated follow-up."
+              />
+            )}
           </AdminPanel>
 
           <AdminPanel
