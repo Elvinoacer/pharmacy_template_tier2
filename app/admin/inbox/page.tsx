@@ -50,6 +50,7 @@ export default async function AdminInboxPage({
       title="Attention inbox"
       subtitle="A single operational queue for alerts, escalations, enquiries, refill activity, and stock events that may need action."
     >
+      <div className="mx-auto w-full max-w-[1280px]">
       <AdminPanel
         title="Needs attention"
         description={`${total} total notification${total === 1 ? "" : "s"} · showing ${notifications.length} on this page`}
@@ -63,6 +64,7 @@ export default async function AdminInboxPage({
           queryParams={queryParams}
         />
       </AdminPanel>
+      </div>
     </AdminShell>
   );
 }
