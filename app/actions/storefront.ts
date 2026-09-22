@@ -8,6 +8,8 @@ import { getTenant } from "@/app/lib/tenant";
 import { assertPharmacyWorkspaceOperable } from "@/app/lib/platform/tenant-access";
 import { upsertPharmacySettings } from "@/app/lib/services/pharmacy-settings";
 import { prisma } from "@/app/lib/db";
+import { assertPremiumGrowthFeature } from "@/app/lib/platform/plan-enforcement";
+import { growthLimitMessage } from "@/app/lib/platform/plan-policy";
 
 export type StorefrontActionState = {
   error?: string;
@@ -237,6 +239,62 @@ function parseOptionalNumber(raw: FormDataEntryValue | null): number | null | un
   return Number.isFinite(n) ? n : null;
 }
 
+export async function saveBasicStorefrontAction(
+  _prev: StorefrontActionState,
+  formData: FormData,
+): Promise<StorefrontActionState> {
+  try {
+    const user = await getSessionUser();
+    requireStaff(user);
+
+    const tenant = await getTenant();
+    const pharmacyId = tenant.pharmacyId;
+    if (!pharmacyId || tenant.bypass) {
+      return { error: "No pharmacy is selected. Choose a pharmacy workspace and try again." };
+    }
+    if (!user?.platformAdmin) {
+      try {
+        await assertPharmacyWorkspaceOperable(pharmacyId);
+      } catch {
+        return { error: "This pharmacy workspace is paused. Restore access before changing the storefront." };
+      }
+    }
+
+    const logoUrl = String(formData.get("logoUrl") || "").trim();
+    if (logoUrl && !/^(https?:\/\/)\S+$/i.test(logoUrl)) {
+      return { error: "Logo URL must start with http:// or https://." };
+    }
+
+    await upsertPharmacySettings({
+      tagline: String(formData.get("tagline") || "").trim() || null,
+      about: String(formData.get("about") || "").trim() || null,
+      logoUrl: logoUrl || null,
+      deliveryNotes: String(formData.get("deliveryNotes") || "").trim() || null,
+      deliveryFeeKes: parseOptionalNumber(formData.get("deliveryFeeKes")) ?? null,
+      deliveryRadiusKm: parseOptionalNumber(formData.get("deliveryRadiusKm")) ?? null,
+      updatedById: user!.id,
+    });
+
+    await writeAuditLog(user!.id, "storefront_basics_updated", "pharmacy_settings", pharmacyId);
+
+    revalidatePath("/");
+    revalidatePath("/storefront");
+    revalidatePath("/about");
+    revalidatePath("/delivery");
+    revalidatePath("/contact");
+    revalidatePath("/admin/settings/storefront");
+    revalidatePath("/admin/settings/location");
+
+    return { success: "Basic storefront details saved." };
+  } catch (e) {
+    if (e instanceof AuthError) {
+      return { error: publicErrorMessage(e, "You do not have permission to change storefront settings.") };
+    }
+    console.error("[saveBasicStorefront]", e);
+    return { error: "We couldn't save the storefront right now. Your existing settings are unchanged. Please try again." };
+  }
+}
+
 export async function saveStorefrontAction(
   _prev: StorefrontActionState,
   formData: FormData,
@@ -255,6 +313,16 @@ export async function saveStorefrontAction(
         await assertPharmacyWorkspaceOperable(pharmacyId);
       } catch {
         return { error: "This pharmacy workspace is paused. Restore access before changing the storefront." };
+      }
+
+      try {
+        await assertPremiumGrowthFeature(pharmacyId, "advanced_storefront");
+      } catch (error) {
+        return {
+          error:
+            growthLimitMessage(error) ||
+            "Advanced storefront customisation is available on Premium.",
+        };
       }
     }
 
