@@ -84,28 +84,28 @@ export default async function AdminNotificationsPage({
       title="Notification settings & history"
       subtitle="Review delivery activity, recover failed sends, and manage push preferences."
     >
-      <div className="space-y-4 sm:space-y-6">
-        <section className="grid grid-cols-2 gap-2.5 sm:grid-cols-3 sm:gap-3 lg:grid-cols-4">
-          <div className="admin-stat col-span-2 min-w-0 border-l-4 border-rose-500 p-3.5 sm:col-span-1 sm:p-4">
+      <div className="mx-auto w-full max-w-[1280px] space-y-4 sm:space-y-6">
+        <section className="grid grid-cols-2 gap-2 sm:grid-cols-3 sm:gap-3 lg:grid-cols-4">
+          <div className="admin-stat col-span-2 min-w-0 border-l-4 border-rose-500 p-4 sm:col-span-1 sm:p-4">
             <div className="flex items-center justify-between gap-2">
-              <p className="text-[10px] font-bold uppercase tracking-wide admin-soft sm:text-xs">Failed sends</p>
+              <p className="text-sm font-bold uppercase tracking-wide admin-soft sm:text-sm">Failed sends</p>
               <AlertTriangle className="h-3.5 w-3.5 text-rose-500" />
             </div>
             <p className="mt-1 text-2xl font-black text-rose-700 dark:text-rose-300">{failedCount}</p>
-            <p className="mt-1 text-[10px] admin-soft sm:text-xs">Retryable delivery failures</p>
+            <p className="mt-1 text-sm admin-soft sm:text-sm">Retryable delivery failures</p>
           </div>
 
-          <div className="admin-stat min-w-0 border-l-4 border-amber-500 p-3.5 sm:p-4">
+          <div className="admin-stat min-w-0 border-l-4 border-amber-500 p-4 sm:p-4">
             <div className="flex items-center justify-between gap-2">
-              <p className="truncate text-[10px] font-bold uppercase tracking-wide admin-soft sm:text-xs">Admin unread</p>
+              <p className="truncate text-sm font-bold uppercase tracking-wide admin-soft sm:text-sm">Admin unread</p>
               <BellRing className="h-3.5 w-3.5 text-amber-600 dark:text-amber-300" />
             </div>
             <p className="mt-1 text-2xl font-black text-amber-700 dark:text-amber-300">{adminInboxCount}</p>
           </div>
 
           {counts.map((c) => (
-            <div key={c.status} className="admin-stat min-w-0 p-3.5 transition-transform hover:-translate-y-0.5 sm:p-4">
-              <span className={`inline-flex max-w-full truncate rounded-full px-2 py-0.5 text-[10px] font-bold uppercase sm:text-xs ${statusColor(c.status)}`}>
+            <div key={c.status} className="admin-stat min-w-0 p-4 transition-transform hover:-translate-y-0.5 sm:p-4">
+              <span className={`inline-flex max-w-full truncate rounded-full px-2 py-0.5 text-sm font-bold uppercase sm:text-sm ${statusColor(c.status)}`}>
                 {c.status}
               </span>
               <p className="mt-1 text-xl font-black admin-text sm:text-2xl">{c._count}</p>

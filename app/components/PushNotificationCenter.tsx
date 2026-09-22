@@ -173,10 +173,10 @@ export function PushEnablePanel({ audience = "portal" }: { audience?: Audience }
 
   const isAdmin = audience === "admin";
   const card = isAdmin
-    ? "rounded-2xl border border-[var(--admin-border)] bg-[var(--admin-inset)] p-5"
+    ? "rounded-2xl border border-[var(--admin-border)] bg-[var(--admin-inset)] p-4 sm:p-6"
     : "rounded-2xl border border-[#e3ebe6] bg-white p-5";
   const titleCls = isAdmin ? "text-sm font-semibold admin-text" : "text-sm font-semibold text-[#0c1a14]";
-  const bodyCls = isAdmin ? "text-xs admin-muted" : "text-xs text-[#5a6b62]";
+  const bodyCls = isAdmin ? "text-sm admin-muted" : "text-xs text-[#5a6b62]";
   const iconWrap = isAdmin
     ? "flex h-11 w-11 items-center justify-center rounded-xl bg-gradient-to-br from-[var(--admin-accent)] to-[var(--admin-accent-2)] text-[var(--admin-btn-fg)]"
     : "flex h-11 w-11 items-center justify-center rounded-xl bg-gradient-to-br from-[#0d6e5a] to-[#084c3f] text-white";
@@ -254,7 +254,7 @@ export function PushEnablePanel({ audience = "portal" }: { audience?: Audience }
                 }}
                 className={
                   isAdmin
-                    ? "inline-flex items-center gap-1.5 rounded-full bg-[var(--admin-inset-2)] px-3.5 py-1.5 text-xs font-semibold admin-text transition hover:bg-[var(--admin-inset-2)] disabled:opacity-60"
+                    ? "inline-flex min-h-11 items-center gap-2 rounded-xl bg-[var(--admin-inset-2)] px-4 text-sm font-semibold admin-text transition hover:bg-[var(--admin-inset-2)] disabled:opacity-60"
                     : "inline-flex items-center gap-1.5 rounded-full border border-[#e3ebe6] bg-white px-3.5 py-1.5 text-xs font-semibold text-[#0c1a14] transition hover:bg-[#f4f7f4] disabled:opacity-60"
                 }
               >
@@ -277,7 +277,7 @@ export function PushEnablePanel({ audience = "portal" }: { audience?: Audience }
           </div>
 
           {testMsg && (
-            <p className={`mt-2 text-xs ${isAdmin ? "admin-accent-text" : "text-[#0d6e5a]"}`}>{testMsg}</p>
+            <p className={`mt-2 ${isAdmin ? "text-sm admin-accent-text" : "text-xs text-[#0d6e5a]"}`}>{testMsg}</p>
           )}
         </div>
       </div>
@@ -591,8 +591,8 @@ export function PushStatusPill({
       <span
         className={
           dark
-            ? "inline-flex items-center gap-1.5 rounded-full bg-[var(--admin-inset-2)] px-2.5 py-1 text-xs font-medium admin-muted"
-            : "inline-flex items-center gap-1.5 rounded-full bg-slate-100 px-2.5 py-1 text-xs font-medium text-slate-600"
+            ? "inline-flex items-center gap-1.5 rounded-full bg-[var(--admin-inset-2)] px-3 py-1 text-sm font-medium admin-muted"
+            : "inline-flex items-center gap-1.5 rounded-full bg-slate-100 px-3 py-1 text-sm font-medium text-slate-600"
         }
       >
         <BellOff className="h-3.5 w-3.5" /> Not supported
@@ -604,8 +604,8 @@ export function PushStatusPill({
       <span
         className={
           dark
-            ? "inline-flex items-center gap-1.5 rounded-full bg-emerald-500/15 px-2.5 py-1 text-xs font-medium text-emerald-300"
-            : "inline-flex items-center gap-1.5 rounded-full bg-emerald-100 px-2.5 py-1 text-xs font-medium text-emerald-700"
+            ? "inline-flex items-center gap-1.5 rounded-full bg-emerald-500/15 px-3 py-1 text-sm font-medium text-emerald-300"
+            : "inline-flex items-center gap-1.5 rounded-full bg-emerald-100 px-3 py-1 text-sm font-medium text-emerald-700"
         }
       >
         <Check className="h-3.5 w-3.5" /> Push enabled
@@ -617,8 +617,8 @@ export function PushStatusPill({
       <span
         className={
           dark
-            ? "inline-flex items-center gap-1.5 rounded-full bg-rose-500/15 px-2.5 py-1 text-xs font-medium text-rose-300"
-            : "inline-flex items-center gap-1.5 rounded-full bg-rose-100 px-2.5 py-1 text-xs font-medium text-rose-700"
+            ? "inline-flex items-center gap-1.5 rounded-full bg-rose-500/15 px-3 py-1 text-sm font-medium text-rose-300"
+            : "inline-flex items-center gap-1.5 rounded-full bg-rose-100 px-3 py-1 text-sm font-medium text-rose-700"
         }
       >
         <AlertCircle className="h-3.5 w-3.5" /> Blocked
@@ -630,8 +630,8 @@ export function PushStatusPill({
       <span
         className={
           dark
-            ? "inline-flex items-center gap-1.5 rounded-full bg-amber-500/15 px-2.5 py-1 text-xs font-medium text-amber-200"
-            : "inline-flex items-center gap-1.5 rounded-full bg-amber-100 px-2.5 py-1 text-xs font-medium text-amber-700"
+            ? "inline-flex items-center gap-1.5 rounded-full bg-amber-500/15 px-3 py-1 text-sm font-medium text-amber-200"
+            : "inline-flex items-center gap-1.5 rounded-full bg-amber-100 px-3 py-1 text-sm font-medium text-amber-700"
         }
       >
         <Bell className="h-3.5 w-3.5" /> Requesting…
@@ -642,8 +642,8 @@ export function PushStatusPill({
     <span
       className={
         dark
-          ? "inline-flex items-center gap-1.5 rounded-full bg-[var(--admin-inset-2)] px-2.5 py-1 text-xs font-medium admin-muted"
-          : "inline-flex items-center gap-1.5 rounded-full bg-slate-100 px-2.5 py-1 text-xs font-medium text-slate-600"
+          ? "inline-flex items-center gap-1.5 rounded-full bg-[var(--admin-inset-2)] px-3 py-1 text-sm font-medium admin-muted"
+          : "inline-flex items-center gap-1.5 rounded-full bg-slate-100 px-3 py-1 text-sm font-medium text-slate-600"
       }
     >
       <Bell className="h-3.5 w-3.5" /> Not yet enabled

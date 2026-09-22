@@ -30,32 +30,32 @@ export default async function AdminKnowledgePage() {
       title="Assistant knowledge"
       subtitle="Curate the approved information the assistant may use when answering customer questions."
     >
-      <div className="mx-auto w-full max-w-6xl space-y-5 sm:space-y-6">
+      <div className="mx-auto w-full max-w-6xl space-y-4 sm:space-y-6">
         <div className="grid grid-cols-2 gap-2 sm:grid-cols-4 sm:gap-3">
           <div className="admin-stat min-w-0 p-3 sm:p-4">
             <div className="flex items-center justify-between gap-2">
-              <p className="truncate text-[11px] font-bold uppercase tracking-wide admin-muted sm:text-xs">Articles</p>
+              <p className="truncate text-sm font-bold uppercase tracking-wide admin-muted">Articles</p>
               <FileText className="h-3.5 w-3.5 shrink-0 admin-accent-text" />
             </div>
             <p className="mt-1 text-xl font-black tabular-nums admin-text sm:text-2xl">{stats.total}</p>
           </div>
           <div className="admin-stat min-w-0 p-3 sm:p-4">
             <div className="flex items-center justify-between gap-2">
-              <p className="truncate text-[11px] font-bold uppercase tracking-wide admin-muted sm:text-xs">Approved</p>
+              <p className="truncate text-sm font-bold uppercase tracking-wide admin-muted">Approved</p>
               <CheckCircle2 className="h-3.5 w-3.5 shrink-0 text-emerald-700 dark:text-emerald-300" />
             </div>
             <p className="mt-1 text-xl font-black tabular-nums text-emerald-700 dark:text-emerald-300 sm:text-2xl">{stats.approved}</p>
           </div>
           <div className="admin-stat min-w-0 p-3 sm:p-4">
             <div className="flex items-center justify-between gap-2">
-              <p className="truncate text-[11px] font-bold uppercase tracking-wide admin-muted sm:text-xs">Drafts</p>
+              <p className="truncate text-sm font-bold uppercase tracking-wide admin-muted">Drafts</p>
               <FileText className="h-3.5 w-3.5 shrink-0 text-amber-700 dark:text-amber-300" />
             </div>
             <p className="mt-1 text-xl font-black tabular-nums text-amber-700 dark:text-amber-300 sm:text-2xl">{stats.drafts}</p>
           </div>
           <div className="admin-stat min-w-0 p-3 sm:p-4">
             <div className="flex items-center justify-between gap-2">
-              <p className="truncate text-[11px] font-bold uppercase tracking-wide admin-muted sm:text-xs">Categories</p>
+              <p className="truncate text-sm font-bold uppercase tracking-wide admin-muted">Categories</p>
               <FolderTree className="h-3.5 w-3.5 shrink-0 admin-accent-text" />
             </div>
             <p className="mt-1 text-xl font-black tabular-nums admin-text sm:text-2xl">{stats.categories}</p>
@@ -81,7 +81,7 @@ export default async function AdminKnowledgePage() {
           </AdminPanel>
 
           <aside className="space-y-3 lg:sticky lg:top-4">
-            <div className="rounded-2xl border border-[var(--admin-border)] bg-[var(--admin-card)] p-4 shadow-sm sm:p-5">
+            <div className="rounded-2xl border border-[var(--admin-border)] bg-[var(--admin-card)] p-4 shadow-sm sm:p-6">
               <div className="flex items-start gap-3">
                 <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[var(--admin-accent-soft)] admin-accent-text">
                   <Brain className="h-5 w-5" />
@@ -95,7 +95,7 @@ export default async function AdminKnowledgePage() {
               </div>
             </div>
 
-            <div className="rounded-2xl border border-emerald-500/20 bg-emerald-500/10 p-4 sm:p-5">
+            <div className="rounded-2xl border border-emerald-500/20 bg-emerald-500/10 p-4 sm:p-6">
               <div className="flex items-start gap-3">
                 <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-emerald-500/15 text-emerald-700 dark:text-emerald-300">
                   <ShieldCheck className="h-5 w-5" />

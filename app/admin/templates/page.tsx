@@ -43,9 +43,9 @@ export default async function AdminTemplatesPage() {
       title="Message templates"
       subtitle="Create reusable messages for email, SMS, WhatsApp, and the portal."
     >
-      <div className={styles.page}>
+      <div className={`${styles.page} mx-auto w-full max-w-[1280px]`}>
         {!premiumActive && (
-          <div className="mb-5">
+          <div className="mb-4 sm:mb-6">
             <PremiumFeatureNotice
               title="Standardise communication at scale"
               description="Existing templates stay readable on Free. Premium lets the pharmacy create and maintain reusable templates for recurring email, SMS, WhatsApp and portal communication."
@@ -54,10 +54,10 @@ export default async function AdminTemplatesPage() {
           </div>
         )}
 
-        <div className="mb-5 grid grid-cols-2 gap-2.5 sm:mb-6 sm:grid-cols-5 sm:gap-3">
+        <div className="mb-4 grid grid-cols-2 gap-2 sm:mb-6 sm:grid-cols-3 sm:gap-3 lg:grid-cols-5">
           <div className="admin-stat p-4">
             <div className="flex items-center justify-between gap-2">
-              <p className="text-xs font-semibold uppercase tracking-wide admin-muted">Total</p>
+              <p className="text-sm font-semibold uppercase tracking-wide admin-muted">Total</p>
               <FileText className="h-3.5 w-3.5 admin-accent-text" />
             </div>
             <p className="mt-1 text-2xl font-bold admin-text">{templates.length}</p>
@@ -67,7 +67,7 @@ export default async function AdminTemplatesPage() {
             return (
               <div key={ch} className="admin-stat p-4">
                 <div className="flex items-center justify-between gap-2">
-                  <p className="truncate text-xs font-semibold uppercase tracking-wide admin-muted">{ch}</p>
+                  <p className="truncate text-sm font-semibold uppercase tracking-wide admin-muted">{ch}</p>
                   <Icon className="h-3.5 w-3.5 shrink-0 admin-accent-text" />
                 </div>
                 <p className="mt-1 text-2xl font-bold admin-text">{byChannel[ch] || 0}</p>
@@ -76,7 +76,7 @@ export default async function AdminTemplatesPage() {
           })}
         </div>
 
-        <div className="grid min-w-0 gap-5 lg:grid-cols-[minmax(0,1.15fr)_minmax(320px,0.85fr)] lg:gap-6">
+        <div className="grid min-w-0 gap-4 sm:gap-6 lg:grid-cols-[minmax(0,1.15fr)_minmax(320px,0.85fr)]">
           <AdminPanel
             title={premiumActive ? "Create / manage template" : "Custom template studio"}
             description={premiumActive ? "Draft, edit, personalise, and save reusable communication copy." : "Preview the reusable communication layer available on Premium."}
@@ -121,7 +121,7 @@ export default async function AdminTemplatesPage() {
                   return (
                     <li
                       key={t.id}
-                      className="rounded-xl border border-[var(--admin-border)] bg-[var(--admin-inset)] p-3.5"
+                      className="rounded-xl border border-[var(--admin-border)] bg-[var(--admin-inset)] p-3 sm:p-4"
                     >
                       <div className="flex items-start gap-3">
                         <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-[var(--admin-accent-soft)] admin-accent-text">
@@ -129,18 +129,18 @@ export default async function AdminTemplatesPage() {
                         </span>
                         <div className="min-w-0 flex-1">
                           <p className="break-words font-semibold admin-text">{t.name}</p>
-                          <div className="mt-1 flex flex-wrap items-center gap-x-2 gap-y-1 text-xs admin-muted">
+                          <div className="mt-1 flex flex-wrap items-center gap-x-2 gap-y-1 text-sm admin-muted">
                             <span className="capitalize">{t.channel}</span>
                             <span aria-hidden="true">·</span>
                             <span className="inline-flex min-w-0 items-center gap-1">
                               <FolderTree className="h-3 w-3 shrink-0" />
-                              <span className="truncate">{t.category}</span>
+                              <span className="break-words">{t.category}</span>
                             </span>
                           </div>
                           {t.subject && (
                             <p className="mt-2 break-words text-sm font-medium admin-text">{t.subject}</p>
                           )}
-                          <p className="mt-1.5 line-clamp-3 break-words text-xs leading-5 admin-muted">{t.body}</p>
+                          <p className="mt-2 break-words text-sm leading-6 admin-muted">{t.body}</p>
                         </div>
                       </div>
                     </li>

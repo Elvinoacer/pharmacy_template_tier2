@@ -82,13 +82,13 @@ export default function KnowledgeForm({
       <form action={formAction} className="space-y-4">
         {state?.error && (
           <div className="admin-alert-error">
-            <AlertCircle className="mt-0.5 h-3.5 w-3.5 shrink-0" />
+            <AlertCircle className="mt-1 h-3.5 w-3.5 shrink-0" />
             <span>{state.error}</span>
           </div>
         )}
         {state?.success && (
           <div className="admin-alert-success">
-            <Check className="mt-0.5 h-3.5 w-3.5 shrink-0" />
+            <Check className="mt-1 h-3.5 w-3.5 shrink-0" />
             <span>{state.success}</span>
           </div>
         )}
@@ -98,13 +98,13 @@ export default function KnowledgeForm({
         {editingId && (
           <div className="flex items-center justify-between gap-3 rounded-xl border border-sky-500/20 bg-sky-500/10 px-3 py-2.5">
             <div className="min-w-0">
-              <p className="text-xs font-bold uppercase tracking-wide text-sky-700 dark:text-sky-300">Editing article</p>
-              <p className="truncate text-sm font-semibold admin-text">{editTitle || "Untitled article"}</p>
+              <p className="text-sm font-bold uppercase tracking-wide text-sky-700 dark:text-sky-300">Editing article</p>
+              <p className="break-words text-sm font-semibold admin-text">{editTitle || "Untitled article"}</p>
             </div>
             <button
               type="button"
               onClick={cancelEdit}
-              className="inline-flex min-h-10 shrink-0 items-center gap-1.5 rounded-lg px-3 text-xs font-semibold admin-muted transition hover:bg-[var(--admin-inset)] hover:text-[var(--admin-text)]"
+              className="inline-flex min-h-11 shrink-0 items-center gap-2 rounded-lg px-3 text-sm font-semibold admin-muted transition hover:bg-[var(--admin-inset)] hover:text-[var(--admin-text)]"
             >
               <X className="h-3.5 w-3.5" /> Cancel
             </button>
@@ -175,7 +175,7 @@ export default function KnowledgeForm({
               onChange={(e) => editingId && setEditContent(e.target.value)}
             />
           </div>
-          <p className="mt-1 text-xs leading-5 admin-soft">Only approved articles can support assistant answers. Markdown is supported.</p>
+          <p className="mt-1 text-sm leading-5 admin-soft">Only approved articles can support assistant answers. Markdown is supported.</p>
         </div>
 
         <label className="flex min-h-11 cursor-pointer items-center gap-3 rounded-xl border border-[var(--admin-border)] bg-[var(--admin-inset)] px-3 text-sm admin-muted transition hover:border-[var(--admin-border-2)] hover:text-[var(--admin-text)]">
@@ -196,7 +196,7 @@ export default function KnowledgeForm({
             <button
               type="button"
               onClick={cancelEdit}
-              className="inline-flex min-h-11 items-center justify-center gap-1.5 rounded-xl border border-[var(--admin-border)] bg-[var(--admin-inset)] px-4 text-sm font-semibold admin-muted transition hover:text-[var(--admin-text)] sm:w-auto"
+              className="inline-flex min-h-11 items-center justify-center gap-2 rounded-xl border border-[var(--admin-border)] bg-[var(--admin-inset)] px-4 text-sm font-semibold admin-muted transition hover:text-[var(--admin-text)] sm:w-auto"
             >
               <X className="h-4 w-4" /> Cancel edit
             </button>
@@ -219,30 +219,30 @@ export default function KnowledgeForm({
         <div className="border-t border-[var(--admin-border)] pt-5">
           <div className="mb-3 flex items-center justify-between gap-3">
             <div>
-              <p className="text-xs font-bold uppercase tracking-wide admin-soft">Published workspace</p>
-              <p className="mt-0.5 text-sm admin-muted">Tap an article to edit it, or use the actions on the right.</p>
+              <p className="text-sm font-bold uppercase tracking-wide admin-soft">Published workspace</p>
+              <p className="mt-1 text-sm admin-muted">Tap an article to edit it, or use the actions on the right.</p>
             </div>
-            <span className="rounded-full bg-[var(--admin-inset)] px-2.5 py-1 text-xs font-bold admin-muted">{articles.length}</span>
+            <span className="rounded-full bg-[var(--admin-inset)] px-3 py-1 text-sm font-bold admin-muted">{articles.length}</span>
           </div>
-          <ul className="space-y-2.5">
+          <ul className="space-y-3">
             {articles.map((a) => (
               <li
                 key={a.id}
-                className="rounded-xl border border-[var(--admin-border)] bg-[var(--admin-inset)] p-3 transition hover:border-[var(--admin-border-2)] sm:p-3.5"
+                className="rounded-xl border border-[var(--admin-border)] bg-[var(--admin-inset)] p-3 transition hover:border-[var(--admin-border-2)] sm:p-4"
               >
                 <div className="flex items-start gap-3">
-                  <button type="button" onClick={() => startEdit(a)} className="min-w-0 flex-1 text-left">
+                  <button type="button" onClick={() => startEdit(a)} className="min-h-11 min-w-0 flex-1 text-left">
                     <div className="flex flex-wrap items-center gap-2">
                       <p className="break-words font-semibold admin-text">{a.title}</p>
                       {a.isApproved ? (
-                        <span className="inline-flex items-center gap-0.5 rounded-full bg-emerald-500/15 px-2 py-0.5 text-[11px] font-semibold text-emerald-700 dark:text-emerald-300">
+                        <span className="inline-flex items-center gap-0.5 rounded-full bg-emerald-500/15 px-2 py-1 text-sm font-semibold text-emerald-700 dark:text-emerald-300">
                           <Check className="h-2.5 w-2.5" /> approved
                         </span>
                       ) : (
-                        <span className="rounded-full bg-amber-500/15 px-2 py-0.5 text-[11px] font-semibold text-amber-700 dark:text-amber-300">draft</span>
+                        <span className="rounded-full bg-amber-500/15 px-2 py-1 text-sm font-semibold text-amber-700 dark:text-amber-300">draft</span>
                       )}
                     </div>
-                    <p className="mt-1 text-xs admin-muted">
+                    <p className="mt-1 text-sm admin-muted">
                       <FolderTree className="mr-1 inline h-2.5 w-2.5" /> {a.category}
                       {a.priority > 0 && (
                         <span className="ml-2 inline-flex items-center gap-0.5">
@@ -257,7 +257,7 @@ export default function KnowledgeForm({
                     <button
                       type="button"
                       onClick={() => startEdit(a)}
-                      className="inline-flex h-10 w-10 items-center justify-center rounded-lg border border-transparent admin-soft transition hover:border-[var(--admin-border)] hover:bg-[var(--admin-card)] hover:text-[var(--admin-text)]"
+                      className="inline-flex h-11 w-11 items-center justify-center rounded-lg border border-transparent admin-soft transition hover:border-[var(--admin-border)] hover:bg-[var(--admin-card)] hover:text-[var(--admin-text)]"
                       title="Edit"
                       aria-label={`Edit ${a.title}`}
                     >
@@ -266,7 +266,7 @@ export default function KnowledgeForm({
                     <button
                       type="button"
                       onClick={() => deleteArticle(a.id, a.title)}
-                      className="inline-flex h-10 w-10 items-center justify-center rounded-lg border border-transparent admin-soft transition hover:border-rose-500/20 hover:bg-rose-500/10 hover:text-rose-600 dark:hover:text-rose-300"
+                      className="inline-flex h-11 w-11 items-center justify-center rounded-lg border border-transparent admin-soft transition hover:border-rose-500/20 hover:bg-rose-500/10 hover:text-rose-600 dark:hover:text-rose-300"
                       title="Delete"
                       aria-label={`Delete ${a.title}`}
                     >

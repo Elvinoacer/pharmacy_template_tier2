@@ -1,14 +1,16 @@
 .page {
   min-width: 0;
+  width: 100%;
 }
 
 .editorPanel,
 .libraryPanel {
   min-width: 0;
+  border-radius: 1rem;
 }
 
 .editorPanel :global(.input-admin) {
-  min-height: 46px;
+  min-height: 44px;
   border-color: var(--admin-border);
   background: var(--admin-input-bg);
   color: var(--admin-text);
@@ -34,6 +36,10 @@
   transition: transform 160ms ease, border-color 160ms ease, background 160ms ease, box-shadow 160ms ease, color 160ms ease;
 }
 
+.editorPanel :global(button) {
+  min-height: 44px;
+}
+
 .editorPanel :global(button:active) {
   transform: scale(0.98);
 }
@@ -43,70 +49,88 @@
   box-shadow: 0 8px 24px rgb(15 23 42 / 0.06);
 }
 
-@media (min-width: 1024px) {
-  .libraryPanel {
-    align-self: start;
-  }
+.page :global(.admin-stat) {
+  min-height: 96px;
+  padding: 12px !important;
 }
 
-@media (max-width: 639px) {
+.page :global(.admin-stat p.text-2xl) {
+  font-size: 1.375rem;
+  line-height: 1.75rem;
+}
+
+.editorPanel :global(form .grid) {
+  grid-template-columns: minmax(0, 1fr) !important;
+  gap: 12px;
+}
+
+.editorPanel :global(form > .flex.items-center.gap-2) {
+  align-items: stretch;
+  flex-direction: column;
+}
+
+.editorPanel :global(form > .flex.items-center.gap-2 > button) {
+  width: 100%;
+  min-height: 44px;
+  justify-content: center;
+}
+
+.editorPanel :global(ul li) {
+  gap: 12px;
+  padding: 12px;
+}
+
+.editorPanel :global(ul li > .flex.shrink-0) {
+  gap: 4px;
+}
+
+.editorPanel :global(ul li button[aria-label]) {
+  display: inline-flex;
+  min-height: 44px;
+  min-width: 44px;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--admin-border);
+  border-radius: 0.75rem;
+  background: var(--admin-inset-2);
+}
+
+.libraryPanel :global(li) {
+  padding: 12px !important;
+}
+
+.libraryPanel :global(li p) {
+  overflow-wrap: anywhere;
+}
+
+@media (min-width: 640px) {
   .page :global(.admin-stat) {
-    min-height: 94px;
-    padding: 0.85rem !important;
-  }
-
-  .page :global(.admin-stat p.text-2xl) {
-    font-size: 1.35rem;
-    line-height: 1.75rem;
-  }
-
-  .editorPanel,
-  .libraryPanel {
-    border-radius: 1rem;
+    min-height: 0;
+    padding: 16px !important;
   }
 
   .editorPanel :global(form .grid) {
-    grid-template-columns: minmax(0, 1fr) !important;
-    gap: 0.85rem;
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    gap: 16px;
   }
 
   .editorPanel :global(form > .flex.items-center.gap-2) {
-    align-items: stretch;
-    flex-direction: column;
+    align-items: center;
+    flex-direction: row;
   }
 
   .editorPanel :global(form > .flex.items-center.gap-2 > button) {
-    width: 100%;
-    min-height: 46px;
-    justify-content: center;
-  }
-
-  .editorPanel :global(ul li) {
-    gap: 0.65rem;
-    padding: 0.8rem;
-  }
-
-  .editorPanel :global(ul li > .flex.shrink-0) {
-    gap: 0.35rem;
-  }
-
-  .editorPanel :global(ul li button[aria-label]) {
-    display: inline-flex;
-    min-height: 40px;
-    min-width: 40px;
-    align-items: center;
-    justify-content: center;
-    border: 1px solid var(--admin-border);
-    border-radius: 0.75rem;
-    background: var(--admin-inset-2);
+    width: auto;
   }
 
   .libraryPanel :global(li) {
-    padding: 0.85rem !important;
+    padding: 16px !important;
   }
+}
 
-  .libraryPanel :global(li p) {
-    overflow-wrap: anywhere;
+@media (min-width: 1024px) {
+  .libraryPanel {
+    align-self: start;
   }
 }
 

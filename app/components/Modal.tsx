@@ -120,7 +120,7 @@ export function Modal({
         className={`modal-card ${maxWidth}`}
       >
         {title && (
-          <div className="flex shrink-0 items-center justify-between gap-3 border-b border-[var(--admin-border)] bg-[var(--admin-card)] px-4 py-3.5 sm:px-6 sm:py-4">
+          <div className="flex shrink-0 items-center justify-between gap-3 border-b border-[var(--admin-border)] bg-[var(--admin-card)] px-4 py-4 sm:px-6 sm:py-4">
             <div className="min-w-0">
               <h3 id={titleId} className="text-base font-semibold text-[var(--admin-text)]">
                 {title}
@@ -138,7 +138,7 @@ export function Modal({
           </div>
         )}
 
-        <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-4 py-4 text-sm text-[var(--admin-text)] sm:px-6 sm:py-5">
+        <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-4 py-4 text-sm text-[var(--admin-text)] sm:px-6 sm:py-6">
           {children}
         </div>
 
