@@ -11,7 +11,6 @@ import {
   Monitor,
   Store,
   ChevronDown,
-  Sparkles,
 } from "lucide-react";
 import type { SessionUser } from "@/app/lib/types";
 import {
@@ -36,6 +35,11 @@ import { TenantBrandProvider } from "@/app/components/TenantBrand";
 import { PushNotificationCenter } from "@/app/components/PushNotificationCenter";
 import { LiveAlertCenter } from "@/app/components/LiveAlertCenter";
 import { logoutAction } from "@/app/actions/auth";
+import {
+  AdminPlanStatusButton,
+  AdminPlanStatusProvider,
+  AdminPlanWelcomeBanner,
+} from "@/app/components/admin/AdminPlanStatus";
 import "./workspace.css";
 
 export function WorkspaceShell({
@@ -85,8 +89,17 @@ export function WorkspaceShell({
           ? "Find medicines, refills, orders… (⌘K)"
           : "Search patients, doses, refills… (⌘K)";
 
+  const planPharmacyId =
+    user.activePharmacyId ||
+    user.memberships.find((membership) => membership.status === "active")?.pharmacyId ||
+    null;
+
   return (
     <TenantBrandProvider value={defaultBrand}>
+      <AdminPlanStatusProvider
+        enabled={role === "admin"}
+        activePharmacyId={planPharmacyId}
+      >
       <NavigationProgressProvider>
         <div
           className="afyvia-workspace-root min-h-screen shell-grid-admin admin-workspace"
@@ -197,16 +210,7 @@ export function WorkspaceShell({
               <div className="flex items-center gap-2 shrink-0">
                 {headerExtra}
 
-                {role === "admin" && (
-                  <Link
-                    href="/admin/billing"
-                    className="hidden min-h-9 items-center gap-1.5 rounded-xl border border-emerald-500/25 bg-emerald-500/10 px-3 text-xs font-semibold text-emerald-800 transition hover:bg-emerald-500/15 dark:text-emerald-200 sm:inline-flex"
-                    aria-label="Explore Premium plans and billing"
-                  >
-                    <Sparkles size={14} aria-hidden="true" />
-                    <span>Upgrade</span>
-                  </Link>
-                )}
+                {role === "admin" && <AdminPlanStatusButton />}
 
                 {/* Theme toggle */}
                 <WorkspaceThemeToggle
@@ -233,6 +237,8 @@ export function WorkspaceShell({
               tabIndex={-1}
               className="workspace-main-scroll min-h-0 flex-1 overflow-x-hidden overflow-y-auto px-4 py-6 sm:px-6 lg:px-8 max-w-[1600px] w-full mx-auto"
             >
+              {role === "admin" && <AdminPlanWelcomeBanner />}
+
               {/* Contextual Task Surface (Surfacing nearby actions for medicines, patients, applications) */}
               <ContextualTaskSurface role={role} user={user} />
 
@@ -298,6 +304,7 @@ export function WorkspaceShell({
           <LiveAlertCenter audience={role === "admin" ? "admin" : "portal"} />
         </div>
       </NavigationProgressProvider>
+      </AdminPlanStatusProvider>
     </TenantBrandProvider>
   );
 }
