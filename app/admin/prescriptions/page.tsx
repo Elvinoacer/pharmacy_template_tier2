@@ -8,6 +8,8 @@ import { AdminShell } from "@/app/components/admin/AdminShell";
 import { Pagination } from "@/app/components/Pagination";
 import { parsePageParam } from "@/app/lib/pagination";
 import { formatDate } from "@/app/lib/time";
+import { getPrescriptionReferralUsage } from "@/app/lib/platform/prescription-referrals";
+import { FREE_MONTHLY_PRESCRIPTION_REFERRAL_LIMIT } from "@/app/lib/platform/plan-policy";
 import {
   FileText,
   Plus,
@@ -80,6 +82,13 @@ export default async function AdminPrescriptionsPage({
 }) {
   const user = await getSessionUser();
   if (!user) redirect("/login");
+  const pharmacyId =
+    user.activePharmacyId ||
+    user.memberships.find((membership) => membership.status === "active")?.pharmacyId ||
+    null;
+  const referralUsage = pharmacyId
+    ? await getPrescriptionReferralUsage(pharmacyId).catch(() => null)
+    : null;
   const sp = await searchParams;
 
   const q = sp.q?.trim() || undefined;
@@ -211,6 +220,73 @@ export default async function AdminPrescriptionsPage({
         </div>
       }
     >
+      {referralUsage && (
+        <section className={`mb-5 rounded-2xl border p-4 shadow-sm ${
+          referralUsage.premium
+            ? "border-emerald-500/25 bg-emerald-500/[0.06]"
+            : referralUsage.remaining === 0
+              ? "border-violet-500/30 bg-violet-500/[0.07]"
+              : "border-[var(--admin-border)] bg-[var(--admin-card)]"
+        }`}>
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+            <div className="min-w-0">
+              <div className="flex flex-wrap items-center gap-2">
+                <span className="inline-flex items-center gap-1.5 text-xs font-bold uppercase tracking-[0.12em] admin-accent-text">
+                  <Sparkles className="h-3.5 w-3.5" />
+                  Direct Afyvia prescription referrals
+                </span>
+                {referralUsage.premium ? (
+                  <span className="rounded-full bg-emerald-500/15 px-2.5 py-1 text-[11px] font-bold text-emerald-700 dark:text-emerald-300">
+                    Unlimited on Premium
+                  </span>
+                ) : (
+                  <span className="rounded-full bg-[var(--admin-inset)] px-2.5 py-1 text-[11px] font-bold admin-muted">
+                    {referralUsage.used} / {FREE_MONTHLY_PRESCRIPTION_REFERRAL_LIMIT} this month
+                  </span>
+                )}
+              </div>
+              <p className="mt-2 max-w-3xl text-xs leading-5 admin-muted">
+                {referralUsage.premium
+                  ? "Marketplace prescription referrals can be sent directly to this pharmacy without a monthly cap."
+                  : referralUsage.remaining === 0
+                    ? "Your free direct-referral allowance is used. Patients are not blocked: Afyvia asks them before sending to another available pharmacy, and you receive a privacy-safe missed-opportunity notice without patient or prescription details."
+                    : `${referralUsage.remaining} direct marketplace referral${referralUsage.remaining === 1 ? "" : "s"} remaining. Existing patients, storefront requests, staff-entered prescriptions and in-person care do not use this allowance.`}
+              </p>
+              {!referralUsage.premium && referralUsage.overflowed > 0 && (
+                <p className="mt-1 text-xs font-semibold text-violet-700 dark:text-violet-300">
+                  {referralUsage.overflowed} additional patient selection{referralUsage.overflowed === 1 ? "" : "s"} reached your pharmacy after the allowance was full.
+                </p>
+              )}
+            </div>
+            {!referralUsage.premium && (
+              <Link
+                href="/admin/billing"
+                className="inline-flex min-h-10 shrink-0 items-center justify-center gap-1.5 rounded-xl bg-violet-600 px-4 text-xs font-bold text-white transition hover:bg-violet-500"
+              >
+                View Premium <ArrowRight className="h-3.5 w-3.5" />
+              </Link>
+            )}
+          </div>
+          {!referralUsage.premium && (
+            <div className="mt-3 h-2 overflow-hidden rounded-full bg-[var(--admin-inset)]">
+              <div
+                className="h-full rounded-full bg-violet-500 transition-[width]"
+                style={{
+                  width: `${Math.min(
+                    100,
+                    Math.round(
+                      (referralUsage.used /
+                        Math.max(FREE_MONTHLY_PRESCRIPTION_REFERRAL_LIMIT, 1)) *
+                        100,
+                    ),
+                  )}%`,
+                }}
+              />
+            </div>
+          )}
+        </section>
+      )}
+
       {/* ── KPI Overview Strip ── */}
       <div className="mb-6 grid grid-cols-2 gap-3 sm:grid-cols-4 lg:grid-cols-5">
         <div className="rounded-2xl border border-[var(--admin-border)] bg-[var(--admin-card)] p-4 shadow-sm">
