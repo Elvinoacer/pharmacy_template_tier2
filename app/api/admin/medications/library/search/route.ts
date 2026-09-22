@@ -13,7 +13,7 @@ const Query = z.object({
 
 export async function GET(req: Request) {
   const user = await getSessionUser();
-  if (!user || !isStaff(user.role)) {
+  if (!user || (!isStaff(user.role) && !user.platformAdmin)) {
     return NextResponse.json(
       { error: "forbidden", message: "You do not have permission to search the medication library." },
       { status: 403 },
