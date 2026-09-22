@@ -70,7 +70,7 @@ export default function ServiceCardLink({
     >
       <div className={styles.cardMedia}>
         {imageUrl ? (
-          <Image
+          <Image unoptimized
             src={imageUrl}
             alt={title}
             fill
