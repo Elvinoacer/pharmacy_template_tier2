@@ -94,7 +94,7 @@ export default async function PortalRefillsPage() {
       title="Medication Refills"
       subtitle="Track your refill schedules, request renewals, and manage pickup or home delivery."
       actions={
-        <Link href="/portal/refills/new" className="btn-primary">
+        <Link href="/portal/refills/new" className="btn-primary min-h-11">
           <Plus className="h-4 w-4" /> Request a refill
         </Link>
       }
@@ -131,11 +131,11 @@ export default async function PortalRefillsPage() {
                 >
                   <div className="flex items-start justify-between">
                     <div>
-                      <h4 className="font-bold text-sm text-[#0c1a14]">{rx.medicineName}</h4>
-                      <p className="text-xs text-[#5a6b62]">{rx.dosage || "Standard regimen"}</p>
+                      <h4 className="break-words text-base font-bold text-[#0c1a14]">{rx.medicineName}</h4>
+                      <p className="text-sm text-[#5a6b62]">{rx.dosage || "Standard regimen"}</p>
                     </div>
                     <span
-                      className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${
+                      className={`text-sm font-bold px-2 py-0.5 rounded-full ${
                         (rx.refillsRemaining ?? 0) > 0 ? "bg-emerald-100 text-emerald-800" : "bg-rose-100 text-rose-800"
                       }`}
                     >
@@ -145,7 +145,7 @@ export default async function PortalRefillsPage() {
 
                   {/* Visual Supply Meter */}
                   <div className="space-y-1">
-                    <div className="flex items-center justify-between text-xs">
+                    <div className="flex items-center justify-between text-sm">
                       <span className="text-[#5a6b62]">Supply Remaining:</span>
                       <strong className={isOverdue ? "text-rose-700" : isDue ? "text-amber-700" : "text-[#0d6e5a]"}>
                         {metrics.daysRemaining > 0 ? `${metrics.daysRemaining} days left` : metrics.statusLabel}
@@ -161,7 +161,7 @@ export default async function PortalRefillsPage() {
                     </div>
                   </div>
 
-                  <div className="space-y-1 text-xs text-[#5a6b62] pt-1">
+                  <div className="space-y-1 text-sm text-[#5a6b62] pt-1">
                     <div className="flex justify-between">
                       <span>Next Due Date:</span>
                       <strong className={isOverdue ? "text-rose-700" : isDue ? "text-amber-700" : "text-[#0c1a14]"}>
@@ -176,13 +176,13 @@ export default async function PortalRefillsPage() {
 
                   <div className="pt-2 border-t border-black/5 flex items-center justify-between">
                     {rx.hasOpenRequest ? (
-                      <span className="inline-flex items-center gap-1 text-xs font-semibold text-emerald-700 bg-emerald-50 px-2.5 py-1 rounded-lg w-full justify-center">
+                      <span className="inline-flex items-center gap-1 text-sm font-semibold text-emerald-700 bg-emerald-50 px-2.5 py-1 rounded-lg w-full justify-center">
                         <Sparkles className="h-3 w-3" /> Refill Processing in Queue
                       </span>
                     ) : (
                       <Link
                         href={`/portal/refills/new?prescriptionId=${rx.id}&medicine=${encodeURIComponent(rx.medicineName)}&rx=${encodeURIComponent(rx.rxReference || "")}`}
-                        className="btn-primary !py-2 !px-3 text-xs w-full text-center justify-center"
+                        className="btn-primary min-h-11 w-full justify-center !px-4 !py-2 text-center text-sm"
                       >
                         Request This Refill
                       </Link>
@@ -207,7 +207,7 @@ export default async function PortalRefillsPage() {
             title="No active refills in queue"
             description="When you submit a refill, you can track every preparation stage right here."
             action={
-              <Link href="/portal/refills/new" className="btn-primary !py-2 text-sm">
+              <Link href="/portal/refills/new" className="btn-primary min-h-11 !py-2 text-sm">
                 <Plus className="h-4 w-4" /> Request a refill
               </Link>
             }
@@ -231,8 +231,8 @@ export default async function PortalRefillsPage() {
                         <Pill className="h-5 w-5" />
                       </div>
                       <div>
-                        <h4 className="font-extrabold text-base text-[#0c1a14]">{r.medicineName}</h4>
-                        <p className="flex flex-wrap items-center gap-2 text-xs text-[#5a6b62]">
+                        <h4 className="break-words text-base font-extrabold text-[#0c1a14]">{r.medicineName}</h4>
+                        <p className="flex flex-wrap items-center gap-2 text-sm text-[#5a6b62]">
                           <span>Submitted {formatDate(r.createdAt)}</span>
                           <span>•</span>
                           <span className="capitalize">{r.pickupPreference === "delivery" ? "🚚 Home Delivery" : "🏢 Branch Pickup"}</span>
@@ -253,7 +253,7 @@ export default async function PortalRefillsPage() {
                           <input type="hidden" name="id" value={r.id} />
                           <button
                             type="submit"
-                            className="btn-icon text-rose-600 hover:bg-rose-50"
+                            className="btn-icon min-h-11 min-w-11 text-rose-600 hover:bg-rose-50"
                             title="Cancel this refill request"
                             aria-label="Cancel"
                           >
@@ -266,16 +266,16 @@ export default async function PortalRefillsPage() {
 
                   {/* Visual Stepper Tracker */}
                   <div className="pt-2">
-                    <div className="grid grid-cols-5 gap-1 sm:gap-2">
+                    <div className="grid grid-cols-1 gap-2 sm:grid-cols-5 sm:gap-2">
                       {STEPS.map((step, idx) => {
                         const isDone = idx < currentStepIdx;
                         const isCurrent = idx === currentStepIdx;
 
                         return (
-                          <div key={step.id} className="space-y-1.5 text-center">
+                          <div key={step.id} className="flex min-w-0 items-center gap-3 rounded-xl border border-[#e3ebe6] bg-[#fafbfa] p-3 text-left sm:block sm:space-y-1.5 sm:border-0 sm:bg-transparent sm:p-0 sm:text-center">
                             <div className="relative flex items-center justify-center">
                               <div
-                                className={`flex h-6 w-6 sm:h-7 sm:w-7 items-center justify-center rounded-full text-[10px] sm:text-xs font-bold transition ${
+                                className={`flex h-6 w-6 sm:h-7 sm:w-7 items-center justify-center rounded-full text-sm sm:text-sm font-bold transition ${
                                   isDone
                                     ? "bg-[#0d6e5a] text-white"
                                     : isCurrent
@@ -287,7 +287,7 @@ export default async function PortalRefillsPage() {
                               </div>
                             </div>
                             <p
-                              className={`text-[9px] sm:text-[10px] font-semibold leading-tight ${
+                              className={`text-sm sm:text-sm font-semibold leading-tight ${
                                 isCurrent
                                   ? "text-[#0d6e5a] font-bold"
                                   : isDone
@@ -305,7 +305,7 @@ export default async function PortalRefillsPage() {
 
                   {/* Order & Payment Banner if generated */}
                   {order && (
-                    <div className="flex flex-wrap items-center justify-between gap-3 rounded-xl bg-[#f0f9f6] border border-[#d0ece3] p-3 text-xs">
+                    <div className="flex flex-wrap items-center justify-between gap-3 rounded-xl bg-[#f0f9f6] border border-[#d0ece3] p-3 text-sm">
                       <div>
                         <strong className="text-[#0c1a14] block">Refill Order Generated</strong>
                         <span className="text-[#5a6b62]">Total: Kes {Number(order.total).toLocaleString()}</span>
@@ -318,7 +318,7 @@ export default async function PortalRefillsPage() {
                         ) : (
                           <Link
                             href={`/portal/orders`}
-                            className="btn-primary !py-1 !px-3 text-xs"
+                            className="btn-primary min-h-11 !px-4 !py-2 text-sm"
                           >
                             Pay via M-Pesa
                           </Link>
@@ -342,7 +342,7 @@ export default async function PortalRefillsPage() {
           <p className="py-6 text-center text-sm text-[#5a6b62]">No past refill history records found.</p>
         ) : (
           <>
-          <div className="hidden overflow-x-auto md:block">
+          <div className="hidden overflow-x-auto lg:block">
             <table className="table-premium">
               <thead>
                 <tr>
@@ -363,7 +363,7 @@ export default async function PortalRefillsPage() {
                     <tr key={r.id}>
                       <td>
                         <p className="font-semibold text-[#0c1a14]">{r.medicineName}</p>
-                        <p className="text-xs text-[#5a6b62]">{r.rxReference || "—"}</p>
+                        <p className="text-sm text-[#5a6b62]">{r.rxReference || "—"}</p>
                       </td>
                       <td className="text-[#5a6b62]">{formatDate(r.createdAt)}</td>
                       <td className="text-[#5a6b62]">{formatDate(r.statusUpdatedAt)}</td>
@@ -372,11 +372,11 @@ export default async function PortalRefillsPage() {
                       </td>
                       <td>
                         {order ? (
-                          <span className="font-bold text-xs text-[#0d6e5a]">
+                          <span className="font-bold text-sm text-[#0d6e5a]">
                             Kes {Number(order.total).toLocaleString()}
                           </span>
                         ) : (
-                          <span className="text-xs text-[#5a6b62]">—</span>
+                          <span className="text-sm text-[#5a6b62]">—</span>
                         )}
                       </td>
                       <td>
@@ -390,7 +390,7 @@ export default async function PortalRefillsPage() {
           </div>
 
           {/* Mobile: card layout instead of a 6-column table */}
-          <ul className="grid gap-3 md:hidden" aria-label="Refill history">
+          <ul className="grid gap-3 lg:hidden" aria-label="Refill history">
             {past.map((r) => {
               const meta = refillStatusMeta(r.status);
               const order = r.prescriptionFill?.order;
@@ -399,11 +399,11 @@ export default async function PortalRefillsPage() {
                   <div className="flex items-start justify-between gap-3">
                     <div className="min-w-0">
                       <p className="font-semibold text-[#0c1a14]">{r.medicineName}</p>
-                      <p className="text-xs text-[#5a6b62]">{r.rxReference || "—"}</p>
+                      <p className="text-sm text-[#5a6b62]">{r.rxReference || "—"}</p>
                     </div>
                     <Badge className={meta.color}>{meta.label}</Badge>
                   </div>
-                  <dl className="mt-3 grid grid-cols-2 gap-2 text-xs text-[#5a6b62]">
+                  <dl className="mt-4 grid grid-cols-1 gap-3 text-sm text-[#5a6b62] sm:grid-cols-2">
                     <div>
                       <dt className="font-semibold text-[#3d4f46]">Submitted</dt>
                       <dd>{formatDate(r.createdAt)}</dd>
