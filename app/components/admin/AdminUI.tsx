@@ -28,9 +28,9 @@ export function AdminCard({
     <div className="admin-stat group h-full overflow-hidden transition-[border-color,box-shadow] duration-200 hover:border-[var(--admin-border-2)] hover:shadow-md">
       <div className="flex h-full items-start justify-between gap-2.5 sm:gap-3">
         <div className="min-w-0 flex-1">
-          <p className="text-[11px] font-semibold leading-4 admin-muted sm:text-xs">{label}</p>
+          <p className="text-sm font-semibold leading-4 admin-muted sm:text-sm">{label}</p>
           <p className="mt-1.5 break-words text-xl font-bold leading-tight tracking-tight admin-text sm:mt-2 sm:text-3xl">{value}</p>
-          {hint && <p className="mt-1 break-words text-xs leading-5 admin-soft sm:text-sm">{hint}</p>}
+          {hint && <p className="mt-1 break-words text-sm leading-5 admin-soft sm:text-sm">{hint}</p>}
         </div>
         {icon && (
           <span className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br ${accentClass} shadow-sm transition-transform duration-200 group-hover:scale-[1.04] sm:h-10 sm:w-10 sm:shadow-md`}>
