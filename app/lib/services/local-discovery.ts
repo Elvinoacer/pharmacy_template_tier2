@@ -23,12 +23,12 @@ export const getLocalDiscovery = cache(async (city: string) => withPlatformBypas
   const [medicines, services] = await Promise.all([
     prismaUnscoped.pharmacyInventory.findMany({
       where: { ...buildPublicInventoryWhere(), pharmacyId: { in: pharmacyIds } },
-      select: { medicationMaster: { select: { slug: true, name: true } } },
+      select: { medicationMaster: { select: { slug: true, name: true, imageUrl: true } } },
       distinct: ["medicationMasterId"], orderBy: { medicationMasterId: "asc" }, take: 48,
     }),
     prismaUnscoped.pharmacyService.findMany({
       where: { active: true, pharmacyId: { in: pharmacyIds } },
-      select: { slug: true, title: true, short: true, pharmacyId: true, pharmacy: { select: { slug: true, name: true } } },
+      select: { slug: true, title: true, short: true, imageUrl: true, pharmacyId: true, pharmacy: { select: { slug: true, name: true } } },
       orderBy: [{ title: "asc" }, { id: "asc" }],
     }),
   ]);
