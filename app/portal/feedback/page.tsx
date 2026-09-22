@@ -44,29 +44,29 @@ export default async function PortalFeedbackPage() {
           </Panel>
           <Panel title="Types of feedback">
             <ul className="space-y-3 text-sm">
-              <li className="flex items-start gap-2.5">
-                <Star className="mt-0.5 h-4 w-4 shrink-0 text-amber-500" />
+              <li className="flex items-start gap-3">
+                <Star className="mt-1 h-4 w-4 shrink-0 text-amber-500" />
                 <div>
                   <p className="font-medium text-[var(--foreground)]">Review</p>
                   <p className="text-sm leading-relaxed text-[var(--muted)]">Rate your experience with us</p>
                 </div>
               </li>
-              <li className="flex items-start gap-2.5">
-                <Lightbulb className="mt-0.5 h-4 w-4 shrink-0 text-blue-500" />
+              <li className="flex items-start gap-3">
+                <Lightbulb className="mt-1 h-4 w-4 shrink-0 text-blue-500" />
                 <div>
                   <p className="font-medium text-[var(--foreground)]">Suggestion</p>
                   <p className="text-sm leading-relaxed text-[var(--muted)]">Ideas to improve our service</p>
                 </div>
               </li>
-              <li className="flex items-start gap-2.5">
-                <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0 text-rose-500" />
+              <li className="flex items-start gap-3">
+                <AlertTriangle className="mt-1 h-4 w-4 shrink-0 text-rose-500" />
                 <div>
                   <p className="font-medium text-[var(--foreground)]">Complaint</p>
                   <p className="text-sm leading-relaxed text-[var(--muted)]">Tell us what went wrong</p>
                 </div>
               </li>
-              <li className="flex items-start gap-2.5">
-                <Smile className="mt-0.5 h-4 w-4 shrink-0 text-emerald-500" />
+              <li className="flex items-start gap-3">
+                <Smile className="mt-1 h-4 w-4 shrink-0 text-emerald-500" />
                 <div>
                   <p className="font-medium text-[var(--foreground)]">Satisfaction</p>
                   <p className="text-sm leading-relaxed text-[var(--muted)]">Quick pulse check on your visit</p>
@@ -115,7 +115,7 @@ export default async function PortalFeedbackPage() {
                     <p className="mt-1 text-sm text-[var(--muted-2)]">{formatDateTime(f.createdAt)}</p>
                     {f.staffResponse && (
                       <div className="mt-3 flex min-w-0 items-start gap-2 rounded-xl border border-emerald-200 bg-emerald-50 p-3 text-sm dark:border-emerald-500/30 dark:bg-emerald-500/10">
-                        <CheckCircle2 className="mt-0.5 h-3.5 w-3.5 shrink-0 text-emerald-600" />
+                        <CheckCircle2 className="mt-1 h-4 w-4 shrink-0 text-emerald-600" />
                         <div className="min-w-0">
                           <p className="break-words text-sm font-semibold uppercase tracking-wide text-emerald-700 dark:text-emerald-300">
                             Pharmacy response
