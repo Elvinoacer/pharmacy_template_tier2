@@ -63,17 +63,17 @@ export default async function IncompleteMedicationsPage({
       title="Missing medicine details"
       subtitle="Start with the lowest enrichment scores and fill the details that improve dispensing safety and patient information."
     >
-      <div className="space-y-4 sm:space-y-6">
+      <div className="mx-auto max-w-7xl space-y-4 sm:space-y-6">
         <div className="grid grid-cols-2 gap-2 sm:flex sm:items-center sm:justify-between">
           <Link
             href="/admin/medications"
-            className="group inline-flex min-h-11 items-center justify-center gap-2 rounded-xl bg-[var(--admin-inset)] px-3 text-xs font-semibold admin-muted transition hover:text-[var(--admin-text)] sm:min-h-0 sm:justify-start sm:bg-transparent sm:px-0 sm:text-sm"
+            className="group inline-flex min-h-11 items-center justify-center gap-2 rounded-xl bg-[var(--admin-inset)] px-3 text-sm font-semibold admin-muted transition hover:text-[var(--admin-text)] sm:justify-start sm:bg-transparent sm:px-0 sm:text-sm"
           >
             <ArrowLeft className="h-4 w-4 transition-transform duration-200 group-hover:-translate-x-0.5" /> Catalogue
           </Link>
           <Link
             href="/admin/medications/metrics"
-            className="inline-flex min-h-11 items-center justify-center gap-1.5 rounded-xl bg-[var(--admin-inset)] px-3 text-xs font-semibold admin-muted transition hover:bg-[var(--admin-inset-2)] hover:text-[var(--admin-text)] sm:min-h-0 sm:rounded-full sm:py-2"
+            className="inline-flex min-h-11 items-center justify-center gap-1.5 rounded-xl bg-[var(--admin-inset)] px-3 text-sm font-semibold admin-muted transition hover:bg-[var(--admin-inset-2)] hover:text-[var(--admin-text)] sm:rounded-full sm:py-2"
           >
             <TrendingUp className="h-3.5 w-3.5" /> Metrics
           </Link>
@@ -82,10 +82,10 @@ export default async function IncompleteMedicationsPage({
         <div className="rounded-2xl border border-[var(--admin-border-2)] bg-[var(--admin-card)] p-3 sm:p-4">
           <div className="mb-3 flex items-center justify-between gap-3">
             <div>
-              <p className="text-xs font-semibold admin-text">Enrichment queue</p>
-              <p className="mt-0.5 text-[11px] admin-muted">{total} record{total === 1 ? "" : "s"} in this view</p>
+              <p className="text-sm font-semibold admin-text">Enrichment queue</p>
+              <p className="mt-0.5 text-sm admin-muted">{total} record{total === 1 ? "" : "s"} in this view</p>
             </div>
-            <span className="rounded-full bg-amber-500/10 px-2.5 py-1 text-[11px] font-semibold text-amber-700 dark:text-amber-300">
+            <span className="rounded-full bg-amber-500/10 px-2.5 py-1 text-sm font-semibold text-amber-700 dark:text-amber-300">
               Lowest score first
             </span>
           </div>
@@ -106,7 +106,7 @@ export default async function IncompleteMedicationsPage({
                     key={item.label}
                     href={href}
                     aria-current={active ? "page" : undefined}
-                    className={`inline-flex min-h-10 items-center rounded-full px-3 text-xs font-semibold transition ${
+                    className={`inline-flex min-h-11 items-center rounded-full px-3 text-sm font-semibold transition ${
                       active
                         ? "bg-emerald-500/10 text-emerald-700 ring-1 ring-inset ring-emerald-500/20 dark:text-emerald-300"
                         : "bg-[var(--admin-inset)] admin-muted hover:bg-[var(--admin-inset-2)] hover:text-[var(--admin-text)]"
@@ -126,7 +126,7 @@ export default async function IncompleteMedicationsPage({
               <AlertTriangle className="h-6 w-6 admin-soft" />
             </div>
             <p className="mt-4 text-sm font-semibold admin-text">Nothing needs attention in this view</p>
-            <p className="mx-auto mt-1 max-w-md text-xs leading-5 admin-soft">Try another status, or return to the medicine catalogue to continue inventory work.</p>
+            <p className="mx-auto mt-1 max-w-md text-base leading-6 admin-soft sm:text-sm sm:leading-5">Try another status, or return to the medicine catalogue to continue inventory work.</p>
           </div>
         ) : (
           <ul className="grid gap-3 xl:grid-cols-2">
@@ -147,14 +147,14 @@ export default async function IncompleteMedicationsPage({
                   <div className="flex items-start gap-3">
                     <div className="min-w-0 flex-1">
                       <p className="break-words text-sm font-bold admin-text">{medicine.name}</p>
-                      <p className="mt-1 text-xs leading-5 admin-muted">
+                      <p className="mt-1 text-sm leading-5 admin-muted">
                         {medicine.genericName} · {medicine.dosageForm?.value || "No dosage form"}
                       </p>
-                      <p className="mt-1 text-[11px] capitalize admin-soft">{medicine.category.replace(/-/g, " ")}</p>
+                      <p className="mt-1 text-sm capitalize admin-soft">{medicine.category.replace(/-/g, " ")}</p>
                     </div>
                     <div className="shrink-0 text-right">
                       <p className={`text-lg font-black ${scoreClass}`}>{medicine.enrichmentScore}%</p>
-                      <p className="text-[10px] capitalize admin-soft">{medicine.enrichmentStatus}</p>
+                      <p className="text-sm capitalize admin-soft">{medicine.enrichmentStatus}</p>
                     </div>
                   </div>
 
@@ -166,18 +166,18 @@ export default async function IncompleteMedicationsPage({
                   </div>
 
                   <div className="mt-4 flex items-center justify-between gap-3 border-t border-[var(--admin-border-2)] pt-3">
-                    <p className="text-[11px] admin-muted">
+                    <p className="text-sm admin-muted">
                       {inventory ? "Inventory record available" : "Master record only"}
                     </p>
                     {inventory ? (
                       <Link
                         href={`/admin/medications/${inventory.id}`}
-                        className="inline-flex min-h-10 shrink-0 items-center justify-center gap-1.5 rounded-xl bg-emerald-500/10 px-3 text-xs font-semibold text-emerald-700 transition hover:bg-emerald-500/20 dark:text-emerald-300"
+                        className="inline-flex min-h-11 shrink-0 items-center justify-center gap-1.5 rounded-xl bg-emerald-500/10 px-3 text-sm font-semibold text-emerald-700 transition hover:bg-emerald-500/20 dark:text-emerald-300"
                       >
                         <Pencil className="h-3.5 w-3.5" /> Enrich
                       </Link>
                     ) : (
-                      <span className="rounded-full bg-[var(--admin-inset)] px-2.5 py-1 text-[10px] font-medium admin-soft">No pharmacy item</span>
+                      <span className="rounded-full bg-[var(--admin-inset)] px-2.5 py-1 text-sm font-medium admin-soft">No pharmacy item</span>
                     )}
                   </div>
                 </li>
