@@ -42,13 +42,13 @@ export function RefillFilter({
       <div className="flex flex-wrap items-center gap-1.5">
         <Link
           href={`/admin/refills${search ? `?q=${encodeURIComponent(search)}` : ""}`}
-          className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-semibold transition ${
+          className={`min-h-11 inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-sm font-semibold transition ${
             active === "all"
               ? "bg-[var(--admin-accent)] text-[var(--admin-btn-fg)]"
               : "bg-[var(--admin-inset)] admin-muted hover:bg-[var(--admin-inset-2)] hover:text-[var(--admin-text)]"
           }`}
         >
-          All <span className="rounded-full bg-black/15 px-1.5 text-xs">{total}</span>
+          All <span className="rounded-full bg-black/15 px-1.5 text-sm">{total}</span>
         </Link>
         {REFILL_STATUSES.map((s) => {
           const Icon = ICONS[s.value] || Pill;
@@ -58,7 +58,7 @@ export function RefillFilter({
             <Link
               key={s.value}
               href={`/admin/refills?status=${s.value}${searchParam}`}
-              className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-semibold transition ${
+              className={`min-h-11 inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-sm font-semibold transition ${
                 isActive
                   ? "bg-[var(--admin-accent)] text-[var(--admin-btn-fg)]"
                   : "bg-[var(--admin-inset)] admin-muted hover:bg-[var(--admin-inset-2)] hover:text-[var(--admin-text)]"
@@ -66,33 +66,33 @@ export function RefillFilter({
             >
               <Icon className="h-3 w-3" />
               {s.label}
-              <span className="rounded-full bg-black/15 px-1.5 text-xs">{count}</span>
+              <span className="rounded-full bg-black/15 px-1.5 text-sm">{count}</span>
             </Link>
           );
         })}
       </div>
 
       {/* Search bar with explicit submit + clear buttons */}
-      <form className="flex flex-wrap items-center gap-2">
-        <div className="relative flex-1 min-w-[200px]">
+      <form className="flex flex-col gap-2 sm:flex-row sm:items-center">
+        <div className="relative w-full min-w-0 flex-1 sm:min-w-[200px]">
           <Search className="pointer-events-none absolute left-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 admin-soft" />
           <input
             name="q"
             defaultValue={search || ""}
             placeholder="Search medicine, Rx ref, customer name…"
-            className="input-admin pl-9"
+            className="input-admin min-h-11 pl-9 text-base sm:text-sm"
           />
         </div>
         <button
           type="submit"
-          className="inline-flex items-center gap-1.5 rounded-full bg-[var(--admin-accent)] px-4 py-1.5 text-xs font-semibold text-[var(--admin-btn-fg)] transition hover:brightness-110"
+          className="inline-flex min-h-11 w-full items-center justify-center gap-1.5 rounded-full bg-[var(--admin-accent)] px-4 py-2 text-sm font-semibold text-[var(--admin-btn-fg)] transition hover:brightness-110 sm:w-auto"
         >
           <Search className="h-3.5 w-3.5" /> Search
         </button>
         {search && (
           <Link
             href={active !== "all" ? `/admin/refills?status=${active}` : "/admin/refills"}
-            className="inline-flex items-center gap-1.5 rounded-full bg-[var(--admin-inset-2)] px-3 py-1.5 text-xs font-semibold admin-muted transition hover:bg-[var(--admin-inset)] hover:text-[var(--admin-text)]"
+            className="inline-flex min-h-11 w-full items-center justify-center gap-1.5 rounded-full bg-[var(--admin-inset-2)] px-3 py-2 text-sm font-semibold admin-muted transition hover:bg-[var(--admin-inset)] hover:text-[var(--admin-text)] sm:w-auto"
           >
             <X className="h-3 w-3" /> Clear
           </Link>
