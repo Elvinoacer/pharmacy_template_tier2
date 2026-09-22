@@ -112,7 +112,7 @@ export default async function PortalMessagesPage({
       title="Messages & notifications"
       subtitle="Conversations with your pharmacy team and recent activity."
     >
-      <div className="mx-auto grid w-full max-w-[1280px] min-w-0 gap-4 sm:gap-6 lg:grid-cols-2 [&_.card-premium>div:first-child>div>p]:text-sm">
+      <div className="mx-auto grid w-full max-w-[1280px] min-w-0 gap-4 sm:gap-6 md:grid-cols-2 [&_.card-premium>div:first-child>div>p]:text-sm">
         {/* Conversations */}
         <Panel
           title="Conversations"
