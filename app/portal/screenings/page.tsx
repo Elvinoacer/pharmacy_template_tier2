@@ -85,14 +85,14 @@ export default async function PortalScreeningsPage() {
         <div className="flex w-full flex-col gap-2 sm:w-auto sm:flex-row sm:flex-wrap sm:items-center">
           <Link
             href={shopBase ? `${shopBase}/services/health-screenings` : "/services/health-screenings"}
-            className="inline-flex min-h-11 w-full items-center justify-center gap-1.5 rounded-xl border border-[var(--line)] bg-card px-3 py-2 text-xs font-semibold text-brand shadow-2xs transition hover:bg-brand-tint sm:w-auto"
+            className="min-w-11 inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-xl border border-[var(--line)] bg-card px-3 py-2 text-sm font-semibold text-brand shadow-2xs transition hover:bg-brand-tint sm:w-auto"
           >
             <CalendarCheck className="h-3.5 w-3.5 shrink-0" />
             <span>Book Screening</span>
           </Link>
           <Link
             href={shopBase ? `${shopBase}/screenings` : "/screenings"}
-            className="inline-flex min-h-11 w-full items-center justify-center gap-1.5 rounded-xl border border-[var(--line)] bg-card px-3 py-2 text-xs font-semibold text-muted shadow-2xs transition hover:bg-brand-tint hover:text-brand sm:w-auto"
+            className="min-w-11 inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-xl border border-[var(--line)] bg-card px-3 py-2 text-sm font-semibold text-muted shadow-2xs transition hover:bg-brand-tint hover:text-brand sm:w-auto"
           >
             <Activity className="h-3.5 w-3.5 shrink-0" />
             <span>Screening Guide</span>
@@ -100,11 +100,13 @@ export default async function PortalScreeningsPage() {
         </div>
       }
     >
-      <PortalScreeningsView
+      <div className="mx-auto w-full max-w-7xl min-w-0">
+        <PortalScreeningsView
         screenings={formattedScreenings}
         referrals={formattedReferrals}
-        patientName={user.fullName || "Patient"}
-      />
+          patientName={user.fullName || "Patient"}
+        />
+      </div>
     </PortalShell>
   );
 }
