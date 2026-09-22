@@ -9,6 +9,7 @@ import {
   CircleGauge,
   CreditCard,
   FileText,
+  Megaphone,
   Package,
   PlugZap,
   ShieldCheck,
@@ -33,6 +34,7 @@ import {
   FREE_MEDICINE_LIMIT,
   FREE_SERVICE_LIMIT,
   FREE_MONTHLY_PRESCRIPTION_REFERRAL_LIMIT,
+  FREE_MONTHLY_CAMPAIGN_LAUNCH_LIMIT,
 } from "@/app/lib/platform/plan-policy";
 import { getPrescriptionReferralUsage } from "@/app/lib/platform/prescription-referrals";
 import { isIntasendConfigured } from "@/app/lib/services/intasend";
@@ -120,6 +122,41 @@ const comparison = [
     premium: "Included",
   },
   {
+    feature: "Campaign launches",
+    free: `${FREE_MONTHLY_CAMPAIGN_LAUNCH_LIMIT} / month`,
+    premium: "Unlimited",
+  },
+  {
+    feature: "Campaign scheduling & multi-channel outreach",
+    free: "Not included",
+    premium: "Included",
+  },
+  {
+    feature: "Custom patient segments",
+    free: "System groups only",
+    premium: "Custom audiences",
+  },
+  {
+    feature: "Automatic refill follow-up",
+    free: "Manual reminders",
+    premium: "Automatic + manual",
+  },
+  {
+    feature: "Loyalty automation",
+    free: "Manual point adjustments",
+    premium: "Birthday, refill & order rewards",
+  },
+  {
+    feature: "Inventory intelligence",
+    free: "Stock, batches, low-stock & expiry",
+    premium: "Velocity-based reorder guidance",
+  },
+  {
+    feature: "Custom message templates",
+    free: "Read existing templates",
+    premium: "Create & manage templates",
+  },
+  {
     feature: "AI-assisted medication import",
     free: "Not included",
     premium: "Included",
@@ -166,16 +203,27 @@ export default async function AdminBillingPage() {
 
   const isOwner = pharmacy.ownerUserId === user.id;
   const premiumActive = await hasPremiumPlan(pharmacy.id);
+  const now = new Date();
+  const monthStart = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), 1));
+  const nextMonth = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth() + 1, 1));
 
   const [tenantData, grant, prescriptionReferralUsage] = await Promise.all([
     withPharmacy(pharmacy.id, async () => {
-      const [publicMedicines, activeServices, subscription, invoices] =
+      const [publicMedicines, activeServices, campaignLaunches, subscription, invoices] =
         await Promise.all([
           prisma.pharmacyInventory.count({
             where: { active: true, publicListing: true },
           }),
           prisma.pharmacyService.count({
             where: { active: true },
+          }),
+          prisma.campaign.count({
+            where: {
+              OR: [
+                { sentAt: { gte: monthStart, lt: nextMonth } },
+                { status: "sending", updatedAt: { gte: monthStart, lt: nextMonth } },
+              ],
+            },
           }),
           prisma.subscription.findFirst({
             where: { status: { not: "cancelled" } },
@@ -202,7 +250,7 @@ export default async function AdminBillingPage() {
             },
           }),
         ]);
-      return { publicMedicines, activeServices, subscription, invoices };
+      return { publicMedicines, activeServices, campaignLaunches, subscription, invoices };
     }),
     withPlatformTx((tx) =>
       tx.pharmacyPromotionGrant.findUnique({
@@ -256,7 +304,7 @@ export default async function AdminBillingPage() {
                   : "Start free. Upgrade only when the limits begin to matter."}
               </h2>
               <p className="mt-2 max-w-2xl text-sm leading-6 text-[var(--admin-text-muted)]">
-                Free keeps the core pharmacy presence live. Premium removes the free listing caps, unlocks unlimited direct Afyvia prescription referrals, AI-assisted imports, advanced analytics and POS synchronization.
+                Free keeps the pharmacy operating and visible. Premium removes growth limits and adds automation: unlimited campaigns and referrals, custom audiences, automatic follow-up, loyalty automation, inventory intelligence, AI-assisted imports, advanced analytics and POS synchronization.
               </p>
 
               <div className="mt-5 flex flex-wrap gap-2 text-xs text-[var(--admin-text-muted)]">
@@ -362,7 +410,7 @@ export default async function AdminBillingPage() {
                 </h2>
               </div>
             </div>
-            <div className="grid gap-3 md:grid-cols-3">
+            <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-4">
               <UsageMeter
                 label="Public medicine listings"
                 used={tenantData.publicMedicines}
@@ -380,6 +428,12 @@ export default async function AdminBillingPage() {
                 used={prescriptionReferralUsage.used}
                 limit={FREE_MONTHLY_PRESCRIPTION_REFERRAL_LIMIT}
                 icon={<FileText className="h-4 w-4 text-[var(--admin-accent)]" />}
+              />
+              <UsageMeter
+                label="Campaign launches this month"
+                used={tenantData.campaignLaunches}
+                limit={FREE_MONTHLY_CAMPAIGN_LAUNCH_LIMIT}
+                icon={<Megaphone className="h-4 w-4 text-[var(--admin-accent)]" />}
               />
             </div>
             <p className="mt-3 text-xs leading-5 text-[var(--admin-text-soft)]">
@@ -446,19 +500,19 @@ export default async function AdminBillingPage() {
         <section className="grid gap-3 md:grid-cols-3">
           {[
             {
-              icon: <Sparkles className="h-5 w-5" />,
-              title: "AI-assisted imports",
-              body: "Move new medicine data into the catalogue faster while preserving the shared medication validation path.",
+              icon: <Megaphone className="h-5 w-5" />,
+              title: "Patient growth engine",
+              body: "Combine campaigns, custom audiences, follow-up and loyalty so the pharmacy can bring customers back instead of managing each touch manually.",
             },
             {
               icon: <BarChart3 className="h-5 w-5" />,
-              title: "Advanced analytics",
-              body: "Use richer operational and commercial reporting when the pharmacy needs more than day-to-day workflow views.",
+              title: "Intelligence & automation",
+              body: "Use inventory velocity, advanced analytics and AI-assisted imports to reduce repetitive work and make better operating decisions.",
             },
             {
               icon: <PlugZap className="h-5 w-5" />,
-              title: "POS synchronization",
-              body: "Connect inventory workflows to supported POS integrations instead of maintaining the same stock in two places.",
+              title: "Scale-ready operations",
+              body: "Remove Free growth limits and connect supported POS workflows while keeping the core pharmacy workspace available on every plan.",
             },
           ].map((benefit) => (
             <article
