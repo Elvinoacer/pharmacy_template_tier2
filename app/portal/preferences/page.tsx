@@ -26,8 +26,8 @@ export default async function PortalPreferencesPage() {
       title="Communication preferences"
       subtitle="Choose how and when you'd like to hear from us."
     >
-      <div className="grid min-w-0 gap-4 sm:gap-6 lg:grid-cols-3">
-        <aside className="min-w-0 space-y-3 lg:col-span-1">
+      <div className="mx-auto grid w-full max-w-[1280px] min-w-0 gap-4 sm:gap-6 md:grid-cols-3 [&_.card-premium>div:first-child>div>p]:text-sm">
+        <aside className="min-w-0 space-y-4 md:col-span-1">
           <Panel>
             <div className="flex min-w-0 items-start gap-3">
               <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[#e6f4ef] text-[#0d6e5a] dark:bg-teal-500/15 dark:text-teal-300">
@@ -35,7 +35,7 @@ export default async function PortalPreferencesPage() {
               </span>
               <div className="min-w-0">
                 <p className="break-words text-sm font-semibold text-[#0c1a14] dark:text-slate-100">Stay in control</p>
-                <p className="mt-0.5 break-words text-xs leading-relaxed text-[#5a6b62] dark:text-slate-400">
+                <p className="mt-1 break-words text-sm leading-relaxed text-[#5a6b62] dark:text-slate-400">
                   You can change these settings any time. We will never contact you on a channel you have turned off.
                 </p>
               </div>
@@ -52,12 +52,12 @@ export default async function PortalPreferencesPage() {
           </Panel>
         </aside>
 
-        <div className="min-w-0 space-y-4 sm:space-y-6 lg:col-span-2">
+        <div className="min-w-0 space-y-4 sm:space-y-6 md:col-span-2">
           <Panel
             title="Device push notifications"
             description="This is separate from email/SMS — it registers this browser for Firebase Cloud Messaging."
           >
-            <div className="min-w-0 overflow-hidden">
+            <div className="min-w-0 overflow-hidden [&_button]:min-h-11 [&_button]:min-w-11 [&_button]:text-sm [&_p]:text-sm">
               <PushEnablePanel audience="portal" />
             </div>
           </Panel>
@@ -66,8 +66,9 @@ export default async function PortalPreferencesPage() {
             title="Channels & consent"
             description="Marketing messages require explicit consent. Refill and pickup reminders only send when reminder consent is enabled."
           >
-            <PreferencesForm
-              action={updatePreferencesAction}
+            <div className="[&_button]:min-h-11 [&_button]:min-w-11 [&_button]:text-sm [&_label]:min-h-11 [&_li_p]:text-sm">
+              <PreferencesForm
+                action={updatePreferencesAction}
               prefs={{
                 emailEnabled: prefs?.emailEnabled ?? true,
                 smsEnabled: prefs?.smsEnabled ?? true,
@@ -75,8 +76,9 @@ export default async function PortalPreferencesPage() {
                 marketingConsent: prefs?.marketingConsent ?? false,
                 reminderConsent: prefs?.reminderConsent ?? true,
                 birthdayMessages: prefs?.birthdayMessages ?? true,
-              }}
-            />
+                }}
+              />
+            </div>
           </Panel>
         </div>
       </div>
@@ -98,7 +100,7 @@ function PreferenceSummary({
       <Icon className="mt-0.5 h-4 w-4 shrink-0 text-[#0d6e5a] dark:text-teal-300" />
       <div className="min-w-0">
         <p className="break-words font-medium text-[#0c1a14] dark:text-slate-100">{title}</p>
-        <p className="break-words text-xs leading-relaxed text-[#5a6b62] dark:text-slate-400">{description}</p>
+        <p className="break-words text-sm leading-relaxed text-[#5a6b62] dark:text-slate-400">{description}</p>
       </div>
     </div>
   );
