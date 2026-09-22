@@ -1,6 +1,7 @@
 import "server-only";
 
 import { randomUUID } from "node:crypto";
+import type { Prisma } from "@/app/generated/prisma/client";
 import { prismaUnscoped } from "@/app/lib/db";
 import { withPlatformBypass } from "@/app/lib/tenant-context";
 import { FREE_MONTHLY_PRESCRIPTION_REFERRAL_LIMIT } from "@/app/lib/platform/plan-policy";
@@ -38,7 +39,7 @@ function periodFor(date = new Date()): string {
 }
 
 async function premiumInTransaction(
-  tx: Parameters<Parameters<typeof prismaUnscoped.$transaction>[0]>[0],
+  tx: Prisma.TransactionClient,
   pharmacyId: string,
   now: Date,
 ) {
