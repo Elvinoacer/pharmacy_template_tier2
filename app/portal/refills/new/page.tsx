@@ -43,7 +43,7 @@ export default async function NewRefillPage({
               </span>
               <div className="min-w-0">
                 <p className="text-sm font-semibold text-foreground">Not a clinical approval</p>
-                <p className="mt-0.5 text-sm leading-relaxed text-muted">
+                <p className="mt-1 text-sm leading-relaxed text-muted">
                   Submitting this form starts a refill request. A pharmacist must review and approve
                   every prescription before it is prepared.
                 </p>
@@ -52,28 +52,28 @@ export default async function NewRefillPage({
           </Panel>
           <Panel title="What happens next">
             <ol className="space-y-3 text-sm">
-              <li className="flex items-start gap-2.5">
+              <li className="flex items-start gap-3">
                 <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-brand text-sm font-bold text-white">1</span>
                 <div className="min-w-0">
                   <p className="font-medium text-foreground">Submitted</p>
                   <p className="text-sm text-muted">Request enters our pharmacist queue</p>
                 </div>
               </li>
-              <li className="flex items-start gap-2.5">
+              <li className="flex items-start gap-3">
                 <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-brand text-sm font-bold text-white">2</span>
                 <div className="min-w-0">
                   <p className="font-medium text-foreground">Under review</p>
                   <p className="text-sm text-muted">Pharmacist verifies the prescription</p>
                 </div>
               </li>
-              <li className="flex items-start gap-2.5">
+              <li className="flex items-start gap-3">
                 <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-brand text-sm font-bold text-white">3</span>
                 <div className="min-w-0">
                   <p className="font-medium text-foreground">Preparing</p>
                   <p className="text-sm text-muted">Medication is being prepared</p>
                 </div>
               </li>
-              <li className="flex items-start gap-2.5">
+              <li className="flex items-start gap-3">
                 <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-brand text-sm font-bold text-white">4</span>
                 <div className="min-w-0">
                   <p className="font-medium text-foreground">Ready for pickup</p>
@@ -85,15 +85,15 @@ export default async function NewRefillPage({
           <Panel>
             <div className="space-y-2 text-sm">
               <div className="flex items-start gap-2 text-muted">
-                <Clock className="mt-0.5 h-4 w-4 shrink-0 text-brand" />
+                <Clock className="mt-1 h-4 w-4 shrink-0 text-brand" />
                 <span>The pharmacy will confirm timing after review</span>
               </div>
               <div className="flex items-start gap-2 text-muted">
-                <Store className="mt-0.5 h-4 w-4 shrink-0 text-brand" />
+                <Store className="mt-1 h-4 w-4 shrink-0 text-brand" />
                 <span>Pickup at the pharmacy holding your prescription</span>
               </div>
               <div className="flex items-start gap-2 text-muted">
-                <Truck className="mt-0.5 h-4 w-4 shrink-0 text-brand" />
+                <Truck className="mt-1 h-4 w-4 shrink-0 text-brand" />
                 <span>Ask the pharmacy about delivery</span>
               </div>
             </div>
