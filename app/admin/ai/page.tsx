@@ -80,17 +80,17 @@ export default async function AdminAiEscalationsPage() {
             description="Patients below 70% adherence in the last 14 days. Review these before lower-risk AI conversations."
             action={<span className="inline-flex min-h-9 w-full items-center justify-center gap-1 rounded-full border border-[var(--admin-border)] bg-[var(--admin-accent-soft)] px-3 text-sm font-semibold admin-accent-text sm:w-auto"><Sparkles className="h-3 w-3" /> AI-assisted triage</span>}
           >
-            <ul className="space-y-2.5">
+            <ul className="space-y-3">
               {adherenceAlerts.map(({ prescription, rate, logCount }) => (
                 <li key={prescription.id} className="flex flex-col gap-3 rounded-2xl border border-rose-500/20 bg-rose-500/[0.05] p-4 transition-[border-color,background-color] hover:border-rose-500/35 sm:flex-row sm:items-center sm:justify-between sm:p-4">
                   <div className="min-w-0 flex-1">
                     <div className="flex flex-wrap items-center gap-2">
                       <p className="break-words font-semibold admin-text">{prescription.medicineName}</p>
-                      <span className="rounded-full bg-rose-500/10 px-2 py-0.5 text-sm font-bold text-rose-500">{Math.round(rate)}%</span>
+                      <span className="rounded-full bg-rose-500/10 px-2 py-1 text-sm font-bold text-rose-500">{Math.round(rate)}%</span>
                     </div>
                     <p className="mt-1 text-sm leading-5 admin-muted">{prescription.customer?.fullName || "Patient"} · {logCount} adherence logs</p>
                   </div>
-                  <Link href={`/admin/prescriptions/${prescription.id}`} className="inline-flex min-h-11 w-full items-center justify-center gap-1.5 rounded-xl bg-[var(--admin-inset)] px-3 text-sm font-semibold admin-accent-text transition hover:bg-[var(--admin-inset-2)] sm:w-auto">
+                  <Link href={`/admin/prescriptions/${prescription.id}`} className="inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-xl bg-[var(--admin-inset)] px-3 text-sm font-semibold admin-accent-text transition hover:bg-[var(--admin-inset-2)] sm:w-auto">
                     Review patient <ArrowRight className="h-3.5 w-3.5" />
                   </Link>
                 </li>
@@ -130,7 +130,7 @@ export default async function AdminAiEscalationsPage() {
 
                     {conv.messages.length > 0 && (
                       <details className="mt-3 rounded-xl border border-[var(--admin-border)] bg-[var(--admin-card)] p-3 sm:p-3">
-                        <summary className="flex min-h-11 cursor-pointer items-center gap-1.5 text-sm font-semibold admin-muted hover:text-[var(--admin-text)]"><ChevronDown className="h-3.5 w-3.5" /> View transcript ({conv.messages.length} messages)</summary>
+                        <summary className="flex min-h-11 cursor-pointer items-center gap-2 text-sm font-semibold admin-muted hover:text-[var(--admin-text)]"><ChevronDown className="h-3.5 w-3.5" /> View transcript ({conv.messages.length} messages)</summary>
                         <div className="mt-2 space-y-2">
                           {conv.messages.map((m) => (
                             <div key={m.id} className={`rounded-xl px-3 py-3 text-sm ${m.role === "user" ? "bg-[var(--admin-inset)] sm:ml-8" : "bg-[var(--admin-accent-soft)] sm:mr-8"}`}>

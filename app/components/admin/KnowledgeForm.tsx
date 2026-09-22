@@ -78,7 +78,7 @@ export default function KnowledgeForm({
   }
 
   return (
-    <div className="space-y-5">
+    <div className="space-y-6">
       <form action={formAction} className="space-y-4">
         {state?.error && (
           <div className="admin-alert-error">
@@ -96,7 +96,7 @@ export default function KnowledgeForm({
         {editingId && <input type="hidden" name="id" value={editingId} />}
 
         {editingId && (
-          <div className="flex items-center justify-between gap-3 rounded-xl border border-sky-500/20 bg-sky-500/10 px-3 py-2.5">
+          <div className="flex items-center justify-between gap-3 rounded-xl border border-sky-500/20 bg-sky-500/10 px-3 py-3">
             <div className="min-w-0">
               <p className="text-sm font-bold uppercase tracking-wide text-sky-700 dark:text-sky-300">Editing article</p>
               <p className="break-words text-sm font-semibold admin-text">{editTitle || "Untitled article"}</p>
@@ -204,7 +204,7 @@ export default function KnowledgeForm({
           <button
             type="submit"
             disabled={pending}
-            className="btn-admin min-h-11 flex-1 !rounded-xl py-2.5 disabled:opacity-50"
+            className="btn-admin min-h-11 flex-1 !rounded-xl py-3 disabled:opacity-50"
           >
             {pending ? (
               <><span className="typing-dot" /> Saving…</>
@@ -216,7 +216,7 @@ export default function KnowledgeForm({
       </form>
 
       {articles.length > 0 && (
-        <div className="border-t border-[var(--admin-border)] pt-5">
+        <div className="border-t border-[var(--admin-border)] pt-6">
           <div className="mb-3 flex items-center justify-between gap-3">
             <div>
               <p className="text-sm font-bold uppercase tracking-wide admin-soft">Published workspace</p>
@@ -235,7 +235,7 @@ export default function KnowledgeForm({
                     <div className="flex flex-wrap items-center gap-2">
                       <p className="break-words font-semibold admin-text">{a.title}</p>
                       {a.isApproved ? (
-                        <span className="inline-flex items-center gap-0.5 rounded-full bg-emerald-500/15 px-2 py-1 text-sm font-semibold text-emerald-700 dark:text-emerald-300">
+                        <span className="inline-flex items-center gap-1 rounded-full bg-emerald-500/15 px-2 py-1 text-sm font-semibold text-emerald-700 dark:text-emerald-300">
                           <Check className="h-2.5 w-2.5" /> approved
                         </span>
                       ) : (
@@ -245,7 +245,7 @@ export default function KnowledgeForm({
                     <p className="mt-1 text-sm admin-muted">
                       <FolderTree className="mr-1 inline h-2.5 w-2.5" /> {a.category}
                       {a.priority > 0 && (
-                        <span className="ml-2 inline-flex items-center gap-0.5">
+                        <span className="ml-2 inline-flex items-center gap-1">
                           <Star className="h-2.5 w-2.5" /> p{a.priority}
                         </span>
                       )}

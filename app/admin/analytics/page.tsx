@@ -77,7 +77,7 @@ export default async function AnalyticsIndexPage() {
                 <Link
                   key={report.href}
                   href={report.href}
-                  className="group relative overflow-hidden rounded-2xl border border-[var(--admin-border)] bg-[var(--admin-card)] p-4 transition-[border-color,box-shadow] duration-200 hover:border-[var(--admin-accent)] hover:shadow-md sm:p-5"
+                  className="group relative overflow-hidden rounded-2xl border border-[var(--admin-border)] bg-[var(--admin-card)] p-4 transition-[border-color,box-shadow] duration-200 hover:border-[var(--admin-accent)] hover:shadow-md sm:p-6"
                 >
                   <div className="flex items-start justify-between gap-3">
                     <div className="min-w-0">
@@ -136,9 +136,9 @@ export default async function AnalyticsIndexPage() {
 
         <AdminPanel title="Decision guide" description="Use the same date range when comparing reports.">
           <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-            <div className="rounded-xl bg-[var(--admin-inset)] p-4"><div className="flex items-center gap-2 text-sm font-semibold admin-text"><ShieldCheck className="h-4 w-4 admin-accent-text" /> Balance the day</div><p className="mt-1.5 text-sm leading-5 admin-muted">Payments → reconciliation → investigate any gap before close.</p></div>
-            <div className="rounded-xl bg-[var(--admin-inset)] p-4"><div className="flex items-center gap-2 text-sm font-semibold admin-text"><Package className="h-4 w-4 admin-accent-text" /> Plan purchases</div><p className="mt-1.5 text-sm leading-5 admin-muted">Inventory → products → prioritize stock with demand and margin.</p></div>
-            <div className="rounded-xl bg-[var(--admin-inset)] p-4"><div className="flex items-center gap-2 text-sm font-semibold admin-text"><Users className="h-4 w-4 admin-accent-text" /> Improve retention</div><p className="mt-1.5 text-sm leading-5 admin-muted">Customers → refills → identify repeat patients and follow-up gaps.</p></div>
+            <div className="rounded-xl bg-[var(--admin-inset)] p-4"><div className="flex items-center gap-2 text-sm font-semibold admin-text"><ShieldCheck className="h-4 w-4 admin-accent-text" /> Balance the day</div><p className="mt-2 text-sm leading-5 admin-muted">Payments → reconciliation → investigate any gap before close.</p></div>
+            <div className="rounded-xl bg-[var(--admin-inset)] p-4"><div className="flex items-center gap-2 text-sm font-semibold admin-text"><Package className="h-4 w-4 admin-accent-text" /> Plan purchases</div><p className="mt-2 text-sm leading-5 admin-muted">Inventory → products → prioritize stock with demand and margin.</p></div>
+            <div className="rounded-xl bg-[var(--admin-inset)] p-4"><div className="flex items-center gap-2 text-sm font-semibold admin-text"><Users className="h-4 w-4 admin-accent-text" /> Improve retention</div><p className="mt-2 text-sm leading-5 admin-muted">Customers → refills → identify repeat patients and follow-up gaps.</p></div>
           </div>
         </AdminPanel>
       </div>

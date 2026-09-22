@@ -105,7 +105,7 @@ export default async function AdminNotificationsPage({
 
           {counts.map((c) => (
             <div key={c.status} className="admin-stat min-w-0 p-4 transition-transform hover:-translate-y-0.5 sm:p-4">
-              <span className={`inline-flex max-w-full truncate rounded-full px-2 py-0.5 text-sm font-bold uppercase sm:text-sm ${statusColor(c.status)}`}>
+              <span className={`inline-flex max-w-full truncate rounded-full px-2 py-1 text-sm font-bold uppercase sm:text-sm ${statusColor(c.status)}`}>
                 {c.status}
               </span>
               <p className="mt-1 text-xl font-black admin-text sm:text-2xl">{c._count}</p>

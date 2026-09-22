@@ -110,12 +110,12 @@ export default function TemplateForm({
       <form action={formAction} className="space-y-4">
         {state?.error && (
           <div className="admin-alert-error">
-            <AlertCircle className="mt-0.5 h-3.5 w-3.5 shrink-0" /> <span>{state.error}</span>
+            <AlertCircle className="mt-1 h-3.5 w-3.5 shrink-0" /> <span>{state.error}</span>
           </div>
         )}
         {state?.success && (
           <div className="admin-alert-success">
-            <Check className="mt-0.5 h-3.5 w-3.5 shrink-0" /> <span>{state.success}</span>
+            <Check className="mt-1 h-3.5 w-3.5 shrink-0" /> <span>{state.success}</span>
           </div>
         )}
 
@@ -190,7 +190,7 @@ export default function TemplateForm({
               type="button"
               onClick={aiDraft}
               disabled={aiLoading}
-              className="inline-flex items-center gap-1 rounded-full bg-gradient-to-r from-[#2dd4bf] to-[#0d6e5a] px-2 py-0.5 text-sm font-semibold text-white hover:brightness-110 disabled:cursor-wait disabled:opacity-60"
+              className="inline-flex items-center gap-1 rounded-full bg-gradient-to-r from-[#2dd4bf] to-[#0d6e5a] px-2 py-1 text-sm font-semibold text-white hover:brightness-110 disabled:cursor-wait disabled:opacity-60"
               title="Let AI draft the body"
             >
               <Wand2 className={`h-2.5 w-2.5 ${aiLoading ? "animate-pulse" : ""}`} /> {aiLoading ? "Drafting…" : "AI draft"}
@@ -212,7 +212,7 @@ export default function TemplateForm({
                 key={variable}
                 type="button"
                 onClick={() => insertVar(variable)}
-                className="rounded-full bg-[var(--admin-inset-2)] px-2 py-0.5 text-sm font-mono admin-accent-text hover:bg-[var(--admin-hover)]"
+                className="rounded-full bg-[var(--admin-inset-2)] px-2 py-1 text-sm font-mono admin-accent-text hover:bg-[var(--admin-hover)]"
               >
                 {variable}
               </button>
@@ -248,10 +248,10 @@ export default function TemplateForm({
               <li key={template.id} className="flex items-start gap-2 rounded-xl border border-[var(--admin-border)] bg-[var(--admin-inset)] p-3">
                 <div className="min-w-0 flex-1">
                   <p className="font-semibold admin-text">{template.name}</p>
-                  <div className="mt-0.5 flex flex-wrap items-center gap-2 text-sm admin-muted">
+                  <div className="mt-1 flex flex-wrap items-center gap-2 text-sm admin-muted">
                     <span className="capitalize">{template.channel}</span>
                     <span>·</span>
-                    <span className="inline-flex items-center gap-0.5"><FolderTree className="h-2.5 w-2.5" /> {template.category}</span>
+                    <span className="inline-flex items-center gap-1"><FolderTree className="h-2.5 w-2.5" /> {template.category}</span>
                   </div>
                   {template.subject && <p className="mt-1 text-sm font-medium admin-text">{template.subject}</p>}
                   <p className="mt-1 break-words text-sm leading-6 admin-muted">{template.body}</p>

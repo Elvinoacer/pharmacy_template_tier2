@@ -115,7 +115,7 @@ export default async function AdminTemplatesPage() {
                 description="Create your first template to standardise recurring customer communication."
               />
             ) : (
-              <ul className="space-y-2.5">
+              <ul className="space-y-3">
                 {templates.map((t) => {
                   const Icon = CHANNEL_ICON[t.channel] || FileText;
                   return (

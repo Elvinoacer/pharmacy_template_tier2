@@ -591,8 +591,8 @@ export function PushStatusPill({
       <span
         className={
           dark
-            ? "inline-flex items-center gap-1.5 rounded-full bg-[var(--admin-inset-2)] px-3 py-1 text-sm font-medium admin-muted"
-            : "inline-flex items-center gap-1.5 rounded-full bg-slate-100 px-3 py-1 text-sm font-medium text-slate-600"
+            ? "inline-flex items-center gap-2 rounded-full bg-[var(--admin-inset-2)] px-3 py-1 text-sm font-medium admin-muted"
+            : "inline-flex items-center gap-2 rounded-full bg-slate-100 px-3 py-1 text-sm font-medium text-slate-600"
         }
       >
         <BellOff className="h-3.5 w-3.5" /> Not supported
@@ -604,8 +604,8 @@ export function PushStatusPill({
       <span
         className={
           dark
-            ? "inline-flex items-center gap-1.5 rounded-full bg-emerald-500/15 px-3 py-1 text-sm font-medium text-emerald-300"
-            : "inline-flex items-center gap-1.5 rounded-full bg-emerald-100 px-3 py-1 text-sm font-medium text-emerald-700"
+            ? "inline-flex items-center gap-2 rounded-full bg-emerald-500/15 px-3 py-1 text-sm font-medium text-emerald-300"
+            : "inline-flex items-center gap-2 rounded-full bg-emerald-100 px-3 py-1 text-sm font-medium text-emerald-700"
         }
       >
         <Check className="h-3.5 w-3.5" /> Push enabled
@@ -617,8 +617,8 @@ export function PushStatusPill({
       <span
         className={
           dark
-            ? "inline-flex items-center gap-1.5 rounded-full bg-rose-500/15 px-3 py-1 text-sm font-medium text-rose-300"
-            : "inline-flex items-center gap-1.5 rounded-full bg-rose-100 px-3 py-1 text-sm font-medium text-rose-700"
+            ? "inline-flex items-center gap-2 rounded-full bg-rose-500/15 px-3 py-1 text-sm font-medium text-rose-300"
+            : "inline-flex items-center gap-2 rounded-full bg-rose-100 px-3 py-1 text-sm font-medium text-rose-700"
         }
       >
         <AlertCircle className="h-3.5 w-3.5" /> Blocked
@@ -630,8 +630,8 @@ export function PushStatusPill({
       <span
         className={
           dark
-            ? "inline-flex items-center gap-1.5 rounded-full bg-amber-500/15 px-3 py-1 text-sm font-medium text-amber-200"
-            : "inline-flex items-center gap-1.5 rounded-full bg-amber-100 px-3 py-1 text-sm font-medium text-amber-700"
+            ? "inline-flex items-center gap-2 rounded-full bg-amber-500/15 px-3 py-1 text-sm font-medium text-amber-200"
+            : "inline-flex items-center gap-2 rounded-full bg-amber-100 px-3 py-1 text-sm font-medium text-amber-700"
         }
       >
         <Bell className="h-3.5 w-3.5" /> Requesting…
@@ -642,8 +642,8 @@ export function PushStatusPill({
     <span
       className={
         dark
-          ? "inline-flex items-center gap-1.5 rounded-full bg-[var(--admin-inset-2)] px-3 py-1 text-sm font-medium admin-muted"
-          : "inline-flex items-center gap-1.5 rounded-full bg-slate-100 px-3 py-1 text-sm font-medium text-slate-600"
+          ? "inline-flex items-center gap-2 rounded-full bg-[var(--admin-inset-2)] px-3 py-1 text-sm font-medium admin-muted"
+          : "inline-flex items-center gap-2 rounded-full bg-slate-100 px-3 py-1 text-sm font-medium text-slate-600"
       }
     >
       <Bell className="h-3.5 w-3.5" /> Not yet enabled
