@@ -317,9 +317,9 @@ export function AdminPlanStatusButton() {
       <summary
         className={
           attention
-            ? "flex min-h-9 cursor-pointer list-none items-center gap-1.5 rounded-xl border border-amber-500/35 bg-amber-500/10 px-3 text-xs font-semibold text-amber-800 transition hover:bg-amber-500/15 dark:text-amber-200 [&::-webkit-details-marker]:hidden"
+            ? "flex min-h-9 cursor-pointer list-none items-center gap-1.5 rounded-xl border border-amber-500/35 bg-amber-500/10 px-3 text-xs font-semibold text-amber-800 transition hover:bg-amber-500/15 dark:text-amber-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--admin-accent)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--admin-panel)] [&::-webkit-details-marker]:hidden"
             : status.premium
-              ? "flex min-h-9 cursor-pointer list-none items-center gap-1.5 rounded-xl border border-emerald-500/25 bg-emerald-500/10 px-3 text-xs font-semibold text-emerald-800 transition hover:bg-emerald-500/15 dark:text-emerald-200 [&::-webkit-details-marker]:hidden"
+              ? "flex min-h-9 cursor-pointer list-none items-center gap-1.5 rounded-xl border border-emerald-500/25 bg-emerald-500/10 px-3 text-xs font-semibold text-emerald-800 transition hover:bg-emerald-500/15 dark:text-emerald-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--admin-accent)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--admin-panel)] [&::-webkit-details-marker]:hidden"
               : "flex min-h-9 cursor-pointer list-none items-center gap-1.5 rounded-xl border border-[var(--admin-border)] bg-[var(--admin-card)] px-3 text-xs font-semibold text-[var(--admin-text)] transition hover:bg-[var(--admin-hover)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--admin-accent)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--admin-panel)] [&::-webkit-details-marker]:hidden"
         }
         aria-label="View current pharmacy plan"
