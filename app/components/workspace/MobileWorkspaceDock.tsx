@@ -10,7 +10,6 @@ import {
   Store,
   LogOut,
   ChevronRight,
-  Sparkles,
 } from "lucide-react";
 import type { SessionUser } from "@/app/lib/types";
 import {
@@ -24,6 +23,7 @@ import { WorkspaceIcon } from "./WorkspaceIcons";
 import { useNavigationProgress } from "./NavigationProgress";
 import { logoutAction } from "@/app/actions/auth";
 import { formatBadgeCount } from "@/app/components/shell/useShell";
+import { AdminPlanStatusMobileCard } from "@/app/components/admin/AdminPlanStatus";
 
 export function MobileWorkspaceDock({
   role,
@@ -175,19 +175,11 @@ export function MobileWorkspaceDock({
           )}
 
           {role === "admin" && (
-            <div className="px-4 py-2.5 border-b border-[var(--admin-border)]">
-              <Link
-                href="/admin/billing"
-                onClick={() => {
-                  startNavigation("/admin/billing", "Plans & billing");
-                  closeSheet();
-                }}
-                className="flex w-full items-center gap-2.5 rounded-xl border border-emerald-500/25 bg-emerald-500/10 px-3 py-2.5 text-xs font-semibold text-emerald-800 dark:text-emerald-200"
-              >
-                <Sparkles size={15} className="shrink-0" />
-                <span className="flex-1 text-left">Explore Premium</span>
-                <ChevronRight size={14} className="opacity-60" />
-              </Link>
+            <div
+              className="px-4 py-2.5 border-b border-[var(--admin-border)]"
+              onClick={() => closeSheet()}
+            >
+              <AdminPlanStatusMobileCard />
             </div>
           )}
 
