@@ -23,7 +23,7 @@ export function AdminRouteUxBoundary({ children }: { children: ReactNode }) {
   const page = resolveAdminUxPage(pathname);
 
   return (
-    <div className="admin-route-ux" data-admin-ux-page={page}>
+    <div className="admin-route-ux w-full min-w-0 max-w-full overflow-x-clip" data-admin-ux-page={page}>
       {children}
     </div>
   );
