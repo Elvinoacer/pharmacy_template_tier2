@@ -46,7 +46,7 @@ export default async function PrescriptionsAnalyticsPage({
         title="Fill flow"
         description="See where prescription fills are sitting in the fulfilment journey."
       >
-        <div className="grid grid-cols-2 gap-2.5 lg:grid-cols-4">
+        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
           <FillStage label="Pending" value={formatNumber(metrics.fillsPending)} />
           <FillStage label="Dispatched" value={formatNumber(metrics.fillsDispatched)} />
           <FillStage label="Collected" value={formatNumber(metrics.fillsCollected)} />
@@ -67,7 +67,7 @@ export default async function PrescriptionsAnalyticsPage({
 function FillStage({ label, value }: { label: string; value: string }) {
   return (
     <div className="min-w-0 rounded-2xl border border-[var(--admin-border)] bg-[var(--admin-inset)] p-3.5 transition-[border-color,background-color,box-shadow] duration-200 hover:border-[var(--admin-border-2)] hover:bg-[var(--admin-hover)] hover:shadow-sm motion-reduce:transition-none sm:p-4">
-      <p className="text-[10px] font-semibold uppercase tracking-[0.1em] admin-muted sm:text-[11px]">{label}</p>
+      <p className="text-sm font-semibold uppercase tracking-[0.1em] admin-muted">{label}</p>
       <p className="mt-2 break-words text-xl font-bold tracking-tight admin-text sm:text-2xl">{value}</p>
     </div>
   );
