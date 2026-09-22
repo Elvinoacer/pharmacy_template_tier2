@@ -219,7 +219,7 @@ export async function recordPrescriptionReferralOverflow(
           type: "prescription_referral_overflow",
           title: "A direct prescription opportunity could not enter your free inbox",
           body:
-            "A patient selected your pharmacy from Afyvia after the 10 monthly direct-referral allowance was used. No patient or prescription details were shared. Upgrade to Premium for unlimited direct marketplace prescription referrals.",
+            "A patient selected your pharmacy from Afyvia after the 10 monthly direct-referral allowance was used. No patient or prescription details were shared with you; Afyvia offered the patient another available pharmacy instead of blocking care. Upgrade to Premium for unlimited direct marketplace prescription referrals.",
           severity: "info",
           relatedType: "billing",
         },
