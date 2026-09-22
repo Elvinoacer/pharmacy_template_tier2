@@ -35,6 +35,7 @@ export default async function PrescriptionsAnalyticsPage({
       period={period}
       basePath="/admin/analytics/prescriptions"
     >
+      <div className="space-y-4 sm:space-y-6 [&_.admin-stat_p:first-child]:!text-sm [&_.admin-stat_p:nth-child(3)]:!text-sm">
       <StatGrid>
         <AdminCard label="Total Prescriptions" value={formatNumber(metrics.totalPrescriptions)} hint={`${formatNumber(metrics.active)} active`} icon={Pill} accent="neutral" />
         <AdminCard label="Fills (period)" value={formatNumber(metrics.fillsTotal)} hint={`${formatNumber(metrics.fillsPending)} pending`} icon={Package} accent="info" />
@@ -60,6 +61,7 @@ export default async function PrescriptionsAnalyticsPage({
         <AdminCard label="COGS" value={formatKES(metrics.cogsTotal)} icon={Package} accent="neutral" />
         <AdminCard label="Gross Profit" value={formatKES(metrics.grossProfit)} icon={TrendingUp} accent="accent" />
       </StatGrid>
+      </div>
     </AnalyticsShell>
   );
 }
