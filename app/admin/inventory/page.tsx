@@ -130,7 +130,7 @@ export default async function AdminInventoryPage() {
                   <div className="min-w-0 flex-1">
                     <Link
                       href={`/admin/medications/${item.id}`}
-                      className="break-words text-sm font-semibold admin-text hover:underline"
+                      className="inline-flex min-h-11 items-center break-words text-sm font-semibold admin-text hover:underline"
                     >
                       {item.name}
                     </Link>
@@ -165,7 +165,7 @@ export default async function AdminInventoryPage() {
                   <div className="min-w-0 flex-1">
                     <Link
                       href={`/admin/medications/${item.id}`}
-                      className="break-words text-sm font-semibold text-rose-700 hover:underline dark:text-rose-300"
+                      className="inline-flex min-h-11 items-center break-words text-sm font-semibold text-rose-700 hover:underline dark:text-rose-300"
                     >
                       {item.name}
                     </Link>
@@ -275,7 +275,7 @@ export default async function AdminInventoryPage() {
                           <span className="rounded-full bg-rose-500/12 px-2.5 py-1 text-sm font-bold text-rose-700 dark:bg-rose-400/10 dark:text-rose-300">Expired</span>
                         </td>
                         <td className="px-2 py-2 text-right">
-                          <Link href={`/admin/medications/${lot.inventoryId}`} className="text-sm font-semibold admin-accent-text">Manage</Link>
+                          <Link href={`/admin/medications/${lot.inventoryId}`} className="inline-flex min-h-11 items-center text-sm font-semibold admin-accent-text">Manage</Link>
                         </td>
                       </tr>
                     ))}
@@ -289,7 +289,7 @@ export default async function AdminInventoryPage() {
                           <span className="rounded-full bg-amber-500/12 px-2.5 py-1 text-sm font-bold text-amber-800 dark:bg-amber-400/10 dark:text-amber-300">{lot.daysUntilExpiry}d left</span>
                         </td>
                         <td className="px-2 py-2 text-right">
-                          <Link href={`/admin/medications/${lot.inventoryId}`} className="text-sm font-semibold admin-accent-text">Manage</Link>
+                          <Link href={`/admin/medications/${lot.inventoryId}`} className="inline-flex min-h-11 items-center text-sm font-semibold admin-accent-text">Manage</Link>
                         </td>
                       </tr>
                     ))}
