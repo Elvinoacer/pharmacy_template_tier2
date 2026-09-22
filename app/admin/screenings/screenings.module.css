@@ -1,206 +1,203 @@
 .surface {
   min-width: 0;
+  width: 100%;
 }
-
 .surface :global(.border-gray-50),
 .surface :global(.border-gray-100),
-.surface :global(.border-gray-200) {
-  border-color: var(--admin-border) !important;
-}
-
+.surface :global(.border-gray-200) { border-color: var(--admin-border) !important; }
 .surface :global(.text-gray-400),
-.surface :global(.text-gray-500) {
-  color: var(--admin-text-soft) !important;
-}
-
+.surface :global(.text-gray-500) { color: var(--admin-text-soft) !important; }
 .surface :global(.text-gray-600),
-.surface :global(.text-gray-700) {
-  color: var(--admin-text-muted) !important;
-}
-
+.surface :global(.text-gray-700) { color: var(--admin-text-muted) !important; }
 .surface :global(.text-gray-800),
-.surface :global(.text-gray-900) {
-  color: var(--admin-text) !important;
-}
-
-.surface :global(.bg-gray-50) {
-  background: var(--admin-inset) !important;
-}
-
+.surface :global(.text-gray-900) { color: var(--admin-text) !important; }
+.surface :global(.bg-gray-50) { background: var(--admin-inset) !important; }
 .surface :global(.bg-teal-50),
 .surface :global(.bg-teal-50\/60),
 .surface :global(.bg-teal-50\/70),
-.surface :global(.bg-teal-100) {
-  background: var(--admin-accent-soft) !important;
-}
-
+.surface :global(.bg-teal-100) { background: var(--admin-accent-soft) !important; }
 .surface :global(.text-teal-700),
 .surface :global(.text-teal-800),
 .surface :global(.text-teal-900),
 .surface :global(.text-teal-950),
-.surface :global(.text-indigo-900) {
-  color: var(--admin-accent-text) !important;
-}
-
+.surface :global(.text-indigo-900) { color: var(--admin-accent-text) !important; }
 .surface :global(.bg-red-50),
-.surface :global(.bg-red-100) {
-  background: color-mix(in srgb, #ef4444 11%, var(--admin-card)) !important;
-}
-
+.surface :global(.bg-red-100) { background: color-mix(in srgb, #ef4444 11%, var(--admin-card)) !important; }
 .surface :global(.bg-amber-50),
 .surface :global(.bg-amber-100),
-.surface :global(.bg-orange-100) {
-  background: color-mix(in srgb, #f59e0b 12%, var(--admin-card)) !important;
-}
-
+.surface :global(.bg-orange-100) { background: color-mix(in srgb, #f59e0b 12%, var(--admin-card)) !important; }
 .surface :global(.text-red-700),
 .surface :global(.text-red-800),
 .surface :global(.text-red-900),
-.surface :global(.text-red-950) {
-  color: color-mix(in srgb, #ef4444 72%, var(--admin-text)) !important;
-}
-
+.surface :global(.text-red-950) { color: color-mix(in srgb, #ef4444 72%, var(--admin-text)) !important; }
 .surface :global(.text-amber-700),
 .surface :global(.text-amber-800),
 .surface :global(.text-amber-900),
-.surface :global(.text-orange-800) {
-  color: color-mix(in srgb, #f59e0b 72%, var(--admin-text)) !important;
-}
-
+.surface :global(.text-orange-800) { color: color-mix(in srgb, #f59e0b 72%, var(--admin-text)) !important; }
 .surface :global(input),
 .surface :global(select),
 .surface :global(textarea) {
+  width: 100%;
   max-width: 100%;
+  min-height: 44px;
   border-color: var(--admin-border) !important;
   background: var(--admin-inset) !important;
   color: var(--admin-text) !important;
+  font-size: 14px;
+  line-height: 20px;
 }
-
+.surface :global(button) {
+  min-height: 44px;
+  font-size: 14px;
+  line-height: 20px;
+}
+.surface :global(.text-xs) {
+  font-size: 14px !important;
+  line-height: 20px !important;
+}
 .surface :global(input::placeholder),
 .surface :global(textarea::placeholder) {
   color: var(--admin-text-soft) !important;
   opacity: 1;
 }
-
 .surface :global(option) {
   background: var(--admin-panel);
   color: var(--admin-text);
 }
-
-.surface :global(table) {
-  min-width: 860px;
-  color: var(--admin-text);
-}
-
-.surface :global(thead) {
-  background: var(--admin-inset) !important;
-  color: var(--admin-text-muted) !important;
-}
-
-.surface :global(tbody) {
-  border-color: var(--admin-border) !important;
-}
-
-.surface :global(.overflow-hidden):has(> table) {
-  max-width: 100%;
-  overflow-x: auto !important;
-  overscroll-behavior-inline: contain;
-  scrollbar-width: thin;
-}
-
 .surface > div > div:nth-child(2) {
   max-width: 100%;
   overflow-x: auto;
   overscroll-behavior-inline: contain;
   scrollbar-width: thin;
 }
-
 .surface > div > div:nth-child(2) > button {
   flex: 0 0 auto;
   min-height: 44px;
   white-space: nowrap;
 }
-
+.surface :global(.overflow-hidden):has(> table) {
+  max-width: 100%;
+  overflow: visible !important;
+}
+.surface :global(table) {
+  display: block;
+  width: 100%;
+  min-width: 0;
+  color: var(--admin-text);
+  font-size: 14px;
+}
+.surface :global(thead) { display: none; }
+.surface :global(tbody) {
+  display: grid;
+  gap: 12px;
+  border: 0 !important;
+}
+.surface :global(tbody tr) {
+  display: grid;
+  min-width: 0;
+  overflow: hidden;
+  border: 1px solid var(--admin-border);
+  border-radius: 16px;
+  background: var(--admin-card);
+  padding: 12px;
+}
+.surface :global(tbody td) {
+  display: grid;
+  grid-template-columns: minmax(104px, 0.4fr) minmax(0, 1fr);
+  gap: 12px;
+  align-items: start;
+  min-width: 0;
+  padding: 8px 0 !important;
+  text-align: left !important;
+  overflow-wrap: anywhere;
+}
+.surface :global(tbody td + td) { border-top: 1px solid var(--admin-border); }
+.surface :global(tbody td::before) {
+  color: var(--admin-text-soft);
+  font-size: 14px;
+  font-weight: 700;
+  line-height: 20px;
+}
+.surface :global(tbody td:nth-child(1)::before) { content: "Patient"; }
+.surface :global(tbody td:nth-child(2)::before) { content: "Screening"; }
+.surface :global(tbody td:nth-child(3)::before) { content: "Key findings"; }
+.surface :global(tbody td:nth-child(4)::before) { content: "Referral"; }
+.surface :global(tbody td:nth-child(5)::before) { content: "Conducted by"; }
+.surface :global(tbody td:nth-child(6)::before) { content: "Date"; }
+.surface :global(tbody td:nth-child(7)::before) { content: "Actions"; }
+.surface :global(tbody td[colspan]) {
+  display: block;
+  border: 0;
+  padding: 24px 16px !important;
+}
+.surface :global(tbody td[colspan]::before) { content: none; }
+.surface :global(tbody td:last-child) {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  justify-content: flex-start;
+}
 .surface :global(.fixed.inset-0) {
+  align-items: flex-end !important;
+  padding: 0 !important;
   backdrop-filter: blur(8px);
 }
-
-@media (max-width: 639px) {
-  .surface {
-    margin-inline: -2px;
+.surface :global(.fixed.inset-0) > div {
+  max-height: 94dvh !important;
+  border-radius: 24px 24px 0 0 !important;
+  padding: 16px !important;
+  padding-bottom: calc(16px + env(safe-area-inset-bottom)) !important;
+}
+@media (min-width: 640px) {
+  .surface :global(.overflow-hidden):has(> table) {
+    overflow-x: auto !important;
+    overscroll-behavior-inline: contain;
+    scrollbar-width: thin;
   }
-
-  .surface > div {
-    gap: 16px;
-  }
-
-  .surface > div > div:first-child {
-    gap: 10px;
-    padding: 12px !important;
-    border-radius: 18px !important;
-  }
-
-  .surface > div > div:first-child > div:first-child {
-    width: 100%;
-    display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-
-  .surface > div > div:first-child > div:first-child > button {
-    width: 100%;
-    min-width: 0;
-    min-height: 46px;
-    justify-content: center;
-    padding-inline: 10px !important;
-  }
-
-  .surface > div > div:first-child > div:first-child > button:first-child {
-    grid-column: 1 / -1;
-  }
-
-  .surface > div > div:nth-child(2) {
-    margin-inline: -2px;
-    padding-inline: 2px;
-  }
-
-  .surface :global(.min-w-\[240px\]) {
-    min-width: 0 !important;
-    width: 100%;
-  }
-
-  .surface :global(select) {
-    width: 100%;
-  }
-
   .surface :global(table) {
-    min-width: 760px;
+    display: table;
+    min-width: 860px;
   }
-
-  .surface :global(.fixed.inset-0) {
-    align-items: flex-end !important;
-    padding: 0 !important;
+  .surface :global(thead) {
+    display: table-header-group;
+    background: var(--admin-inset) !important;
+    color: var(--admin-text-muted) !important;
   }
-
-  .surface :global(.fixed.inset-0) > div {
-    max-height: 94dvh !important;
-    border-radius: 22px 22px 0 0 !important;
+  .surface :global(tbody) {
+    display: table-row-group;
+    border-color: var(--admin-border) !important;
+  }
+  .surface :global(tbody tr) {
+    display: table-row;
+    border: 0;
+    border-radius: 0;
+    background: transparent;
+    padding: 0;
+  }
+  .surface :global(tbody td) {
+    display: table-cell;
     padding: 16px !important;
-    padding-bottom: calc(16px + env(safe-area-inset-bottom)) !important;
+    border-top: 0;
+    text-align: left !important;
   }
-
-  .surface :global(.grid-cols-2) {
-    grid-template-columns: minmax(0, 1fr) !important;
+  .surface :global(tbody td::before) { content: none !important; }
+  .surface :global(tbody td:last-child) {
+    display: table-cell;
+    text-align: right !important;
   }
-
-  .surface :global(.col-span-2) {
-    grid-column: auto !important;
+  .surface :global(.fixed.inset-0) {
+    align-items: center !important;
+    padding: 16px !important;
   }
-
-  .surface :global(.flex.items-center.justify-between) {
-    min-width: 0;
+  .surface :global(.fixed.inset-0) > div {
+    max-height: 92vh !important;
+    border-radius: 24px !important;
+    padding: 24px !important;
   }
 }
-
+@media (min-width: 1024px) {
+  .surface :global(.fixed.inset-0) > div { padding: 32px !important; }
+}
 @media (prefers-reduced-motion: reduce) {
   .surface *,
   .surface *::before,
