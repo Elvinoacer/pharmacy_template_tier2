@@ -112,7 +112,7 @@ export default async function PortalMessagesPage({
       title="Messages & notifications"
       subtitle="Conversations with your pharmacy team and recent activity."
     >
-      <div className="grid min-w-0 gap-4 sm:gap-6 lg:grid-cols-2">
+      <div className="mx-auto grid w-full max-w-[1280px] min-w-0 gap-4 sm:gap-6 lg:grid-cols-2 [&_.card-premium>div:first-child>div>p]:text-sm">
         {/* Conversations */}
         <Panel
           title="Conversations"
@@ -135,15 +135,15 @@ export default async function PortalMessagesPage({
                   >
                     <div className="mb-3 flex min-w-0 flex-wrap items-center justify-between gap-2">
                       <div className="flex min-w-0 flex-1 items-center gap-2">
-                        <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-[var(--brand-soft)] text-[var(--brand-deep)]">
+                        <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-[var(--brand-soft)] text-[var(--brand-deep)]">
                           <ChannelIcon className="h-4 w-4" />
                         </span>
-                        <p className="min-w-0 break-words text-sm font-semibold text-[var(--foreground)]">
+                        <p className="min-w-0 break-words text-base font-semibold text-[var(--foreground)]">
                           {c.subject || c.channel}
                         </p>
                       </div>
                       <span
-                        className={`shrink-0 rounded-full px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide ${
+                        className={`shrink-0 rounded-full px-3 py-1 text-sm font-semibold uppercase tracking-wide ${
                           c.status === "open"
                             ? "bg-emerald-100 text-emerald-700"
                             : c.status === "pending"
@@ -162,13 +162,13 @@ export default async function PortalMessagesPage({
                         return (
                           <li
                             key={m.id}
-                            className={`min-w-0 rounded-xl px-3 py-2 text-sm ${
+                            className={`min-w-0 rounded-xl p-3 text-base ${
                               outbound
                                 ? "bg-[var(--brand-soft)] text-[var(--brand-deep)] sm:ml-8"
                                 : "bg-[var(--card-elev)] text-[var(--foreground)] sm:mr-8"
                             }`}
                           >
-                            <p className="mb-1 flex min-w-0 flex-wrap items-center justify-between gap-x-2 gap-y-0.5 text-[10px] uppercase tracking-wide text-[var(--muted-2)]">
+                            <p className="mb-1 flex min-w-0 flex-wrap items-center justify-between gap-x-2 gap-y-1 text-sm uppercase tracking-wide text-[var(--muted-2)]">
                               <span>{m.senderType}</span>
                               <span className="normal-case tracking-normal">{formatDateTime(m.createdAt)}</span>
                             </p>
@@ -178,7 +178,9 @@ export default async function PortalMessagesPage({
                       })}
                     </ul>
                     {c.status !== "closed" && (
-                      <PortalReplyForm conversationId={c.id} />
+                      <div className="[&_button]:min-h-11 [&_button]:min-w-11 [&_button]:text-sm [&_input]:min-h-11 [&_input]:text-base">
+                        <PortalReplyForm conversationId={c.id} />
+                      </div>
                     )}
                   </div>
                 );
@@ -192,14 +194,16 @@ export default async function PortalMessagesPage({
           title="Notification feed"
           description={`${total} total · searchable, paginated`}
         >
-          <PortalNotificationsPanel
-            initial={notifications}
-            total={total}
-            page={page}
-            pageSize={PAGE_SIZE}
-            basePath="/portal/messages"
-            queryParams={{ q }}
-          />
+          <div className="[&_button]:min-h-11 [&_button]:min-w-11 [&_button]:text-sm [&_input]:min-h-11 [&_input]:text-base [&_a]:min-h-11 [&_a]:min-w-11 [&_a]:text-sm">
+            <PortalNotificationsPanel
+              initial={notifications}
+              total={total}
+              page={page}
+              pageSize={PAGE_SIZE}
+              basePath="/portal/messages"
+              queryParams={{ q }}
+            />
+          </div>
         </Panel>
       </div>
     </PortalShell>
