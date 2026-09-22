@@ -46,21 +46,21 @@ export default async function ProductsAnalyticsPage({
             >
               <div className="flex min-w-0 items-start justify-between gap-3">
                 <div className="min-w-0">
-                  <p className="text-[11px] font-semibold uppercase tracking-[0.12em] admin-muted">#{index + 1} by net sales</p>
-                  <h3 className="mt-1 line-clamp-2 text-sm font-semibold leading-snug admin-text">{p.name}</h3>
+                  <p className="text-sm font-semibold uppercase tracking-[0.12em] admin-muted">#{index + 1} by net sales</p>
+                  <h3 className="mt-1 break-words text-base font-semibold leading-snug admin-text">{p.name}</h3>
                 </div>
-                <span className="shrink-0 rounded-full border border-[var(--admin-border)] bg-[var(--admin-card)] px-2.5 py-1 text-[11px] font-semibold admin-text">
+                <span className="shrink-0 rounded-full border border-[var(--admin-border)] bg-[var(--admin-card)] px-3 py-2 text-sm font-semibold admin-text">
                   {formatPct(p.marginPct)} margin
                 </span>
               </div>
 
               <div className="mt-4 rounded-xl border border-[var(--admin-border)] bg-[var(--admin-card)] p-3">
-                <p className="text-[11px] font-semibold uppercase tracking-wide admin-muted">Net sales</p>
+                <p className="text-sm font-semibold uppercase tracking-wide admin-muted">Net sales</p>
                 <p className="mt-1 break-words text-xl font-bold tracking-tight admin-text">{formatKES(p.netSales)}</p>
-                <p className="mt-1 text-xs admin-muted">Gross profit {formatKES(p.grossProfit)}</p>
+                <p className="mt-1 text-sm admin-muted">Gross profit {formatKES(p.grossProfit)}</p>
               </div>
 
-              <dl className="mt-3 grid grid-cols-2 gap-2 text-xs">
+              <dl className="mt-3 grid grid-cols-2 gap-2">
                 <ProductMetric label="Units" value={formatNumber(p.unitsSold)} />
                 <ProductMetric label="Orders" value={formatNumber(p.ordersCount)} />
                 <ProductMetric label="Gross sales" value={formatKES(p.grossSales)} />
@@ -78,7 +78,7 @@ export default async function ProductsAnalyticsPage({
         </div>
 
         <div tabIndex={0} role="region" aria-label="Product profitability records" className="admin-table-region hidden overflow-x-auto lg:block">
-          <table className="w-full min-w-[1120px] text-xs">
+          <table className="w-full min-w-[1120px] text-sm">
             <thead>
               <tr className="border-b border-[var(--admin-border)] text-left admin-muted">
                 <th>Medicine</th>
@@ -96,7 +96,7 @@ export default async function ProductsAnalyticsPage({
             <tbody>
               {products.map((p) => (
                 <tr key={p.inventoryId} className="border-b border-[var(--admin-border)] transition-colors duration-150 hover:bg-[var(--admin-hover)] motion-reduce:transition-none">
-                  <td className="max-w-[260px] font-medium admin-text">{p.name}</td>
+                  <td className="max-w-[260px] break-words font-medium admin-text">{p.name}</td>
                   <td className="text-right admin-muted">{formatNumber(p.unitsSold)}</td>
                   <td className="text-right admin-muted">{formatKES(p.grossSales)}</td>
                   <td className="text-right admin-muted">{formatKES(p.discounts)}</td>
@@ -121,8 +121,8 @@ export default async function ProductsAnalyticsPage({
 
 function ProductMetric({ label, value }: { label: string; value: string }) {
   return (
-    <div className="min-w-0 rounded-xl border border-[var(--admin-border)] bg-[var(--admin-card)] px-3 py-2.5">
-      <dt className="text-[10px] font-semibold uppercase tracking-wide admin-muted">{label}</dt>
+    <div className="min-w-0 rounded-xl border border-[var(--admin-border)] bg-[var(--admin-card)] p-3">
+      <dt className="text-sm font-semibold uppercase tracking-wide admin-muted">{label}</dt>
       <dd className="mt-1 break-words font-semibold admin-text">{value}</dd>
     </div>
   );
