@@ -92,81 +92,157 @@ function UsageMeter({
 
 const comparison = [
   {
+    group: "Plan & core pharmacy",
     feature: "Monthly platform fee",
     free: "KES 0",
     premium: "KES 500 / month",
   },
   {
-    feature: "Public medicine listings",
-    free: `${FREE_MEDICINE_LIMIT} listings`,
-    premium: "Free-plan cap removed",
+    group: "Plan & core pharmacy",
+    feature: "Core pharmacy workspace",
+    free: "Orders, dispensing, prescriptions & patient records included",
+    premium: "Included",
   },
   {
-    feature: "Active pharmacy services",
-    free: `${FREE_SERVICE_LIMIT} services`,
-    premium: "Free-plan cap removed",
-  },
-  {
-    feature: "Direct Afyvia prescription referrals",
-    free: `${FREE_MONTHLY_PRESCRIPTION_REFERRAL_LIMIT} / month`,
-    premium: "Unlimited",
-  },
-  {
-    feature: "Storefront, orders, reservations & bookings",
+    group: "Plan & core pharmacy",
+    feature: "Clinical safety & adherence workflows",
     free: "Included",
     premium: "Included",
   },
   {
+    group: "Plan & core pharmacy",
+    feature: "Shared medication library, barcode & manual entry",
+    free: "Included",
+    premium: "Included",
+  },
+  {
+    group: "Plan & core pharmacy",
+    feature: "CSV medication import",
+    free: "Up to 500 rows per batch",
+    premium: "Included",
+  },
+  {
+    group: "Storefront & commerce",
+    feature: "Basic pharmacy storefront",
+    free: "Identity, about & delivery basics",
+    premium: "Included",
+  },
+  {
+    group: "Storefront & commerce",
+    feature: "Advanced storefront studio",
+    free: "Not included",
+    premium: "Brand colours, hero, sections, gallery, team, FAQ & CTAs",
+  },
+  {
+    group: "Storefront & commerce",
+    feature: "Public medicine listings",
+    free: `${FREE_MEDICINE_LIMIT} listings`,
+    premium: "Unlimited public listings",
+  },
+  {
+    group: "Storefront & commerce",
+    feature: "Active pharmacy services",
+    free: `${FREE_SERVICE_LIMIT} services`,
+    premium: "Unlimited active services",
+  },
+  {
+    group: "Storefront & commerce",
+    feature: "Online orders, reservations & bookings",
+    free: "Included",
+    premium: "Included",
+  },
+  {
+    group: "Storefront & commerce",
     feature: "Your pharmacy M-PESA connection",
     free: "Included",
     premium: "Included",
   },
   {
+    group: "Patient acquisition",
+    feature: "Direct Afyvia prescription referrals",
+    free: `${FREE_MONTHLY_PRESCRIPTION_REFERRAL_LIMIT} / month`,
+    premium: "Unlimited",
+  },
+  {
+    group: "Patient acquisition",
     feature: "Campaign launches",
     free: `${FREE_MONTHLY_CAMPAIGN_LAUNCH_LIMIT} / month`,
     premium: "Unlimited",
   },
   {
-    feature: "Campaign scheduling & multi-channel outreach",
+    group: "Patient acquisition",
+    feature: "Campaign delivery",
+    free: "Single channel",
+    premium: "Multi-channel",
+  },
+  {
+    group: "Patient acquisition",
+    feature: "Campaign scheduling",
     free: "Not included",
     premium: "Included",
   },
   {
-    feature: "Custom patient segments",
-    free: "System groups only",
-    premium: "Custom audiences",
+    group: "Patient acquisition",
+    feature: "Patient groups / segments",
+    free: "System groups",
+    premium: "Custom reusable audiences",
   },
   {
+    group: "Patient acquisition",
+    feature: "Reusable message templates",
+    free: "Read existing templates",
+    premium: "Create & manage custom templates",
+  },
+  {
+    group: "Retention & loyalty",
+    feature: "Manual patient reminders",
+    free: "Included",
+    premium: "Included",
+  },
+  {
+    group: "Retention & loyalty",
     feature: "Automatic refill follow-up",
-    free: "Manual reminders",
+    free: "Manual follow-up",
     premium: "Automatic + manual",
   },
   {
-    feature: "Loyalty automation",
-    free: "Manual point adjustments",
-    premium: "Birthday, refill & order rewards",
+    group: "Retention & loyalty",
+    feature: "Loyalty balances & manual point adjustments",
+    free: "Included",
+    premium: "Included",
   },
   {
+    group: "Retention & loyalty",
+    feature: "Loyalty automation & promotional coupons",
+    free: "Not included",
+    premium: "Birthday, refill & order rewards + coupons",
+  },
+  {
+    group: "Operations & intelligence",
+    feature: "Inventory basics",
+    free: "Stock, batches, stock-outs, low-stock & expiry",
+    premium: "Included",
+  },
+  {
+    group: "Operations & intelligence",
     feature: "Inventory intelligence",
-    free: "Stock, batches, low-stock & expiry",
-    premium: "Velocity-based reorder guidance",
+    free: "Not included",
+    premium: "Sales velocity & reorder guidance",
   },
   {
-    feature: "Custom message templates",
-    free: "Read existing templates",
-    premium: "Create & manage templates",
-  },
-  {
+    group: "Operations & intelligence",
     feature: "AI-assisted medication import",
     free: "Not included",
     premium: "Included",
   },
   {
+    group: "Operations & intelligence",
     feature: "Advanced analytics",
-    free: "Not included",
-    premium: "Included",
+    free: "Core operational views",
+    premium: "Advanced reporting",
   },
   {
+    group: "Operations & intelligence",
     feature: "POS synchronization",
     free: "Not included",
     premium: "Included",
@@ -453,7 +529,7 @@ export default async function AdminBillingPage() {
               </h2>
             </div>
             <p className="max-w-lg text-xs leading-5 text-[var(--admin-text-muted)]">
-              Premium is an expansion layer, not a requirement to keep the pharmacy online.
+              See exactly what stays Free and what KES 500/month adds. Core pharmacy and clinical work is never locked behind Premium.
             </p>
           </div>
 
@@ -468,32 +544,45 @@ export default async function AdminBillingPage() {
                 </span>
               </div>
             </div>
-            {comparison.map((row) => (
-              <div
-                key={row.feature}
-                className="grid grid-cols-[1.3fr_0.85fr_0.85fr] border-t border-[var(--admin-border)] text-xs sm:text-sm"
-              >
-                <div className="p-3 font-semibold text-[var(--admin-text)] sm:p-4">
-                  {row.feature}
+            {comparison.map((row, index) => {
+              const startsGroup =
+                index === 0 || comparison[index - 1]?.group !== row.group;
+              return (
+                <div key={row.feature}>
+                  {startsGroup ? (
+                    <div className="border-t border-[var(--admin-border)] bg-[var(--admin-inset)]/60 px-3 py-2 text-[10px] font-bold uppercase tracking-[0.12em] text-[var(--admin-accent-text)] sm:px-4">
+                      {row.group}
+                    </div>
+                  ) : null}
+                  <div className="grid grid-cols-[1.3fr_0.85fr_0.85fr] border-t border-[var(--admin-border)] text-xs sm:text-sm">
+                    <div className="p-3 font-semibold text-[var(--admin-text)] sm:p-4">
+                      {row.feature}
+                    </div>
+                    <div className="border-l border-[var(--admin-border)] p-3 text-[var(--admin-text-muted)] sm:p-4">
+                      {row.free === "Not included" ? (
+                        <span className="inline-flex items-center gap-1.5">
+                          <X className="h-3.5 w-3.5 shrink-0 text-[var(--admin-text-soft)]" />
+                          {row.free}
+                        </span>
+                      ) : row.free === "Included" ? (
+                        <span className="inline-flex items-center gap-1.5">
+                          <Check className="h-3.5 w-3.5 shrink-0 text-emerald-600 dark:text-emerald-300" />
+                          Included
+                        </span>
+                      ) : (
+                        row.free
+                      )}
+                    </div>
+                    <div className="border-l border-[var(--admin-border)] p-3 font-medium text-[var(--admin-text)] sm:p-4">
+                      <span className="inline-flex items-start gap-1.5">
+                        <Check className="mt-0.5 h-3.5 w-3.5 shrink-0 text-emerald-600 dark:text-emerald-300" />
+                        {row.premium}
+                      </span>
+                    </div>
+                  </div>
                 </div>
-                <div className="border-l border-[var(--admin-border)] p-3 text-[var(--admin-text-muted)] sm:p-4">
-                  {row.free === "Not included" ? (
-                    <span className="inline-flex items-center gap-1.5">
-                      <X className="h-3.5 w-3.5 text-[var(--admin-text-soft)]" />
-                      {row.free}
-                    </span>
-                  ) : (
-                    row.free
-                  )}
-                </div>
-                <div className="border-l border-[var(--admin-border)] p-3 font-medium text-[var(--admin-text)] sm:p-4">
-                  <span className="inline-flex items-start gap-1.5">
-                    <Check className="mt-0.5 h-3.5 w-3.5 shrink-0 text-emerald-600 dark:text-emerald-300" />
-                    {row.premium}
-                  </span>
-                </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         </section>
 
