@@ -36,20 +36,20 @@ export default async function MedicationCategoriesPage() {
       actions={
         <Link
           href="/admin/medications"
-          className="inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-xl bg-[var(--admin-inset)] px-4 text-xs font-semibold admin-accent-text transition hover:bg-[var(--admin-inset-2)] sm:w-auto sm:rounded-full"
+          className="inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-xl bg-[var(--admin-inset)] px-4 text-sm font-semibold admin-accent-text transition hover:bg-[var(--admin-inset-2)] sm:w-auto sm:rounded-full"
         >
           <ArrowLeft className="h-3.5 w-3.5" /> Back to catalogue
         </Link>
       }
     >
-      <div className="space-y-4 sm:space-y-6">
+      <div className="mx-auto max-w-7xl space-y-4 sm:space-y-6">
         {loadError && (
           <div className="admin-alert-error">
             <span>{loadError}</span>
           </div>
         )}
 
-        <section aria-label="Category overview" className="grid grid-cols-2 gap-2.5 sm:grid-cols-3 sm:gap-4">
+        <section aria-label="Category overview" className="grid grid-cols-1 gap-3 sm:grid-cols-3 sm:gap-4">
           <AdminCard
             label="Categories"
             value={categories.length}
@@ -64,7 +64,7 @@ export default async function MedicationCategoriesPage() {
             icon={Package}
             accent="info"
           />
-          <div className="col-span-2 sm:col-span-1">
+          <div>
             <AdminCard
               label="Empty categories"
               value={emptyCats}
