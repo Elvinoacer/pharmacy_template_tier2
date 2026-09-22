@@ -129,7 +129,7 @@ export default async function IncompleteMedicationsPage({
             <p className="mx-auto mt-1 max-w-md text-base leading-6 admin-soft sm:text-sm sm:leading-5">Try another status, or return to the medicine catalogue to continue inventory work.</p>
           </div>
         ) : (
-          <ul className="grid gap-3 xl:grid-cols-2">
+          <ul className="grid gap-3 lg:grid-cols-2">
             {paged.map((medicine) => {
               const inventory = medicine.pharmacyInventory[0];
               const scoreClass =
