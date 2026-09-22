@@ -408,14 +408,12 @@
     justify-content: flex-start;
   }
 
-  .surface
-    :global(.workspace-command-trigger-responsive .afyvia-command-bar-text) {
+  .surface :global(.workspace-command-trigger-responsive) :global(.afyvia-command-bar-text) {
     display: block;
     font-size: 14px;
   }
 
-  .surface
-    :global(.workspace-command-trigger-responsive .afyvia-command-bar-kbd) {
+  .surface :global(.workspace-command-trigger-responsive) :global(.afyvia-command-bar-kbd) {
     display: none;
   }
 }
@@ -433,8 +431,7 @@
     max-width: 440px !important;
   }
 
-  .surface
-    :global(.workspace-command-trigger-responsive .afyvia-command-bar-kbd) {
+  .surface :global(.workspace-command-trigger-responsive) :global(.afyvia-command-bar-kbd) {
     display: flex;
   }
 }
