@@ -4,6 +4,7 @@ import { AuthError, getSessionUser, isStaff, writeAuditLog } from "@/app/lib/aut
 import { requireMedicationWriteContext } from "@/app/lib/services/medication-access";
 import { withPharmacy } from "@/app/lib/tenant-context";
 import { NextResponse } from "next/server";
+import { revalidatePath } from "next/cache";
 import { z } from "zod";
 import { prisma } from "@/app/lib/db";
 
@@ -87,6 +88,10 @@ export async function POST(req: Request) {
 
       return updated;
     });
+
+    revalidatePath("/admin/medications");
+    revalidatePath("/admin/inventory");
+    revalidatePath("/medicines");
 
     return NextResponse.json({
       ok: true,
