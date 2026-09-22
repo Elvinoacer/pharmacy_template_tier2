@@ -207,7 +207,7 @@ export function BarcodeScanFlow() {
     <div className="space-y-4 sm:space-y-6">
       <section className="rounded-2xl border border-[var(--admin-border-2)] bg-[var(--admin-card)] p-4 shadow-sm sm:rounded-3xl sm:p-5">
         {!cameraSupported && (
-          <div className="mb-4 flex items-start gap-2 rounded-xl border border-amber-500/20 bg-amber-500/10 p-3 text-xs leading-relaxed text-amber-800 dark:text-amber-200">
+          <div className="mb-4 flex items-start gap-2 rounded-xl border border-amber-500/20 bg-amber-500/10 p-3 text-sm leading-relaxed text-amber-800 dark:text-amber-200">
             <AlertCircle className="mt-0.5 h-3.5 w-3.5 shrink-0" />
             <span>Your browser does not support native camera scanning. Manual entry and USB keyboard scanners still work.</span>
           </div>
@@ -241,7 +241,7 @@ export function BarcodeScanFlow() {
           <div className="relative mt-4 overflow-hidden rounded-2xl border border-white/10 bg-black shadow-inner">
             <video ref={videoRef} className="aspect-[4/3] max-h-[28rem] w-full object-cover sm:aspect-video" playsInline muted />
             <div className="pointer-events-none absolute inset-x-[12%] top-1/2 h-20 -translate-y-1/2 rounded-xl border-2 border-white/70 shadow-[0_0_0_999px_rgba(0,0,0,0.18)]" />
-            <div className="absolute inset-x-0 bottom-0 flex items-center justify-center gap-2 bg-black/70 p-2.5 text-xs font-medium text-white backdrop-blur-sm">
+            <div className="absolute inset-x-0 bottom-0 flex items-center justify-center gap-2 bg-black/70 p-2.5 text-sm font-medium text-white backdrop-blur-sm">
               {scanning ? (
                 <>
                   <span className="typing-dot" /> Align one barcode inside the frame
@@ -253,7 +253,7 @@ export function BarcodeScanFlow() {
           </div>
         )}
 
-        <div className="my-4 flex items-center gap-3 text-[10px] font-bold uppercase tracking-[0.16em] admin-soft">
+        <div className="my-4 flex items-center gap-3 text-sm font-bold uppercase tracking-[0.16em] admin-soft">
           <span className="h-px flex-1 bg-[var(--admin-border-2)]" />
           <span className="inline-flex items-center gap-1.5"><Keyboard className="h-3 w-3" /> Manual or USB scanner</span>
           <span className="h-px flex-1 bg-[var(--admin-border-2)]" />
@@ -267,7 +267,7 @@ export function BarcodeScanFlow() {
               value={manualBarcode}
               onChange={(event) => setManualBarcode(event.target.value)}
               placeholder="Type or scan barcode"
-              className="input-admin min-h-11 w-full pl-10 font-mono"
+              className="input-admin min-h-11 w-full pl-10 font-mono text-base sm:text-sm"
               autoCapitalize="off"
               autoComplete="off"
               spellCheck={false}
@@ -296,19 +296,19 @@ export function BarcodeScanFlow() {
             <p className="flex items-center gap-2 text-sm font-bold text-amber-800 dark:text-amber-200">
               <AlertCircle className="h-4 w-4 shrink-0" /> Not found in the shared library
             </p>
-            <p className="mt-2 break-words text-xs leading-relaxed text-amber-800/80 dark:text-amber-200/75">
+            <p className="mt-2 break-words text-base leading-relaxed text-amber-800/80 dark:text-amber-200/75 sm:text-sm">
               Barcode <code className="rounded bg-amber-500/10 px-1 font-mono">{result.barcode}</code> is not in MedicationMaster yet. Manual entry is available on every plan. AI Import is a Premium shortcut when you want assisted extraction.
             </p>
             <div className="mt-4 grid gap-2 sm:grid-cols-2">
               <Link
                 href="/admin/medications/import/ai"
-                className="inline-flex min-h-10 items-center justify-center gap-1.5 rounded-xl bg-purple-500/10 px-3 text-xs font-semibold text-purple-700 transition hover:bg-purple-500/20 dark:text-purple-300"
+                className="inline-flex min-h-11 items-center justify-center gap-1.5 rounded-xl bg-purple-500/10 px-3 text-sm font-semibold text-purple-700 transition hover:bg-purple-500/20 dark:text-purple-300"
               >
                 <Sparkles className="h-3.5 w-3.5" /> AI Import · Premium <ArrowRight className="h-3 w-3" />
               </Link>
               <Link
                 href="/admin/medications/new"
-                className="inline-flex min-h-10 items-center justify-center rounded-xl bg-[var(--admin-inset)] px-3 text-xs font-semibold admin-muted transition hover:bg-[var(--admin-hover)] hover:text-[var(--admin-text)]"
+                className="inline-flex min-h-11 items-center justify-center rounded-xl bg-[var(--admin-inset)] px-3 text-sm font-semibold admin-muted transition hover:bg-[var(--admin-hover)] hover:text-[var(--admin-text)]"
               >
                 Manual entry
               </Link>
@@ -332,7 +332,7 @@ export function BarcodeScanFlow() {
               )}
               <div className="min-w-0">
                 <h3 className="break-words text-base font-bold admin-text">{result.master.name}</h3>
-                <p className="mt-1 text-xs leading-relaxed admin-muted">
+                <p className="mt-1 text-base leading-relaxed admin-muted sm:text-sm">
                   {result.master.genericName}
                   {result.master.brandName ? ` · ${result.master.brandName}` : ""}
                   {result.master.strengthDisplay ? ` · ${result.master.strengthDisplay}` : ""}
@@ -340,7 +340,7 @@ export function BarcodeScanFlow() {
                   {result.master.manufacturer ? ` · ${result.master.manufacturer}` : ""}
                 </p>
                 {result.master.controlledDrug && (
-                  <span className="mt-2 inline-flex rounded-full bg-rose-500/10 px-2.5 py-1 text-xs font-bold text-rose-700 dark:text-rose-300">
+                  <span className="mt-2 inline-flex rounded-full bg-rose-500/10 px-2.5 py-1 text-sm font-bold text-rose-700 dark:text-rose-300">
                     Controlled · {result.master.controlledDrugSchedule}
                   </span>
                 )}
@@ -348,9 +348,9 @@ export function BarcodeScanFlow() {
             </div>
 
             {result.alreadyStocked ? (
-              <div className="mt-4 rounded-xl border border-blue-500/15 bg-blue-500/10 p-3 text-xs leading-relaxed text-blue-800 dark:text-blue-200">
+              <div className="mt-4 rounded-xl border border-blue-500/15 bg-blue-500/10 p-3 text-sm leading-relaxed text-blue-800 dark:text-blue-200">
                 <Check className="mr-1 inline h-3 w-3" /> Already in inventory ({result.alreadyStocked.currentStock} in stock).{" "}
-                <Link href={`/admin/medications/${result.alreadyStocked.id}`} className="font-semibold underline underline-offset-2">
+                <Link href={`/admin/medications/${result.alreadyStocked.id}`} className="inline-flex min-h-11 items-center font-semibold underline underline-offset-2">
                   Edit inventory →
                 </Link>
               </div>
