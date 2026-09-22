@@ -94,12 +94,12 @@ export function ServiceBookingsPanel({
 
   return (
     <div className="space-y-4">
-      <div className="flex flex-wrap gap-2">
+      <div className="flex max-w-full flex-wrap gap-2">
         {["all", "requested", "awaiting_payment", "confirmed", "completed", "cancelled"].map((s) => (
           <Link
             key={s}
             href={s === "all" ? "/admin/services/bookings" : `/admin/services/bookings?status=${s}`}
-            className={`rounded-full px-3 py-1.5 text-xs font-semibold transition ${
+            className={`inline-flex min-h-11 items-center rounded-full px-4 py-2 text-sm font-semibold transition ${
               statusFilter === s
                 ? "bg-[var(--admin-accent)] text-[var(--admin-btn-fg)]"
                 : "bg-[var(--admin-inset)] admin-muted hover:bg-[var(--admin-inset-2)]"
@@ -113,7 +113,7 @@ export function ServiceBookingsPanel({
       {bookings.length === 0 ? (
         <div className="admin-empty py-12">
           <p className="text-sm font-semibold admin-text">No bookings yet</p>
-          <p className="mt-1 text-xs admin-muted">
+          <p className="mt-1 text-sm admin-muted">
             Public service forms will land here when customers book.
           </p>
         </div>
@@ -124,17 +124,17 @@ export function ServiceBookingsPanel({
               key={b.id}
               className="rounded-2xl border border-[var(--admin-border)] bg-[var(--admin-panel)] p-4"
             >
-              <div className="flex flex-wrap items-start justify-between gap-3">
+              <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-start">
                 <div className="min-w-0">
                   <div className="flex flex-wrap items-center gap-2">
                     <p className="font-semibold admin-text">{b.fullName}</p>
                     <span
-                      className={`rounded-full px-2 py-0.5 text-xs font-semibold capitalize ${statusBadge(b.status)}`}
+                      className={`rounded-full px-2 py-0.5 text-sm font-semibold capitalize ${statusBadge(b.status)}`}
                     >
                       {b.status.replace(/_/g, " ")}
                     </span>
                     <span
-                      className={`rounded-full px-2 py-0.5 text-xs font-semibold capitalize ${payBadge(b.paymentStatus)}`}
+                      className={`rounded-full px-2 py-0.5 text-sm font-semibold capitalize ${payBadge(b.paymentStatus)}`}
                     >
                       {b.paymentStatus}
                     </span>
@@ -152,11 +152,11 @@ export function ServiceBookingsPanel({
                       </span>
                     )}
                   </p>
-                  <div className="mt-2 flex flex-wrap gap-x-4 gap-y-1 text-xs admin-soft">
+                  <div className="mt-2 flex flex-wrap gap-x-4 gap-y-1 text-sm admin-soft">
                     <span className="inline-flex items-center gap-1">
                       <Phone className="h-3 w-3" /> {b.phone}
                     </span>
-                    {b.email && <span>{b.email}</span>}
+                    {b.email && <span className="break-all">{b.email}</span>}
                     {(b.preferredDate || b.preferredTime) && (
                       <span className="inline-flex items-center gap-1">
                         <Calendar className="h-3 w-3" />
@@ -169,28 +169,28 @@ export function ServiceBookingsPanel({
                     </span>
                   </div>
                   {b.notes && (
-                    <p className="mt-2 rounded-lg bg-[var(--admin-inset)] px-2.5 py-1.5 text-xs admin-muted">
+                    <p className="mt-2 rounded-lg bg-[var(--admin-inset)] px-3 py-2 text-sm admin-muted">
                       {b.notes}
                     </p>
                   )}
                   {b.paidVia && (
-                    <p className="mt-1 text-xs admin-soft">
+                    <p className="mt-1 text-sm admin-soft">
                       Paid via {b.paidVia}
                       {b.paymentRef ? ` · ref ${b.paymentRef}` : ""}
                     </p>
                   )}
                 </div>
 
-                <div className="flex flex-col gap-2 sm:items-end">
+                <div className="flex w-full flex-col gap-3 lg:w-auto lg:items-end">
                   {/* Record payment for unpaid priced bookings */}
                   {(b.status === "awaiting_payment" || b.paymentStatus === "unpaid") &&
                     b.amount != null &&
                     b.amount > 0 && (
-                      <form action={payAction} className="flex flex-wrap items-end gap-2">
+                      <form action={payAction} className="grid w-full gap-3 sm:grid-cols-2 lg:flex lg:w-auto lg:flex-wrap lg:items-end">
                         <input type="hidden" name="bookingId" value={b.id} />
                         <div>
-                          <label className="label-admin !text-xs">Record payment</label>
-                          <select name="paidVia" className="input-admin !py-1.5 text-xs" defaultValue="cash">
+                          <label className="label-admin !text-sm">Record payment</label>
+                          <select name="paidVia" className="input-admin min-h-11 !py-2 text-base sm:text-sm" defaultValue="cash">
                             <option value="cash">Cash</option>
                             <option value="card">Card</option>
                             <option value="other">Other</option>
@@ -198,17 +198,17 @@ export function ServiceBookingsPanel({
                           </select>
                         </div>
                         <div>
-                          <label className="label-admin !text-xs">Ref (optional)</label>
+                          <label className="label-admin !text-sm">Ref (optional)</label>
                           <input
                             name="paymentRef"
                             placeholder="Receipt #"
-                            className="input-admin !py-1.5 text-xs"
+                            className="input-admin min-h-11 !py-2 text-base sm:text-sm"
                           />
                         </div>
                         <button
                           type="submit"
                           disabled={pending}
-                          className="btn-admin inline-flex items-center gap-1 !rounded-xl px-2.5 py-1.5 text-xs disabled:opacity-50"
+                          className="btn-admin inline-flex min-h-11 w-full items-center justify-center gap-2 !rounded-xl px-4 py-2 !text-sm disabled:opacity-50 sm:col-span-2 lg:w-auto"
                         >
                           {payPending ? (
                             <Loader2 className="h-3 w-3 animate-spin" />
@@ -220,15 +220,15 @@ export function ServiceBookingsPanel({
                       </form>
                     )}
 
-                  <div className="flex flex-wrap gap-1.5">
+                  <div className="grid w-full grid-cols-1 gap-2 sm:grid-cols-2 lg:flex lg:w-auto lg:flex-wrap">
                     {b.status === "requested" && (
-                      <form action={stAction}>
+                      <form action={stAction} className="w-full lg:w-auto">
                         <input type="hidden" name="bookingId" value={b.id} />
                         <input type="hidden" name="status" value="confirmed" />
                         <button
                           type="submit"
                           disabled={pending}
-                          className="btn-admin inline-flex items-center gap-1 text-xs font-semibold !rounded-xl px-2.5 py-1.5"
+                          className="btn-admin inline-flex min-h-11 w-full items-center justify-center gap-2 !rounded-xl px-4 py-2 !text-sm lg:w-auto"
                           title="Confirm appointment request"
                         >
                           <Check className="h-3 w-3" /> Confirm request
@@ -236,13 +236,13 @@ export function ServiceBookingsPanel({
                       </form>
                     )}
                     {b.status === "awaiting_payment" && (
-                      <form action={stAction}>
+                      <form action={stAction} className="w-full lg:w-auto">
                         <input type="hidden" name="bookingId" value={b.id} />
                         <input type="hidden" name="status" value="confirmed" />
                         <button
                           type="submit"
                           disabled={pending}
-                          className="btn-admin-ghost inline-flex items-center gap-1 text-xs"
+                          className="btn-admin-ghost inline-flex min-h-11 w-full items-center justify-center gap-2 !text-sm lg:w-auto"
                           title="Confirm without payment (staff override)"
                         >
                           <Check className="h-3 w-3" /> Force confirm
@@ -250,26 +250,26 @@ export function ServiceBookingsPanel({
                       </form>
                     )}
                     {b.status === "confirmed" && (
-                      <form action={stAction}>
+                      <form action={stAction} className="w-full lg:w-auto">
                         <input type="hidden" name="bookingId" value={b.id} />
                         <input type="hidden" name="status" value="completed" />
                         <button
                           type="submit"
                           disabled={pending}
-                          className="btn-admin-ghost inline-flex items-center gap-1 text-xs"
+                          className="btn-admin-ghost inline-flex min-h-11 w-full items-center justify-center gap-2 !text-sm lg:w-auto"
                         >
                           <Check className="h-3 w-3" /> Complete
                         </button>
                       </form>
                     )}
                     {b.status !== "cancelled" && b.status !== "completed" && (
-                      <form action={stAction}>
+                      <form action={stAction} className="w-full lg:w-auto">
                         <input type="hidden" name="bookingId" value={b.id} />
                         <input type="hidden" name="status" value="cancelled" />
                         <button
                           type="submit"
                           disabled={pending}
-                          className="btn-admin-ghost inline-flex items-center gap-1 text-xs !text-red-600"
+                          className="btn-admin-ghost inline-flex min-h-11 w-full items-center justify-center gap-2 !text-sm !text-red-600 lg:w-auto"
                         >
                           <XCircle className="h-3 w-3" /> Cancel
                         </button>
