@@ -5,6 +5,7 @@ import React, {
   useContext,
   useEffect,
   useMemo,
+  useRef,
   useState,
 } from "react";
 import Link from "next/link";
@@ -279,6 +280,18 @@ function PremiumBenefits() {
 
 export function AdminPlanStatusButton() {
   const { status, loading } = useAdminPlanStatus();
+  const planMenu = useRef<HTMLDetailsElement>(null);
+
+  useEffect(() => {
+    const handlePointerDown = (event: PointerEvent) => {
+      if (planMenu.current?.open && !planMenu.current.contains(event.target as Node)) {
+        planMenu.current.open = false;
+      }
+    };
+
+    document.addEventListener("pointerdown", handlePointerDown);
+    return () => document.removeEventListener("pointerdown", handlePointerDown);
+  }, []);
 
   if (loading) {
     return (
@@ -291,16 +304,26 @@ export function AdminPlanStatusButton() {
   const periodEnd = formatDate(status.subscription.periodEnd);
 
   return (
-    <details className="group relative hidden sm:block">
+    <details
+      ref={planMenu}
+      className="group relative hidden sm:block"
+      onKeyDown={(event) => {
+        if (event.key === "Escape") {
+          event.currentTarget.open = false;
+          event.currentTarget.querySelector("summary")?.focus();
+        }
+      }}
+    >
       <summary
         className={
           attention
             ? "flex min-h-9 cursor-pointer list-none items-center gap-1.5 rounded-xl border border-amber-500/35 bg-amber-500/10 px-3 text-xs font-semibold text-amber-800 transition hover:bg-amber-500/15 dark:text-amber-200 [&::-webkit-details-marker]:hidden"
             : status.premium
               ? "flex min-h-9 cursor-pointer list-none items-center gap-1.5 rounded-xl border border-emerald-500/25 bg-emerald-500/10 px-3 text-xs font-semibold text-emerald-800 transition hover:bg-emerald-500/15 dark:text-emerald-200 [&::-webkit-details-marker]:hidden"
-              : "flex min-h-9 cursor-pointer list-none items-center gap-1.5 rounded-xl border border-[var(--admin-border)] bg-[var(--admin-card)] px-3 text-xs font-semibold text-[var(--admin-text)] transition hover:bg-[var(--admin-hover)] [&::-webkit-details-marker]:hidden"
+              : "flex min-h-9 cursor-pointer list-none items-center gap-1.5 rounded-xl border border-[var(--admin-border)] bg-[var(--admin-card)] px-3 text-xs font-semibold text-[var(--admin-text)] transition hover:bg-[var(--admin-hover)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--admin-accent)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--admin-panel)] [&::-webkit-details-marker]:hidden"
         }
         aria-label="View current pharmacy plan"
+        aria-haspopup="dialog"
       >
         {attention ? (
           <AlertTriangle size={14} aria-hidden="true" />
@@ -323,8 +346,12 @@ export function AdminPlanStatusButton() {
         />
       </summary>
 
-      <div className="absolute right-0 top-11 z-50 flex max-h-[calc(100dvh-5rem)] w-[360px] max-w-[calc(100vw-2rem)] flex-col overflow-hidden rounded-2xl border border-[var(--admin-border)] bg-[var(--admin-card)] shadow-2xl shadow-black/15">
-        <div className="shrink-0 border-b border-[var(--admin-border)] p-4">
+      <div
+        role="dialog"
+        aria-label="Pharmacy plan details"
+        className="absolute right-0 top-full z-50 mt-2 flex max-h-[calc(100svh-8rem)] w-[380px] max-w-[calc(100vw-2rem)] flex-col overflow-hidden rounded-2xl border border-[var(--admin-border)] bg-[var(--admin-card)] shadow-2xl shadow-black/15"
+      >
+        <div className="shrink-0 border-b border-[var(--admin-border)] p-3.5">
           <div className="flex items-start justify-between gap-3">
             <div>
               <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-[var(--admin-accent-text)]">
@@ -358,9 +385,9 @@ export function AdminPlanStatusButton() {
           )}
         </div>
 
-        <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain">
+        <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain [scrollbar-gutter:stable]">
           {!status.premium && (
-            <div className="space-y-3 border-b border-[var(--admin-border)] p-4">
+            <div className="space-y-2.5 border-b border-[var(--admin-border)] p-3.5">
               <p className="text-[10px] font-bold uppercase tracking-[0.12em] text-[var(--admin-text-soft)]">
                 Free usage
               </p>
@@ -375,7 +402,7 @@ export function AdminPlanStatusButton() {
             </div>
           )}
 
-          <div className="space-y-3 p-4">
+          <div className="space-y-3 p-3.5">
             <div>
               <p className="mb-2 text-[10px] font-bold uppercase tracking-[0.12em] text-[var(--admin-text-soft)]">
                 {status.premium ? "Premium includes" : "Free keeps available"}
@@ -396,7 +423,7 @@ export function AdminPlanStatusButton() {
           </div>
         </div>
 
-        <div className="shrink-0 border-t border-[var(--admin-border)] bg-[var(--admin-card)] p-3">
+        <div className="shrink-0 border-t border-[var(--admin-border)] bg-[var(--admin-card)] p-3 shadow-[0_-8px_20px_rgba(0,0,0,0.04)]">
           <Link
             href="/admin/billing"
             className="flex min-h-10 w-full items-center justify-center gap-1.5 rounded-xl bg-[var(--admin-accent)] px-3 text-xs font-semibold text-white transition hover:brightness-105 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--admin-accent)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--admin-card)]"
