@@ -59,7 +59,7 @@ export default async function PortalLoyaltyPage() {
       title="Loyalty rewards"
       subtitle={`Points and coupons are per pharmacy${tenant.slug ? " — viewing your balance with your active pharmacy" : ""}. Earn on every refill and redeem for exclusive coupons.`}
     >
-      <div className="mb-5 grid gap-3 sm:mb-6 sm:grid-cols-3 sm:gap-4">
+      <div className="mx-auto mb-6 grid w-full max-w-[1280px] gap-4 sm:grid-cols-3 [&_.card-stat_p:first-child]:text-sm [&_.card-stat_p:nth-child(3)]:text-sm">
         <StatCard
           label="Points balance"
           value={balance}
@@ -83,7 +83,7 @@ export default async function PortalLoyaltyPage() {
         />
       </div>
 
-      <div className="grid gap-4 sm:gap-6 lg:grid-cols-2">
+      <div className="mx-auto grid w-full max-w-[1280px] min-w-0 gap-4 sm:gap-6 lg:grid-cols-2 [&_.card-premium>div:first-child>div>p]:text-sm">
         {/* Tier progress */}
         <Panel title="Your tier" description="Climb the tiers for richer rewards">
           <div className={`mb-4 flex flex-col items-start gap-3 rounded-2xl p-4 ring-2 sm:flex-row sm:items-center sm:gap-4 sm:p-5 ${tierMeta.bg} ${tierMeta.ring}`}>
@@ -91,10 +91,10 @@ export default async function PortalLoyaltyPage() {
               <Award className="h-6 w-6 sm:h-7 sm:w-7" />
             </div>
             <div className="min-w-0 flex-1">
-              <p className={`text-xs font-semibold uppercase tracking-wide ${tierMeta.color}`}>Current tier</p>
+              <p className={`text-sm font-semibold uppercase tracking-wide ${tierMeta.color}`}>Current tier</p>
               <p className="break-words text-xl font-bold capitalize text-[var(--foreground)] sm:text-2xl">{tier}</p>
               {tierMeta.next && (
-                <p className="mt-0.5 text-xs leading-relaxed text-[var(--muted)]">
+                <p className="mt-1 text-sm leading-relaxed text-[var(--muted)]">
                   {pointsToNext} more points to reach <strong className="capitalize">{tierMeta.next}</strong>
                 </p>
               )}
@@ -102,7 +102,7 @@ export default async function PortalLoyaltyPage() {
           </div>
           {tierMeta.next && (
             <div>
-              <div className="mb-1.5 flex flex-wrap items-center justify-between gap-1 text-xs">
+              <div className="mb-2 flex flex-wrap items-center justify-between gap-2 text-sm">
                 <span className="font-medium text-[var(--foreground)]">{balance} pts</span>
                 <span className="text-[var(--muted)]">{tierMeta.min} pts → {tierMeta.next}</span>
               </div>
@@ -119,14 +119,18 @@ export default async function PortalLoyaltyPage() {
         {/* Referral code */}
         <Panel title="Referral code" description="Share with family — you both earn after their first refill">
           <div className="rounded-2xl border border-dashed border-[var(--line-2)] bg-[var(--brand-tint)] p-4 sm:p-5">
-            <p className="text-xs font-semibold uppercase tracking-wide text-[var(--muted)]">Your code</p>
+            <p className="text-sm font-semibold uppercase tracking-wide text-[var(--muted)]">Your code</p>
             <div className="mt-2 flex flex-wrap items-center justify-between gap-3">
               <p className="min-w-0 break-all font-mono text-xl font-bold tracking-wider text-[var(--brand-deep)] sm:text-3xl">
                 {account?.referralCode || "—"}
               </p>
-              {account?.referralCode && <CopyButton value={account.referralCode} />}
+              {account?.referralCode && (
+                <div className="[&_button]:min-h-11 [&_button]:min-w-11 [&_button]:text-sm">
+                  <CopyButton value={account.referralCode} />
+                </div>
+              )}
             </div>
-            <p className="mt-3 text-sm leading-relaxed text-[var(--muted)]">
+            <p className="mt-3 text-base leading-relaxed text-[var(--muted)]">
               Earn <strong className="text-[var(--brand-deep)]">+50 points</strong> for every friend who completes
               their first refill using your code.
             </p>
@@ -160,7 +164,7 @@ export default async function PortalLoyaltyPage() {
                     <div className="flex min-w-0 items-start justify-between gap-2">
                       <div className="min-w-0">
                         <p className="break-all font-mono text-base font-bold text-[var(--brand-deep)]">{c.code}</p>
-                        <p className="mt-0.5 break-words text-xs leading-relaxed text-[var(--muted)]">{c.description || "Coupon"}</p>
+                        <p className="mt-1 break-words text-sm leading-relaxed text-[var(--muted)]">{c.description || "Coupon"}</p>
                       </div>
                       <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-[var(--accent-soft)] text-[var(--accent-deep)]">
                         <Gift className="h-5 w-5" />
@@ -168,18 +172,20 @@ export default async function PortalLoyaltyPage() {
                     </div>
                     {c.pointsCost > 0 ? (
                       <div className="flex flex-wrap items-center justify-between gap-2">
-                        <span className="badge badge-accent">
-                          <Sparkles className="h-3 w-3" /> {c.pointsCost} pts
+                        <span className="inline-flex min-h-7 items-center gap-1.5 rounded-full bg-[var(--accent-soft)] px-3 py-1 text-sm font-semibold text-[var(--accent-deep)]">
+                          <Sparkles className="h-4 w-4" /> {c.pointsCost} pts
                         </span>
-                        <RedeemCouponForm
-                          couponId={c.id}
-                          canRedeem={canRedeem}
-                          pointsShort={Math.max(0, c.pointsCost - balance)}
-                          alreadyRedeemed={alreadyRedeemed}
-                        />
+                        <div className="[&_button]:min-h-11 [&_button]:min-w-11 [&_button]:text-sm [&_p]:text-sm">
+                          <RedeemCouponForm
+                            couponId={c.id}
+                            canRedeem={canRedeem}
+                            pointsShort={Math.max(0, c.pointsCost - balance)}
+                            alreadyRedeemed={alreadyRedeemed}
+                          />
+                        </div>
                       </div>
                     ) : (
-                      <p className="text-xs font-medium text-[var(--brand-deep)]">Free with any purchase</p>
+                      <p className="text-sm font-medium text-[var(--brand-deep)]">Free with any purchase</p>
                     )}
                   </li>
                 );
@@ -214,7 +220,7 @@ export default async function PortalLoyaltyPage() {
                         <p className="break-words text-sm font-semibold text-[var(--foreground)]">
                           {t.description || t.type}
                         </p>
-                        <p className="text-xs capitalize leading-relaxed text-[var(--muted)]">
+                        <p className="text-sm capitalize leading-relaxed text-[var(--muted)]">
                           {t.type.replace("_", " ")} · {formatDate(t.createdAt)}
                         </p>
                       </div>
