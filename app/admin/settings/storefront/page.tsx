@@ -50,15 +50,15 @@ export default async function AdminStorefrontStudioPage() {
 
   return (
     <AdminShell user={user} title="Website appearance" subtitle="Shape the public pharmacy experience with a mobile-first editing flow and clear publishing priority.">
-      <div className="storefront-studio-ux max-w-6xl space-y-4 sm:space-y-5">
+      <div className="storefront-studio-ux mx-auto w-full max-w-6xl space-y-4 sm:space-y-6">
         {premiumActive ? (
           <>
-            <section aria-label="Storefront editing priority" className="grid grid-cols-3 gap-2 rounded-2xl border border-[var(--admin-border)] bg-[var(--admin-inset)] p-2.5 sm:gap-3 sm:p-3">
+            <section aria-label="Storefront editing priority" className="grid grid-cols-1 gap-3 rounded-2xl border border-[var(--admin-border)] bg-[var(--admin-inset)] p-3 sm:grid-cols-3">
               {prioritySteps.map(({ icon: StepIcon, step, title, hint }) => (
-                <div key={step} className="min-w-0 rounded-xl bg-[var(--admin-panel)] px-2.5 py-2.5 sm:px-3 sm:py-3">
-                  <div className="flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-[0.12em] admin-soft sm:text-[11px]"><StepIcon className="h-3.5 w-3.5 admin-accent-text" /> Step {step}</div>
-                  <p className="mt-1 truncate text-xs font-semibold admin-text sm:text-sm">{title}</p>
-                  <p className="mt-0.5 hidden text-[11px] admin-muted sm:block">{hint}</p>
+                <div key={step} className="min-w-0 rounded-xl bg-[var(--admin-panel)] p-3">
+                  <div className="flex items-center gap-2 text-sm font-bold uppercase tracking-[0.12em] admin-soft"><StepIcon className="h-4 w-4 admin-accent-text" /> Step {step}</div>
+                  <p className="mt-1 break-words text-base font-semibold admin-text">{title}</p>
+                  <p className="mt-1 text-sm admin-muted">{hint}</p>
                 </div>
               ))}
             </section>
@@ -85,21 +85,109 @@ export default async function AdminStorefrontStudioPage() {
           </>
         )}
         <style>{`
-          .storefront-studio-ux form { min-width: 0; }
-          .storefront-studio-ux form > div[class*="overflow-x-auto"] { scroll-snap-type: x proximity; overscroll-behavior-x: contain; scrollbar-width: thin; }
-          .storefront-studio-ux form > div[class*="overflow-x-auto"] > button { scroll-snap-align: start; min-height: 40px; }
-          .storefront-studio-ux input, .storefront-studio-ux textarea, .storefront-studio-ux select { max-width: 100%; }
-          html[data-theme="dark"] .storefront-studio-ux [class*="text-red-200"] { color: #fda4af !important; }
-          html[data-theme="dark"] .storefront-studio-ux [class*="text-emerald-200"] { color: #6ee7b7 !important; }
-          html[data-theme="dark"] .storefront-studio-ux [class*="text-teal-700"] { color: #5eead4 !important; }
-          @media (max-width: 639px) {
-            .storefront-studio-ux form { gap: 14px; }
-            .storefront-studio-ux form > .admin-card:first-child { padding: 14px !important; }
-            .storefront-studio-ux form > .admin-card:first-child > div:last-child { display: grid; grid-template-columns: minmax(0, 1fr); width: 100%; }
-            .storefront-studio-ux form > .admin-card:first-child > div:last-child a, .storefront-studio-ux form > .admin-card:first-child > div:last-child button { width: 100%; min-height: 44px; justify-content: center; }
-            .storefront-studio-ux .admin-card { border-radius: 16px !important; }
-            .storefront-studio-ux .admin-card[class*="p-5"], .storefront-studio-ux .admin-card[class*="sm:p-6"] { padding: 16px !important; }
-            .storefront-studio-ux [class*="flex items-start gap-2"] > .flex-1 { min-width: 0; }
+          .storefront-studio-ux {
+            min-width: 0;
+            overflow-wrap: anywhere;
+          }
+
+          .storefront-studio-ux form {
+            min-width: 0;
+          }
+
+          .storefront-studio-ux form > div[class*="overflow-x-auto"] {
+            scroll-snap-type: x proximity;
+            overscroll-behavior-x: contain;
+            scrollbar-width: thin;
+          }
+
+          .storefront-studio-ux form > div[class*="overflow-x-auto"] > button {
+            min-height: 44px;
+            scroll-snap-align: start;
+          }
+
+          .storefront-studio-ux :is(button, a) {
+            min-height: 44px;
+            min-width: 44px;
+            font-size: 14px;
+          }
+
+          .storefront-studio-ux :is(input:not([type="hidden"]), textarea, select) {
+            max-width: 100%;
+            min-width: 0;
+            font-size: 16px;
+          }
+
+          .storefront-studio-ux :is(input[type="checkbox"], input[type="radio"], input[type="color"]) {
+            min-height: 44px;
+            min-width: 44px;
+          }
+
+          .storefront-studio-ux :is(label, .label-admin) {
+            font-size: 14px;
+          }
+
+          .storefront-studio-ux p {
+            font-size: 16px;
+            line-height: 1.5;
+          }
+
+          .storefront-studio-ux li {
+            font-size: 14px;
+          }
+
+          .storefront-studio-ux p.truncate {
+            overflow: visible;
+            text-overflow: clip;
+            white-space: normal;
+            overflow-wrap: anywhere;
+          }
+
+          .storefront-studio-ux form > .admin-card:first-child {
+            padding: 16px !important;
+          }
+
+          .storefront-studio-ux form > .admin-card:first-child > div:last-child {
+            display: grid;
+            grid-template-columns: minmax(0, 1fr);
+            gap: 8px;
+            width: 100%;
+          }
+
+          .storefront-studio-ux form > .admin-card:first-child > div:last-child :is(a, button) {
+            width: 100%;
+            justify-content: center;
+          }
+
+          .storefront-studio-ux [class*="flex items-start"] > .flex-1 {
+            min-width: 0;
+          }
+
+          html[data-theme="dark"] .storefront-studio-ux [class*="text-red-200"] {
+            color: #fda4af !important;
+          }
+
+          html[data-theme="dark"] .storefront-studio-ux [class*="text-emerald-200"] {
+            color: #6ee7b7 !important;
+          }
+
+          html[data-theme="dark"] .storefront-studio-ux [class*="text-teal-700"] {
+            color: #5eead4 !important;
+          }
+
+          @media (min-width: 640px) {
+            .storefront-studio-ux :is(input:not([type="hidden"]), textarea, select),
+            .storefront-studio-ux p {
+              font-size: 14px;
+            }
+
+            .storefront-studio-ux form > .admin-card:first-child > div:last-child {
+              display: flex;
+              width: auto;
+            }
+
+            .storefront-studio-ux form > .admin-card:first-child > div:last-child :is(a, button) {
+              width: auto;
+            }
           }
         `}</style>
       </div>
