@@ -49,9 +49,9 @@ export default async function PaymentsAnalyticsPage({
         <AdminCard label="Avg Attempts / Order" value={metrics.averageAttemptsPerOrder.toFixed(1)} icon={Activity} accent="neutral" />
       </StatGrid>
 
-      <div className="grid min-w-0 gap-4 xl:grid-cols-2">
+      <div className="grid min-w-0 gap-4 lg:grid-cols-2">
         <AdminPanel title="Collected by Provider" description="Completed collections grouped by payment channel.">
-          <div className="space-y-2 text-xs">
+          <div className="space-y-2 text-sm">
             {Object.entries(metrics.collectedByProvider).map(([prov, amt]) => (
               <MetricRow key={prov} label={prov.toUpperCase()} value={formatKES(amt)} />
             ))}
@@ -68,7 +68,7 @@ export default async function PaymentsAnalyticsPage({
             <p className="text-[11px] font-semibold uppercase tracking-[0.12em] admin-muted">Total outstanding</p>
             <p className="mt-1 break-words text-2xl font-bold tracking-tight admin-text sm:text-3xl">{formatKES(aging.total)}</p>
           </div>
-          <div className="space-y-2 text-xs">
+          <div className="space-y-2 text-sm">
             {aging.buckets.map((b) => (
               <MetricRow key={b.label} label={b.label} value={formatKES(b.amount)} meta={`${b.count} orders`} />
             ))}
@@ -88,10 +88,10 @@ export default async function PaymentsAnalyticsPage({
             >
               <div className="flex min-w-0 items-start justify-between gap-3">
                 <div className="min-w-0">
-                  <p className="truncate text-sm font-semibold admin-text">{c.customerName}</p>
-                  <p className="mt-1 text-xs admin-muted">Oldest balance · {c.oldestDays} days</p>
+                  <p className="break-words text-sm font-semibold admin-text">{c.customerName}</p>
+                  <p className="mt-1 text-sm admin-muted">Oldest balance · {c.oldestDays} days</p>
                 </div>
-                <span className="shrink-0 rounded-full border border-[var(--admin-border)] bg-[var(--admin-card)] px-2.5 py-1 text-[11px] font-semibold admin-muted">
+                <span className="shrink-0 rounded-full border border-[var(--admin-border)] bg-[var(--admin-card)] px-3 py-1.5 text-sm font-semibold admin-muted">
                   Due
                 </span>
               </div>
@@ -106,7 +106,7 @@ export default async function PaymentsAnalyticsPage({
         </div>
 
         <div tabIndex={0} role="region" aria-label="Outstanding customer records" className="admin-table-region hidden overflow-x-auto md:block">
-          <table className="w-full min-w-[620px] text-xs">
+          <table className="w-full min-w-[620px] text-sm">
             <thead>
               <tr className="border-b border-[var(--admin-border)] text-left admin-muted">
                 <th>Customer</th>
@@ -139,7 +139,7 @@ function MetricRow({ label, value, meta }: { label: string; value: string; meta?
       <span className="break-words font-medium admin-muted">{label}</span>
       <span className="min-w-0 sm:text-right">
         <strong className="block break-words text-sm admin-text">{value}</strong>
-        {meta && <small className="mt-0.5 block text-[11px] admin-muted">{meta}</small>}
+        {meta && <small className="mt-0.5 block text-sm admin-muted">{meta}</small>}
       </span>
     </div>
   );
