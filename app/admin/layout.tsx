@@ -101,24 +101,27 @@ export default async function AdminLayout({ children }: { children: React.ReactN
     <>
       {impersonatedName && (
         <div
-          className="flex flex-col items-center justify-between gap-3 border-b border-amber-300/30 bg-amber-300/10 px-4 py-2.5 text-sm text-amber-100 sm:flex-row"
+          className="flex flex-col items-stretch justify-between gap-3 border-b border-amber-300/30 bg-amber-300/10 px-4 py-3 text-sm text-amber-100 sm:flex-row sm:items-center"
           role="status"
         >
-          <p className="flex items-center gap-2">
+          <p className="flex min-w-0 items-start gap-2 sm:items-center">
             <AlertTriangle className="h-4 w-4 shrink-0" aria-hidden />
             <span>
               <strong>Support view:</strong> you are working inside <strong>{impersonatedName}</strong>
               . Mutations require an act-as-tenant session.
             </span>
           </p>
-          <div className="flex items-center gap-3">
-            <Link href="/platform/pharmacies" className="text-xs underline hover:text-white">
+          <div className="flex w-full flex-wrap items-center gap-2 sm:w-auto sm:flex-nowrap">
+            <Link
+              href="/platform/pharmacies"
+              className="inline-flex min-h-11 items-center px-2 text-sm underline hover:text-white"
+            >
               Tenant console
             </Link>
             <form action={exitImpersonationAction}>
               <button
                 type="submit"
-                className="rounded-full bg-amber-300/20 px-3 py-1 text-xs font-semibold hover:bg-amber-300/30"
+                className="inline-flex min-h-11 items-center rounded-full bg-amber-300/20 px-4 py-2 text-sm font-semibold hover:bg-amber-300/30"
               >
                 Exit support view
               </button>
