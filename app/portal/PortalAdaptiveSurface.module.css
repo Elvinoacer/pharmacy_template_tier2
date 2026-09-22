@@ -331,6 +331,36 @@
   white-space: normal;
 }
 
+.surface :global(.afyvia-mobile-sheet button),
+.surface :global(.afyvia-mobile-sheet a),
+.surface :global(.afyvia-mobile-sheet p),
+.surface :global(.afyvia-mobile-sheet span),
+.surface :global(.afyvia-mobile-sheet kbd),
+.surface :global(.afyvia-contextual-surface button),
+.surface :global(.afyvia-contextual-surface a),
+.surface :global(.afyvia-contextual-surface p),
+.surface :global(.afyvia-contextual-surface span),
+.surface :global(.afyvia-command-dialog button),
+.surface :global(.afyvia-command-dialog a),
+.surface :global(.afyvia-command-dialog p),
+.surface :global(.afyvia-command-dialog span),
+.surface :global(.afyvia-command-dialog kbd),
+.surface :global(.afyvia-rail-label),
+.surface :global(.afyvia-flyout-eyebrow),
+.surface :global(.afyvia-flyout-title),
+.surface :global(.afyvia-flyout-desc),
+.surface :global(.afyvia-flyout-item-label),
+.surface :global(.afyvia-flyout-item-sub) {
+  font-size: 14px;
+}
+
+.surface :global(.afyvia-dock-badge),
+.surface :global(.afyvia-rail-badge) {
+  min-width: 24px;
+  height: 24px;
+  font-size: 14px;
+}
+
 .surface :global(.overflow-x-auto) {
   margin-inline: 0;
   padding-bottom: 4px;
