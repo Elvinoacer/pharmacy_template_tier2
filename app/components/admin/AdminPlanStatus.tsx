@@ -8,6 +8,7 @@ import React, {
   useState,
 } from "react";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import {
   AlertTriangle,
   ArrowRight,
@@ -470,6 +471,215 @@ export function AdminPlanStatusMobileCard() {
         </p>
       )}
     </Link>
+  );
+}
+
+export function AdminPlanDashboardCard() {
+  const { status, loading } = useAdminPlanStatus();
+  const pathname = usePathname();
+
+  if (pathname !== "/admin") return null;
+
+  if (loading) {
+    return (
+      <div className="mb-5 h-28 animate-pulse rounded-2xl border border-[var(--admin-border)] bg-[var(--admin-inset)]" />
+    );
+  }
+  if (!status) return null;
+
+  const periodEnd = formatDate(status.subscription.periodEnd);
+
+  return (
+    <section className="mb-5 rounded-2xl border border-[var(--admin-border)] bg-[var(--admin-card)] p-4 shadow-sm sm:p-5">
+      <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+        <div className="flex min-w-0 items-start gap-3">
+          <div
+            className={
+              status.subscription.paymentAttention
+                ? "flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-amber-500/10 text-amber-700 dark:text-amber-300"
+                : status.premium
+                  ? "flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-emerald-500/10 text-emerald-700 dark:text-emerald-300"
+                  : "flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[var(--admin-inset)] text-[var(--admin-accent-text)]"
+            }
+          >
+            {status.subscription.paymentAttention ? (
+              <AlertTriangle className="h-5 w-5" />
+            ) : status.premium ? (
+              <BadgeCheck className="h-5 w-5" />
+            ) : (
+              <ShieldCheck className="h-5 w-5" />
+            )}
+          </div>
+
+          <div className="min-w-0">
+            <p className="text-[10px] font-bold uppercase tracking-[0.13em] text-[var(--admin-text-soft)]">
+              Pharmacy plan
+            </p>
+            <div className="mt-1 flex flex-wrap items-center gap-2">
+              <h2 className="text-base font-bold text-[var(--admin-text)]">
+                {status.subscription.paymentAttention
+                  ? "Premium payment needs attention"
+                  : status.premium
+                    ? "Afyvia Premium"
+                    : "Afyvia Free"}
+              </h2>
+              <span className="rounded-full bg-[var(--admin-inset)] px-2 py-0.5 text-[10px] font-semibold text-[var(--admin-text-muted)]">
+                {status.premium ? "Active" : "KES 0/month"}
+              </span>
+            </div>
+            <p className="mt-1 max-w-2xl text-xs leading-5 text-[var(--admin-text-muted)]">
+              {status.subscription.paymentAttention
+                ? "Review billing before Premium capacity is interrupted. Core Free-plan operations remain available."
+                : status.premium
+                  ? `Premium capacity and advanced tools are active${periodEnd ? ` through ${periodEnd}` : ""}.`
+                  : "Core pharmacy work is included. Upgrade only when you need more listings, referrals, automation or intelligence."}
+            </p>
+          </div>
+        </div>
+
+        {!status.premium ? (
+          <div className="grid min-w-0 grid-cols-2 gap-2 sm:grid-cols-4 lg:min-w-[470px]">
+            {usageRows.map((row) => {
+              const entry = status.usage[row.key];
+              const tone = usageTone(entry);
+              return (
+                <div
+                  key={row.key}
+                  className={
+                    tone === "limit"
+                      ? "rounded-xl border border-rose-500/20 bg-rose-500/[0.06] px-3 py-2"
+                      : tone === "near"
+                        ? "rounded-xl border border-amber-500/20 bg-amber-500/[0.06] px-3 py-2"
+                        : "rounded-xl bg-[var(--admin-inset)] px-3 py-2"
+                  }
+                >
+                  <p className="text-[10px] text-[var(--admin-text-soft)]">
+                    {row.shortLabel}
+                  </p>
+                  <p className="mt-0.5 text-xs font-bold text-[var(--admin-text)]">
+                    {usageCopy(entry)}
+                  </p>
+                </div>
+              );
+            })}
+          </div>
+        ) : (
+          <div className="flex shrink-0 flex-wrap items-center gap-2 text-[11px] text-[var(--admin-text-muted)]">
+            <span className="rounded-full bg-[var(--admin-inset)] px-2.5 py-1">Unlimited listings</span>
+            <span className="rounded-full bg-[var(--admin-inset)] px-2.5 py-1">Automation active</span>
+            <span className="rounded-full bg-[var(--admin-inset)] px-2.5 py-1">Advanced tools active</span>
+          </div>
+        )}
+      </div>
+
+      <div className="mt-3 flex justify-end">
+        <Link
+          href="/admin/billing"
+          className="inline-flex min-h-9 items-center gap-1.5 text-xs font-semibold text-[var(--admin-accent-text)] hover:underline"
+        >
+          {status.premium ? "Manage plan & billing" : "View plan & limits"}
+          <ArrowRight className="h-3.5 w-3.5" />
+        </Link>
+      </div>
+    </section>
+  );
+}
+
+export function AdminPlanContextNotice() {
+  const { status } = useAdminPlanStatus();
+  const pathname = usePathname();
+
+  if (!status) return null;
+
+  if (status.subscription.paymentAttention) {
+    return (
+      <section className="mb-5 flex flex-col gap-3 rounded-2xl border border-amber-500/25 bg-amber-500/[0.08] p-4 sm:flex-row sm:items-center sm:justify-between">
+        <div className="flex items-start gap-2.5">
+          <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0 text-amber-700 dark:text-amber-300" />
+          <div>
+            <p className="text-sm font-semibold text-[var(--admin-text)]">
+              Premium payment needs attention
+            </p>
+            <p className="mt-1 text-xs leading-5 text-[var(--admin-text-muted)]">
+              Review billing before Premium capacity is interrupted. Your core Free-plan pharmacy workspace remains available.
+            </p>
+          </div>
+        </div>
+        <Link
+          href="/admin/billing"
+          className="inline-flex min-h-9 shrink-0 items-center justify-center gap-1.5 rounded-xl bg-amber-600 px-3 text-xs font-semibold text-white hover:bg-amber-700"
+        >
+          Review billing <ArrowRight className="h-3.5 w-3.5" />
+        </Link>
+      </section>
+    );
+  }
+
+  if (status.premium) return null;
+
+  let key: keyof AdminPlanStatus["usage"] | null = null;
+  let noun = "";
+  let unaffected = "";
+
+  if (pathname.startsWith("/admin/medications")) {
+    key = "medicines";
+    noun = "public medicine listings";
+    unaffected = "Existing published medicines stay available.";
+  } else if (pathname.startsWith("/admin/services")) {
+    key = "services";
+    noun = "active services";
+    unaffected = "Existing active services and bookings stay available.";
+  } else if (pathname.startsWith("/admin/prescriptions")) {
+    key = "prescriptionReferrals";
+    noun = "direct Afyvia prescription referrals this month";
+    unaffected = "Existing patients, staff-entered prescriptions and storefront requests are not blocked by this allowance.";
+  } else if (pathname.startsWith("/admin/campaigns")) {
+    key = "campaigns";
+    noun = "campaign launches this month";
+    unaffected = "You can continue preparing drafts even after the monthly Free launch is used.";
+  }
+
+  if (!key) return null;
+
+  const entry = status.usage[key];
+  const tone = usageTone(entry);
+  if (tone === "normal" || entry.limit == null) return null;
+
+  const remaining = Math.max(0, entry.limit - entry.used);
+  const atLimit = remaining === 0;
+
+  return (
+    <section
+      className={
+        atLimit
+          ? "mb-5 flex flex-col gap-3 rounded-2xl border border-amber-500/30 bg-amber-500/[0.08] p-4 sm:flex-row sm:items-center sm:justify-between"
+          : "mb-5 flex flex-col gap-3 rounded-2xl border border-[var(--admin-border)] bg-[var(--admin-inset)]/60 p-4 sm:flex-row sm:items-center sm:justify-between"
+      }
+    >
+      <div className="min-w-0">
+        <div className="flex flex-wrap items-center gap-2">
+          <span className="rounded-full bg-[var(--admin-card)] px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-[var(--admin-text-muted)]">
+            Free plan
+          </span>
+          <span className="text-xs font-bold text-[var(--admin-text)]">
+            {entry.used} / {entry.limit} {noun}
+          </span>
+        </div>
+        <p className="mt-1.5 text-xs leading-5 text-[var(--admin-text-muted)]">
+          {atLimit
+            ? `Your Free allowance for ${noun} is currently in use. ${unaffected}`
+            : `You have ${remaining} Free ${remaining === 1 ? "slot" : "slots"} remaining for ${noun}. ${unaffected}`}
+        </p>
+      </div>
+
+      <Link
+        href="/admin/billing"
+        className="inline-flex min-h-9 shrink-0 items-center justify-center gap-1.5 rounded-xl border border-[var(--admin-border)] bg-[var(--admin-card)] px-3 text-xs font-semibold text-[var(--admin-accent-text)] transition hover:bg-[var(--admin-hover)]"
+      >
+        {status.isOwner ? "See Premium capacity" : "View plan details"}
+        <ArrowRight className="h-3.5 w-3.5" />
+      </Link>
+    </section>
   );
 }
 
