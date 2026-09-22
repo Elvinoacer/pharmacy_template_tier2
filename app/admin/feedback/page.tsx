@@ -101,7 +101,7 @@ export default async function AdminFeedbackPage() {
                     <div className="flex min-w-0 flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
                       <div className="min-w-0">
                         <p className="break-words text-base font-semibold leading-6 admin-text">{subject}</p>
-                        <div className="mt-1.5 flex flex-wrap items-center gap-2">
+                        <div className="mt-2 flex flex-wrap items-center gap-2">
                           <span className={`rounded-full px-3 py-1 text-sm font-semibold capitalize ${STATUS_COLOR[f.status] || STATUS_COLOR.archived}`}>
                             {f.status}
                           </span>
@@ -112,7 +112,7 @@ export default async function AdminFeedbackPage() {
                       </div>
 
                       {f.rating ? (
-                        <span className="inline-flex shrink-0 items-center gap-0.5 self-start rounded-full bg-amber-500/10 px-2 py-1 text-amber-700 dark:text-amber-300">
+                        <span className="inline-flex shrink-0 items-center gap-1 self-start rounded-full bg-amber-500/10 px-2 py-1 text-amber-700 dark:text-amber-300">
                           {Array.from({ length: 5 }).map((_, i) => (
                             <Star
                               key={i}
@@ -141,7 +141,7 @@ export default async function AdminFeedbackPage() {
 
                     {f.staffResponse && (
                       <div className="mt-3 flex items-start gap-3 rounded-xl border border-emerald-500/20 bg-emerald-500/[0.07] px-3 py-3 dark:border-emerald-400/20 dark:bg-emerald-400/[0.07] sm:px-4 sm:py-3">
-                        <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-emerald-600 dark:text-emerald-300" />
+                        <CheckCircle2 className="mt-1 h-4 w-4 shrink-0 text-emerald-600 dark:text-emerald-300" />
                         <div className="min-w-0">
                           <p className="text-sm font-semibold uppercase tracking-[0.08em] text-emerald-700 dark:text-emerald-300">Staff response</p>
                           <p className="mt-1 whitespace-pre-wrap break-words text-base leading-6 admin-text">{f.staffResponse}</p>
