@@ -18,6 +18,7 @@ import { checkRateLimitAsync } from "@/app/lib/rate-limit";
 import { buildOnboardingRateLimitKeys } from "@/app/lib/onboarding-rate-limit";
 import { emailVerificationBody, sendDelivery } from "@/app/lib/services/delivery";
 import { loadOwnerSubmissionReadiness } from "@/app/lib/services/pharmacy-verification";
+import { notifyPlatformOfPharmacyApplication } from "@/app/lib/services/pharmacy-application-notifications";
 
 export type OnboardState = {
   error?: string;
@@ -381,6 +382,21 @@ export async function submitPharmacyApplicationAction(_prev: OnboardState, formD
         },
       },
     });
+
+    // Submission is authoritative even if email delivery has a temporary outage.
+    // Await the send so serverless execution cannot terminate before Resend accepts it.
+    const platformNotification = await notifyPlatformOfPharmacyApplication(
+      pharmacyId,
+      "submitted",
+    );
+    if (platformNotification.status === "failed") {
+      console.error("[onboard] application submitted but reviewer email failed", {
+        pharmacyId,
+        recipient: platformNotification.recipient,
+        error: platformNotification.error,
+      });
+    }
+
     revalidatePath("/onboard");
     revalidatePath("/onboard/verification");
     revalidatePath("/platform");
@@ -504,6 +520,18 @@ export async function resubmitPharmacyApplicationAction(
         },
       },
     });
+
+    const platformNotification = await notifyPlatformOfPharmacyApplication(
+      pharmacyId,
+      "resubmitted",
+    );
+    if (platformNotification.status === "failed") {
+      console.error("[onboard] application resubmitted but reviewer email failed", {
+        pharmacyId,
+        recipient: platformNotification.recipient,
+        error: platformNotification.error,
+      });
+    }
 
     revalidatePath("/onboard");
     revalidatePath("/platform");
