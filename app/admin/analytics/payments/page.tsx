@@ -36,6 +36,7 @@ export default async function PaymentsAnalyticsPage({
       period={period}
       basePath="/admin/analytics/payments"
     >
+      <div className="space-y-4 sm:space-y-6 [&_.admin-stat_p:first-child]:!text-sm [&_.admin-stat_p:nth-child(3)]:!text-sm">
       <StatGrid>
         <AdminCard label="Total Attempts" value={formatNumber(metrics.totalAttempts)} icon={Activity} accent="neutral" />
         <AdminCard label="Successful" value={formatNumber(metrics.successful)} hint={`Success rate ${formatPct(metrics.successRate)}`} icon={Wallet} accent="info" />
@@ -129,6 +130,7 @@ export default async function PaymentsAnalyticsPage({
           </table>
         </div>
       </AdminPanel>
+      </div>
     </AnalyticsShell>
   );
 }
