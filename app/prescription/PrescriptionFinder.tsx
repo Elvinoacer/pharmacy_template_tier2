@@ -277,10 +277,37 @@ export default function PrescriptionFinder({
           notes: uploadedPhoto
             ? `[Attached Prescription Photo]\nRequested Items:\n${names}`
             : `Prescription referral for clinical review and sourcing.\nRequested Items:\n${names}`,
+          requestKind: "prescription_referral",
         }),
       });
       const data = await res.json();
       if (!res.ok) {
+        if (data.error === "prescription_referral_limit") {
+          const selectedName =
+            data.selectedPharmacy?.name || "The pharmacy you selected";
+          const alternativeName = data.alternative?.name || null;
+          const alternativeSlug = data.alternative?.slug || null;
+
+          if (alternativeSlug) setReferralPharmacySlug(alternativeSlug);
+          setReferralFeedback({
+            code: "referral_capacity",
+            tone: "warning",
+            title: `${selectedName} has used its free direct-referral allowance`,
+            message: alternativeName
+              ? `Your prescription was not shared without your permission. ${alternativeName} can receive it now, so we selected that pharmacy for you to review before sending.`
+              : "Your prescription was not shared. Choose another pharmacy and send it there instead.",
+            actions: alternativeName
+              ? [
+                  { id: "retry_submit", label: `Send to ${alternativeName}`, variant: "primary" },
+                  { id: "pharmacies", label: "Choose another pharmacy", href: "/pharmacies", variant: "ghost" },
+                ]
+              : [
+                  { id: "pharmacies", label: "Choose another pharmacy", href: "/pharmacies", variant: "primary" },
+                  { id: "retry_search", label: "Check availability", variant: "secondary" },
+                ],
+          });
+          return;
+        }
         throw new Error(
           data.error === "validation_failed"
             ? Object.values(data.fields || {}).flat()[0] || "Check form details."
