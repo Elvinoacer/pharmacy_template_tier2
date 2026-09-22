@@ -58,7 +58,7 @@ export default async function PortalCaregiversPage() {
         </div>
       </div>
 
-      <div className="min-w-0 max-w-full [&_.input-premium]:min-h-11 [&_.input-premium]:text-base [&_button]:min-h-11 [&_button]:min-w-11 [&_button]:text-sm [&_button]:opacity-100 [&_label]:min-h-11 [&_label_span]:text-base [&_p]:text-base [&_span]:text-sm">
+      <div className="min-w-0 max-w-full [&_.input-premium]:min-h-11 [&_.input-premium]:text-base [&_button]:min-h-11 [&_button]:min-w-11 [&_button]:text-sm [&_button]:opacity-100 [&_label]:min-h-11 [&_label_span]:text-base [&_p]:text-base [&_span]:text-base">
         <CaregiversView caregivers={caregiverRows} />
       </div>
     </PortalShell>
