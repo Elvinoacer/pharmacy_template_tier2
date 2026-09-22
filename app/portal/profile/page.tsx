@@ -51,8 +51,8 @@ export default async function PortalProfilePage() {
 
           <Panel title="Account">
             <ul className="min-w-0 space-y-3 text-sm">
-              <li className="flex min-w-0 items-start gap-2.5">
-                <Mail className="mt-0.5 h-4 w-4 shrink-0 text-[#0d6e5a] dark:text-teal-300" />
+              <li className="flex min-w-0 items-start gap-3">
+                <Mail className="mt-1 h-4 w-4 shrink-0 text-[#0d6e5a] dark:text-teal-300" />
                 <div className="min-w-0">
                   <p className="text-sm text-[#5a6b62] dark:text-slate-400">Email</p>
                   <p className="break-all font-medium text-[#0c1a14] dark:text-slate-100">{profile.user.email}</p>
@@ -68,8 +68,8 @@ export default async function PortalProfilePage() {
                 </div>
               </li>
               {profile.phone && (
-                <li className="flex min-w-0 items-start gap-2.5">
-                  <Phone className="mt-0.5 h-4 w-4 shrink-0 text-[#0d6e5a] dark:text-teal-300" />
+                <li className="flex min-w-0 items-start gap-3">
+                  <Phone className="mt-1 h-4 w-4 shrink-0 text-[#0d6e5a] dark:text-teal-300" />
                   <div className="min-w-0">
                     <p className="text-sm text-[#5a6b62] dark:text-slate-400">Phone</p>
                     <p className="break-words font-medium text-[#0c1a14] dark:text-slate-100">{profile.phone}</p>
@@ -77,8 +77,8 @@ export default async function PortalProfilePage() {
                 </li>
               )}
               {(profile.addressLine1 || profile.city) && (
-                <li className="flex min-w-0 items-start gap-2.5">
-                  <MapPin className="mt-0.5 h-4 w-4 shrink-0 text-[#0d6e5a] dark:text-teal-300" />
+                <li className="flex min-w-0 items-start gap-3">
+                  <MapPin className="mt-1 h-4 w-4 shrink-0 text-[#0d6e5a] dark:text-teal-300" />
                   <div className="min-w-0">
                     <p className="text-sm text-[#5a6b62] dark:text-slate-400">Address</p>
                     <p className="break-words font-medium leading-relaxed text-[#0c1a14] dark:text-slate-100">
@@ -90,8 +90,8 @@ export default async function PortalProfilePage() {
                 </li>
               )}
               {profile.emergencyContactName && (
-                <li className="flex min-w-0 items-start gap-2.5">
-                  <Heart className="mt-0.5 h-4 w-4 shrink-0 text-rose-500 dark:text-rose-300" />
+                <li className="flex min-w-0 items-start gap-3">
+                  <Heart className="mt-1 h-4 w-4 shrink-0 text-rose-500 dark:text-rose-300" />
                   <div className="min-w-0">
                     <p className="text-sm text-[#5a6b62] dark:text-slate-400">Emergency contact</p>
                     <p className="break-words font-medium text-[#0c1a14] dark:text-slate-100">{profile.emergencyContactName}</p>
