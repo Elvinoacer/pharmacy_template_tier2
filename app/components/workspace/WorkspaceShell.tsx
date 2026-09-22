@@ -5,6 +5,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
   ChevronRight,
+  ArrowLeft,
   Bell,
   Sun,
   Moon,
@@ -96,6 +97,24 @@ export function WorkspaceShell({
     user.memberships.find((membership) => membership.status === "active")?.pharmacyId ||
     null;
 
+  const workspaceHomeHref =
+    role === "admin"
+      ? "/admin"
+      : role === "platform"
+        ? "/platform"
+        : role === "portal"
+          ? "/portal"
+          : "/caregiver";
+  const workspaceLabel =
+    role === "admin"
+      ? "Pharmacy"
+      : role === "platform"
+        ? "Platform"
+        : role === "portal"
+          ? "Portal"
+          : "Caregiver";
+  const isWorkspaceHome = pathname === workspaceHomeHref;
+
   return (
     <TenantBrandProvider value={defaultBrand}>
       <AdminPlanStatusProvider
@@ -139,97 +158,102 @@ export function WorkspaceShell({
           {/* 2. Workspace Content Layout */}
           <div className="flex min-h-0 min-w-0 flex-1 flex-col pb-20 lg:pb-8">
             {/* Universal Workspace Header */}
-            <header className="sticky top-0 z-20 flex min-h-[64px] items-center justify-between gap-3 border-b border-[var(--admin-border)] bg-[var(--admin-panel)]/95 px-4 backdrop-blur sm:px-6">
-              {/* Left: Breadcrumbs / Workspace Identity */}
+            <header className="sticky top-0 z-20 flex min-h-16 items-center justify-between gap-2 border-b border-[var(--admin-border)] bg-[var(--admin-panel)]/95 px-4 backdrop-blur sm:gap-3 sm:px-6 lg:px-8">
+              {/* Mobile: keep location context without squeezing full breadcrumbs. */}
+              <div className="flex min-w-0 items-center sm:hidden">
+                <Link
+                  href={workspaceHomeHref}
+                  aria-label={
+                    isWorkspaceHome
+                      ? `${workspaceLabel} workspace home`
+                      : `Back to ${workspaceLabel} workspace home`
+                  }
+                  className="inline-flex min-h-11 min-w-11 items-center gap-2 rounded-xl px-2 text-sm font-semibold text-[var(--admin-accent-text)] hover:bg-[var(--admin-hover)]"
+                >
+                  {!isWorkspaceHome && <ArrowLeft size={18} aria-hidden="true" />}
+                  <span>{workspaceLabel}</span>
+                </Link>
+              </div>
+
+              {/* Tablet/Desktop: full breadcrumb trail. */}
               <nav
                 aria-label="Breadcrumbs"
-                className="flex items-center gap-2 min-w-0"
+                className="hidden min-w-0 items-center gap-2 sm:flex sm:max-w-[220px] lg:max-w-[300px]"
               >
                 <Link
-                  href={
-                    role === "admin"
-                      ? "/admin"
-                      : role === "platform"
-                        ? "/platform"
-                        : role === "portal"
-                          ? "/portal"
-                          : "/caregiver"
-                  }
-                  className="text-xs font-semibold uppercase tracking-wider text-[var(--admin-accent-text)] hover:underline shrink-0"
+                  href={workspaceHomeHref}
+                  className="shrink-0 text-sm font-semibold uppercase tracking-wider text-[var(--admin-accent-text)] hover:underline"
                 >
-                  {role === "admin"
-                    ? "Pharmacy"
-                    : role === "platform"
-                      ? "Platform"
-                      : role === "portal"
-                        ? "Portal"
-                        : "Caregiver"}
+                  {workspaceLabel}
                 </Link>
 
                 {currentGroup && (
                   <>
                     <ChevronRight
-                      size={13}
-                      className="text-[var(--admin-text-soft)] shrink-0"
+                      size={16}
+                      className="shrink-0 text-[var(--admin-text-soft)]"
                     />
-                    <span className="text-xs font-medium text-[var(--admin-text-soft)] truncate hidden sm:inline">
+                    <span className="hidden min-w-0 truncate text-sm font-medium text-[var(--admin-text-soft)] md:inline">
                       {currentGroup.shortLabel}
                     </span>
                   </>
                 )}
 
-                {currentDest &&
-                  pathname !== "/admin" &&
-                  pathname !== "/platform" &&
-                  pathname !== "/portal" &&
-                  pathname !== "/caregiver" && (
-                    <>
-                      <ChevronRight
-                        size={13}
-                        className="text-[var(--admin-text-soft)] shrink-0"
-                      />
-                      <span
-                        aria-current="page"
-                        className="text-xs font-semibold text-[var(--admin-text)] truncate"
-                      >
-                        {currentDest.label}
-                      </span>
-                    </>
-                  )}
+                {currentDest && !isWorkspaceHome && (
+                  <>
+                    <ChevronRight
+                      size={16}
+                      className="shrink-0 text-[var(--admin-text-soft)]"
+                    />
+                    <span
+                      aria-current="page"
+                      className="min-w-0 truncate text-sm font-semibold text-[var(--admin-text)]"
+                      title={currentDest.label}
+                    >
+                      {currentDest.label}
+                    </span>
+                  </>
+                )}
               </nav>
 
-              {/* Center: Universal Command Bar */}
-              <div className="flex-1 max-w-xl mx-auto px-2">
+              {/* Mobile = icon trigger; tablet = compact search; desktop = full command bar. */}
+              <div className="mx-auto flex min-w-11 flex-1 justify-center px-0 sm:max-w-[320px] sm:px-2 lg:max-w-xl">
                 <CommandCenter
                   role={role}
                   user={user}
                   currentPath={pathname}
                   placeholder={commandPlaceholder}
+                  triggerClassName="workspace-command-trigger-responsive"
                 />
               </div>
 
-              {/* Right: Actions, Theme, Notifications & User Menu */}
-              <div className="flex items-center gap-2 shrink-0">
-                {headerExtra}
+              {/* Right: only essential actions remain in the mobile header. */}
+              <div className="flex shrink-0 items-center gap-2">
+                <div className="hidden items-center gap-2 sm:flex">{headerExtra}</div>
 
-                {role === "admin" && <AdminPlanStatusButton />}
+                {role === "admin" && (
+                  <div className="hidden sm:block">
+                    <AdminPlanStatusButton />
+                  </div>
+                )}
 
-                {/* Theme toggle */}
-                <WorkspaceThemeToggle
-                  mode={theme.mode}
-                  resolved={theme.resolved}
-                  onCycle={theme.cycle}
-                />
+                <div className="hidden sm:block">
+                  <WorkspaceThemeToggle
+                    mode={theme.mode}
+                    resolved={theme.resolved}
+                    onCycle={theme.cycle}
+                  />
+                </div>
 
-                {/* Notifications Bell */}
                 <WorkspaceBellButton role={role} unread={attention.count} />
 
-                {/* User Menu */}
-                <WorkspaceHeaderUserMenu
-                  user={user}
-                  role={role}
-                  brand={defaultBrand}
-                />
+                <div className="hidden sm:block">
+                  <WorkspaceHeaderUserMenu
+                    user={user}
+                    role={role}
+                    brand={defaultBrand}
+                  />
+                </div>
               </div>
             </header>
 
@@ -237,7 +261,7 @@ export function WorkspaceShell({
             <main
               id="workspace-main-content"
               tabIndex={-1}
-              className="workspace-main-scroll min-h-0 flex-1 overflow-x-hidden overflow-y-auto px-4 py-6 sm:px-6 lg:px-8 max-w-[1600px] w-full mx-auto"
+              className="workspace-main-scroll mx-auto min-h-0 w-full max-w-[1280px] flex-1 overflow-x-hidden overflow-y-auto px-4 py-6 sm:px-6 lg:px-8"
             >
               {role === "admin" && <AdminPlanWelcomeBanner />}
               {role === "admin" && <AdminPlanDashboardCard />}
@@ -250,7 +274,7 @@ export function WorkspaceShell({
               {(title || currentDest) && (
                 <div className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                   <div className="min-w-0 flex-1">
-                    <p className="text-[11px] font-bold uppercase tracking-wider text-[var(--admin-accent-text)]">
+                    <p className="text-sm font-bold uppercase tracking-wider text-[var(--admin-accent-text)]">
                       {currentGroup?.label || "Workspace"}
                     </p>
                     <h1 className="mt-1 text-2xl font-bold tracking-tight text-[var(--admin-text)] sm:text-3xl">
@@ -263,7 +287,7 @@ export function WorkspaceShell({
                     )}
                   </div>
                   {actions && (
-                    <div className="flex items-center gap-2 shrink-0">
+                    <div className="flex w-full shrink-0 flex-wrap items-center gap-2 sm:w-auto">
                       {actions}
                     </div>
                   )}
@@ -340,7 +364,7 @@ export function WorkspaceThemeToggle({
     <button
       type="button"
       onClick={onCycle}
-      className={`theme-toggle inline-flex h-9 w-9 items-center justify-center rounded-xl border border-[var(--admin-border)] bg-[var(--admin-card)] text-[var(--admin-text-muted)] transition hover:bg-[var(--admin-hover)] hover:text-[var(--admin-text)] ${className}`}
+      className={`theme-toggle inline-flex h-11 w-11 min-h-11 min-w-11 items-center justify-center rounded-xl border border-[var(--admin-border)] bg-[var(--admin-card)] text-[var(--admin-text-muted)] transition hover:bg-[var(--admin-hover)] hover:text-[var(--admin-text)] lg:h-9 lg:w-9 lg:min-h-9 lg:min-w-9 ${className}`}
       aria-label={label}
       title={label}
     >
@@ -368,12 +392,12 @@ function WorkspaceBellButton({
   return (
     <Link
       href={href}
-      className="relative inline-flex h-9 w-9 items-center justify-center rounded-xl border border-[var(--admin-border)] bg-[var(--admin-card)] text-[var(--admin-text-muted)] transition hover:bg-[var(--admin-hover)] hover:text-[var(--admin-text)]"
+      className="relative inline-flex h-11 w-11 min-h-11 min-w-11 items-center justify-center rounded-xl border border-[var(--admin-border)] bg-[var(--admin-card)] text-[var(--admin-text-muted)] transition hover:bg-[var(--admin-hover)] hover:text-[var(--admin-text)] lg:h-9 lg:w-9 lg:min-h-9 lg:min-w-9"
       aria-label={`Notifications${unread ? ` · ${unread} unread` : ""}`}
     >
       <Bell size={16} />
       {unread > 0 && (
-        <span className="absolute -right-1 -top-1 flex h-4 min-w-4 items-center justify-center rounded-full bg-rose-500 px-1 text-[10px] font-bold text-white shadow-sm">
+        <span className="absolute -right-1 -top-1 flex h-6 min-w-6 items-center justify-center rounded-full bg-rose-500 px-1 text-sm font-bold leading-none text-white shadow-sm">
           {formatBadgeCount(unread)}
         </span>
       )}
@@ -419,10 +443,10 @@ function WorkspaceHeaderUserMenu({
       }}
     >
       <summary
-        className="flex items-center gap-2 h-9 px-2 rounded-xl border border-[var(--admin-border)] bg-[var(--admin-card)] text-xs font-semibold cursor-pointer select-none list-none"
+        className="flex h-11 min-h-11 items-center gap-2 rounded-xl border border-[var(--admin-border)] bg-[var(--admin-card)] px-2 text-sm font-semibold cursor-pointer select-none list-none lg:h-9 lg:min-h-9"
         aria-label={`User account options for ${user.fullName || user.email}`}
       >
-        <span className="grid place-items-center w-6 h-6 rounded-lg bg-teal-700 text-white font-bold text-[11px]">
+        <span className="grid h-6 w-6 place-items-center rounded-lg bg-teal-700 text-sm font-bold text-white">
           {initials}
         </span>
         <span className="hidden md:inline max-w-[120px] truncate text-[var(--admin-text)]">
@@ -431,14 +455,14 @@ function WorkspaceHeaderUserMenu({
         <ChevronDown size={13} className="text-[var(--admin-text-soft)]" />
       </summary>
 
-      <div className="absolute right-0 top-full mt-2 w-64 rounded-2xl border border-[var(--admin-border-2)] bg-[var(--admin-panel)] p-3 shadow-2xl z-50 text-xs">
+      <div className="absolute right-0 top-full z-50 mt-2 w-64 rounded-2xl border border-[var(--admin-border-2)] bg-[var(--admin-panel)] p-3 text-sm shadow-2xl">
         <p className="font-semibold text-[var(--admin-text)] truncate">
           {user.fullName || "User"}
         </p>
-        <p className="text-[11px] text-[var(--admin-text-soft)] truncate mt-0.5">
+        <p className="mt-0.5 truncate text-sm text-[var(--admin-text-soft)]">
           {user.email}
         </p>
-        <p className="mt-1 text-[10px] uppercase font-bold text-[var(--admin-accent-text)]">
+        <p className="mt-1 text-sm font-bold uppercase text-[var(--admin-accent-text)]">
           {user.role} · {brand.name}
         </p>
 
@@ -446,7 +470,7 @@ function WorkspaceHeaderUserMenu({
           {brand.slug && (
             <Link
               href={`/p/${brand.slug}`}
-              className="flex items-center gap-2 px-2 py-1.5 rounded-lg text-[var(--admin-text-muted)] hover:bg-[var(--admin-hover)] hover:text-[var(--admin-text)]"
+              className="flex min-h-11 items-center gap-2 rounded-lg px-2 py-2 text-[var(--admin-text-muted)] hover:bg-[var(--admin-hover)] hover:text-[var(--admin-text)]"
             >
               <Store size={14} /> View pharmacy website
             </Link>
@@ -455,7 +479,7 @@ function WorkspaceHeaderUserMenu({
           {role === "admin" && (
             <Link
               href="/admin/settings/location"
-              className="flex items-center gap-2 px-2 py-1.5 rounded-lg text-[var(--admin-text-muted)] hover:bg-[var(--admin-hover)] hover:text-[var(--admin-text)]"
+              className="flex min-h-11 items-center gap-2 rounded-lg px-2 py-2 text-[var(--admin-text-muted)] hover:bg-[var(--admin-hover)] hover:text-[var(--admin-text)]"
             >
               Pharmacy settings
             </Link>
@@ -464,7 +488,7 @@ function WorkspaceHeaderUserMenu({
           {role === "platform" && (
             <Link
               href="/platform/security"
-              className="flex items-center gap-2 px-2 py-1.5 rounded-lg text-[var(--admin-text-muted)] hover:bg-[var(--admin-hover)] hover:text-[var(--admin-text)]"
+              className="flex min-h-11 items-center gap-2 rounded-lg px-2 py-2 text-[var(--admin-text-muted)] hover:bg-[var(--admin-hover)] hover:text-[var(--admin-text)]"
             >
               Security credentials
             </Link>
@@ -474,13 +498,13 @@ function WorkspaceHeaderUserMenu({
             <>
               <Link
                 href="/portal/profile"
-                className="flex items-center gap-2 px-2 py-1.5 rounded-lg text-[var(--admin-text-muted)] hover:bg-[var(--admin-hover)] hover:text-[var(--admin-text)]"
+                className="flex min-h-11 items-center gap-2 rounded-lg px-2 py-2 text-[var(--admin-text-muted)] hover:bg-[var(--admin-hover)] hover:text-[var(--admin-text)]"
               >
                 My Profile & Medical Info
               </Link>
               <Link
                 href="/portal/preferences"
-                className="flex items-center gap-2 px-2 py-1.5 rounded-lg text-[var(--admin-text-muted)] hover:bg-[var(--admin-hover)] hover:text-[var(--admin-text)]"
+                className="flex min-h-11 items-center gap-2 rounded-lg px-2 py-2 text-[var(--admin-text-muted)] hover:bg-[var(--admin-hover)] hover:text-[var(--admin-text)]"
               >
                 Notification Preferences
               </Link>
@@ -491,13 +515,13 @@ function WorkspaceHeaderUserMenu({
             <>
               <Link
                 href="/caregiver/patients"
-                className="flex items-center gap-2 px-2 py-1.5 rounded-lg text-[var(--admin-text-muted)] hover:bg-[var(--admin-hover)] hover:text-[var(--admin-text)]"
+                className="flex min-h-11 items-center gap-2 rounded-lg px-2 py-2 text-[var(--admin-text-muted)] hover:bg-[var(--admin-hover)] hover:text-[var(--admin-text)]"
               >
                 Managed Patients
               </Link>
               <Link
                 href="/caregiver/notifications"
-                className="flex items-center gap-2 px-2 py-1.5 rounded-lg text-[var(--admin-text-muted)] hover:bg-[var(--admin-hover)] hover:text-[var(--admin-text)]"
+                className="flex min-h-11 items-center gap-2 rounded-lg px-2 py-2 text-[var(--admin-text-muted)] hover:bg-[var(--admin-hover)] hover:text-[var(--admin-text)]"
               >
                 Alerts & Reminders
               </Link>
@@ -507,7 +531,7 @@ function WorkspaceHeaderUserMenu({
           <form action={logoutAction} className="pt-1">
             <button
               type="submit"
-              className="w-full text-left px-2 py-1.5 rounded-lg text-rose-600 dark:text-rose-400 font-semibold hover:bg-rose-50 dark:hover:bg-rose-950/20"
+              className="min-h-11 w-full rounded-lg px-2 py-2 text-left font-semibold text-rose-600 hover:bg-rose-50 dark:text-rose-400 dark:hover:bg-rose-950/20"
             >
               Sign out
             </button>
