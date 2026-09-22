@@ -36,6 +36,8 @@ import { PushNotificationCenter } from "@/app/components/PushNotificationCenter"
 import { LiveAlertCenter } from "@/app/components/LiveAlertCenter";
 import { logoutAction } from "@/app/actions/auth";
 import {
+  AdminPlanContextNotice,
+  AdminPlanDashboardCard,
   AdminPlanStatusButton,
   AdminPlanStatusProvider,
   AdminPlanWelcomeBanner,
@@ -238,6 +240,8 @@ export function WorkspaceShell({
               className="workspace-main-scroll min-h-0 flex-1 overflow-x-hidden overflow-y-auto px-4 py-6 sm:px-6 lg:px-8 max-w-[1600px] w-full mx-auto"
             >
               {role === "admin" && <AdminPlanWelcomeBanner />}
+              {role === "admin" && <AdminPlanDashboardCard />}
+              {role === "admin" && <AdminPlanContextNotice />}
 
               {/* Contextual Task Surface (Surfacing nearby actions for medicines, patients, applications) */}
               <ContextualTaskSurface role={role} user={user} />
