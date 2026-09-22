@@ -128,8 +128,8 @@ export function VerificationPaymentStep({
 
       <section className="mb-5 rounded-2xl border border-[var(--brand)] bg-[var(--brand-soft)]/30 p-4">
         <h3 className="font-semibold">One-time verification · KES {currentCost}</h3>
-        <p className="mt-2 text-sm">No monthly payment is required to join or launch. Your free plan includes 5 public medicine listings, 2 services, reservations and bookings.</p>
-        <p className="mt-2 text-xs text-[var(--muted)]">Upgrade later to Premium for KES 500/month when you need more listings or premium tools.</p>
+        <p className="mt-2 text-sm">No monthly payment is required to join or launch. Your free plan includes 5 public medicine listings, 2 services, 10 direct Afyvia prescription referrals per month, reservations and bookings.</p>
+        <p className="mt-2 text-xs text-[var(--muted)]">Upgrade later to Premium for KES 500/month when you need unlimited direct Afyvia prescription referrals, more listings or premium tools.</p>
       </section>
 
       {/* Payment Action Form */}
