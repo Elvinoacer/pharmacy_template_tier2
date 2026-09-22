@@ -253,7 +253,7 @@ export function CsvImportFlow() {
                         : "bg-[var(--admin-inset)]"
                   }`}
                 >
-                  <span className={`text-[11px] font-semibold sm:text-xs ${current ? "admin-text" : complete ? "text-emerald-700 dark:text-emerald-300" : "admin-muted"}`}>
+                  <span className={`text-sm font-semibold sm:text-sm ${current ? "admin-text" : complete ? "text-emerald-700 dark:text-emerald-300" : "admin-muted"}`}>
                     {complete ? "✓ " : `${index + 1}. `}{item.label}
                   </span>
                 </li>
@@ -276,9 +276,9 @@ export function CsvImportFlow() {
             </div>
             <div>
               <p className="text-sm font-semibold admin-text">Choose a CSV file</p>
-              <p className="mt-1 text-xs leading-5 admin-muted">Up to 1000 rows · headers must be in the first row</p>
+              <p className="mt-1 text-sm leading-5 admin-muted">Up to 1000 rows · headers must be in the first row</p>
             </div>
-            <span className="rounded-full bg-[var(--admin-inset)] px-3 py-1 text-[10px] font-semibold admin-soft">.csv or .txt</span>
+            <span className="rounded-full bg-[var(--admin-inset)] px-3 py-1 text-sm font-semibold admin-soft">.csv or .txt</span>
           </button>
           {error && (
             <div className="admin-alert-error mt-4 items-start">
@@ -294,9 +294,9 @@ export function CsvImportFlow() {
             <div className="flex flex-col gap-3 border-b border-[var(--admin-border-2)] pb-4 sm:flex-row sm:items-end sm:justify-between">
               <div>
                 <h2 className="text-sm font-semibold admin-text">Match columns to medicine fields</h2>
-                <p className="mt-1 text-xs leading-5 admin-muted">{fileName} · {rows.length} rows · {headers.length} source columns</p>
+                <p className="mt-1 text-sm leading-5 admin-muted">{fileName} · {rows.length} rows · {headers.length} source columns</p>
               </div>
-              <span className={`w-fit rounded-full px-2.5 py-1 text-[10px] font-semibold ${requiredReady ? "bg-emerald-500/10 text-emerald-700 dark:text-emerald-300" : "bg-amber-500/10 text-amber-700 dark:text-amber-300"}`}>
+              <span className={`w-fit rounded-full px-2.5 py-1 text-sm font-semibold ${requiredReady ? "bg-emerald-500/10 text-emerald-700 dark:text-emerald-300" : "bg-amber-500/10 text-amber-700 dark:text-amber-300"}`}>
                 {mappedCount}/{SYSTEM_FIELDS.length} mapped
               </span>
             </div>
@@ -304,13 +304,13 @@ export function CsvImportFlow() {
             <div className="mt-4 grid gap-2.5 lg:grid-cols-2">
               {SYSTEM_FIELDS.map((field) => (
                 <label key={field.key} className="grid gap-1.5 rounded-xl bg-[var(--admin-inset)] p-3 sm:grid-cols-[minmax(0,10rem)_1fr] sm:items-center sm:gap-3">
-                  <span className="text-xs font-medium admin-muted">
+                  <span className="text-sm font-medium admin-muted">
                     {field.label}{field.required && <span className="text-rose-500"> *</span>}
                   </span>
                   <select
                     value={mapping[field.key] || ""}
                     onChange={(event) => setMapping((current) => ({ ...current, [field.key]: event.target.value }))}
-                    className="input-admin min-w-0 text-xs"
+                    className="input-admin min-h-11 min-w-0 text-base sm:text-sm"
                   >
                     <option value="">— Skip —</option>
                     {headers.map((header) => <option key={header} value={header}>{header}</option>)}
@@ -321,14 +321,14 @@ export function CsvImportFlow() {
           </section>
 
           {!requiredReady && (
-            <div className="flex items-start gap-2 rounded-xl border border-amber-500/25 bg-amber-500/[0.06] p-3 text-xs text-amber-800 dark:text-amber-200">
+            <div className="flex items-start gap-2 rounded-xl border border-amber-500/25 bg-amber-500/[0.06] p-3 text-sm text-amber-800 dark:text-amber-200">
               <AlertCircle className="mt-0.5 h-4 w-4 shrink-0" />
               Map medicine name, generic name, and price before continuing.
             </div>
           )}
 
           <div className="grid gap-2 sm:grid-cols-[auto_1fr]">
-            <button type="button" onClick={reset} className="inline-flex min-h-11 items-center justify-center gap-1.5 rounded-xl bg-[var(--admin-inset)] px-4 text-xs font-semibold admin-muted transition hover:bg-[var(--admin-inset-2)] hover:text-[var(--admin-text)] sm:rounded-full">
+            <button type="button" onClick={reset} className="inline-flex min-h-11 items-center justify-center gap-1.5 rounded-xl bg-[var(--admin-inset)] px-4 text-sm font-semibold admin-muted transition hover:bg-[var(--admin-inset-2)] hover:text-[var(--admin-text)] sm:rounded-full">
               <RotateCcw className="h-3.5 w-3.5" /> Different file
             </button>
             <button type="button" onClick={() => setStep("preview")} disabled={!requiredReady} className="btn-admin min-h-11 w-full !rounded-xl justify-center disabled:opacity-50">
@@ -344,12 +344,12 @@ export function CsvImportFlow() {
             <div className="flex flex-col gap-2 border-b border-[var(--admin-border-2)] p-3.5 sm:flex-row sm:items-end sm:justify-between sm:p-5">
               <div>
                 <h2 className="text-sm font-semibold admin-text">Preview before import</h2>
-                <p className="mt-1 text-xs admin-muted">Showing the first {Math.min(10, rows.length)} of {rows.length} rows.</p>
+                <p className="mt-1 text-sm admin-muted">Showing the first {Math.min(10, rows.length)} of {rows.length} rows.</p>
               </div>
-              <span className="w-fit rounded-full bg-[var(--admin-inset)] px-2.5 py-1 text-[10px] font-semibold admin-muted">{mappedCount} columns included</span>
+              <span className="w-fit rounded-full bg-[var(--admin-inset)] px-2.5 py-1 text-sm font-semibold admin-muted">{mappedCount} columns included</span>
             </div>
             <div tabIndex={0} role="region" aria-label="Scrollable medication import preview" className="admin-table-region overflow-x-auto">
-              <table className="min-w-[720px] w-full text-xs">
+              <table className="min-w-[720px] w-full text-sm">
                 <thead className="bg-[var(--admin-inset)]">
                   <tr className="border-b border-[var(--admin-border-2)]">
                     <th className="sticky left-0 z-10 bg-[var(--admin-inset)] px-3 py-2.5 text-left font-semibold admin-muted">#</th>
@@ -364,7 +364,7 @@ export function CsvImportFlow() {
                       <td className="sticky left-0 bg-[var(--admin-card)] px-3 py-2.5 font-semibold admin-soft">{index + 1}</td>
                       {SYSTEM_FIELDS.filter((field) => mapping[field.key]).map((field) => (
                         <td key={field.key} className="max-w-64 px-3 py-2.5 admin-text">
-                          <span className="line-clamp-2">{fieldFor(row, field.key) || <span className="admin-soft">—</span>}</span>
+                          <span className="break-words whitespace-normal">{fieldFor(row, field.key) || <span className="admin-soft">—</span>}</span>
                         </td>
                       ))}
                     </tr>
@@ -372,7 +372,7 @@ export function CsvImportFlow() {
                 </tbody>
               </table>
             </div>
-            <p className="border-t border-[var(--admin-border-2)] p-3 text-[11px] leading-5 admin-muted sm:px-5">
+            <p className="border-t border-[var(--admin-border-2)] p-3 text-sm leading-5 admin-muted sm:px-5">
               Missing clinical fields do not reject a row; new master records can be flagged for enrichment after import.
             </p>
           </section>
@@ -384,7 +384,7 @@ export function CsvImportFlow() {
           )}
 
           <div className="grid gap-2 sm:grid-cols-[auto_1fr]">
-            <button type="button" onClick={() => setStep("map")} className="inline-flex min-h-11 items-center justify-center gap-1.5 rounded-xl bg-[var(--admin-inset)] px-4 text-xs font-semibold admin-muted transition hover:bg-[var(--admin-inset-2)] hover:text-[var(--admin-text)] sm:rounded-full">
+            <button type="button" onClick={() => setStep("map")} className="inline-flex min-h-11 items-center justify-center gap-1.5 rounded-xl bg-[var(--admin-inset)] px-4 text-sm font-semibold admin-muted transition hover:bg-[var(--admin-inset-2)] hover:text-[var(--admin-text)] sm:rounded-full">
               <ArrowLeft className="h-3.5 w-3.5" /> Edit mapping
             </button>
             <button type="button" onClick={doImport} className="btn-admin min-h-11 w-full !rounded-xl justify-center">
@@ -398,7 +398,7 @@ export function CsvImportFlow() {
         <section className="rounded-2xl border border-[var(--admin-border-2)] bg-[var(--admin-card)] px-5 py-12 text-center sm:p-14">
           <Loader2 className="mx-auto h-8 w-8 animate-spin admin-accent-text" />
           <p className="mt-4 text-sm font-semibold admin-text">Importing {rows.length} medicines…</p>
-          <p className="mx-auto mt-1 max-w-md text-xs leading-5 admin-muted">Matching shared medicine masters first, then creating only the records that do not already exist.</p>
+          <p className="mx-auto mt-1 max-w-md text-base leading-6 admin-muted sm:text-sm sm:leading-5">Matching shared medicine masters first, then creating only the records that do not already exist.</p>
         </section>
       )}
 
@@ -410,14 +410,14 @@ export function CsvImportFlow() {
           <h2 className="mt-4 text-lg font-bold admin-text">
             {summary?.errors.length ? "Import finished with rows to review" : "Import complete"}
           </h2>
-          <p className="mt-1 text-xs admin-muted">
+          <p className="mt-1 text-sm admin-muted">
             {summary?.errors.length
               ? "Successful rows were saved. Failed rows were left unchanged so you can correct and retry them safely."
               : "Your catalogue has been refreshed with the processed rows."}
           </p>
 
           {summary && (
-            <div className="mx-auto mt-5 grid max-w-2xl grid-cols-2 gap-2 sm:grid-cols-5 sm:gap-3">
+            <div className="mx-auto mt-5 grid max-w-2xl grid-cols-1 gap-2 sm:grid-cols-5 sm:gap-3">
               {[
                 [summary.created, "New masters", "text-emerald-700 dark:text-emerald-300"],
                 [summary.matched, "Matched", "text-blue-700 dark:text-blue-300"],
@@ -427,7 +427,7 @@ export function CsvImportFlow() {
               ].map(([value, label, className]) => (
                 <div key={label as string} className="rounded-xl bg-[var(--admin-card)] p-3 sm:p-4">
                   <p className={`text-xl font-black sm:text-2xl ${className as string}`}>{value as number}</p>
-                  <p className="mt-1 text-[10px] leading-4 admin-muted sm:text-xs">{label as string}</p>
+                  <p className="mt-1 text-sm leading-4 admin-muted sm:text-sm">{label as string}</p>
                 </div>
               ))}
             </div>
@@ -436,10 +436,10 @@ export function CsvImportFlow() {
           {summary?.upgradeRequired && (
             <div className="mx-auto mt-5 max-w-2xl rounded-2xl border border-violet-500/25 bg-violet-500/[0.06] p-4 text-left">
               <p className="text-sm font-bold text-violet-800 dark:text-violet-200">Free-plan public listing limit reached</p>
-              <p className="mt-1 text-xs leading-5 text-violet-800/80 dark:text-violet-200/80">
+              <p className="mt-1 text-sm leading-5 text-violet-800/80 dark:text-violet-200/80">
                 CSV import itself remains available on the free plan. Only rows that would exceed the 5 public medicine listing allowance were blocked; private inventory rows can still be imported.
               </p>
-              <button type="button" onClick={() => router.push("/admin/billing")} className="mt-3 inline-flex min-h-10 items-center justify-center rounded-xl bg-violet-600 px-4 text-xs font-bold text-white transition hover:bg-violet-500">
+              <button type="button" onClick={() => router.push("/admin/billing")} className="mt-3 inline-flex min-h-11 items-center justify-center rounded-xl bg-violet-600 px-4 text-sm font-bold text-white transition hover:bg-violet-500">
                 View Premium
               </button>
             </div>
@@ -447,18 +447,18 @@ export function CsvImportFlow() {
 
           {summary && summary.errors.length > 0 && (
             <div className="mx-auto mt-5 max-w-2xl rounded-2xl border border-rose-500/20 bg-rose-500/[0.05] p-3 text-left sm:p-4">
-              <p className="text-xs font-bold text-rose-700 dark:text-rose-300">
+              <p className="text-sm font-bold text-rose-700 dark:text-rose-300">
                 Rows to correct ({summary.errors.length})
               </p>
               <ul className="mt-2 space-y-1.5">
                 {summary.errors.slice(0, 10).map((item) => (
-                  <li key={`${item.row}:${item.message}`} className="text-xs leading-5 text-rose-700/90 dark:text-rose-200/90">
+                  <li key={`${item.row}:${item.message}`} className="text-sm leading-5 text-rose-700/90 dark:text-rose-200/90">
                     <span className="font-semibold">Row {item.row}:</span> {item.message}
                   </li>
                 ))}
               </ul>
               {summary.errors.length > 10 && (
-                <p className="mt-2 text-[11px] text-rose-700/75 dark:text-rose-200/75">
+                <p className="mt-2 text-sm text-rose-700/75 dark:text-rose-200/75">
                   +{summary.errors.length - 10} more failed row(s). Correct the source file and import again.
                 </p>
               )}
@@ -469,7 +469,7 @@ export function CsvImportFlow() {
             <button type="button" onClick={() => router.push("/admin/medications")} className="btn-admin min-h-11 w-full !rounded-xl justify-center">
               View catalogue
             </button>
-            <button type="button" onClick={reset} className="inline-flex min-h-11 items-center justify-center gap-1.5 rounded-xl bg-[var(--admin-inset)] px-4 text-xs font-semibold admin-muted transition hover:bg-[var(--admin-inset-2)] hover:text-[var(--admin-text)]">
+            <button type="button" onClick={reset} className="inline-flex min-h-11 items-center justify-center gap-1.5 rounded-xl bg-[var(--admin-inset)] px-4 text-sm font-semibold admin-muted transition hover:bg-[var(--admin-inset-2)] hover:text-[var(--admin-text)]">
               <RotateCcw className="h-3.5 w-3.5" /> Import another file
             </button>
           </div>
