@@ -276,13 +276,19 @@ async function submitRefill(raw: Record<string, unknown>) {
         {
           error: "prescription_referral_limit",
           message:
-            "This pharmacy has used its free monthly direct prescription referral allowance. Your prescription has not been shared with another pharmacy.",
+            "This pharmacy is not accepting additional Afyvia-routed prescription referrals right now. Your prescription has not been shared with another pharmacy.",
           selectedPharmacy: selectedPharmacy
             ? { id: selectedPharmacy.id, name: selectedPharmacy.name, slug: selectedPharmacy.slug }
             : null,
-          alternative,
-          limit: reservation.usage.limit,
-          used: reservation.usage.used,
+          alternative: alternative
+            ? {
+                id: alternative.id,
+                slug: alternative.slug,
+                name: alternative.name,
+                city: alternative.city,
+                county: alternative.county,
+              }
+            : null,
           patientDataShared: false,
         },
         { status: 409 },
