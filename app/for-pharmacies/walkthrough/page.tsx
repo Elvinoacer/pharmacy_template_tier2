@@ -61,7 +61,7 @@ const steps = [
   {
     num: "05",
     title: "Go Live & Keep Patients",
-    desc: "Publish on the free plan, with up to 5 public medicines and 2 services. Upgrade to Premium (KES 500/month) only when you need more listings or premium tools.",
+    desc: "Publish on the free plan, with up to 5 public medicines, 2 services and 10 direct Afyvia prescription referrals per month. Upgrade to Premium (KES 500/month) for unlimited direct referrals, more listings or premium tools.",
     duration: "Instant",
     href: "/onboard",
     cta: "Launch your pharmacy",
