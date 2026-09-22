@@ -45,6 +45,7 @@ export default async function AnalyticsOverviewPage({
       period={period as PeriodOption}
       basePath="/admin/analytics/overview"
     >
+      <div className="space-y-4 sm:space-y-6 [&_.admin-stat_p:first-child]:!text-sm [&_.admin-stat_p:nth-child(3)]:!text-sm">
       <StatGrid>
         <AdminCard label="Gross Sales" value={formatKES(data.financial.grossSales)} hint="Before discounts" icon={DollarSign} accent="accent" />
         <AdminCard
@@ -209,6 +210,7 @@ export default async function AnalyticsOverviewPage({
             {Object.keys(data.sales.byType).length === 0 && <EmptyInline>No orders in this period.</EmptyInline>}
           </div>
         </section>
+      </div>
       </div>
     </AnalyticsShell>
   );
