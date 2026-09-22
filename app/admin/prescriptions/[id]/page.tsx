@@ -307,14 +307,14 @@ export default async function PrescriptionDetailPage({
         <div className="flex flex-wrap items-center gap-2">
           <Link
             href="/admin/prescriptions"
-            className="inline-flex items-center gap-1.5 rounded-full border border-black/5 bg-white/80 px-3 py-1.5 text-xs font-semibold admin-accent-text transition hover:bg-[var(--admin-card)] dark:bg-black/40"
+            className="inline-flex min-h-11 items-center justify-center gap-1.5 rounded-full border border-black/5 bg-white/80 px-3 py-2 text-sm font-semibold admin-accent-text transition hover:bg-[var(--admin-card)] dark:bg-black/40"
           >
             <ArrowLeft className="h-3.5 w-3.5" /> All prescriptions
           </Link>
           {prescription.customer && (
             <Link
               href={`/admin/customers/${prescription.customer.id}`}
-              className="inline-flex items-center gap-1.5 rounded-full border border-black/5 bg-white/80 px-3 py-1.5 text-xs font-semibold admin-accent-text transition hover:bg-[var(--admin-card)] dark:bg-black/40"
+              className="inline-flex min-h-11 items-center justify-center gap-1.5 rounded-full border border-black/5 bg-white/80 px-3 py-2 text-sm font-semibold admin-accent-text transition hover:bg-[var(--admin-card)] dark:bg-black/40"
             >
               <User className="h-3.5 w-3.5" /> Customer
             </Link>
@@ -322,7 +322,7 @@ export default async function PrescriptionDetailPage({
           {prescription.medication && (
             <Link
               href={`/admin/medications/${prescription.medication.id}`}
-              className="inline-flex items-center gap-1.5 rounded-full border border-black/5 bg-white/80 px-3 py-1.5 text-xs font-semibold admin-accent-text transition hover:bg-[var(--admin-card)] dark:bg-black/40"
+              className="inline-flex min-h-11 items-center justify-center gap-1.5 rounded-full border border-black/5 bg-white/80 px-3 py-2 text-sm font-semibold admin-accent-text transition hover:bg-[var(--admin-card)] dark:bg-black/40"
             >
               <Pill className="h-3.5 w-3.5" /> Catalogue
             </Link>
@@ -336,7 +336,7 @@ export default async function PrescriptionDetailPage({
           />
         </div>
 
-        <div className="flex flex-wrap items-start gap-2 sm:items-center">
+        <div className="flex w-full flex-wrap items-start gap-2 sm:w-auto sm:items-center">
           {!prescription.dispatchedAt ? (
             <DispatchPrescriptionForm
               action={adminDispatchPrescriptionAction}
@@ -349,7 +349,7 @@ export default async function PrescriptionDetailPage({
               hasMedicationLink={Boolean(prescription.medicationId && prescription.medication)}
             />
           ) : (
-            <span className="inline-flex flex-wrap items-center gap-1.5 rounded-full border border-emerald-500/30 bg-emerald-500/15 px-3.5 py-1.5 text-xs font-bold text-emerald-700">
+            <span className="inline-flex flex-wrap items-center gap-1.5 rounded-full border border-emerald-500/30 bg-emerald-500/15 px-3.5 py-1.5 text-sm font-bold text-emerald-700">
               <Check className="h-3.5 w-3.5" /> Dispatched {formatDateTime(prescription.dispatchedAt)}
             </span>
           )}
@@ -357,7 +357,7 @@ export default async function PrescriptionDetailPage({
             <input type="hidden" name="id" value={prescription.id} />
             <ConfirmSubmitButton
               message="Delete this prescription? Adherence logs will also be removed."
-              className="inline-flex items-center gap-1.5 rounded-full bg-rose-500/10 px-3.5 py-1.5 text-xs font-bold text-rose-600 transition hover:bg-rose-500/20"
+              className="inline-flex min-h-11 w-full items-center justify-center gap-1.5 rounded-full bg-rose-500/10 px-3.5 py-2 text-sm font-bold text-rose-600 transition hover:bg-rose-500/20 sm:w-auto"
             >
               <Trash2 className="h-3.5 w-3.5" /> Delete
             </ConfirmSubmitButton>
@@ -390,22 +390,22 @@ export default async function PrescriptionDetailPage({
               </div>
               <div>
                 <h3 className="text-sm font-bold admin-text">Prescription Document &amp; Scans ({prescription.attachmentUrls.length})</h3>
-                <p className="text-[11px] admin-soft">Original script uploaded by patient or referring clinic</p>
+                <p className="text-sm admin-soft">Original script uploaded by patient or referring clinic</p>
               </div>
             </div>
           </div>
-          <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
             {prescription.attachmentUrls.map((url, idx) => {
               const isImg = url.startsWith("data:image/") || /\.(jpe?g|png|webp|gif|svg)($|\?)/i.test(url);
               return (
                 <div key={idx} className="rounded-xl border border-[var(--admin-border)] bg-[var(--admin-card)] p-3 shadow-xs">
-                  <div className="flex items-center justify-between mb-2">
-                    <span className="text-xs font-semibold admin-text">Script #{idx + 1}</span>
+                  <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+                    <span className="text-sm font-semibold admin-text">Script #{idx + 1}</span>
                     <a
                       href={url}
                       target="_blank"
                       rel="noreferrer"
-                      className="inline-flex items-center gap-1 rounded-lg bg-emerald-500/10 px-2.5 py-1 text-[11px] font-bold text-emerald-700 hover:bg-emerald-500/20 dark:text-emerald-300"
+                      className="inline-flex min-h-11 w-full items-center justify-center gap-1 rounded-lg bg-emerald-500/10 px-3 py-2 text-sm font-bold text-emerald-700 hover:bg-emerald-500/20 dark:text-emerald-300 sm:w-auto"
                     >
                       Open Full Document <ExternalLink className="h-3 w-3" />
                     </a>
@@ -416,7 +416,7 @@ export default async function PrescriptionDetailPage({
                     </a>
                   ) : (
                     <div className="flex h-32 items-center justify-center rounded-lg bg-[var(--admin-inset)] p-3 text-center">
-                      <p className="truncate font-mono text-xs admin-soft">{url}</p>
+                      <p className="break-all font-mono text-sm admin-soft">{url}</p>
                     </div>
                   )}
                 </div>
@@ -432,7 +432,7 @@ export default async function PrescriptionDetailPage({
       </div>
 
       {/* Priority 1: KPI strip */}
-      <div className="mb-5 grid grid-cols-2 gap-3 sm:mb-6 lg:grid-cols-4">
+      <div className="mb-5 grid grid-cols-1 gap-3 sm:mb-6 sm:grid-cols-2 lg:grid-cols-4">
         <KpiCard
           label="Adherence"
           value={`${metrics.adherenceRate}%`}
@@ -476,12 +476,12 @@ export default async function PrescriptionDetailPage({
             title="AI clinical take"
             description="Prioritised observations for the pharmacist"
             action={
-              <span className="inline-flex items-center gap-1 rounded-full border border-emerald-500/30 bg-gradient-to-r from-emerald-500/20 to-teal-500/20 px-3 py-1 text-xs font-bold text-emerald-700 dark:text-emerald-400">
+              <span className="inline-flex items-center gap-1 rounded-full border border-emerald-500/30 bg-gradient-to-r from-emerald-500/20 to-teal-500/20 px-3 py-1 text-sm font-bold text-emerald-700 dark:text-emerald-400">
                 <Sparkles className="h-3.5 w-3.5" /> AI
               </span>
             }
           >
-            <div className="prose prose-sm dark:prose-invert max-w-none text-xs admin-text sm:text-sm">
+            <div className="prose prose-sm dark:prose-invert max-w-none text-sm admin-text sm:text-sm">
               <Markdown>{analysis}</Markdown>
             </div>
           </AdminPanel>
@@ -493,32 +493,32 @@ export default async function PrescriptionDetailPage({
           >
             <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
               <div className="rounded-lg border border-[var(--admin-border)] px-3 py-2">
-                <p className="text-xs uppercase tracking-wider admin-muted">Total billed</p>
+                <p className="text-sm uppercase tracking-wider admin-muted">Total billed</p>
                 <p className="mt-0.5 font-semibold admin-text">KES {fillTotals.totalBilled.toLocaleString("en-KE", { maximumFractionDigits: 0 })}</p>
               </div>
               <div className="rounded-lg border border-[var(--admin-border)] px-3 py-2">
-                <p className="text-xs uppercase tracking-wider admin-muted">Collected</p>
+                <p className="text-sm uppercase tracking-wider admin-muted">Collected</p>
                 <p className="mt-0.5 font-semibold admin-text">KES {fillTotals.totalCollected.toLocaleString("en-KE", { maximumFractionDigits: 0 })}</p>
               </div>
               <div className="rounded-lg border border-amber-500/30 bg-amber-500/5 px-3 py-2">
-                <p className="text-xs uppercase tracking-wider admin-muted">Outstanding</p>
+                <p className="text-sm uppercase tracking-wider admin-muted">Outstanding</p>
                 <p className={`mt-0.5 font-semibold ${fillTotals.totalOutstanding > 0 ? "text-amber-600" : "admin-text"}`}>
                   KES {fillTotals.totalOutstanding.toLocaleString("en-KE", { maximumFractionDigits: 0 })}
                 </p>
               </div>
               <div className="rounded-lg border border-[var(--admin-border)] px-3 py-2">
-                <p className="text-xs uppercase tracking-wider admin-muted">Gross profit</p>
+                <p className="text-sm uppercase tracking-wider admin-muted">Gross profit</p>
                 <p className="mt-0.5 font-semibold admin-text">KES {fillGrossProfit.toLocaleString("en-KE", { maximumFractionDigits: 0 })}</p>
               </div>
             </div>
 
             {fillHistory.length === 0 ? (
-              <p className="mt-4 text-xs admin-muted">
+              <p className="mt-4 text-sm admin-muted">
                 No fills recorded yet. Dispatch this prescription to create the first fill + commercial order.
               </p>
             ) : (
               <div tabIndex={0} role="region" aria-label="Scrollable records" className="admin-table-region mt-4 overflow-x-auto">
-                <table className="w-full text-xs">
+                <table className="w-full text-sm">
                   <thead>
                     <tr className="text-left admin-muted border-b border-[var(--admin-border)]">
                       <th className="py-2 pr-3">#</th>
@@ -551,7 +551,7 @@ export default async function PrescriptionDetailPage({
                         <td className="py-2 pr-3 text-right admin-text font-semibold">KES {f.grossProfit.toFixed(0)}</td>
                         <td className="py-2 pr-3 admin-muted">
                           {f.paymentProvider ? `${f.paymentProvider}${f.providerRef ? ` · ${f.providerRef}` : ""}` : "—"}
-                          {f.paymentStatus && <div className="text-xs">{f.paymentStatus}</div>}
+                          {f.paymentStatus && <div className="text-sm">{f.paymentStatus}</div>}
                         </td>
                         <td className="py-2 pr-3 text-right admin-muted">KES {f.amountPaid.toFixed(0)}</td>
                         <td className={`py-2 pr-3 text-right ${f.amountDue > 0 ? "text-amber-600 font-semibold" : "admin-muted"}`}>
@@ -589,12 +589,12 @@ export default async function PrescriptionDetailPage({
                       <p className="font-mono text-sm font-bold admin-text">
                         {slot.timeOfDay}
                         {slot.label ? (
-                          <span className="ml-1.5 font-sans text-xs font-medium admin-soft">
+                          <span className="ml-1.5 font-sans text-sm font-medium admin-soft">
                             {slot.label}
                           </span>
                         ) : null}
                       </p>
-                      <p className="mt-0.5 text-xs admin-soft">
+                      <p className="mt-0.5 text-sm admin-soft">
                         {slot.log?.recordedBy
                           ? `Logged by ${slot.log.recordedBy}`
                           : slot.status === "pending"
@@ -617,13 +617,13 @@ export default async function PrescriptionDetailPage({
             description="Each row is a scheduled time · columns are days"
           >
             {timeline.length === 0 ? (
-              <p className="py-4 text-center text-xs admin-soft">No schedule configured.</p>
+              <p className="py-4 text-center text-sm admin-soft">No schedule configured.</p>
             ) : (
               <div tabIndex={0} role="region" aria-label="Scrollable records" className="admin-table-region -mx-1 overflow-x-auto px-1">
                 <table className="w-full min-w-[640px] border-separate border-spacing-1 text-center">
                   <thead>
                     <tr>
-                      <th className="sticky left-0 z-10 bg-[var(--admin-panel)] px-2 py-1 text-left text-xs font-bold uppercase tracking-wider admin-soft">
+                      <th className="sticky left-0 z-10 bg-[var(--admin-panel)] px-2 py-1 text-left text-sm font-bold uppercase tracking-wider admin-soft">
                         Slot
                       </th>
                       {dayKeys.map((d) => {
@@ -632,7 +632,7 @@ export default async function PrescriptionDetailPage({
                         return (
                           <th
                             key={d}
-                            className={`px-0.5 py-1 text-xs font-semibold ${
+                            className={`px-0.5 py-1 text-sm font-semibold ${
                               isToday ? "text-emerald-700" : "admin-soft"
                             }`}
                             title={d}
@@ -647,17 +647,17 @@ export default async function PrescriptionDetailPage({
                     {timeline.map((row) => (
                       <tr key={row.timeOfDay}>
                         <td className="sticky left-0 z-10 whitespace-nowrap bg-[var(--admin-panel)] px-2 py-1 text-left">
-                          <span className="font-mono text-xs font-bold admin-text">
+                          <span className="font-mono text-sm font-bold admin-text">
                             {row.timeOfDay}
                           </span>
                           {row.label && (
-                            <span className="ml-1 text-xs admin-soft">{row.label}</span>
+                            <span className="ml-1 text-sm admin-soft">{row.label}</span>
                           )}
                         </td>
                         {row.cells.map((c) => (
                           <td key={`${row.timeOfDay}-${c.date}`} className="p-0.5">
                             <div
-                              className={`mx-auto flex h-8 w-8 items-center justify-center rounded-lg text-xs font-bold ${cellColor(c.status)}`}
+                              className={`mx-auto flex h-8 w-8 items-center justify-center rounded-lg text-sm font-bold ${cellColor(c.status)}`}
                               title={`${c.date} ${row.timeOfDay}: ${c.status}`}
                             >
                               {cellGlyph(c.status)}
@@ -668,7 +668,7 @@ export default async function PrescriptionDetailPage({
                     ))}
                   </tbody>
                 </table>
-                <div className="mt-3 flex flex-wrap items-center gap-3 border-t border-[var(--admin-inset-2)] pt-3 text-xs admin-soft">
+                <div className="mt-3 flex flex-wrap items-center gap-3 border-t border-[var(--admin-inset-2)] pt-3 text-sm admin-soft">
                   <LegendDot className="bg-emerald-500" label="Taken" />
                   <LegendDot className="bg-amber-500" label="Late" />
                   <LegendDot className="bg-rose-500" label="Missed" />
@@ -711,7 +711,7 @@ export default async function PrescriptionDetailPage({
                     return (
                       <li
                         key={a.id}
-                        className="flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-[var(--admin-inset-2)] bg-[var(--admin-inset)] px-4 py-2.5 text-xs"
+                        className="flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-[var(--admin-inset-2)] bg-[var(--admin-inset)] px-4 py-2.5 text-sm"
                       >
                         <div className="flex items-center gap-3">
                           <span
@@ -736,14 +736,14 @@ export default async function PrescriptionDetailPage({
                             <p className="font-bold capitalize admin-text">
                               {status} {time}
                             </p>
-                            <p className="text-xs admin-soft">
+                            <p className="text-sm admin-soft">
                               {date}
                               {recordedBy}
                             </p>
                           </div>
                         </div>
                         {"notes" in a && a.notes && (
-                          <span className="max-w-full truncate rounded-lg bg-white/60 px-2.5 py-1 text-xs italic admin-muted dark:bg-black/40">
+                          <span className="max-w-full whitespace-normal break-words rounded-lg bg-white/60 px-2.5 py-1 text-sm italic admin-muted dark:bg-black/40">
                             &ldquo;{a.notes}&rdquo;
                           </span>
                         )}
@@ -760,19 +760,19 @@ export default async function PrescriptionDetailPage({
             description={`${prescription.refillRequests.length} requests`}
           >
             {prescription.refillRequests.length === 0 ? (
-              <p className="py-4 text-center text-xs admin-soft">No refill requests yet.</p>
+              <p className="py-4 text-center text-sm admin-soft">No refill requests yet.</p>
             ) : (
               <ul className="space-y-2">
                 {prescription.refillRequests.map((r) => (
                   <li
                     key={r.id}
-                    className="flex items-center justify-between gap-3 rounded-2xl border border-[var(--admin-inset-2)] bg-[var(--admin-inset)] px-4 py-2.5 text-xs"
+                    className="flex flex-col items-start gap-2 rounded-2xl border border-[var(--admin-inset-2)] bg-[var(--admin-inset)] px-4 py-3 text-sm sm:flex-row sm:items-center sm:justify-between"
                   >
                     <div>
                       <p className="font-bold admin-text">{r.medicineName}</p>
-                      <p className="text-xs admin-soft">{formatDateTime(r.createdAt)}</p>
+                      <p className="text-sm admin-soft">{formatDateTime(r.createdAt)}</p>
                     </div>
-                    <span className="rounded-full bg-emerald-500/15 px-3 py-1 text-xs font-bold capitalize text-emerald-700">
+                    <span className="rounded-full bg-emerald-500/15 px-3 py-1 text-sm font-bold capitalize text-emerald-700">
                       {r.status.replace("_", " ")}
                     </span>
                   </li>
@@ -786,28 +786,28 @@ export default async function PrescriptionDetailPage({
         <div className="space-y-5 lg:col-span-1 lg:space-y-6">
           <AdminPanel title="Regimen" description="Dosage & schedule">
             <div className="rounded-xl border border-[var(--admin-inset-2)] bg-[var(--admin-inset)] p-3">
-              <p className="text-xs font-bold uppercase tracking-wider admin-soft">Medicine</p>
+              <p className="text-sm font-bold uppercase tracking-wider admin-soft">Medicine</p>
               <p className="mt-1 text-sm font-bold admin-text">{prescription.medicineName}</p>
-              <p className="mt-1 text-xs font-semibold text-[var(--admin-accent-text)] dark:text-emerald-400">
+              <p className="mt-1 text-sm font-semibold text-[var(--admin-accent-text)] dark:text-emerald-400">
                 {formula.formulaLabel}
               </p>
               {prescription.dosage && (
-                <p className="mt-1 text-xs admin-muted">{prescription.dosage}</p>
+                <p className="mt-1 text-sm admin-muted">{prescription.dosage}</p>
               )}
               {prescription.schedule && (
-                <p className="mt-0.5 text-xs admin-muted">{prescription.schedule}</p>
+                <p className="mt-0.5 text-sm admin-muted">{prescription.schedule}</p>
               )}
             </div>
 
             {prescription.doseSchedule.length > 0 && (
               <div className="mt-3 space-y-1.5">
-                <p className="text-xs font-bold uppercase tracking-wider admin-soft">
+                <p className="text-sm font-bold uppercase tracking-wider admin-soft">
                   Daily slots
                 </p>
                 {prescription.doseSchedule.map((slot) => (
                   <div
                     key={slot.id}
-                    className="flex items-center justify-between rounded-xl border border-[var(--admin-inset-2)] bg-[var(--admin-inset)] px-3 py-2 text-xs"
+                    className="flex items-center justify-between rounded-xl border border-[var(--admin-inset-2)] bg-[var(--admin-inset)] px-3 py-2 text-sm"
                   >
                     <span className="font-mono font-bold text-[var(--admin-accent-text)] dark:text-emerald-400">
                       {slot.timeOfDay}
@@ -820,10 +820,10 @@ export default async function PrescriptionDetailPage({
           </AdminPanel>
 
           <AdminPanel title="Rx details" description="Administrative metadata">
-            <dl className="space-y-2.5 text-xs">
+            <dl className="space-y-2.5 text-sm">
               <MetaRow label="Status">
                 <span
-                  className={`rounded-full px-2.5 py-0.5 text-xs font-bold capitalize ${STATUS_COLOR[prescription.status]}`}
+                  className={`rounded-full px-2.5 py-0.5 text-sm font-bold capitalize ${STATUS_COLOR[prescription.status]}`}
                 >
                   {prescription.status.replace("_", " ")}
                 </span>
@@ -868,17 +868,17 @@ export default async function PrescriptionDetailPage({
 
             {prescription.notes && (
               <div className="mt-4 rounded-xl border border-amber-500/20 bg-amber-500/10 p-3">
-                <p className="text-xs font-bold uppercase tracking-wider text-amber-800">
+                <p className="text-sm font-bold uppercase tracking-wider text-amber-800">
                   Pharmacist notes
                 </p>
-                <p className="mt-1 text-xs text-amber-900">{prescription.notes}</p>
+                <p className="mt-1 text-sm text-amber-900">{prescription.notes}</p>
               </div>
             )}
 
             {prescription.customer && (
               <Link
                 href={`/admin/customers/${prescription.customer.id}`}
-                className="mt-4 inline-flex items-center gap-1 text-xs font-bold admin-accent-text hover:underline"
+                className="mt-4 inline-flex min-h-11 items-center gap-1 text-sm font-bold admin-accent-text hover:underline"
               >
                 Open full customer profile <ExternalLink className="h-3 w-3" />
               </Link>
@@ -925,7 +925,7 @@ function KpiCard({
   return (
     <div className="rounded-2xl border border-[var(--admin-inset-2)] bg-gradient-to-br from-[var(--admin-inset)] to-white p-4 shadow-xs dark:to-slate-900 sm:rounded-3xl sm:p-5">
       <div className="flex items-center justify-between">
-        <span className="text-xs font-bold uppercase tracking-wider admin-soft">{label}</span>
+        <span className="text-sm font-bold uppercase tracking-wider admin-soft">{label}</span>
         <span className={`flex h-8 w-8 items-center justify-center rounded-xl sm:h-9 sm:w-9 sm:rounded-2xl ${iconBg}`}>
           {icon}
         </span>
@@ -945,14 +945,14 @@ function KpiCard({
           />
         </div>
       )}
-      <p className="mt-1 text-xs admin-soft">{hint}</p>
+      <p className="mt-1 text-sm admin-soft">{hint}</p>
     </div>
   );
 }
 
 function MetaRow({ label, children }: { label: string; children: React.ReactNode }) {
   return (
-    <div className="flex items-center justify-between gap-2 border-b border-[var(--admin-inset-2)] py-1.5">
+    <div className="flex min-w-0 flex-col items-start gap-1 border-b border-[var(--admin-inset-2)] py-2 sm:flex-row sm:items-center sm:justify-between sm:gap-2 [&>*:last-child]:max-w-full [&>*:last-child]:break-words sm:[&>*:last-child]:max-w-[60%] sm:[&>*:last-child]:text-right">
       <span className="font-medium admin-soft">{label}</span>
       {children}
     </div>
@@ -1044,7 +1044,7 @@ function CellBadge({ status }: { status: string }) {
         : status.charAt(0).toUpperCase() + status.slice(1);
   return (
     <span
-      className={`inline-flex shrink-0 items-center rounded-full px-2.5 py-1 text-xs font-bold ${styles[status] || "bg-slate-100 text-slate-600"}`}
+      className={`inline-flex shrink-0 items-center rounded-full px-2.5 py-1 text-sm font-bold ${styles[status] || "bg-slate-100 text-slate-600"}`}
     >
       {label}
     </span>
