@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { revalidatePath } from "next/cache";
 import { AuthError, getSessionUser, isStaff, writeAuditLog } from "@/app/lib/auth";
 import { requireMedicationWriteContext } from "@/app/lib/services/medication-access";
 import { withPharmacy } from "@/app/lib/tenant-context";
@@ -221,6 +222,10 @@ export async function POST(req: Request) {
         enrichmentScore: result.enrichmentScore,
       },
     ));
+
+    revalidatePath("/admin/medications");
+    revalidatePath("/admin/inventory");
+    revalidatePath("/admin/medications/library");
 
     return NextResponse.json({
       ok: true,
