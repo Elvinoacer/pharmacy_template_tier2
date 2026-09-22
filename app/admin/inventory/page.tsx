@@ -5,6 +5,7 @@ import { getInventoryHealth } from "@/app/lib/services/stock";
 import { withPharmacy } from "@/app/lib/tenant-context";
 import { AdminShell } from "@/app/components/admin/AdminShell";
 import { AdminCard, AdminPanel, AdminEmptyState } from "@/app/components/admin/AdminUI";
+import { PremiumFeatureNotice } from "@/app/components/admin/PremiumFeatureNotice";
 import { formatDate } from "@/app/lib/time";
 import {
   Package,
@@ -15,6 +16,7 @@ import {
   ArrowRight,
   Boxes,
 } from "lucide-react";
+import { hasPremiumPlan } from "@/app/lib/platform/entitlements";
 
 export const metadata = { title: "Inventory health" };
 export const dynamic = "force-dynamic";
@@ -33,9 +35,12 @@ export default async function AdminInventoryPage() {
     redirect("/admin/select");
   }
 
-  const health = await withPharmacy(pharmacyId, () =>
-    getInventoryHealth({ expiryDays: 60, salesLookbackDays: 30 }),
-  );
+  const [health, premiumActive] = await Promise.all([
+    withPharmacy(pharmacyId, () =>
+      getInventoryHealth({ expiryDays: 60, salesLookbackDays: 30 }),
+    ),
+    hasPremiumPlan(pharmacyId),
+  ]);
 
   return (
     <AdminShell
@@ -83,15 +88,27 @@ export default async function AdminInventoryPage() {
             }
           />
         </Link>
-        <Link href="#reorder" className="col-span-2 block min-w-0 lg:col-span-1">
-          <AdminCard
-            label="Reorder now"
-            value={health.counts.reorder}
-            hint="Velocity + threshold"
-            icon={Truck}
-            accent={health.counts.reorder > 0 ? "accent" : "neutral"}
-          />
-        </Link>
+        {premiumActive ? (
+          <Link href="#reorder" className="col-span-2 block min-w-0 lg:col-span-1">
+            <AdminCard
+              label="Reorder now"
+              value={health.counts.reorder}
+              hint="Velocity + threshold"
+              icon={Truck}
+              accent={health.counts.reorder > 0 ? "accent" : "neutral"}
+            />
+          </Link>
+        ) : (
+          <Link href="/admin/billing" className="col-span-2 block min-w-0 lg:col-span-1">
+            <AdminCard
+              label="Inventory intelligence"
+              value="Premium"
+              hint="Velocity-based reorder guidance"
+              icon={Truck}
+              accent="accent"
+            />
+          </Link>
+        )}
       </div>
 
       <div className="grid gap-4 sm:gap-6 lg:grid-cols-2">
@@ -286,10 +303,21 @@ export default async function AdminInventoryPage() {
         <AdminPanel
           id="reorder"
           title="Reorder suggestions"
-          description="30-day sales velocity plus low-stock thresholds. Suggested quantity targets roughly 30 days of cover or 2× threshold."
+          description={
+            premiumActive
+              ? "30-day sales velocity plus low-stock thresholds. Suggested quantity targets roughly 30 days of cover or 2× threshold."
+              : "Free keeps stock, batch and expiry visibility. Premium adds velocity-based replenishment intelligence."
+          }
           className="lg:col-span-2"
         >
-          {health.reorderSuggestions.length === 0 ? (
+          {!premiumActive ? (
+            <PremiumFeatureNotice
+              compact
+              title="Know what to restock before you run out — and what not to buy again"
+              description="Premium inventory intelligence uses recent sales velocity and stock thresholds to suggest replenishment quantities. Core stock-outs, low-stock alerts, batches and expiry tracking remain Free."
+              benefits={["Sales velocity", "Reorder suggestions", "Stock optimisation"]}
+            />
+          ) : health.reorderSuggestions.length === 0 ? (
             <AdminEmptyState
               icon={Truck}
               title="Nothing to reorder"
