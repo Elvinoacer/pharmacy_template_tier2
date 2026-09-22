@@ -26,6 +26,7 @@ import {
   type MedicineCatalogItem,
 } from "../../components/MedicineCatalogCard";
 import PageHero from "../../components/PageHero";
+import MedicineProductImage from "../../components/MedicineProductImage";
 import NetworkMedicineView from "../NetworkMedicineView";
 import { prisma } from "../../lib/db";
 import { formatPrice } from "../../lib/format";
@@ -553,7 +554,7 @@ export default async function CategoryOrMedicinePage({ params }: Props) {
               </div>
 
               {med.medicationMaster.imageUrl ? (
-                <Image src={med.medicationMaster.imageUrl} alt={med.medicationMaster.name} fill priority className="object-contain p-6 sm:p-8" sizes="(max-width:1024px) 100vw,45vw" />
+                <MedicineProductImage src={med.medicationMaster.imageUrl} alt={med.medicationMaster.name} priority className="object-contain p-6 sm:p-8" sizes="(max-width:1024px) 100vw,45vw" />
               ) : (
                 <Image src="/images/care/medicine-still-life.png" alt="Illustrative medicine supplies; product photo not provided" fill className="object-cover" sizes="(max-width: 768px) 100vw, 50vw" />
               )}
@@ -563,7 +564,7 @@ export default async function CategoryOrMedicinePage({ params }: Props) {
               <div className="grid grid-cols-4 gap-2 sm:gap-3">
                 {gallery.map((src, index) => (
                   <div key={`${src}-${index}`} className="relative aspect-square overflow-hidden rounded-2xl border border-[var(--medicine-ui-border)] bg-[var(--card)]/80 backdrop-blur-md transition hover:border-[var(--brand)]">
-                    <Image unoptimized src={src} alt={`${med.medicationMaster.name} view ${index + 2}`} fill className="object-contain p-2" sizes="140px" />
+                    <MedicineProductImage src={src} alt={`${med.medicationMaster.name} view ${index + 2}`} className="object-contain p-2" sizes="140px" />
                   </div>
                 ))}
               </div>
