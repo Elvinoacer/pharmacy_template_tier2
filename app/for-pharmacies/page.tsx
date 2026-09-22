@@ -210,7 +210,7 @@ export default function ForPharmaciesPage() {
                 <li className="flex items-start gap-2">
                   <CheckCircle2 size={15} className="mt-0.5 shrink-0 text-[var(--brand)]" aria-hidden />
                   <span>
-                    <strong>24/7 Prescription Inbox:</strong> Patients send prescriptions anytime; you review and dispense when ready.
+                    <strong>Prescription Reach:</strong> Your direct storefront requests stay available; Free includes 10 new Afyvia marketplace prescription referrals each month, while Premium removes that marketplace cap.
                   </span>
                 </li>
               </ul>
