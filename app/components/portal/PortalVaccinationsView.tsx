@@ -99,6 +99,7 @@ export function PortalVaccinationsView({
               </table>
             </div>
           </>
+        )}
       </section>
 
       <section className="grid gap-6 md:grid-cols-2">
