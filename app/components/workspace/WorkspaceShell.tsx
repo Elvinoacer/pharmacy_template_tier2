@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useRef, useState, useEffect } from "react";
+import React, { useRef, useEffect } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
@@ -123,7 +123,7 @@ export function WorkspaceShell({
       >
       <NavigationProgressProvider>
         <div
-          className="afyvia-workspace-root min-h-screen shell-grid-admin admin-workspace [&_.afyvia-dock-label]:text-sm [&_.afyvia-mobile-sheet-close]:!h-11 [&_.afyvia-mobile-sheet-close]:!w-11 [&_.afyvia-mobile-sheet_button]:min-h-11 [&_.afyvia-mobile-sheet_button]:text-sm [&_.afyvia-mobile-sheet_a]:min-h-11 [&_.afyvia-mobile-sheet_a]:text-sm [&_.afyvia-mobile-sheet_select]:min-h-11 [&_.afyvia-mobile-sheet_select]:text-sm"
+          className="afyvia-workspace-root min-h-screen shell-grid-admin admin-workspace [&_.afyvia-dock-item]:min-h-11 [&_.afyvia-dock-item]:min-w-11 [&_.afyvia-dock-label]:text-sm [&_.afyvia-sheet-link]:min-h-11 [&_.afyvia-sheet-link]:text-sm [&_.afyvia-mobile-sheet-close]:!h-11 [&_.afyvia-mobile-sheet-close]:!w-11 [&_.afyvia-mobile-sheet_button]:min-h-11 [&_.afyvia-mobile-sheet_button]:text-sm [&_.afyvia-mobile-sheet_a]:min-h-11 [&_.afyvia-mobile-sheet_a]:text-sm [&_.afyvia-mobile-sheet_select]:min-h-11 [&_.afyvia-mobile-sheet_select]:text-sm"
           data-role={role}
           data-theme={theme.hydrated ? theme.resolved : undefined}
           data-admin-theme={theme.hydrated ? theme.resolved : undefined}
@@ -156,7 +156,7 @@ export function WorkspaceShell({
           />
 
           {/* 2. Workspace Content Layout */}
-          <div className="flex min-h-0 min-w-0 flex-1 flex-col pb-20 lg:pb-8">
+          <div className="flex min-h-0 min-w-0 flex-1 flex-col pb-[calc(var(--afyvia-dock-height)+env(safe-area-inset-bottom)+1rem)] lg:pb-8">
             {/* Universal Workspace Header */}
             <header className="sticky top-0 z-20 flex min-h-16 items-center justify-between gap-2 border-b border-[var(--admin-border)] bg-[var(--admin-panel)]/95 px-4 backdrop-blur sm:gap-3 sm:px-6 lg:px-8">
               {/* Mobile: keep location context without squeezing full breadcrumbs. */}
@@ -197,7 +197,7 @@ export function WorkspaceShell({
                       size={16}
                       className="shrink-0 text-[var(--admin-text-soft)]"
                     />
-                    <span className="hidden min-w-0 truncate text-sm font-medium text-[var(--admin-text-soft)] md:inline">
+                    <span className="hidden min-w-0 truncate text-sm font-medium text-[var(--admin-text-soft)] lg:inline">
                       {currentGroup.shortLabel}
                     </span>
                   </>
@@ -265,7 +265,7 @@ export function WorkspaceShell({
             <main
               id="workspace-main-content"
               tabIndex={-1}
-              className="workspace-main-scroll mx-auto min-h-0 w-full max-w-[1280px] flex-1 overflow-x-hidden overflow-y-auto px-4 py-6 sm:px-6 lg:px-8"
+              className="workspace-main-scroll mx-auto min-h-0 w-full max-w-[1280px] flex-1 overflow-x-hidden overflow-y-auto px-4 py-5 sm:px-6 sm:py-6 lg:px-8 lg:py-8"
             >
               {role === "admin" && (
                 <div className="hidden sm:block [&_a]:min-h-11 [&_a]:text-sm [&_button]:min-h-11 [&_button]:min-w-11 [&_button]:text-sm [&_p]:text-sm [&_span]:text-sm">
@@ -286,22 +286,22 @@ export function WorkspaceShell({
 
               {/* Page Title & Action Bar */}
               {(title || currentDest) && (
-                <div className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                <div className="mb-5 flex min-w-0 flex-col gap-4 sm:mb-6 sm:flex-row sm:items-start sm:justify-between sm:gap-6 lg:mb-8">
                   <div className="min-w-0 flex-1">
                     <p className="text-sm font-bold uppercase tracking-wider text-[var(--admin-accent-text)]">
                       {currentGroup?.label || "Workspace"}
                     </p>
-                    <h1 className="mt-1 text-2xl font-bold tracking-tight text-[var(--admin-text)] sm:text-3xl">
+                    <h1 className="mt-1 break-words text-2xl font-bold tracking-tight text-[var(--admin-text)] sm:text-[1.75rem] lg:text-3xl">
                       {title || currentDest?.label}
                     </h1>
                     {(subtitle || currentDest?.description) && (
-                      <p className="mt-1 max-w-3xl text-base text-[var(--admin-text-muted)] sm:text-sm">
+                      <p className="mt-1 max-w-3xl break-words text-sm leading-6 text-[var(--admin-text-muted)] sm:text-[15px] lg:text-base">
                         {subtitle || currentDest?.description}
                       </p>
                     )}
                   </div>
                   {actions && (
-                    <div className="flex w-full shrink-0 flex-wrap items-center gap-2 sm:w-auto">
+                    <div className="flex w-full min-w-0 shrink-0 flex-col items-stretch gap-2 sm:w-auto sm:max-w-[48%] sm:flex-row sm:flex-wrap sm:items-center sm:justify-end lg:max-w-none [&_a]:min-h-11 [&_a]:max-w-full [&_button]:min-h-11 [&_button]:max-w-full">
                       {actions}
                     </div>
                   )}
@@ -340,7 +340,7 @@ export function WorkspaceShell({
           />
 
           {/* Push Notifications & Realtime Alerts */}
-          <div className="[&_button]:min-h-11 [&_button]:min-w-11 [&_button]:text-sm [&_p]:text-sm">
+          <div className="[&_button]:min-h-11 [&_button]:min-w-11 [&_button]:text-sm [&_p]:text-sm [&_[role=alertdialog]]:!bottom-[calc(var(--afyvia-dock-height)+env(safe-area-inset-bottom)+0.75rem)] [&_[role=alertdialog]]:!max-h-[70dvh] [&_[role=alertdialog]]:!overflow-y-auto lg:[&_[role=alertdialog]]:!bottom-4 lg:[&_[role=alertdialog]]:!max-h-[80dvh]">
             <PushNotificationCenter
               audience={role === "admin" ? "admin" : "portal"}
             />
@@ -465,7 +465,7 @@ function WorkspaceHeaderUserMenu({
         <span className="grid h-6 w-6 place-items-center rounded-lg bg-teal-700 text-sm font-bold text-white">
           {initials}
         </span>
-        <span className="hidden md:inline max-w-[120px] truncate text-[var(--admin-text)]">
+        <span className="hidden lg:inline max-w-[120px] truncate text-[var(--admin-text)]">
           {user.fullName || user.email}
         </span>
         <ChevronDown size={13} className="text-[var(--admin-text-soft)]" />
