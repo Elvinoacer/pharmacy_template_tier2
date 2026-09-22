@@ -212,16 +212,16 @@ export default function MissedDoseCalculator() {
   }, [schedule, hoursAgo, hoursUntilNext]);
 
   return (
-    <div className="overflow-hidden rounded-3xl border border-[var(--health-ui-border)] bg-white shadow-sm">
+    <div className="min-w-0 overflow-hidden rounded-3xl border border-[var(--health-ui-border)] bg-white shadow-sm">
       {/* Header */}
       <div className="bg-gradient-to-r from-[#0c1a14] via-[#1b382b] to-[#0d6e5a] p-6 text-white sm:p-7">
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div>
             <div className="flex items-center gap-2">
-              <span className="rounded-full bg-emerald-400/20 px-3 py-0.5 text-[11px] font-bold uppercase tracking-wider text-emerald-200 border border-emerald-400/30">
+              <span className="rounded-full bg-emerald-400/20 px-3 py-0.5 text-sm font-bold uppercase tracking-wider text-emerald-200 border border-emerald-400/30">
                 Interactive Decision Engine
               </span>
-              <span className="rounded-full bg-white/10 px-2.5 py-0.5 text-[11px] font-semibold text-emerald-100">
+              <span className="rounded-full bg-white/10 px-3 py-0.5 text-sm font-semibold text-emerald-100">
                 Clinical Safety Algorithm
               </span>
             </div>
@@ -231,12 +231,12 @@ export default function MissedDoseCalculator() {
             >
               Missed-Dose Decision Assistant
             </h3>
-            <p className="mt-1 text-xs text-emerald-100">
+            <p className="mt-1 text-sm text-emerald-100">
               Select your medication dosing frequency and time elapsed to calculate instant clinical guidance.
             </p>
           </div>
 
-          <div className="hidden sm:flex items-center gap-1.5 rounded-2xl bg-white/10 px-3.5 py-2 text-xs font-bold text-emerald-200 border border-white/10">
+          <div className="hidden sm:flex items-center gap-2 rounded-2xl bg-white/10 px-4 py-2 text-sm font-bold text-emerald-200 border border-white/10">
             <Zap className="h-4 w-4 text-emerald-300" />
             Instant Pharmacist Decision
           </div>
@@ -246,18 +246,18 @@ export default function MissedDoseCalculator() {
       <div className="p-6 sm:p-8 space-y-8">
         {/* Step 1: Dosing Schedule Selection Chips */}
         <div>
-          <label className="block text-xs font-bold text-[#0c1a14] uppercase tracking-wider">
+          <label className="block text-sm font-bold text-[#0c1a14] uppercase tracking-wider">
             1. Select Medication Frequency Schedule
           </label>
-          <div className="mt-3 grid gap-2.5 sm:grid-cols-2 lg:grid-cols-4">
+          <div className="mt-3 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
             {SCHEDULE_PRESETS.map((preset) => {
               const isSelected = schedule === preset.id;
               return (
                 <button
                   key={preset.id}
                   type="button"
-                  onClick={() => setSchedule(preset.id)}
-                  className={`text-left rounded-2xl p-3.5 border transition-all duration-150 ${
+                  onClick={() = className="min-h-11 min-w-11"> setSchedule(preset.id)}
+                  className={`text-left rounded-2xl p-4 border transition-all duration-150 ${
                     isSelected
                       ? "border-teal-700 bg-teal-50/80 shadow-xs ring-1 ring-teal-700"
                       : "border-[var(--health-ui-border)] bg-[#fbfdfb] hover:border-teal-300 hover:bg-white"
@@ -265,9 +265,9 @@ export default function MissedDoseCalculator() {
                 >
                   <div className="flex items-center gap-2">
                     <span className="text-lg">{preset.icon}</span>
-                    <p className="font-bold text-xs text-[#0c1a14] truncate">{preset.title}</p>
+                    <p className="font-bold text-sm text-[#0c1a14] truncate">{preset.title}</p>
                   </div>
-                  <p className="mt-1 text-[11px] text-[var(--health-editorial-body)] leading-tight line-clamp-2">
+                  <p className="mt-1 text-sm text-[var(--health-editorial-body)] leading-tight line-clamp-2">
                     {preset.subtitle}
                   </p>
                 </button>
@@ -280,11 +280,11 @@ export default function MissedDoseCalculator() {
         {schedule !== "antibiotic" && schedule !== "oral_contraceptive" && schedule !== "insulin" && schedule !== "prn" && (
           <div className="rounded-2xl border border-[var(--health-ui-border)] bg-[#f8faf9] p-5 sm:p-6 space-y-6">
             <div>
-              <div className="flex items-center justify-between">
-                <label className="text-xs font-bold text-[#0c1a14]">
+              <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+                <label className="text-sm font-bold text-[#0c1a14]">
                   2. How many hours ago was your dose due?
                 </label>
-                <span className="rounded-full bg-teal-800 px-3 py-0.5 text-xs font-black text-white">
+                <span className="rounded-full bg-teal-800 px-3 py-0.5 text-sm font-black text-white">
                   {hoursAgo} {hoursAgo === 1 ? "hour" : "hours"} ago
                 </span>
               </div>
@@ -293,10 +293,10 @@ export default function MissedDoseCalculator() {
                 min={1}
                 max={20}
                 value={hoursAgo}
-                onChange={(e) => setHoursAgo(Number(e.target.value))}
+                onChange={(e) = className="min-h-11 min-w-11"> setHoursAgo(Number(e.target.value))}
                 className="mt-3 w-full accent-teal-800 cursor-pointer"
               />
-              <div className="flex justify-between text-[10px] text-[var(--muted)] font-semibold mt-1">
+              <div className="flex justify-between text-sm text-[var(--muted)] font-semibold mt-1">
                 <span>1 hour (Just missed)</span>
                 <span>6 hours</span>
                 <span>12 hours</span>
@@ -305,11 +305,11 @@ export default function MissedDoseCalculator() {
             </div>
 
             <div className="border-t border-[var(--health-ui-border)] pt-4">
-              <div className="flex items-center justify-between">
-                <label className="text-xs font-bold text-[#0c1a14]">
+              <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+                <label className="text-sm font-bold text-[#0c1a14]">
                   3. In how many hours is your NEXT scheduled dose due?
                 </label>
-                <span className="rounded-full bg-teal-800 px-3 py-0.5 text-xs font-black text-white">
+                <span className="rounded-full bg-teal-800 px-3 py-0.5 text-sm font-black text-white">
                   In {hoursUntilNext} {hoursUntilNext === 1 ? "hour" : "hours"}
                 </span>
               </div>
@@ -318,10 +318,10 @@ export default function MissedDoseCalculator() {
                 min={1}
                 max={24}
                 value={hoursUntilNext}
-                onChange={(e) => setHoursUntilNext(Number(e.target.value))}
+                onChange={(e) = className="min-h-11 min-w-11"> setHoursUntilNext(Number(e.target.value))}
                 className="mt-3 w-full accent-teal-800 cursor-pointer"
               />
-              <div className="flex justify-between text-[10px] text-[var(--muted)] font-semibold mt-1">
+              <div className="flex justify-between text-sm text-[var(--muted)] font-semibold mt-1">
                 <span>1 hour (Imminent next dose)</span>
                 <span>6 hours</span>
                 <span>12 hours</span>
@@ -343,7 +343,7 @@ export default function MissedDoseCalculator() {
         >
           <div className="flex flex-wrap items-center justify-between gap-3 border-b border-black/5 pb-4">
             <span
-              className={`rounded-full px-3.5 py-1 text-xs font-black uppercase tracking-wider ${
+              className={`rounded-full px-4 py-1 text-sm font-black uppercase tracking-wider ${
                 advice.tone === "good"
                   ? "bg-emerald-100 text-emerald-950 border border-emerald-300"
                   : advice.tone === "warn"
@@ -354,7 +354,7 @@ export default function MissedDoseCalculator() {
               {advice.badge}
             </span>
 
-            <span className="text-xs text-[var(--health-editorial-body)] font-semibold">
+            <span className="text-sm text-[var(--health-editorial-body)] font-semibold">
               Selected: <strong>{activePreset.title}</strong>
             </span>
           </div>
@@ -372,15 +372,15 @@ export default function MissedDoseCalculator() {
               {advice.title}
             </h4>
 
-            <p className="mt-2 text-xs sm:text-sm leading-relaxed text-[#2c3e35] font-medium">
+            <p className="mt-2 text-sm sm:text-sm leading-relaxed text-[#2c3e35] font-medium">
               {advice.advice}
             </p>
 
             <div className="mt-4 rounded-2xl bg-white/90 p-4 border border-black/5 space-y-2">
-              <p className="text-xs font-bold text-[#0c1a14]">Required Safety Action Steps:</p>
-              <ul className="space-y-1.5">
+              <p className="text-sm font-bold text-[#0c1a14]">Required Safety Action Steps:</p>
+              <ul className="space-y-2">
                 {advice.rules.map((rule, idx) => (
-                  <li key={idx} className="flex items-start gap-2 text-xs text-[#2c3e35]">
+                  <li key={idx} className="flex items-start gap-2 text-sm text-[#2c3e35]">
                     <CheckCircle2
                       className={`h-4 w-4 shrink-0 mt-0.5 ${
                         advice.tone === "good"
@@ -398,11 +398,11 @@ export default function MissedDoseCalculator() {
           </div>
 
           {/* Quick Pharmacist Phone Assistance CTA */}
-          <div className="mt-6 flex flex-wrap items-center justify-between gap-3 border-t border-black/5 pt-4 text-xs text-[var(--health-editorial-body)]">
+          <div className="mt-6 flex flex-wrap items-center justify-between gap-3 border-t border-black/5 pt-4 text-sm text-[var(--health-editorial-body)]">
             <span>Still unsure or experiencing adverse symptoms?</span>
             <a
               href={`tel:${pharmacy.phone}`}
-              className="inline-flex items-center gap-1.5 font-bold text-teal-900 hover:underline"
+              className="min-h-11 min-w-11 inline-flex items-center gap-2 font-bold text-teal-900 hover:underline"
             >
               <PhoneCall className="h-3.5 w-3.5 text-teal-700" />
               Call Pharmacist ({pharmacy.phone})
