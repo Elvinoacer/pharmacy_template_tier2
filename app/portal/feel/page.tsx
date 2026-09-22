@@ -15,7 +15,9 @@ export default async function PortalFeelPage() {
       title="How do you feel?"
       subtitle="Guided check-ins saved to your account — escalate anytime for pharmacist feedback."
     >
-      <HowDoYouFeelClient mode="portal" />
+      <div className="min-w-0 max-w-full [&_a]:inline-flex [&_a]:min-h-11 [&_a]:items-center [&_button]:min-h-11 [&_button]:min-w-11 [&_button]:text-sm [&_button_span]:text-sm [&_p]:text-base [&_textarea]:text-base">
+        <HowDoYouFeelClient mode="portal" />
+      </div>
     </PortalShell>
   );
 }
