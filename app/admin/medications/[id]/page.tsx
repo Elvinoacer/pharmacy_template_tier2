@@ -175,7 +175,7 @@ export default async function EditMedicationPage({
       title={`Edit: ${med.name}`}
       subtitle="Clinical record, catalogue settings and stock operations in one workspace."
     >
-      <div className="mx-auto w-full max-w-5xl space-y-5 sm:space-y-6">
+      <div className="mx-auto w-full min-w-0 max-w-5xl space-y-5 sm:space-y-6">
         <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
           <Link
             href="/admin/medications"
@@ -209,25 +209,25 @@ export default async function EditMedicationPage({
 
             <div className="mt-4 grid grid-cols-2 gap-2 sm:grid-cols-4 sm:gap-3">
               <div className="rounded-xl border border-[var(--admin-border)] bg-[var(--admin-card)] p-3">
-                <p className="text-[11px] font-bold uppercase tracking-wide admin-soft">Stock</p>
+                <p className="text-sm font-bold uppercase tracking-wide admin-soft">Stock</p>
                 <p className={`mt-1 text-lg font-black tabular-nums ${stockState.tone}`}>{inv.currentStock}</p>
-                <span className={`mt-1 inline-flex rounded-full px-2 py-0.5 text-[11px] font-semibold ${stockState.bg} ${stockState.tone}`}>
+                <span className={`mt-1 inline-flex rounded-full px-2 py-0.5 text-sm font-semibold ${stockState.bg} ${stockState.tone}`}>
                   {stockState.label}
                 </span>
               </div>
               <div className="rounded-xl border border-[var(--admin-border)] bg-[var(--admin-card)] p-3">
-                <p className="text-[11px] font-bold uppercase tracking-wide admin-soft">Price</p>
+                <p className="text-sm font-bold uppercase tracking-wide admin-soft">Price</p>
                 <p className="mt-1 text-lg font-black tabular-nums admin-text">KES {Number(inv.price ?? 0).toLocaleString()}</p>
               </div>
               <div className="rounded-xl border border-[var(--admin-border)] bg-[var(--admin-card)] p-3">
-                <p className="text-[11px] font-bold uppercase tracking-wide admin-soft">Access</p>
+                <p className="text-sm font-bold uppercase tracking-wide admin-soft">Access</p>
                 <p className="mt-1 inline-flex items-center gap-1.5 text-sm font-bold admin-text">
                   <Boxes className="h-3.5 w-3.5 admin-accent-text" />
                   {inv.overTheCounter ? "OTC" : inv.prescriptionRequired ? "Prescription" : "Standard"}
                 </p>
               </div>
               <div className="rounded-xl border border-[var(--admin-border)] bg-[var(--admin-card)] p-3">
-                <p className="text-[11px] font-bold uppercase tracking-wide admin-soft">Visibility</p>
+                <p className="text-sm font-bold uppercase tracking-wide admin-soft">Visibility</p>
                 <p className="mt-1 inline-flex items-center gap-1.5 text-sm font-bold admin-text">
                   <Eye className="h-3.5 w-3.5 admin-accent-text" />
                   {inv.publicListing ? "Public" : "Private"}
