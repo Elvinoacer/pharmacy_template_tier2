@@ -61,15 +61,15 @@ export default async function NewMedicationPage({
       title={fullMode ? "Enter full medicine details" : "Add a medicine quickly"}
       subtitle={fullMode ? "If the medicine already exists in the network library, it will be reused automatically." : "Capture the essentials now, then enrich the record whenever you have more time."}
     >
-      <div className="mx-auto max-w-4xl space-y-4 sm:space-y-6">
+      <div className="mx-auto w-full min-w-0 max-w-4xl space-y-4 sm:space-y-6">
         <div className="flex flex-wrap items-center justify-between gap-3">
           <Link
             href="/admin/medications/add"
-            className="group inline-flex min-h-10 items-center gap-2 rounded-full border border-[var(--admin-border-2)] bg-[var(--admin-card)] px-3.5 text-sm font-medium admin-muted transition hover:border-[var(--admin-accent)] hover:admin-accent-text"
+            className="group inline-flex min-h-11 items-center gap-2 rounded-full border border-[var(--admin-border-2)] bg-[var(--admin-card)] px-3.5 text-sm font-medium admin-muted transition hover:border-[var(--admin-accent)] hover:admin-accent-text"
           >
             <ArrowLeft className="h-4 w-4 transition-transform group-hover:-translate-x-0.5" /> Back to acquisition chooser
           </Link>
-          <span className="inline-flex items-center gap-1.5 rounded-full bg-emerald-500/10 px-3 py-1.5 text-xs font-semibold text-emerald-700 dark:text-emerald-300">
+          <span className="inline-flex items-center gap-1.5 rounded-full bg-emerald-500/10 px-3 py-1.5 text-sm font-semibold text-emerald-700 dark:text-emerald-300">
             {fullMode ? <ShieldCheck className="h-3.5 w-3.5" /> : <Zap className="h-3.5 w-3.5" />} {fullMode ? "Deduplicated before save" : "Fast entry · image ready"}
           </span>
         </div>
@@ -80,7 +80,7 @@ export default async function NewMedicationPage({
               <Library className="mt-0.5 h-4 w-4 shrink-0" />
               <div>
                 <p className="font-semibold">Fastest when you have the pack in hand</p>
-                <p className="mt-0.5 text-xs leading-5 text-sky-800/80 dark:text-sky-100/75">
+                <p className="mt-0.5 text-sm leading-5 text-sky-800/80 dark:text-sky-100/75">
                   Enter the label details, snap the pack image, and continue serving the next customer. You can add the clinical and supplier details later.
                 </p>
               </div>
@@ -93,7 +93,7 @@ export default async function NewMedicationPage({
             <Library className="mt-0.5 h-4 w-4 shrink-0" />
             <div>
               <p className="font-semibold">One medicine record, many pharmacy inventories</p>
-              <p className="mt-0.5 text-xs leading-5 text-sky-800/80 dark:text-sky-100/75">
+              <p className="mt-0.5 text-sm leading-5 text-sky-800/80 dark:text-sky-100/75">
                 New medicines join the shared library after validation. Your price, stock, supplier, shelf and public visibility remain private to your pharmacy.
               </p>
             </div>
@@ -111,9 +111,9 @@ export default async function NewMedicationPage({
               <div className="min-w-0 flex-1">
                 <div className="flex flex-wrap items-center gap-2">
                   <h2 className="text-lg font-bold admin-text sm:text-xl">Medication details</h2>
-                  <span className="rounded-full bg-[var(--admin-inset)] px-2 py-1 text-[10px] font-bold uppercase tracking-wide admin-soft">Manual</span>
+                  <span className="rounded-full bg-[var(--admin-inset)] px-2 py-1 text-sm font-bold uppercase tracking-wide admin-soft">Manual</span>
                 </div>
-                <p className="mt-1 max-w-2xl text-xs leading-relaxed admin-muted sm:text-sm">
+                <p className="mt-1 max-w-2xl text-sm leading-relaxed admin-muted sm:text-sm">
                   We check barcode and clinical identity against the shared library before creating anything new.
                 </p>
               </div>
@@ -123,17 +123,17 @@ export default async function NewMedicationPage({
               {["Identity", "Clinical", "Commercial", "Inventory", "Media"].map((step, index) => (
                 <div
                   key={step}
-                  className="flex min-w-0 items-center gap-2 rounded-xl border border-[var(--admin-border-2)] bg-[var(--admin-inset)] px-2.5 py-2 text-[10px] font-semibold admin-muted sm:text-xs"
+                  className="flex min-w-0 items-center gap-2 rounded-xl border border-[var(--admin-border-2)] bg-[var(--admin-inset)] px-2.5 py-2 text-sm font-semibold admin-muted sm:text-sm"
                 >
-                  <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-[var(--admin-accent-soft)] text-[10px] font-black admin-accent-text">
+                  <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-[var(--admin-accent-soft)] text-sm font-black admin-accent-text">
                     {index + 1}
                   </span>
-                  <span className="truncate">{step}</span>
+                  <span className="break-words">{step}</span>
                 </div>
               ))}
             </div>
 
-            <div className="mt-3 flex items-start gap-2 rounded-xl bg-[var(--admin-inset)] px-3 py-2.5 text-xs leading-relaxed admin-soft">
+            <div className="mt-3 flex items-start gap-2 rounded-xl bg-[var(--admin-inset)] px-3 py-2.5 text-sm leading-relaxed admin-soft">
               <Sparkles className="mt-0.5 h-3.5 w-3.5 shrink-0 admin-accent-text" />
               Required and safety-critical fields come first. Possible duplicates are reviewed before a new shared record is created.
             </div>
@@ -159,7 +159,7 @@ export default async function NewMedicationPage({
             </div>
             <div>
               <h2 className="text-base font-bold admin-text">Quick medication entry</h2>
-              <p className="text-xs admin-muted">A short form for busy counter and receiving workflows.</p>
+              <p className="text-sm admin-muted">A short form for busy counter and receiving workflows.</p>
             </div>
           </div>
           <QuickMedicationForm action={adminCreateSharedMedicationAction} categories={categories} dosageForms={dosageForms} />
