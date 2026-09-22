@@ -129,7 +129,7 @@ export function DispensingRegisterTable({
 
   return (
     <div className="space-y-4">
-      <div className="grid grid-cols-2 gap-3 md:grid-cols-3 xl:grid-cols-5">
+      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5">
         <button
           type="button"
           onClick={() => handleFilterClick("all")}
@@ -138,20 +138,20 @@ export function DispensingRegisterTable({
           }`}
         >
           <div className="flex items-start justify-between gap-2">
-            <p className="text-[10px] font-bold uppercase tracking-wider admin-muted sm:text-xs">Total dispensed</p>
+            <p className="text-sm font-bold uppercase tracking-wider admin-muted sm:text-sm">Total dispensed</p>
             <ShieldCheck className="h-4 w-4 shrink-0 admin-accent-text" />
           </div>
           <p className="mt-2 text-2xl font-black admin-text">{metrics.totalDispensed}</p>
-          <p className="mt-1 text-xs leading-4 admin-soft">All customer handoffs</p>
+          <p className="mt-1 text-sm leading-4 admin-soft">All customer handoffs</p>
         </button>
 
         <div className="admin-stat min-h-28 p-3.5">
           <div className="flex items-start justify-between gap-2">
-            <p className="text-[10px] font-bold uppercase tracking-wider text-blue-700 dark:text-blue-300 sm:text-xs">Rx prescriptions</p>
+            <p className="text-sm font-bold uppercase tracking-wider text-blue-700 dark:text-blue-300 sm:text-sm">Rx prescriptions</p>
             <Stethoscope className="h-4 w-4 shrink-0 text-blue-600 dark:text-blue-300" />
           </div>
           <p className="mt-2 text-2xl font-black text-blue-700 dark:text-blue-300">{metrics.rxFillsCount}</p>
-          <p className="mt-1 text-xs leading-4 admin-soft">Valid doctor scripts</p>
+          <p className="mt-1 text-sm leading-4 admin-soft">Valid doctor scripts</p>
         </div>
 
         <button
@@ -162,11 +162,11 @@ export function DispensingRegisterTable({
           }`}
         >
           <div className="flex items-start justify-between gap-2">
-            <p className="text-[10px] font-bold uppercase tracking-wider text-purple-700 dark:text-purple-300 sm:text-xs">Controlled</p>
+            <p className="text-sm font-bold uppercase tracking-wider text-purple-700 dark:text-purple-300 sm:text-sm">Controlled</p>
             <Lock className="h-4 w-4 shrink-0 text-purple-700 dark:text-purple-300" />
           </div>
           <p className="mt-2 text-2xl font-black text-purple-700 dark:text-purple-300">{metrics.controlledCount}</p>
-          <p className="mt-1 text-xs leading-4 admin-soft">DDA schedule records</p>
+          <p className="mt-1 text-sm leading-4 admin-soft">DDA schedule records</p>
         </button>
 
         <button
@@ -177,20 +177,20 @@ export function DispensingRegisterTable({
           }`}
         >
           <div className="flex items-start justify-between gap-2">
-            <p className="text-[10px] font-bold uppercase tracking-wider text-emerald-700 dark:text-emerald-300 sm:text-xs">Substitutions</p>
+            <p className="text-sm font-bold uppercase tracking-wider text-emerald-700 dark:text-emerald-300 sm:text-sm">Substitutions</p>
             <RefreshCw className="h-4 w-4 shrink-0 text-emerald-700 dark:text-emerald-300" />
           </div>
           <p className="mt-2 text-2xl font-black text-emerald-700 dark:text-emerald-300">{metrics.substitutionsCount}</p>
-          <p className="mt-1 text-xs leading-4 admin-soft">Generic switches</p>
+          <p className="mt-1 text-sm leading-4 admin-soft">Generic switches</p>
         </button>
 
         <div className="admin-stat col-span-2 min-h-28 p-3.5 md:col-span-1">
           <div className="flex items-start justify-between gap-2">
-            <p className="text-[10px] font-bold uppercase tracking-wider admin-muted sm:text-xs">Dispensed value</p>
+            <p className="text-sm font-bold uppercase tracking-wider admin-muted sm:text-sm">Dispensed value</p>
             <Sparkles className="h-4 w-4 shrink-0 text-amber-700 dark:text-amber-300" />
           </div>
           <p className="mt-2 break-words text-xl font-bold admin-text">KES {metrics.totalValueKes.toLocaleString()}</p>
-          <p className="mt-1 text-xs leading-4 admin-soft">Realized revenue</p>
+          <p className="mt-1 text-sm leading-4 admin-soft">Realized revenue</p>
         </div>
       </div>
 
@@ -199,7 +199,7 @@ export function DispensingRegisterTable({
           <button
             type="button"
             onClick={() => handleFilterClick("all")}
-            className={`min-h-10 shrink-0 rounded-full px-3.5 py-1.5 text-xs font-bold transition ${
+            className={`min-h-11 shrink-0 rounded-full px-3.5 py-1.5 text-sm font-bold transition ${
               filterType === "all"
                 ? "bg-[var(--admin-accent)] text-[var(--admin-btn-fg)] shadow-sm"
                 : "bg-[var(--admin-inset)] admin-text hover:bg-[var(--admin-hover)]"
@@ -210,7 +210,7 @@ export function DispensingRegisterTable({
           <button
             type="button"
             onClick={() => handleFilterClick("controlled")}
-            className={`inline-flex min-h-10 shrink-0 items-center gap-1.5 rounded-full px-3.5 py-1.5 text-xs font-bold transition ${
+            className={`inline-flex min-h-11 shrink-0 items-center gap-1.5 rounded-full px-3.5 py-1.5 text-sm font-bold transition ${
               filterType === "controlled"
                 ? "bg-purple-700 text-white shadow-sm dark:bg-purple-500 dark:text-slate-950"
                 : "bg-purple-500/10 text-purple-800 hover:bg-purple-500/20 dark:text-purple-300"
@@ -221,7 +221,7 @@ export function DispensingRegisterTable({
           <button
             type="button"
             onClick={() => handleFilterClick("substitutions")}
-            className={`inline-flex min-h-10 shrink-0 items-center gap-1.5 rounded-full px-3.5 py-1.5 text-xs font-bold transition ${
+            className={`inline-flex min-h-11 shrink-0 items-center gap-1.5 rounded-full px-3.5 py-1.5 text-sm font-bold transition ${
               filterType === "substitutions"
                 ? "bg-emerald-700 text-white shadow-sm dark:bg-emerald-400 dark:text-slate-950"
                 : "bg-emerald-500/10 text-emerald-800 hover:bg-emerald-500/20 dark:text-emerald-300"
@@ -232,7 +232,7 @@ export function DispensingRegisterTable({
         </div>
 
         <div className="mt-3 flex flex-col gap-3 border-t border-[var(--admin-border)] pt-3 sm:flex-row sm:items-center sm:justify-between">
-          <div className="grid grid-cols-4 rounded-xl bg-[var(--admin-inset)] p-1 text-xs font-semibold admin-muted sm:flex">
+          <div className="grid grid-cols-4 rounded-xl bg-[var(--admin-inset)] p-1 text-sm font-semibold admin-muted sm:flex">
             {[
               { label: "Today", value: "today" as const },
               { label: "7d", value: 7 as const },
@@ -243,7 +243,7 @@ export function DispensingRegisterTable({
                 key={preset.label}
                 type="button"
                 onClick={() => handleQuickDate(preset.value)}
-                className="min-h-9 rounded-lg px-2 py-1 transition hover:bg-[var(--admin-card)] hover:text-[var(--admin-text)]"
+                className="min-h-11 rounded-lg px-2 py-1 transition hover:bg-[var(--admin-card)] hover:text-[var(--admin-text)]"
               >
                 {preset.label}
               </button>
@@ -253,7 +253,7 @@ export function DispensingRegisterTable({
           <button
             type="button"
             onClick={handleExportCsv}
-            className="btn-admin-secondary inline-flex w-full items-center justify-center gap-1.5 text-xs font-bold sm:w-auto"
+            className="min-h-11 btn-admin-secondary inline-flex w-full items-center justify-center gap-1.5 text-sm font-bold sm:w-auto"
             title="Download Kenya PPB compliant regulatory audit register"
           >
             <Download className="h-3.5 w-3.5" />
@@ -264,35 +264,35 @@ export function DispensingRegisterTable({
 
       <form onSubmit={handleSearchSubmit} className="grid gap-3 rounded-2xl border border-[var(--admin-border)] bg-[var(--admin-card)] p-3 shadow-sm sm:p-4 md:grid-cols-12 md:items-end">
         <div className="relative md:col-span-6">
-          <label className="mb-1 block text-xs font-semibold uppercase tracking-wide admin-soft">Search ledger</label>
+          <label className="mb-1 block text-sm font-semibold uppercase tracking-wide admin-soft">Search ledger</label>
           <Search className="pointer-events-none absolute left-3 top-[36px] h-3.5 w-3.5 -translate-y-1/2 admin-soft" />
           <input
             type="text"
             placeholder="Patient, medicine, batch, prescriber…"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="input-admin w-full pl-9 text-xs"
+            className="input-admin min-h-11 w-full pl-9 text-sm"
           />
         </div>
         <div className="md:col-span-2">
-          <label className="mb-1 block text-xs font-semibold uppercase tracking-wide admin-soft">From</label>
+          <label className="mb-1 block text-sm font-semibold uppercase tracking-wide admin-soft">From</label>
           <input
             type="date"
             value={startDate}
             onChange={(e) => setStartDate(e.target.value)}
-            className="input-admin w-full text-xs"
+            className="input-admin min-h-11 w-full text-sm"
           />
         </div>
         <div className="md:col-span-2">
-          <label className="mb-1 block text-xs font-semibold uppercase tracking-wide admin-soft">To</label>
+          <label className="mb-1 block text-sm font-semibold uppercase tracking-wide admin-soft">To</label>
           <input
             type="date"
             value={endDate}
             onChange={(e) => setEndDate(e.target.value)}
-            className="input-admin w-full text-xs"
+            className="input-admin min-h-11 w-full text-sm"
           />
         </div>
-        <button type="submit" className="btn-admin-primary w-full px-4 py-2 text-xs font-bold md:col-span-2">
+        <button type="submit" className="min-h-11 btn-admin-primary w-full px-4 py-2 text-sm font-bold md:col-span-2">
           Filter records
         </button>
       </form>
@@ -302,13 +302,13 @@ export function DispensingRegisterTable({
           {loading ? (
             <div className="px-4 py-16 text-center admin-soft">
               <span className="inline-block h-6 w-6 animate-spin rounded-full border-2 border-[var(--admin-accent)] border-t-transparent" />
-              <p className="mt-2 text-xs font-medium">Filtering dispensing ledger…</p>
+              <p className="mt-2 text-sm font-medium">Filtering dispensing ledger…</p>
             </div>
           ) : records.length === 0 ? (
             <div className="px-4 py-16 text-center admin-soft">
               <FileText className="mx-auto mb-2 h-10 w-10 opacity-30" />
               <p className="text-sm font-bold admin-text">No dispensing records found.</p>
-              <p className="mt-1 text-xs admin-soft">Try a broader search or date range.</p>
+              <p className="mt-1 text-sm admin-soft">Try a broader search or date range.</p>
             </div>
           ) : (
             <div className="space-y-3 p-3">
@@ -316,7 +316,7 @@ export function DispensingRegisterTable({
                 <article key={r.id} className="rounded-2xl border border-[var(--admin-border)] bg-[var(--admin-inset)] p-4">
                   <div className="flex items-start justify-between gap-3">
                     <div className="min-w-0">
-                      <p className="text-[10px] font-semibold uppercase tracking-wide admin-soft">{r.date.slice(0, 10)} · {r.date.slice(11)}</p>
+                      <p className="text-sm font-semibold uppercase tracking-wide admin-soft">{r.date.slice(0, 10)} · {r.date.slice(11)}</p>
                       <div className="mt-1 flex min-w-0 flex-wrap items-center gap-1.5">
                         {r.patientId ? (
                           <Link
@@ -330,14 +330,14 @@ export function DispensingRegisterTable({
                           <span className="break-words text-sm font-bold admin-text">{r.patientName}</span>
                         )}
                         {r.isWalkIn && (
-                          <span className="rounded-full bg-[var(--admin-card)] px-2 py-0.5 text-[10px] admin-muted">Walk-in</span>
+                          <span className="rounded-full bg-[var(--admin-card)] px-2 py-0.5 text-sm admin-muted">Walk-in</span>
                         )}
                       </div>
-                      <p className="mt-0.5 break-all text-xs admin-soft">{r.patientPhone || r.patientEmail || "No contact"}</p>
+                      <p className="mt-0.5 break-all text-sm admin-soft">{r.patientPhone || r.patientEmail || "No contact"}</p>
                     </div>
                     <div className="shrink-0 text-right">
                       <p className="text-sm font-bold admin-text">KES {r.totalPrice.toLocaleString()}</p>
-                      <p className="text-[10px] uppercase admin-soft">{r.paymentMethod}</p>
+                      <p className="text-sm uppercase admin-soft">{r.paymentMethod}</p>
                     </div>
                   </div>
 
@@ -345,25 +345,25 @@ export function DispensingRegisterTable({
                     <div className="flex flex-wrap items-center gap-1.5">
                       <p className="break-words text-sm font-bold admin-text">{r.medicineName}</p>
                       {r.isControlled && (
-                        <span className="rounded-full bg-purple-500/15 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-purple-700 dark:text-purple-300">
+                        <span className="rounded-full bg-purple-500/15 px-2 py-0.5 text-sm font-bold uppercase tracking-wide text-purple-700 dark:text-purple-300">
                           {r.controlledSchedule?.replace("_", " ") || "DDA"}
                         </span>
                       )}
                       {r.isSubstituted && (
-                        <span className="rounded-full bg-emerald-500/15 px-2 py-0.5 text-[10px] font-bold text-emerald-700 dark:text-emerald-300">
+                        <span className="rounded-full bg-emerald-500/15 px-2 py-0.5 text-sm font-bold text-emerald-700 dark:text-emerald-300">
                           Substituted
                         </span>
                       )}
                     </div>
-                    <p className="mt-1 text-xs leading-5 admin-muted">
+                    <p className="mt-1 text-sm leading-5 admin-muted">
                       <strong className="admin-text">{r.quantity} {r.billingUnit}</strong> · {r.genericName}{r.strengthDisplay ? ` · ${r.strengthDisplay}` : ""}
                     </p>
                     {r.isSubstituted && r.originalMedicineName && (
-                      <p className="mt-1 text-xs font-medium text-amber-800 dark:text-amber-300">Prescribed: {r.originalMedicineName}</p>
+                      <p className="mt-1 text-sm font-medium text-amber-800 dark:text-amber-300">Prescribed: {r.originalMedicineName}</p>
                     )}
                   </div>
 
-                  <dl className="mt-3 grid grid-cols-2 gap-x-3 gap-y-2 text-xs">
+                  <dl className="mt-3 grid grid-cols-2 gap-x-3 gap-y-2 text-sm">
                     <div>
                       <dt className="admin-soft">Batch / expiry</dt>
                       <dd className="mt-0.5 break-words font-medium admin-text">{r.batchNumber || "—"}{r.batchNumber ? ` · ${r.expiryDate || "No expiry"}` : ""}</dd>
@@ -380,7 +380,7 @@ export function DispensingRegisterTable({
                   </dl>
 
                   {r.dispenserNote && (
-                    <p className="mt-3 rounded-xl bg-[var(--admin-card)] px-3 py-2 text-xs leading-5 text-emerald-800 dark:text-emerald-300">
+                    <p className="mt-3 rounded-xl bg-[var(--admin-card)] px-3 py-2 text-sm leading-5 text-emerald-800 dark:text-emerald-300">
                       Note: {r.dispenserNote}
                     </p>
                   )}
@@ -389,7 +389,7 @@ export function DispensingRegisterTable({
                     <button
                       type="button"
                       onClick={() => setSelectedOrderId(r.orderId!)}
-                      className="mt-3 inline-flex min-h-11 w-full items-center justify-center gap-1.5 rounded-xl bg-[var(--admin-accent-soft)] px-3 py-2 text-xs font-bold admin-accent-text transition hover:brightness-105"
+                      className="mt-3 inline-flex min-h-11 w-full items-center justify-center gap-1.5 rounded-xl bg-[var(--admin-accent-soft)] px-3 py-2 text-sm font-bold admin-accent-text transition hover:brightness-105"
                     >
                       <Printer className="h-3.5 w-3.5" /> Receipt
                     </button>
@@ -401,7 +401,7 @@ export function DispensingRegisterTable({
         </div>
 
         <div tabIndex={0} role="region" aria-label="Scrollable dispensing records" className="admin-table-region hidden overflow-x-auto scroll-admin md:block">
-          <table className="table-admin text-xs">
+          <table className="table-admin text-sm">
             <thead>
               <tr>
                 <th>Date / Time</th>
@@ -419,7 +419,7 @@ export function DispensingRegisterTable({
                 <tr>
                   <td colSpan={8} className="py-16 text-center admin-soft">
                     <span className="inline-block h-6 w-6 animate-spin rounded-full border-2 border-[var(--admin-accent)] border-t-transparent" />
-                    <p className="mt-2 text-xs font-medium">Filtering regulatory dispensing ledger…</p>
+                    <p className="mt-2 text-sm font-medium">Filtering regulatory dispensing ledger…</p>
                   </td>
                 </tr>
               ) : records.length === 0 ? (
@@ -427,7 +427,7 @@ export function DispensingRegisterTable({
                   <td colSpan={8} className="py-16 text-center admin-soft">
                     <FileText className="mx-auto mb-2 h-10 w-10 opacity-30" />
                     <p className="text-sm font-bold admin-text">No dispensing records found.</p>
-                    <p className="mt-1 text-xs admin-soft">Try broadening your search query or selecting a different date range.</p>
+                    <p className="mt-1 text-sm admin-soft">Try broadening your search query or selecting a different date range.</p>
                   </td>
                 </tr>
               ) : (
@@ -435,7 +435,7 @@ export function DispensingRegisterTable({
                   <tr key={r.id} className="transition hover:bg-[var(--admin-hover)]">
                     <td className="whitespace-nowrap">
                       <p className="font-bold admin-text">{r.date.slice(0, 10)}</p>
-                      <p className="font-mono text-xs admin-soft">{r.date.slice(11)}</p>
+                      <p className="font-mono text-sm admin-soft">{r.date.slice(11)}</p>
                     </td>
 
                     <td>
@@ -452,37 +452,37 @@ export function DispensingRegisterTable({
                           <span className="font-bold admin-text">{r.patientName}</span>
                         )}
                         {r.isWalkIn && (
-                          <span className="rounded bg-[var(--admin-inset)] px-1.5 py-0.5 text-xs admin-muted">Walk-In</span>
+                          <span className="rounded bg-[var(--admin-inset)] px-1.5 py-0.5 text-sm admin-muted">Walk-In</span>
                         )}
                       </div>
-                      <p className="text-xs admin-soft">{r.patientPhone || r.patientEmail || "—"}</p>
+                      <p className="text-sm admin-soft">{r.patientPhone || r.patientEmail || "—"}</p>
                     </td>
 
                     <td>
                       <div className="flex flex-wrap items-center gap-1.5">
                         <span className="text-sm font-bold admin-text">{r.medicineName}</span>
                         {r.isControlled && (
-                          <span className="rounded-full bg-purple-500/15 px-2 py-0.5 text-xs font-black uppercase tracking-wide text-purple-700 dark:text-purple-300">
+                          <span className="rounded-full bg-purple-500/15 px-2 py-0.5 text-sm font-black uppercase tracking-wide text-purple-700 dark:text-purple-300">
                             {r.controlledSchedule?.replace("_", " ") || "DDA"}
                           </span>
                         )}
                         {r.isSubstituted && (
-                          <span className="rounded-full bg-emerald-500/15 px-2 py-0.5 text-xs font-bold text-emerald-700 dark:text-emerald-300">Generic substituted</span>
+                          <span className="rounded-full bg-emerald-500/15 px-2 py-0.5 text-sm font-bold text-emerald-700 dark:text-emerald-300">Generic substituted</span>
                         )}
                       </div>
-                      <p className="mt-0.5 text-xs admin-soft">
+                      <p className="mt-0.5 text-sm admin-soft">
                         <span className="font-bold admin-text">{r.quantity} {r.billingUnit}</span> · {r.genericName}{r.strengthDisplay ? ` · ${r.strengthDisplay}` : ""}
                       </p>
                       {r.isSubstituted && r.originalMedicineName && (
-                        <p className="text-xs font-medium text-amber-800 dark:text-amber-300">Prescribed: {r.originalMedicineName}</p>
+                        <p className="text-sm font-medium text-amber-800 dark:text-amber-300">Prescribed: {r.originalMedicineName}</p>
                       )}
                     </td>
 
-                    <td className="whitespace-nowrap font-mono text-xs">
+                    <td className="whitespace-nowrap font-mono text-sm">
                       {r.batchNumber ? (
                         <div>
                           <p className="font-bold text-emerald-800 dark:text-emerald-300">{r.batchNumber}</p>
-                          <p className="text-xs admin-soft">Exp: {r.expiryDate || "—"}</p>
+                          <p className="text-sm admin-soft">Exp: {r.expiryDate || "—"}</p>
                         </div>
                       ) : (
                         <span className="admin-soft">—</span>
@@ -493,27 +493,27 @@ export function DispensingRegisterTable({
                       {r.prescriber ? (
                         <div>
                           <p className="font-bold admin-text">{r.prescriber}</p>
-                          <p className="text-xs italic admin-soft">{r.dosageInstructions || "As directed"}</p>
+                          <p className="text-sm italic admin-soft">{r.dosageInstructions || "As directed"}</p>
                         </div>
                       ) : (
                         <div>
-                          <span className="rounded bg-[var(--admin-inset)] px-1.5 py-0.5 text-xs font-semibold admin-muted">OTC counter sale</span>
-                          {r.dosageInstructions && <p className="mt-0.5 text-xs italic admin-soft">{r.dosageInstructions}</p>}
+                          <span className="rounded bg-[var(--admin-inset)] px-1.5 py-0.5 text-sm font-semibold admin-muted">OTC counter sale</span>
+                          {r.dosageInstructions && <p className="mt-0.5 text-sm italic admin-soft">{r.dosageInstructions}</p>}
                         </div>
                       )}
                     </td>
 
                     <td>
                       <p className="font-semibold admin-text">{r.dispensedByName}</p>
-                      <p className="text-xs capitalize admin-soft">{r.dispensedByRole || "Pharmacist"}</p>
+                      <p className="text-sm capitalize admin-soft">{r.dispensedByRole || "Pharmacist"}</p>
                       {r.dispenserNote && (
-                        <p className="mt-0.5 line-clamp-1 text-xs text-emerald-800 dark:text-emerald-300" title={r.dispenserNote}>Note: {r.dispenserNote}</p>
+                        <p className="mt-0.5 text-sm text-emerald-800 dark:text-emerald-300" title={r.dispenserNote}>Note: {r.dispenserNote}</p>
                       )}
                     </td>
 
                     <td className="whitespace-nowrap text-right">
                       <p className="text-sm font-bold admin-text">KES {r.totalPrice.toLocaleString()}</p>
-                      <p className="text-xs uppercase admin-soft">{r.paymentMethod}</p>
+                      <p className="text-sm uppercase admin-soft">{r.paymentMethod}</p>
                     </td>
 
                     <td className="whitespace-nowrap text-right">
@@ -521,7 +521,7 @@ export function DispensingRegisterTable({
                         <button
                           type="button"
                           onClick={() => setSelectedOrderId(r.orderId!)}
-                          className="inline-flex items-center gap-1 rounded-lg bg-[var(--admin-accent-soft)] px-3 py-1 text-xs font-bold admin-accent-text transition hover:brightness-110"
+                          className="inline-flex items-center gap-1 rounded-lg bg-[var(--admin-accent-soft)] px-3 py-1 text-sm font-bold admin-accent-text transition hover:brightness-110"
                         >
                           <Printer className="h-3 w-3" /> Receipt
                         </button>
@@ -534,7 +534,7 @@ export function DispensingRegisterTable({
           </table>
         </div>
 
-        <div className="flex flex-col gap-3 border-t border-[var(--admin-border)] bg-[var(--admin-inset)] px-4 py-3 text-xs sm:flex-row sm:items-center sm:justify-between sm:px-5">
+        <div className="flex flex-col gap-3 border-t border-[var(--admin-border)] bg-[var(--admin-inset)] px-4 py-3 text-sm sm:flex-row sm:items-center sm:justify-between sm:px-5">
           <span className="admin-soft">
             Showing <strong className="admin-text">{records.length}</strong> of <strong className="admin-text">{totalCount}</strong> entries
           </span>
@@ -544,7 +544,7 @@ export function DispensingRegisterTable({
               type="button"
               disabled={page <= 1 || loading}
               onClick={() => fetchFiltered(page - 1)}
-              className="inline-flex min-h-10 items-center justify-center gap-1 rounded-lg border border-[var(--admin-border)] bg-[var(--admin-card)] px-2.5 py-1 text-xs font-semibold admin-text disabled:opacity-40"
+              className="inline-flex min-h-11 items-center justify-center gap-1 rounded-lg border border-[var(--admin-border)] bg-[var(--admin-card)] px-2.5 py-1 text-sm font-semibold admin-text disabled:opacity-40"
             >
               <ChevronLeft className="h-3.5 w-3.5" />
               <span className="hidden xs:inline">Previous</span>
@@ -554,7 +554,7 @@ export function DispensingRegisterTable({
               type="button"
               disabled={page >= totalPages || loading}
               onClick={() => fetchFiltered(page + 1)}
-              className="inline-flex min-h-10 items-center justify-center gap-1 rounded-lg border border-[var(--admin-border)] bg-[var(--admin-card)] px-2.5 py-1 text-xs font-semibold admin-text disabled:opacity-40"
+              className="inline-flex min-h-11 items-center justify-center gap-1 rounded-lg border border-[var(--admin-border)] bg-[var(--admin-card)] px-2.5 py-1 text-sm font-semibold admin-text disabled:opacity-40"
             >
               <span className="hidden xs:inline">Next</span>
               <ChevronRight className="h-3.5 w-3.5" />
