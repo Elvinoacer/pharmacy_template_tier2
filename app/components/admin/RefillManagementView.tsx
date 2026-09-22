@@ -335,6 +335,7 @@ export function RefillManagementView({
                 </tbody>
               </table>
             </div>
+            </>
           )}
         </div>
       )}
