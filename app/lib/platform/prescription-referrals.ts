@@ -105,7 +105,7 @@ export async function getPrescriptionReferralUsage(
 
 export async function reservePrescriptionReferralSlot(
   pharmacyId: string,
-  eventId = randomUUID(),
+  eventId: string = randomUUID(),
 ): Promise<{ accepted: boolean; eventId: string; usage: PrescriptionReferralUsage }> {
   const period = periodFor();
   const now = new Date();
