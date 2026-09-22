@@ -131,7 +131,7 @@ export function Modal({
               type="button"
               onClick={() => onCloseRef.current()}
               aria-label="Close dialog"
-              className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-xl text-[var(--admin-text-muted)] transition hover:bg-[var(--admin-hover)] hover:text-[var(--admin-text)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--admin-accent)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--admin-card)]"
+              className="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-xl text-[var(--admin-text-muted)] transition hover:bg-[var(--admin-hover)] hover:text-[var(--admin-text)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--admin-accent)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--admin-card)]"
             >
               <X className="h-4 w-4" />
             </button>
