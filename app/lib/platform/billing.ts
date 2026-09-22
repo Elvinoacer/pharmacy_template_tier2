@@ -480,6 +480,7 @@ export async function createIntasendBillingCheckout(
   opts?: {
     actorId?: string | null;
     redirectUrl?: string;
+    redirectPath?: string;
   },
 ) {
   // A checkout spans several reads and writes. Re-establish the tenant scope here
@@ -495,6 +496,7 @@ async function createIntasendBillingCheckoutInPharmacy(
   opts?: {
     actorId?: string | null;
     redirectUrl?: string;
+    redirectPath?: string;
   },
 ) {
   const invoice = await prismaUnscoped.invoice.findFirst({
@@ -547,7 +549,11 @@ async function createIntasendBillingCheckoutInPharmacy(
   // Keep the return URL to one simple query parameter (no chained "&" params).
   // /onboard can resolve the correct stage from persisted billing/onboarding state,
   // and both payment steps already recognize payment=returned.
-  const defaultRedirect = `${intasendConfig.appBaseUrl}/onboard?payment=returned`;
+  const requestedPath =
+    opts?.redirectPath && opts.redirectPath.startsWith("/")
+      ? opts.redirectPath
+      : "/onboard?payment=returned";
+  const defaultRedirect = `${intasendConfig.appBaseUrl}${requestedPath}`;
   const redirectUrl = opts?.redirectUrl || defaultRedirect;
 
   if (existing && existing.createdAt >= pendingCutoff) {
