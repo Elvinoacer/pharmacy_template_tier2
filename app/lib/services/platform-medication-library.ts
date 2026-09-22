@@ -128,6 +128,7 @@ export async function listPlatformMedications(opts: PlatformMedicationFilterOpti
         packSize: true,
         category: true,
         barcode: true,
+        imageUrl: true,
         status: true,
         controlledDrug: true,
         controlledDrugSchedule: true,
