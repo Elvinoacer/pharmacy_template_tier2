@@ -112,7 +112,7 @@ export default async function PortalDashboardPage() {
               {data.prescriptions.slice(0, 4).map((p) => (
                 <li
                   key={p.id}
-                  className="flex min-w-0 flex-col items-stretch gap-3 rounded-xl border border-[var(--line)] bg-[var(--card-elev)] px-4 py-3 transition hover:border-[#0d6e5a]/30 hover:bg-[var(--brand-tint)] sm:flex-row sm:items-center sm:justify-between"
+                  className="flex min-w-0 flex-col items-stretch gap-3 rounded-xl border border-[var(--line)] bg-[var(--card-elev)] px-4 py-3 transition hover:border-[var(--brand)] hover:bg-[var(--brand-tint)] sm:flex-row sm:items-center sm:justify-between"
                 >
                   <div className="min-w-0">
                     <p className="font-semibold text-[var(--foreground)]">{p.medicineName}</p>
@@ -165,7 +165,7 @@ export default async function PortalDashboardPage() {
                 return (
                   <li
                     key={r.id}
-                    className="flex min-w-0 flex-col items-start gap-3 rounded-xl border border-[var(--line)] px-4 py-3 transition hover:border-[#0d6e5a]/30 sm:flex-row sm:items-center sm:justify-between"
+                    className="flex min-w-0 flex-col items-start gap-3 rounded-xl border border-[var(--line)] px-4 py-3 transition hover:border-[var(--brand)] sm:flex-row sm:items-center sm:justify-between"
                   >
                     <div className="min-w-0">
                       <p className="break-words font-semibold text-[var(--foreground)]">{r.medicineName}</p>
@@ -238,7 +238,7 @@ export default async function PortalDashboardPage() {
               <span className="absolute left-2 top-1 bottom-1 w-px bg-[var(--line)]" />
               {data.timeline.slice(0, 8).map((e) => (
                 <li key={e.id} className="relative">
-                  <span className="absolute -left-2 top-1 flex h-3 w-3 items-center justify-center rounded-full bg-[var(--brand)] ring-4 ring-[#f4f7f4]">
+                  <span className="absolute -left-2 top-1 flex h-3 w-3 items-center justify-center rounded-full bg-[var(--brand)] ring-4 ring-[var(--card)]">
                     <CheckCircle2 className="h-3 w-3 text-white" />
                   </span>
                   <div className="ml-4">
