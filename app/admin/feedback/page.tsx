@@ -58,21 +58,21 @@ export default async function AdminFeedbackPage() {
       title="Patient feedback"
       subtitle="Review what customers are saying, prioritise unresolved feedback, and respond without losing context."
     >
-      <div className="mb-5 grid grid-cols-2 gap-2.5 sm:mb-6 sm:gap-3 lg:grid-cols-4">
-        <div className="admin-stat p-3.5 sm:p-4">
-          <p className="text-[11px] font-semibold uppercase tracking-[0.08em] admin-muted sm:text-xs">Total</p>
+      <div className="mb-5 grid grid-cols-2 gap-3 sm:mb-6 sm:gap-3 lg:grid-cols-4">
+        <div className="admin-stat p-4 sm:p-4">
+          <p className="text-sm font-semibold uppercase tracking-[0.08em] admin-muted">Total</p>
           <p className="mt-1 text-xl font-bold admin-text sm:text-2xl">{stats.total}</p>
         </div>
-        <div className="admin-stat p-3.5 sm:p-4">
-          <p className="text-[11px] font-semibold uppercase tracking-[0.08em] text-rose-700 dark:text-rose-300 sm:text-xs">New</p>
+        <div className="admin-stat p-4 sm:p-4">
+          <p className="text-sm font-semibold uppercase tracking-[0.08em] text-rose-700 dark:text-rose-300">New</p>
           <p className="mt-1 text-xl font-bold text-rose-700 dark:text-rose-300 sm:text-2xl">{stats.new}</p>
         </div>
-        <div className="admin-stat p-3.5 sm:p-4">
-          <p className="text-[11px] font-semibold uppercase tracking-[0.08em] text-emerald-700 dark:text-emerald-300 sm:text-xs">Responded</p>
+        <div className="admin-stat p-4 sm:p-4">
+          <p className="text-sm font-semibold uppercase tracking-[0.08em] text-emerald-700 dark:text-emerald-300">Responded</p>
           <p className="mt-1 text-xl font-bold text-emerald-700 dark:text-emerald-300 sm:text-2xl">{stats.responded}</p>
         </div>
-        <div className="admin-stat p-3.5 sm:p-4">
-          <p className="text-[11px] font-semibold uppercase tracking-[0.08em] text-amber-800 dark:text-amber-300 sm:text-xs">Avg rating</p>
+        <div className="admin-stat p-4 sm:p-4">
+          <p className="text-sm font-semibold uppercase tracking-[0.08em] text-amber-800 dark:text-amber-300">Avg rating</p>
           <p className="mt-1 text-xl font-bold text-amber-800 dark:text-amber-300 sm:text-2xl">{stats.avgRating}</p>
         </div>
       </div>
@@ -100,12 +100,12 @@ export default async function AdminFeedbackPage() {
                   <div className="min-w-0 flex-1">
                     <div className="flex min-w-0 flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
                       <div className="min-w-0">
-                        <p className="break-words text-sm font-semibold leading-5 admin-text sm:text-base">{subject}</p>
-                        <div className="mt-1.5 flex flex-wrap items-center gap-1.5">
-                          <span className={`rounded-full px-2.5 py-1 text-[11px] font-semibold capitalize ${STATUS_COLOR[f.status] || STATUS_COLOR.archived}`}>
+                        <p className="break-words text-base font-semibold leading-6 admin-text">{subject}</p>
+                        <div className="mt-1.5 flex flex-wrap items-center gap-2">
+                          <span className={`rounded-full px-3 py-1 text-sm font-semibold capitalize ${STATUS_COLOR[f.status] || STATUS_COLOR.archived}`}>
                             {f.status}
                           </span>
-                          <span className="rounded-full bg-[var(--admin-inset)] px-2.5 py-1 text-[11px] font-semibold capitalize admin-muted ring-1 ring-inset ring-[var(--admin-border)]">
+                          <span className="rounded-full bg-[var(--admin-inset)] px-3 py-1 text-sm font-semibold capitalize admin-muted ring-1 ring-inset ring-[var(--admin-border)]">
                             {f.type}
                           </span>
                         </div>
@@ -127,10 +127,10 @@ export default async function AdminFeedbackPage() {
                       ) : null}
                     </div>
 
-                    <p className="mt-3 whitespace-pre-wrap break-words text-sm leading-6 admin-text">{f.body}</p>
+                    <p className="mt-3 whitespace-pre-wrap break-words text-base leading-6 admin-text">{f.body}</p>
 
-                    <div className="mt-2 flex flex-col gap-1 text-[11px] admin-soft sm:flex-row sm:flex-wrap sm:items-center sm:gap-x-3 sm:text-xs">
-                      <span className="inline-flex items-center gap-1.5">
+                    <div className="mt-2 flex flex-col gap-1 text-sm admin-soft sm:flex-row sm:flex-wrap sm:items-center sm:gap-x-3">
+                      <span className="inline-flex items-center gap-2">
                         <Clock className="h-3 w-3" />
                         {formatDateTime(f.createdAt)}
                       </span>
@@ -140,11 +140,11 @@ export default async function AdminFeedbackPage() {
                     </div>
 
                     {f.staffResponse && (
-                      <div className="mt-3 flex items-start gap-2.5 rounded-xl border border-emerald-500/20 bg-emerald-500/[0.07] px-3 py-2.5 dark:border-emerald-400/20 dark:bg-emerald-400/[0.07] sm:px-4 sm:py-3">
+                      <div className="mt-3 flex items-start gap-3 rounded-xl border border-emerald-500/20 bg-emerald-500/[0.07] px-3 py-3 dark:border-emerald-400/20 dark:bg-emerald-400/[0.07] sm:px-4 sm:py-3">
                         <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-emerald-600 dark:text-emerald-300" />
                         <div className="min-w-0">
-                          <p className="text-[11px] font-semibold uppercase tracking-[0.08em] text-emerald-700 dark:text-emerald-300">Staff response</p>
-                          <p className="mt-1 whitespace-pre-wrap break-words text-sm leading-5 admin-text">{f.staffResponse}</p>
+                          <p className="text-sm font-semibold uppercase tracking-[0.08em] text-emerald-700 dark:text-emerald-300">Staff response</p>
+                          <p className="mt-1 whitespace-pre-wrap break-words text-base leading-6 admin-text">{f.staffResponse}</p>
                         </div>
                       </div>
                     )}
