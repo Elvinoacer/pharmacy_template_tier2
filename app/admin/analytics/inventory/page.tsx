@@ -39,7 +39,7 @@ export default async function InventoryAnalyticsPage({
         title="Stock attention"
         description="Operational signals that may require replenishment, expiry handling, or stock correction."
       >
-        <div className="grid grid-cols-2 gap-2.5 sm:grid-cols-3 xl:grid-cols-5">
+        <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5">
           <InventorySignal label="Out of stock" value={metrics.outOfStock} />
           <InventorySignal label="Low stock" value={metrics.lowStock} />
           <InventorySignal label="Expiring soon" value={metrics.expiringSoon} />
@@ -65,8 +65,8 @@ export default async function InventoryAnalyticsPage({
               <TrendingUp className="h-5 w-5" aria-hidden="true" />
             </span>
             <div className="min-w-0">
-              <p className="text-xs font-semibold uppercase tracking-[0.1em] admin-muted">COGS · last 30 days</p>
-              <p className="mt-1 text-xs admin-soft">Useful for comparing current stock value with recent cost consumption.</p>
+              <p className="text-sm font-semibold uppercase tracking-[0.1em] admin-muted">COGS · last 30 days</p>
+              <p className="mt-1 text-sm admin-soft">Useful for comparing current stock value with recent cost consumption.</p>
             </div>
           </div>
           <strong className="break-words text-2xl font-bold tracking-tight admin-text sm:text-right sm:text-3xl">{formatKES(metrics.cogsLast30d)}</strong>
@@ -78,9 +78,9 @@ export default async function InventoryAnalyticsPage({
 
 function InventorySignal({ label, value }: { label: string; value: number }) {
   return (
-    <div className="min-w-0 rounded-2xl border border-[var(--admin-border)] bg-[var(--admin-inset)] p-3.5 transition-[border-color,background-color,box-shadow] duration-200 hover:border-[var(--admin-border-2)] hover:bg-[var(--admin-hover)] hover:shadow-sm motion-reduce:transition-none sm:p-4">
+    <div className="min-w-0 rounded-2xl border border-[var(--admin-border)] bg-[var(--admin-inset)] p-4 transition-[border-color,background-color,box-shadow] duration-200 hover:border-[var(--admin-border-2)] hover:bg-[var(--admin-hover)] hover:shadow-sm motion-reduce:transition-none">
       <div className="flex items-start justify-between gap-2">
-        <p className="text-[10px] font-semibold uppercase leading-relaxed tracking-[0.1em] admin-muted sm:text-[11px]">{label}</p>
+        <p className="text-sm font-semibold uppercase leading-relaxed tracking-[0.1em] admin-muted">{label}</p>
         <AlertTriangle className="h-4 w-4 shrink-0 admin-accent-text" aria-hidden="true" />
       </div>
       <p className="mt-3 text-2xl font-bold tracking-tight admin-text sm:text-3xl">{formatNumber(value)}</p>
