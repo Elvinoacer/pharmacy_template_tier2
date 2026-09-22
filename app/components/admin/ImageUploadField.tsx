@@ -268,7 +268,7 @@ export default function ImageUploadField(props: Props) {
 
   return (
     <div className="space-y-2">
-      <label className="label-admin" htmlFor={inputId}>
+      <label className="label-admin !text-sm" htmlFor={inputId}>
         {label}
         {props.required ? " *" : ""}
       </label>
@@ -398,7 +398,7 @@ export default function ImageUploadField(props: Props) {
           <button
             type="button"
             onClick={submitUrlDraft}
-            className="btn-admin min-h-11 !rounded-lg px-3 py-2 text-sm"
+            className="btn-admin !text-sm min-h-11 !rounded-lg px-3 py-2 text-sm"
           >
             Add
           </button>

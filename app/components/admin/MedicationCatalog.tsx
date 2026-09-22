@@ -141,17 +141,17 @@ function StatusBadges({ m }: { m: CatalogMed }) {
   return (
     <div className="flex flex-wrap items-center gap-1">
       {m.overTheCounter ? (
-        <span className="inline-flex items-center gap-0.5 rounded-md bg-emerald-500/10 px-1.5 py-0.5 text-[11px] font-semibold text-emerald-700 dark:text-emerald-300">
+        <span className="inline-flex items-center gap-0.5 rounded-md bg-emerald-500/10 px-1.5 py-0.5 text-sm font-semibold text-emerald-700 dark:text-emerald-300">
           <Boxes className="h-2.5 w-2.5" /> OTC
         </span>
       ) : m.prescriptionRequired ? (
-        <span className="inline-flex items-center gap-0.5 rounded-md bg-violet-500/10 px-1.5 py-0.5 text-[11px] font-semibold text-violet-700 dark:text-violet-300">
+        <span className="inline-flex items-center gap-0.5 rounded-md bg-violet-500/10 px-1.5 py-0.5 text-sm font-semibold text-violet-700 dark:text-violet-300">
           <FileText className="h-2.5 w-2.5" /> Rx
         </span>
       ) : null}
       {m.controlledDrug && (
         <span
-          className="inline-flex items-center gap-0.5 rounded-md bg-rose-500/10 px-1.5 py-0.5 text-[11px] font-semibold text-rose-700 dark:text-rose-300"
+          className="inline-flex items-center gap-0.5 rounded-md bg-rose-500/10 px-1.5 py-0.5 text-sm font-semibold text-rose-700 dark:text-rose-300"
           title={m.controlledDrugSchedule || "Controlled"}
         >
           <Shield className="h-2.5 w-2.5" />
@@ -159,23 +159,23 @@ function StatusBadges({ m }: { m: CatalogMed }) {
         </span>
       )}
       {m.publicListing && (
-        <span className="inline-flex items-center gap-0.5 rounded-md bg-blue-500/10 px-1.5 py-0.5 text-[11px] font-semibold text-blue-700 dark:text-blue-300">
+        <span className="inline-flex items-center gap-0.5 rounded-md bg-blue-500/10 px-1.5 py-0.5 text-sm font-semibold text-blue-700 dark:text-blue-300">
           <Tag className="h-2.5 w-2.5" /> Public
         </span>
       )}
       {m.requiresRefrigeration && (
-        <span className="inline-flex items-center gap-0.5 rounded-md bg-sky-500/10 px-1.5 py-0.5 text-[11px] font-semibold text-sky-700 dark:text-sky-300">
+        <span className="inline-flex items-center gap-0.5 rounded-md bg-sky-500/10 px-1.5 py-0.5 text-sm font-semibold text-sky-700 dark:text-sky-300">
           <Snowflake className="h-2.5 w-2.5" /> Cold
         </span>
       )}
       {!m.active && (
-        <span className="inline-flex items-center rounded-md bg-slate-500/10 px-1.5 py-0.5 text-[11px] font-semibold text-slate-700 dark:text-slate-300">
+        <span className="inline-flex items-center rounded-md bg-slate-500/10 px-1.5 py-0.5 text-sm font-semibold text-slate-700 dark:text-slate-300">
           Inactive
         </span>
       )}
       {m.enrichmentStatus !== "complete" && m.enrichmentScore < 70 && (
         <span
-          className="inline-flex items-center gap-0.5 rounded-md bg-amber-500/10 px-1.5 py-0.5 text-[11px] font-semibold text-amber-700 dark:text-amber-300"
+          className="inline-flex items-center gap-0.5 rounded-md bg-amber-500/10 px-1.5 py-0.5 text-sm font-semibold text-amber-700 dark:text-amber-300"
           title={`Enrichment ${m.enrichmentScore}% · ${m.enrichmentStatus}`}
         >
           <AlertTriangle className="h-2.5 w-2.5" /> {m.enrichmentScore}%
@@ -193,12 +193,12 @@ function StockCell({ m }: { m: CatalogMed }) {
     <div className="min-w-0 sm:min-w-[7rem]">
       <div className="flex items-baseline justify-between gap-2">
         <span className={`text-sm font-black tabular-nums ${tone.className}`}>{m.currentStock}</span>
-        <span className="text-[11px] admin-soft">reorder ≤{m.lowStockThreshold}</span>
+        <span className="text-sm admin-soft">reorder ≤{m.lowStockThreshold}</span>
       </div>
       <div className="mt-1 h-1.5 overflow-hidden rounded-full bg-[var(--admin-inset-2)]">
         <div className={`h-full rounded-full ${tone.bar}`} style={{ width: `${pct}%` }} />
       </div>
-      <p className={`mt-1 text-[11px] font-semibold ${tone.className}`}>{tone.label}</p>
+      <p className={`mt-1 text-sm font-semibold ${tone.className}`}>{tone.label}</p>
     </div>
   );
 }
@@ -258,7 +258,7 @@ export function MedicationCatalog({ rows, deleteAction }: Props) {
         <button
           type="button"
           onClick={toggleAll}
-          className="inline-flex min-h-10 items-center gap-2 rounded-lg bg-[var(--admin-inset)] px-3 text-xs font-semibold admin-muted transition hover:text-[var(--admin-text)]"
+          className="inline-flex min-h-11 items-center gap-2 rounded-lg bg-[var(--admin-inset)] px-3 text-sm font-semibold admin-muted transition hover:text-[var(--admin-text)]"
         >
           {allSelected ? <CheckSquare className="h-4 w-4" /> : <Square className="h-4 w-4" />}
           {allSelected ? "Clear page" : "Select page"}
@@ -268,39 +268,39 @@ export function MedicationCatalog({ rows, deleteAction }: Props) {
           <button
             type="button"
             onClick={() => setViewMode("table")}
-            className={`inline-flex min-h-9 items-center gap-1.5 rounded-lg px-3 text-xs font-semibold transition ${view === "table" ? "bg-[var(--admin-card)] text-[var(--admin-text)] shadow-sm" : "admin-muted hover:text-[var(--admin-text)]"}`}
+            className={`inline-flex min-h-11 items-center gap-1.5 rounded-lg px-3 text-sm font-semibold transition ${view === "table" ? "bg-[var(--admin-card)] text-[var(--admin-text)] shadow-sm" : "admin-muted hover:text-[var(--admin-text)]"}`}
           >
             <List className="h-3.5 w-3.5" /> Table
           </button>
           <button
             type="button"
             onClick={() => setViewMode("cards")}
-            className={`inline-flex min-h-9 items-center gap-1.5 rounded-lg px-3 text-xs font-semibold transition ${view === "cards" ? "bg-[var(--admin-card)] text-[var(--admin-text)] shadow-sm" : "admin-muted hover:text-[var(--admin-text)]"}`}
+            className={`inline-flex min-h-11 items-center gap-1.5 rounded-lg px-3 text-sm font-semibold transition ${view === "cards" ? "bg-[var(--admin-card)] text-[var(--admin-text)] shadow-sm" : "admin-muted hover:text-[var(--admin-text)]"}`}
           >
             <LayoutGrid className="h-3.5 w-3.5" /> Cards
           </button>
         </div>
 
-        <span className="text-xs font-bold admin-soft lg:hidden">Card view</span>
+        <span className="text-sm font-bold admin-soft lg:hidden">Card view</span>
       </div>
 
       {selectedCount > 0 && (
         <div className="mt-2.5 border-t border-[var(--admin-border)] pt-2.5">
           <div className="mb-2 flex items-center justify-between gap-2">
-            <span className="text-xs font-bold admin-text">{selectedCount} selected</span>
-            {pending && <span className="text-xs admin-soft">Updating…</span>}
+            <span className="text-sm font-bold admin-text">{selectedCount} selected</span>
+            {pending && <span className="text-sm admin-soft">Updating…</span>}
           </div>
           <div className="grid grid-cols-2 gap-2 sm:flex sm:flex-wrap">
-            <button type="button" disabled={pending} onClick={() => runBulk("activate")} className="inline-flex min-h-10 items-center justify-center gap-1.5 rounded-lg bg-emerald-500/10 px-3 text-xs font-semibold text-emerald-700 disabled:opacity-50 dark:text-emerald-300">
+            <button type="button" disabled={pending} onClick={() => runBulk("activate")} className="inline-flex min-h-11 items-center justify-center gap-1.5 rounded-lg bg-emerald-500/10 px-3 text-sm font-semibold text-emerald-700 disabled:opacity-50 dark:text-emerald-300">
               <Eye className="h-3.5 w-3.5" /> Activate
             </button>
-            <button type="button" disabled={pending} onClick={() => runBulk("deactivate")} className="inline-flex min-h-10 items-center justify-center gap-1.5 rounded-lg bg-rose-500/10 px-3 text-xs font-semibold text-rose-700 disabled:opacity-50 dark:text-rose-300">
+            <button type="button" disabled={pending} onClick={() => runBulk("deactivate")} className="inline-flex min-h-11 items-center justify-center gap-1.5 rounded-lg bg-rose-500/10 px-3 text-sm font-semibold text-rose-700 disabled:opacity-50 dark:text-rose-300">
               <Archive className="h-3.5 w-3.5" /> Deactivate
             </button>
-            <button type="button" disabled={pending} onClick={() => runBulk("publish")} className="inline-flex min-h-10 items-center justify-center gap-1.5 rounded-lg bg-blue-500/10 px-3 text-xs font-semibold text-blue-700 disabled:opacity-50 dark:text-blue-300">
+            <button type="button" disabled={pending} onClick={() => runBulk("publish")} className="inline-flex min-h-11 items-center justify-center gap-1.5 rounded-lg bg-blue-500/10 px-3 text-sm font-semibold text-blue-700 disabled:opacity-50 dark:text-blue-300">
               <Eye className="h-3.5 w-3.5" /> Show public
             </button>
-            <button type="button" disabled={pending} onClick={() => runBulk("unpublish")} className="inline-flex min-h-10 items-center justify-center gap-1.5 rounded-lg bg-slate-500/10 px-3 text-xs font-semibold text-slate-700 disabled:opacity-50 dark:text-slate-300">
+            <button type="button" disabled={pending} onClick={() => runBulk("unpublish")} className="inline-flex min-h-11 items-center justify-center gap-1.5 rounded-lg bg-slate-500/10 px-3 text-sm font-semibold text-slate-700 disabled:opacity-50 dark:text-slate-300">
               <EyeOff className="h-3.5 w-3.5" /> Hide public
             </button>
           </div>
@@ -310,7 +310,7 @@ export function MedicationCatalog({ rows, deleteAction }: Props) {
   );
 
   const cards = (
-    <ul className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">
+    <ul className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
       {rows.map((m) => {
         const isSelected = selected.has(m.id);
         const tone = stockTone(m.currentStock, m.lowStockThreshold);
@@ -324,7 +324,7 @@ export function MedicationCatalog({ rows, deleteAction }: Props) {
               <button
                 type="button"
                 onClick={() => toggleOne(m.id)}
-                className="mt-0.5 inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-[var(--admin-inset)] admin-muted transition hover:text-[var(--admin-text)] sm:h-9 sm:w-9"
+                className="mt-0.5 inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-[var(--admin-inset)] admin-muted transition hover:text-[var(--admin-text)]"
                 aria-label={isSelected ? `Deselect ${m.name}` : `Select ${m.name}`}
               >
                 {isSelected ? <CheckSquare className="h-4 w-4 text-emerald-600 dark:text-emerald-300" /> : <Square className="h-4 w-4" />}
@@ -338,13 +338,13 @@ export function MedicationCatalog({ rows, deleteAction }: Props) {
                     <Link href={`/admin/medications/${m.id}`} className="block break-words text-sm font-bold admin-text hover:admin-accent-text hover:underline">
                       {m.name}
                     </Link>
-                    <p className="mt-0.5 line-clamp-2 text-xs leading-5 admin-soft">
+                    <p className="mt-0.5 break-words text-sm leading-5 admin-soft">
                       {[m.genericName, m.strengthDisplay, m.dosageForm].filter(Boolean).join(" · ")}
                     </p>
                   </div>
                   <div className="shrink-0 text-right">
                     <p className="text-sm font-black tabular-nums admin-text">KES {formatPrice(m.price)}</p>
-                    <p className={`mt-0.5 text-[11px] font-bold ${tone.className}`}>{tone.label}</p>
+                    <p className={`mt-0.5 text-sm font-bold ${tone.className}`}>{tone.label}</p>
                   </div>
                 </div>
               </div>
@@ -356,22 +356,22 @@ export function MedicationCatalog({ rows, deleteAction }: Props) {
               <StockCell m={m} />
             </div>
 
-            <div className="mt-3 grid grid-cols-2 gap-x-4 gap-y-2 text-xs">
+            <div className="mt-3 grid grid-cols-2 gap-x-4 gap-y-2 text-sm">
               <div className="min-w-0">
-                <p className="text-[10px] font-bold uppercase tracking-wide admin-soft">Category</p>
-                <p className="mt-0.5 truncate capitalize admin-text">{m.category.replace(/-/g, " ")}</p>
+                <p className="text-sm font-bold uppercase tracking-wide admin-soft">Category</p>
+                <p className="mt-0.5 break-words capitalize admin-text">{m.category.replace(/-/g, " ")}</p>
               </div>
               <div className="min-w-0">
-                <p className="text-[10px] font-bold uppercase tracking-wide admin-soft">Shelf</p>
-                <p className="mt-0.5 truncate admin-text">{m.shelfLocation || "Not set"}</p>
+                <p className="text-sm font-bold uppercase tracking-wide admin-soft">Shelf</p>
+                <p className="mt-0.5 break-words admin-text">{m.shelfLocation || "Not set"}</p>
               </div>
               <div className="min-w-0">
-                <p className="text-[10px] font-bold uppercase tracking-wide admin-soft">SKU</p>
-                <p className="mt-0.5 truncate font-mono admin-text">{m.sku || "—"}</p>
+                <p className="text-sm font-bold uppercase tracking-wide admin-soft">SKU</p>
+                <p className="mt-0.5 break-words font-mono admin-text">{m.sku || "—"}</p>
               </div>
               <div className="min-w-0">
-                <p className="text-[10px] font-bold uppercase tracking-wide admin-soft">Linked</p>
-                <p className="mt-0.5 truncate admin-text">{m.prescriptionCount} Rx · {m.orderItemCount} orders</p>
+                <p className="text-sm font-bold uppercase tracking-wide admin-soft">Linked</p>
+                <p className="mt-0.5 break-words admin-text">{m.prescriptionCount} Rx · {m.orderItemCount} orders</p>
               </div>
             </div>
 
@@ -402,21 +402,21 @@ export function MedicationCatalog({ rows, deleteAction }: Props) {
   const table = (
     <div className="overflow-hidden rounded-2xl border border-[var(--admin-border)] bg-[var(--admin-card)] shadow-sm">
       <div tabIndex={0} role="region" aria-label="Scrollable medication records" className="admin-table-region overflow-x-auto">
-        <table className="w-full min-w-[940px] text-left text-sm">
+        <table className="w-full min-w-[940px] text-left !text-sm">
           <thead>
-            <tr className="border-b border-[var(--admin-border-2)] bg-[var(--admin-inset)] text-[11px] font-bold uppercase tracking-wider admin-muted">
-              <th className="w-10 px-3 py-3">
-                <button type="button" onClick={toggleAll} className="admin-muted hover:text-[var(--admin-text)]" aria-label="Select all">
+            <tr className="border-b border-[var(--admin-border-2)] bg-[var(--admin-inset)] text-sm font-bold uppercase tracking-wider admin-muted">
+              <th className="!text-sm w-10 px-3 py-3">
+                <button type="button" onClick={toggleAll} className="inline-flex h-11 w-11 items-center justify-center rounded-lg admin-muted hover:text-[var(--admin-text)]" aria-label="Select all">
                   {allSelected ? <CheckSquare className="h-4 w-4" /> : <Square className="h-4 w-4" />}
                 </button>
               </th>
-              <th className="px-3 py-3">Medication</th>
-              <th className="px-3 py-3">Flags</th>
-              <th className="px-3 py-3">Stock</th>
-              <th className="px-3 py-3 text-right">Price</th>
-              <th className="px-3 py-3">Linked</th>
-              <th className="px-3 py-3">Location</th>
-              <th className="w-24 px-3 py-3 text-right">Actions</th>
+              <th className="!text-sm px-3 py-3">Medication</th>
+              <th className="!text-sm px-3 py-3">Flags</th>
+              <th className="!text-sm px-3 py-3">Stock</th>
+              <th className="!text-sm px-3 py-3 text-right">Price</th>
+              <th className="!text-sm px-3 py-3">Linked</th>
+              <th className="!text-sm px-3 py-3">Location</th>
+              <th className="!text-sm w-24 px-3 py-3 text-right">Actions</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-[var(--admin-border-2)]">
@@ -425,7 +425,7 @@ export function MedicationCatalog({ rows, deleteAction }: Props) {
               return (
                 <tr key={m.id} className={`transition hover:bg-[var(--admin-hover)] ${isSelected ? "bg-emerald-500/5" : ""} ${!m.active ? "opacity-60" : ""}`}>
                   <td className="px-3 py-3 align-middle">
-                    <button type="button" onClick={() => toggleOne(m.id)} className="admin-muted hover:text-[var(--admin-text)]" aria-label={isSelected ? `Deselect ${m.name}` : `Select ${m.name}`}>
+                    <button type="button" onClick={() => toggleOne(m.id)} className="inline-flex h-11 w-11 items-center justify-center rounded-lg admin-muted hover:text-[var(--admin-text)]" aria-label={isSelected ? `Deselect ${m.name}` : `Select ${m.name}`}>
                       {isSelected ? <CheckSquare className="h-4 w-4 text-emerald-600 dark:text-emerald-300" /> : <Square className="h-4 w-4" />}
                     </button>
                   </td>
@@ -433,9 +433,9 @@ export function MedicationCatalog({ rows, deleteAction }: Props) {
                     <div className="flex items-center gap-3">
                       <MedThumb src={m.imageUrl} name={m.name} size="sm" />
                       <div className="min-w-0 max-w-[270px]">
-                        <Link href={`/admin/medications/${m.id}`} className="block truncate font-bold admin-text hover:admin-accent-text hover:underline">{m.name}</Link>
-                        <p className="truncate text-xs admin-soft">{[m.genericName, m.strengthDisplay, m.dosageForm].filter(Boolean).join(" · ")}</p>
-                        <p className="mt-0.5 flex flex-wrap gap-x-2 font-mono text-[11px] admin-soft">{m.sku && <span>SKU {m.sku}</span>}{m.barcode && <span>EAN {m.barcode}</span>}</p>
+                        <Link href={`/admin/medications/${m.id}`} className="block break-words font-bold admin-text hover:admin-accent-text hover:underline">{m.name}</Link>
+                        <p className="break-words text-sm admin-soft">{[m.genericName, m.strengthDisplay, m.dosageForm].filter(Boolean).join(" · ")}</p>
+                        <p className="mt-0.5 flex flex-wrap gap-x-2 font-mono text-sm admin-soft">{m.sku && <span>SKU {m.sku}</span>}{m.barcode && <span>EAN {m.barcode}</span>}</p>
                       </div>
                     </div>
                   </td>
@@ -443,11 +443,11 @@ export function MedicationCatalog({ rows, deleteAction }: Props) {
                   <td className="px-3 py-3"><StockCell m={m} /></td>
                   <td className="px-3 py-3 text-right">
                     <p className="font-black tabular-nums admin-text">{formatPrice(m.price)}</p>
-                    {m.purchasePrice != null && <p className="text-[11px] admin-soft">cost {formatPrice(m.purchasePrice)}</p>}
-                    <p className="text-[11px] admin-soft">KES</p>
+                    {m.purchasePrice != null && <p className="text-sm admin-soft">cost {formatPrice(m.purchasePrice)}</p>}
+                    <p className="text-sm admin-soft">KES</p>
                   </td>
                   <td className="px-3 py-3">
-                    <div className="space-y-1 text-xs">
+                    <div className="space-y-1 text-sm">
                       {m.prescriptionCount > 0 ? (
                         <Link href={`/admin/prescriptions?q=${encodeURIComponent(m.name)}`} className="inline-flex items-center gap-1 font-semibold text-violet-700 hover:underline dark:text-violet-300">
                           <FileText className="h-3 w-3" /> {m.prescriptionCount} Rx
@@ -457,18 +457,18 @@ export function MedicationCatalog({ rows, deleteAction }: Props) {
                     </div>
                   </td>
                   <td className="px-3 py-3">
-                    <p className="max-w-[8rem] truncate text-xs admin-text">{m.shelfLocation || "—"}</p>
-                    {m.supplier && <p className="max-w-[8rem] truncate text-[11px] admin-soft">{m.supplier}</p>}
-                    {m.packSize && <p className="max-w-[8rem] truncate text-[11px] admin-soft">{m.packSize}</p>}
+                    <p className="max-w-[8rem] break-words text-sm admin-text">{m.shelfLocation || "—"}</p>
+                    {m.supplier && <p className="max-w-[8rem] break-words text-sm admin-soft">{m.supplier}</p>}
+                    {m.packSize && <p className="max-w-[8rem] break-words text-sm admin-soft">{m.packSize}</p>}
                   </td>
                   <td className="px-3 py-3 text-right">
                     <div className="inline-flex items-center gap-1">
-                      <Link href={`/admin/medications/${m.id}`} className="inline-flex h-9 w-9 items-center justify-center rounded-lg bg-[var(--admin-inset)] admin-muted transition hover:bg-emerald-500/10 hover:text-emerald-700 dark:hover:text-emerald-300" title="Edit">
+                      <Link href={`/admin/medications/${m.id}`} className="inline-flex h-11 w-11 items-center justify-center rounded-lg bg-[var(--admin-inset)] admin-muted transition hover:bg-emerald-500/10 hover:text-emerald-700 dark:hover:text-emerald-300" title="Edit">
                         <Pencil className="h-3.5 w-3.5" />
                       </Link>
                       <form action={deleteAction}>
                         <input type="hidden" name="id" value={m.id} />
-                        <ConfirmSubmitButton message={`Delete ${m.name}? This cannot be undone if nothing references it.`} title="Delete" className="inline-flex h-9 w-9 items-center justify-center rounded-lg bg-[var(--admin-inset)] admin-muted transition hover:bg-rose-500/10 hover:text-rose-700 dark:hover:text-rose-300">
+                        <ConfirmSubmitButton message={`Delete ${m.name}? This cannot be undone if nothing references it.`} title="Delete" className="inline-flex h-11 w-11 items-center justify-center rounded-lg bg-[var(--admin-inset)] admin-muted transition hover:bg-rose-500/10 hover:text-rose-700 dark:hover:text-rose-300">
                           <Trash2 className="h-3.5 w-3.5" />
                         </ConfirmSubmitButton>
                       </form>

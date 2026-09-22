@@ -23,10 +23,10 @@ export default async function LibraryPage() {
       title="Medicine library"
       subtitle="Reuse trusted medicine records and only add the stock, pricing, and shelf details specific to your pharmacy."
     >
-      <div className="mx-auto max-w-5xl space-y-4 sm:space-y-6">
+      <div className="mx-auto w-full min-w-0 max-w-5xl space-y-4 sm:space-y-6">
         <Link
           href="/admin/medications/add"
-          className="group inline-flex min-h-11 items-center gap-2 rounded-xl bg-[var(--admin-inset)] px-3 text-sm font-medium admin-muted transition hover:text-[var(--admin-text)] sm:min-h-0 sm:bg-transparent sm:px-0"
+          className="group inline-flex min-h-11 items-center gap-2 rounded-xl bg-[var(--admin-inset)] px-3 text-sm font-medium admin-muted transition hover:text-[var(--admin-text)] sm:bg-transparent sm:px-0"
         >
           <ArrowLeft className="h-4 w-4 transition-transform duration-200 group-hover:-translate-x-0.5" />
           Back to acquisition methods
@@ -39,7 +39,7 @@ export default async function LibraryPage() {
             </div>
             <div className="min-w-0">
               <p className="text-sm font-semibold text-emerald-800 dark:text-emerald-200">Search before creating a duplicate</p>
-              <p className="mt-1 text-xs leading-5 text-emerald-800/75 dark:text-emerald-200/75">
+              <p className="mt-1 text-sm leading-5 text-emerald-800/75 dark:text-emerald-200/75">
                 Search by product name, generic, brand, or barcode. A matched record keeps the shared clinical data and creates only your pharmacy inventory entry.
               </p>
             </div>
@@ -47,11 +47,11 @@ export default async function LibraryPage() {
           <div className="mt-4 grid grid-cols-2 gap-2">
             <div className="flex items-center gap-2 rounded-xl border border-emerald-500/15 bg-[var(--admin-card)] p-3">
               <Search className="h-4 w-4 shrink-0 text-emerald-700 dark:text-emerald-300" />
-              <span className="text-xs font-medium admin-text">Find the master record</span>
+              <span className="text-sm font-medium admin-text">Find the master record</span>
             </div>
             <div className="flex items-center gap-2 rounded-xl border border-emerald-500/15 bg-[var(--admin-card)] p-3">
               <BadgeCheck className="h-4 w-4 shrink-0 text-emerald-700 dark:text-emerald-300" />
-              <span className="text-xs font-medium admin-text">Add local stock details</span>
+              <span className="text-sm font-medium admin-text">Add local stock details</span>
             </div>
           </div>
         </section>
