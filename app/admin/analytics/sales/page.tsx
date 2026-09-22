@@ -49,13 +49,13 @@ export default async function SalesAnalyticsPage({
       </StatGrid>
 
       <AdminPanel title="Reservation funnel" description="Website and portal reservations from creation through conversion or drop-off.">
-        <div className="grid grid-cols-2 gap-2 sm:gap-3 lg:grid-cols-4">
+        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
           <FunnelStat label="Created" value={funnel.reservationsCreated} />
           <FunnelStat label="Converted" value={funnel.reservationsConverted} accent="success" />
           <FunnelStat label="Expired" value={funnel.reservationsExpired} accent="warning" />
           <FunnelStat label="Cancelled" value={funnel.reservationsCancelled} accent="danger" />
         </div>
-        <div className="mt-3 grid gap-2 min-[420px]:grid-cols-3">
+        <div className="mt-3 grid gap-3 sm:grid-cols-3">
           <RateStat label="Conversion" value={formatPct(funnel.conversionRate)} emphasis />
           <RateStat label="Expired" value={formatPct(funnel.expiredRate)} />
           <RateStat label="Cancelled" value={formatPct(funnel.cancelledRate)} />
@@ -65,9 +65,9 @@ export default async function SalesAnalyticsPage({
       <div className="grid gap-3 lg:grid-cols-2">
         <AdminPanel title="By source" description="Which channels are producing orders and revenue.">
           {Object.keys(metrics.bySource).length === 0 ? (
-            <p className="text-xs admin-muted">No orders in this period.</p>
+            <p className="text-sm admin-muted">No orders in this period.</p>
           ) : (
-            <div className="space-y-2 text-xs">
+            <div className="space-y-2 text-sm">
               {Object.entries(metrics.bySource).map(([src, v]) => (
                 <BreakdownRow key={src} label={src} orders={v.orders} units={v.units} revenue={v.revenue} />
               ))}
@@ -77,9 +77,9 @@ export default async function SalesAnalyticsPage({
 
         <AdminPanel title="By type" description="Compare demand across order types.">
           {Object.keys(metrics.byType).length === 0 ? (
-            <p className="text-xs admin-muted">No orders in this period.</p>
+            <p className="text-sm admin-muted">No orders in this period.</p>
           ) : (
-            <div className="space-y-2 text-xs">
+            <div className="space-y-2 text-sm">
               {Object.entries(metrics.byType).map(([type, v]) => (
                 <BreakdownRow key={type} label={type} orders={v.orders} units={v.units} revenue={v.revenue} />
               ))}
@@ -103,7 +103,7 @@ function FunnelStat({ label, value, accent }: { label: string; value: number; ac
 
   return (
     <div className={`min-w-0 rounded-xl border border-[var(--admin-border)] p-3 sm:p-4 ${surface}`}>
-      <p className="text-[11px] font-semibold uppercase tracking-wider admin-muted sm:text-xs">{label}</p>
+      <p className="text-sm font-semibold uppercase tracking-wider admin-muted">{label}</p>
       <p className={`mt-1 break-words text-2xl font-bold sm:text-3xl ${tone}`}>{formatNumber(value)}</p>
     </div>
   );
@@ -111,9 +111,9 @@ function FunnelStat({ label, value, accent }: { label: string; value: number; ac
 
 function RateStat({ label, value, emphasis = false }: { label: string; value: string; emphasis?: boolean }) {
   return (
-    <div className="flex items-center justify-between gap-2 rounded-xl border border-[var(--admin-border)] bg-[var(--admin-card)] px-3 py-2.5 min-[420px]:block">
-      <p className="text-[11px] font-medium uppercase tracking-wide admin-muted">{label}</p>
-      <p className={`break-words text-sm font-bold min-[420px]:mt-1 min-[420px]:text-lg ${emphasis ? "text-emerald-700 dark:text-emerald-300" : "admin-text"}`}>{value}</p>
+    <div className="flex min-w-0 items-center justify-between gap-3 rounded-xl border border-[var(--admin-border)] bg-[var(--admin-card)] px-3 py-3 sm:block">
+      <p className="text-sm font-medium uppercase tracking-wide admin-muted">{label}</p>
+      <p className={`break-words text-base font-bold sm:mt-1 sm:text-lg ${emphasis ? "text-emerald-700 dark:text-emerald-300" : "admin-text"}`}>{value}</p>
     </div>
   );
 }
