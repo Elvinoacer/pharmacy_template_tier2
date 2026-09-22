@@ -44,7 +44,7 @@ export default async function NetworkServiceView({ slug }: { slug: string }) {
         <div className="mx-auto grid max-w-6xl gap-8 lg:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)]">
           <div className="relative aspect-[4/3] overflow-hidden rounded-3xl border border-[var(--service-ui-border)] bg-[var(--card)] shadow-sm">
             {first.imageUrl ? (
-              <Image
+              <Image unoptimized
                 src={first.imageUrl}
                 alt={first.title}
                 fill
