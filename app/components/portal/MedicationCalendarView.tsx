@@ -202,7 +202,7 @@ export function MedicationCalendarView({
           {/* View Mode Switcher */}
           <div className="flex items-center rounded-xl border border-[#e3ebe6] bg-[#fafcfb] p-1 shadow-2xs">
             <button
-              onClick={() = className="min-h-11 min-w-11"> setViewMode("month")}
+              onClick={() => setViewMode("month")}
               className={`hidden items-center gap-1 rounded-lg px-3 py-2 text-sm font-semibold transition sm:flex ${
                 viewMode === "month"
                   ? "bg-[#0d6e5a] text-white shadow-2xs"
@@ -213,7 +213,7 @@ export function MedicationCalendarView({
               <span>Month</span>
             </button>
             <button
-              onClick={() = className="min-h-11 min-w-11"> setViewMode("week")}
+              onClick={() => setViewMode("week")}
               className={`hidden items-center gap-1 rounded-lg px-3 py-2 text-sm font-semibold transition sm:flex ${
                 viewMode === "week"
                   ? "bg-[#0d6e5a] text-white shadow-2xs"
@@ -224,7 +224,7 @@ export function MedicationCalendarView({
               <span>Week</span>
             </button>
             <button
-              onClick={() = className="min-h-11 min-w-11"> setViewMode("agenda")}
+              onClick={() => setViewMode("agenda")}
               className={`flex items-center gap-1 rounded-lg px-3 py-2 text-sm font-semibold transition ${
                 viewMode === "agenda"
                   ? "bg-[#0d6e5a] text-white shadow-2xs"
@@ -250,7 +250,7 @@ export function MedicationCalendarView({
           </a>
 
           <button
-            onClick={() = className="min-h-11 min-w-11"> window.print()}
+            onClick={() => window.print()}
             className="inline-flex items-center gap-2 rounded-xl border border-[#e3ebe6] bg-white px-4 py-2 text-sm font-semibold text-[#5a6b62] hover:bg-[#f2f7f4] shadow-2xs transition"
             title="Print a clean wallet/fridge card of your schedule"
           >
@@ -366,7 +366,7 @@ export function MedicationCalendarView({
                 return (
                   <button
                     key={day.dateStr}
-                    onClick={() = className="min-h-11 min-w-11"> setSelectedDay(day)}
+                    onClick={() => setSelectedDay(day)}
                     className={`h-20 sm:h-24 rounded-2xl p-2 sm:p-2 text-left flex flex-col justify-between transition relative border ${
                       isSelected
                         ? "border-[#0d6e5a] bg-teal-50/50 ring-2 ring-[#0d6e5a]/25 shadow-xs"
@@ -447,7 +447,7 @@ export function MedicationCalendarView({
                 return (
                   <button
                     key={day.dateStr}
-                    onClick={() = className="min-h-11 min-w-11"> setSelectedDay(day)}
+                    onClick={() => setSelectedDay(day)}
                     className={`h-48 rounded-2xl p-3 text-left flex flex-col justify-between transition border ${
                       isSelected
                         ? "border-[#0d6e5a] bg-teal-50/50 ring-2 ring-[#0d6e5a]/25 shadow-xs"
@@ -511,7 +511,7 @@ export function MedicationCalendarView({
                   <button
                     key={day.dateStr}
                     type="button"
-                    onClick={() = className="min-h-11 min-w-11"> setSelectedDay(day)}
+                    onClick={() => setSelectedDay(day)}
                     className={`w-full cursor-pointer rounded-2xl border p-4 text-left transition ${
                       selectedDay?.dateStr === day.dateStr
                         ? "border-[#0d6e5a] bg-teal-50/30"
@@ -613,7 +613,7 @@ export function MedicationCalendarView({
             {/* Time period filter pills */}
             <div className="mt-3 flex items-center gap-2 overflow-x-auto pb-1">
               <button
-                onClick={() = className="min-h-11 min-w-11"> setTimeFilter("all")}
+                onClick={() => setTimeFilter("all")}
                 className={`rounded-xl px-3 py-1 text-sm font-bold transition ${
                   timeFilter === "all"
                     ? "bg-[#0d6e5a] text-white"
@@ -623,7 +623,7 @@ export function MedicationCalendarView({
                 All
               </button>
               <button
-                onClick={() = className="min-h-11 min-w-11"> setTimeFilter("morning")}
+                onClick={() => setTimeFilter("morning")}
                 className={`flex items-center gap-1 rounded-xl px-3 py-1 text-sm font-semibold transition ${
                   timeFilter === "morning"
                     ? "bg-[#0d6e5a] text-white"
@@ -633,7 +633,7 @@ export function MedicationCalendarView({
                 <Sun className="h-3 w-3" /> Morning
               </button>
               <button
-                onClick={() = className="min-h-11 min-w-11"> setTimeFilter("afternoon")}
+                onClick={() => setTimeFilter("afternoon")}
                 className={`flex items-center gap-1 rounded-xl px-3 py-1 text-sm font-semibold transition ${
                   timeFilter === "afternoon"
                     ? "bg-[#0d6e5a] text-white"
@@ -643,7 +643,7 @@ export function MedicationCalendarView({
                 <Sunset className="h-3 w-3" /> Afternoon
               </button>
               <button
-                onClick={() = className="min-h-11 min-w-11"> setTimeFilter("evening")}
+                onClick={() => setTimeFilter("evening")}
                 className={`flex items-center gap-1 rounded-xl px-3 py-1 text-sm font-semibold transition ${
                   timeFilter === "evening"
                     ? "bg-[#0d6e5a] text-white"
@@ -751,7 +751,7 @@ export function MedicationCalendarView({
                       <div className="flex items-center justify-between border-t border-black/5 pt-2 text-sm">
                         <div className="flex items-center gap-2">
                           <button
-                            onClick={() = className="min-h-11 min-w-11">
+                            onClick={() =>
                               handleLogDose(dose.prescriptionId, "taken", dose.timeOfDay)
                             }
                             disabled={loggingStatus !== null}
@@ -761,7 +761,7 @@ export function MedicationCalendarView({
                             Taken
                           </button>
                           <button
-                            onClick={() = className="min-h-11 min-w-11">
+                            onClick={() =>
                               handleLogDose(dose.prescriptionId, "late", dose.timeOfDay)
                             }
                             disabled={loggingStatus !== null}
@@ -770,7 +770,7 @@ export function MedicationCalendarView({
                             Late
                           </button>
                           <button
-                            onClick={() = className="min-h-11 min-w-11">
+                            onClick={() =>
                               handleLogDose(dose.prescriptionId, "skipped", dose.timeOfDay)
                             }
                             disabled={loggingStatus !== null}
@@ -781,7 +781,7 @@ export function MedicationCalendarView({
                         </div>
 
                         <button
-                          onClick={() = className="min-h-11 min-w-11"> {
+                          onClick={() => {
                             setActiveDoseModal(dose);
                             setDoseNote(dose.notes || "");
                           }}
@@ -851,7 +851,7 @@ export function MedicationCalendarView({
                 Dose Log Note: {activeDoseModal.medicineName}
               </h3>
               <button
-                onClick={() = className="min-h-11 min-w-11"> setActiveDoseModal(null)}
+                onClick={() => setActiveDoseModal(null)}
                 className="rounded-full p-1 text-[#8a9a92] hover:bg-black/5"
               >
                 <X className="h-5 w-5" />
@@ -864,7 +864,7 @@ export function MedicationCalendarView({
 
             <textarea
               value={doseNote}
-              onChange={(e) = className="min-h-11 min-w-11"> setDoseNote(e.target.value)}
+              onChange={(e) => setDoseNote(e.target.value)}
               placeholder="e.g. Taken after lunch, mild dizziness noted..."
               rows={3}
               className="mt-4 w-full rounded-2xl border border-[#e3ebe6] p-3 text-sm text-[#0c1a14] focus:border-[#0d6e5a] focus:outline-none"
@@ -872,13 +872,13 @@ export function MedicationCalendarView({
 
             <div className="mt-4 flex items-center justify-end gap-2">
               <button
-                onClick={() = className="min-h-11 min-w-11"> setActiveDoseModal(null)}
+                onClick={() => setActiveDoseModal(null)}
                 className="rounded-xl px-3 py-2 text-sm font-semibold text-[#5a6b62] hover:bg-[#f2f7f4]"
               >
                 Cancel
               </button>
               <button
-                onClick={() = className="min-h-11 min-w-11">
+                onClick={() =>
                   handleLogDose(
                     activeDoseModal.prescriptionId,
                     activeDoseModal.status === "pending"
