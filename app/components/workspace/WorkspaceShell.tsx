@@ -268,12 +268,16 @@ export function WorkspaceShell({
               className="workspace-main-scroll mx-auto min-h-0 w-full max-w-[1280px] flex-1 overflow-x-hidden overflow-y-auto px-4 py-6 sm:px-6 lg:px-8"
             >
               {role === "admin" && (
-                <div className="hidden sm:block">
+                <div className="hidden sm:block [&_a]:min-h-11 [&_a]:text-sm [&_button]:min-h-11 [&_button]:min-w-11 [&_button]:text-sm [&_p]:text-sm [&_span]:text-sm">
                   <AdminPlanWelcomeBanner />
                   <AdminPlanDashboardCard />
                 </div>
               )}
-              {role === "admin" && <AdminPlanContextNotice />}
+              {role === "admin" && (
+                <div className="[&_a]:min-h-11 [&_a]:text-sm [&_button]:min-h-11 [&_button]:min-w-11 [&_button]:text-sm [&_p]:text-sm [&_span]:text-sm">
+                  <AdminPlanContextNotice />
+                </div>
+              )}
 
               {/* Contextual Task Surface (Surfacing nearby actions for medicines, patients, applications) */}
               <div className="[&_.afyvia-context-chip]:min-h-11 [&_.afyvia-context-chip]:text-sm [&_.afyvia-context-dropdown-item]:min-h-11 [&_.afyvia-context-dropdown-item]:text-sm">
@@ -336,9 +340,11 @@ export function WorkspaceShell({
           />
 
           {/* Push Notifications & Realtime Alerts */}
-          <PushNotificationCenter
-            audience={role === "admin" ? "admin" : "portal"}
-          />
+          <div className="[&_button]:min-h-11 [&_button]:min-w-11 [&_button]:text-sm [&_p]:text-sm">
+            <PushNotificationCenter
+              audience={role === "admin" ? "admin" : "portal"}
+            />
+          </div>
           <LiveAlertCenter audience={role === "admin" ? "admin" : "portal"} />
         </div>
       </NavigationProgressProvider>
