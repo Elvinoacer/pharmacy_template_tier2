@@ -466,10 +466,12 @@ export default async function AdminBillingPage() {
                       <p className="mt-1 text-sm leading-5 text-[var(--admin-text-muted)]">
                         Settle the outstanding monthly invoice to restore Premium entitlements. Your Free plan remains available.
                       </p>
-                      <RetryOverdueForm
-                        pharmacyId={pharmacy.id}
-                        suspended={tenantData.subscription?.status === "unpaid"}
-                      />
+                      <div className="[&_p]:!text-sm">
+                        <RetryOverdueForm
+                          pharmacyId={pharmacy.id}
+                          suspended={tenantData.subscription?.status === "unpaid"}
+                        />
+                      </div>
                     </div>
                   ) : (
                     <PharmacyEnrolmentPricingSelector
@@ -662,7 +664,9 @@ export default async function AdminBillingPage() {
               <p className="mb-3 text-sm leading-5 text-[var(--admin-text-muted)]">
                 Vouchers are optional. Apply one here only if the platform team gave your pharmacy a code.
               </p>
-              <PromoCardForm pharmacyId={pharmacy.id} />
+              <div className="[&_p]:!text-sm">
+                <PromoCardForm pharmacyId={pharmacy.id} />
+              </div>
             </div>
           </details>
         )}
