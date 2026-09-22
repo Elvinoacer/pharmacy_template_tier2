@@ -11,6 +11,7 @@ import { sendDelivery } from "@/app/lib/services/delivery";
 import { dispatchPushToUser, dispatchPushToStaff } from "@/app/lib/services/push";
 import { recordAdminNotification } from "@/app/lib/services/admin-notifications";
 import { formatTime, toLocalDateInputValue } from "@/app/lib/time";
+import { hasPremiumPlan } from "@/app/lib/platform/entitlements";
 
 export async function getCustomerDashboard(customerId: string) {
   return withPlatformBypass(async () => {
@@ -1217,6 +1218,23 @@ export async function processDueReminders(): Promise<{ processedCount: number; f
 
   for (const reminder of due) {
     try {
+      // System-generated prescription refill nudges are a Premium automation.
+      // Medication-dose reminders and staff-created reminders remain available
+      // because clinical safety and intentional patient communication stay Free.
+      if (
+        reminder.type === "refill" &&
+        reminder.relatedType === "prescription" &&
+        !reminder.createdById &&
+        !(await hasPremiumPlan(reminder.pharmacyId))
+      ) {
+        await prisma.reminder.update({
+          where: { id: reminder.id },
+          data: { status: "cancelled" },
+        });
+        processedCount += 1;
+        continue;
+      }
+
       // Honour reminderConsent — skip opted-out customers without failing the batch.
       if (reminder.customer.preferences?.reminderConsent === false) {
         await prisma.reminder.update({
