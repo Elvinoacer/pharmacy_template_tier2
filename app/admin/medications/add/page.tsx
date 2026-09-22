@@ -1,5 +1,7 @@
 import { redirect } from "next/navigation";
 import { getSessionUser } from "@/app/lib/auth";
+import { requireMedicationWriteContext } from "@/app/lib/services/medication-access";
+import { isFeatureEnabled } from "@/app/lib/platform/entitlements";
 import { AdminShell } from "@/app/components/admin/AdminShell";
 import Link from "next/link";
 import {
@@ -100,6 +102,14 @@ export default async function AddMedicationChooserPage() {
   const user = await getSessionUser();
   if (!user) redirect("/login");
 
+  let pharmacyId: string;
+  try {
+    pharmacyId = await requireMedicationWriteContext(user);
+  } catch {
+    redirect("/admin/medications");
+  }
+  const premiumActive = user.platformAdmin || await isFeatureEnabled(pharmacyId, "ai_import");
+
   return (
     <AdminShell
       user={user}
@@ -124,6 +134,13 @@ export default async function AddMedicationChooserPage() {
         <div className="grid gap-3 sm:grid-cols-2 sm:gap-4">
           {METHODS.map((m) => {
             const Icon = m.icon;
+            const premiumMethod = m.href === "/admin/medications/import/ai";
+            const badge = premiumMethod
+              ? (premiumActive ? "Premium active" : "Premium")
+              : m.badge;
+            const helper = premiumMethod && !premiumActive
+              ? "Premium · KES 500/month"
+              : m.helper;
 
             if (m.disabled) {
               return (
@@ -165,9 +182,13 @@ export default async function AddMedicationChooserPage() {
                       </span>
                     )}
                   </div>
-                  {m.badge && (
-                    <span className="rounded-full bg-emerald-500 px-2.5 py-1 text-[11px] font-bold text-white shadow-sm">
-                      {m.badge}
+                  {badge && (
+                    <span className={`rounded-full px-2.5 py-1 text-[11px] font-bold shadow-sm ${
+                      premiumMethod && !premiumActive
+                        ? "bg-violet-500/15 text-violet-700 ring-1 ring-violet-500/20 dark:text-violet-300"
+                        : "bg-emerald-500 text-white"
+                    }`}>
+                      {badge}
                     </span>
                   )}
                 </div>
@@ -176,7 +197,7 @@ export default async function AddMedicationChooserPage() {
                 <p className="mt-1.5 text-sm leading-6 admin-muted">{m.description}</p>
 
                 <div className="mt-auto flex items-center justify-between gap-3 pt-4">
-                  <span className="text-xs font-semibold admin-soft">{m.helper}</span>
+                  <span className="text-xs font-semibold admin-soft">{helper}</span>
                   <span className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-[var(--admin-inset)] admin-text transition group-hover:bg-emerald-500 group-hover:text-white">
                     <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
                   </span>
