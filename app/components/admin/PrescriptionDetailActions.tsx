@@ -24,7 +24,7 @@ export function PrescriptionDetailActions({
       <button
         type="button"
         onClick={() => setSubOpen(true)}
-        className="inline-flex items-center gap-1.5 rounded-full border border-emerald-500/30 bg-emerald-500/10 px-3.5 py-1.5 text-xs font-bold text-emerald-700 transition hover:bg-emerald-500/20"
+        className="inline-flex items-center gap-1.5 rounded-full border border-emerald-500/30 bg-emerald-500/10 px-3.5 py-1.5 text-sm font-bold text-emerald-700 transition hover:bg-emerald-500/20"
       >
         <RefreshCw className="h-3.5 w-3.5" />
         <span>Substitute Generic</span>
@@ -34,7 +34,7 @@ export function PrescriptionDetailActions({
         <button
           type="button"
           onClick={() => setReceiptOpen(true)}
-          className="inline-flex items-center gap-1.5 rounded-full border border-[var(--admin-border)] bg-[var(--admin-card)] px-3.5 py-1.5 text-xs font-bold admin-text transition hover:brightness-110"
+          className="inline-flex items-center gap-1.5 rounded-full border border-[var(--admin-border)] bg-[var(--admin-card)] px-3.5 py-1.5 text-sm font-bold admin-text transition hover:brightness-110"
         >
           <Printer className="h-3.5 w-3.5 text-slate-600" />
           <span>Receipt &amp; Label</span>
