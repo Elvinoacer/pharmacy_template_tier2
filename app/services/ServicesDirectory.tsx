@@ -492,7 +492,7 @@ function ServiceCard({
     <article className="care-glass group flex flex-col overflow-hidden rounded-[24px] border !border-[var(--service-ui-border)] bg-[var(--card-elev)] transition duration-200 hover:-translate-y-0.5 hover:!border-[var(--brand)] shadow-sm">
       {/* Visual Header */}
       <Link href={service.href} className="relative block h-36 w-full overflow-hidden bg-[#07241e] sm:h-40">
-        <Image
+        <Image unoptimized
           src={service.imageUrl || "/images/care/editorial-pharmacy.png"}
           alt={service.title}
           fill
