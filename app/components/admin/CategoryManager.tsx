@@ -566,7 +566,7 @@ export function CategoryManager({ initial }: { initial: CategoryRow[] }) {
             <strong>{Math.min(currentPage * PAGE_SIZE, total)}</strong> of{" "}
             <strong>{total}</strong>
           </p>
-          <div className="flex w-full items-center gap-1 overflow-x-auto pb-1 sm:w-auto">
+          <div className="flex w-full flex-wrap items-center gap-1 sm:w-auto">
             <button
               type="button"
               disabled={currentPage <= 1}
