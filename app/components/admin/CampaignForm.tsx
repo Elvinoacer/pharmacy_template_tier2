@@ -11,9 +11,13 @@ type ScheduleMode = "draft" | "schedule" | "now";
 export default function CampaignForm({
   action,
   segments,
+  premiumActive,
+  freeLaunchesRemaining,
 }: {
   action: (prev: ActionState, formData: FormData) => Promise<ActionState>;
-  segments: { id: string; name: string }[];
+  segments: { id: string; name: string; isSystem: boolean }[];
+  premiumActive: boolean;
+  freeLaunchesRemaining: number | null;
 }) {
   const fieldPrefix = useId();
   const [state, formAction, pending] = useActionState(action, {} as ActionState);
@@ -106,7 +110,9 @@ export default function CampaignForm({
             <option value="email">Email</option>
             <option value="sms">SMS</option>
             <option value="whatsapp">WhatsApp</option>
-            <option value="multi">Multi-channel</option>
+            <option value="multi" disabled={!premiumActive}>
+              Multi-channel{premiumActive ? "" : " — Premium"}
+            </option>
           </select>
         </div>
         <div>
@@ -114,7 +120,13 @@ export default function CampaignForm({
           <select id={`${fieldPrefix}-segment`} name="segmentId" className="input-admin" defaultValue="">
             <option value="">All customers</option>
             {segments.map((segment) => (
-              <option key={segment.id} value={segment.id}>{segment.name}</option>
+              <option
+                key={segment.id}
+                value={segment.id}
+                disabled={!premiumActive && !segment.isSystem}
+              >
+                {segment.name}{!premiumActive && !segment.isSystem ? " — Premium" : ""}
+              </option>
             ))}
           </select>
         </div>
@@ -179,9 +191,24 @@ export default function CampaignForm({
             <input type="radio" name="scheduleMode" value="draft" checked={mode === "draft"} onChange={() => setMode("draft")} className="accent-[var(--admin-accent)]" />
             <Calendar className="h-3.5 w-3.5 shrink-0" /> Save as draft
           </label>
-          <label className={`flex min-h-12 cursor-pointer items-center gap-2 rounded-xl border px-3 py-2 text-xs font-medium transition ${mode === "schedule" ? "border-[var(--admin-accent)] bg-[var(--admin-accent-soft)] admin-accent-text" : "border-[var(--admin-border)] bg-[var(--admin-inset)] admin-text hover:border-[var(--admin-border-2)]"}`}>
-            <input type="radio" name="scheduleMode" value="schedule" checked={mode === "schedule"} onChange={() => setMode("schedule")} className="accent-[var(--admin-accent)]" />
-            <Calendar className="h-3.5 w-3.5 shrink-0" /> Schedule
+          <label className={`flex min-h-12 items-center gap-2 rounded-xl border px-3 py-2 text-xs font-medium transition ${
+            !premiumActive
+              ? "cursor-not-allowed border-[var(--admin-border)] bg-[var(--admin-inset)] opacity-60 admin-muted"
+              : mode === "schedule"
+                ? "cursor-pointer border-[var(--admin-accent)] bg-[var(--admin-accent-soft)] admin-accent-text"
+                : "cursor-pointer border-[var(--admin-border)] bg-[var(--admin-inset)] admin-text hover:border-[var(--admin-border-2)]"
+          }`}>
+            <input
+              type="radio"
+              name="scheduleMode"
+              value="schedule"
+              checked={mode === "schedule"}
+              onChange={() => setMode("schedule")}
+              disabled={!premiumActive}
+              className="accent-[var(--admin-accent)]"
+            />
+            <Calendar className="h-3.5 w-3.5 shrink-0" />
+            Schedule{premiumActive ? "" : " · Premium"}
           </label>
           <label className={`flex min-h-12 cursor-pointer items-center gap-2 rounded-xl border px-3 py-2 text-xs font-medium transition ${mode === "now" ? "border-[var(--admin-accent)] bg-[var(--admin-accent-soft)] admin-accent-text" : "border-[var(--admin-border)] bg-[var(--admin-inset)] admin-text hover:border-[var(--admin-border-2)]"}`}>
             <input type="radio" name="scheduleMode" value="now" checked={mode === "now"} onChange={() => setMode("now")} className="accent-[var(--admin-accent)]" />
@@ -205,13 +232,28 @@ export default function CampaignForm({
         {mode === "now" && (
           <>
             <input type="hidden" name="sendNow" value="true" />
-            <p className="text-xs leading-5 admin-soft">Campaign will launch immediately on submit. Each recipient gets a personalized message.</p>
+            <p className="text-xs leading-5 admin-soft">
+              {freeLaunchesRemaining === 0
+                ? "Your Free monthly campaign launch has been used. Save this as a draft or upgrade for unlimited launches."
+                : premiumActive
+                  ? "Campaign will launch immediately on submit. Each recipient gets a personalized message."
+                  : `Campaign will launch immediately. Free includes ${freeLaunchesRemaining ?? 1} launch remaining this month.`}
+            </p>
           </>
         )}
-        {mode === "draft" && <p className="text-xs leading-5 admin-soft">Saved as draft — launch later from the campaigns list.</p>}
+        {mode === "draft" && (
+          <p className="text-xs leading-5 admin-soft">
+            Saved as draft — launch later from the campaigns list.
+            {!premiumActive ? " Scheduling, custom segments and multi-channel delivery unlock on Premium." : ""}
+          </p>
+        )}
       </fieldset>
 
-      <button type="submit" disabled={pending} className="btn-admin w-full !rounded-xl py-2.5 disabled:opacity-50">
+      <button
+        type="submit"
+        disabled={pending || (mode === "now" && freeLaunchesRemaining === 0)}
+        className="btn-admin w-full !rounded-xl py-2.5 disabled:cursor-not-allowed disabled:opacity-50"
+      >
         {pending ? (
           <><span className="typing-dot" /> Saving…</>
         ) : mode === "now" ? (
