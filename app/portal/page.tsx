@@ -105,7 +105,7 @@ export default async function PortalDashboardPage() {
               action={<Link href="/prescription" className="btn-primary min-h-11 !py-2 text-sm">Find my medicines</Link>}
             />
           ) : (
-            <ul className="space-y-2.5">
+            <ul className="space-y-3">
               {data.prescriptions.slice(0, 4).map((p) => (
                 <li
                   key={p.id}
@@ -154,7 +154,7 @@ export default async function PortalDashboardPage() {
               }
             />
           ) : (
-            <ul className="space-y-2.5">
+            <ul className="space-y-3">
               {data.refills.slice(0, 5).map((r) => {
                 const meta = refillStatusMeta(r.status);
                 return (
@@ -197,13 +197,13 @@ export default async function PortalDashboardPage() {
               description="New refill updates and messages will land here."
             />
           ) : (
-            <ul className="space-y-2.5">
+            <ul className="space-y-3">
               {data.notifications.map((n) => (
                 <li
                   key={n.id}
-                  className="flex items-start gap-3 rounded-xl border border-[#e3ebe6] bg-[#fafbfa] px-3.5 py-3"
+                  className="flex items-start gap-3 rounded-xl border border-[#e3ebe6] bg-[#fafbfa] px-4 py-3"
                 >
-                  <span className="mt-0.5 flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[#e6f4ef] text-[#0d6e5a]">
+                  <span className="mt-1 flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[#e6f4ef] text-[#0d6e5a]">
                     <Bell className="h-4 w-4" />
                   </span>
                   <div className="min-w-0">
@@ -228,10 +228,10 @@ export default async function PortalDashboardPage() {
             <EmptyState icon={Activity} title="No activity yet" />
           ) : (
             <ol className="relative space-y-4 pl-4">
-              <span className="absolute left-1.5 top-1 bottom-1 w-px bg-[#e3ebe6]" />
+              <span className="absolute left-2 top-1 bottom-1 w-px bg-[#e3ebe6]" />
               {data.timeline.slice(0, 8).map((e) => (
                 <li key={e.id} className="relative">
-                  <span className="absolute -left-2.5 top-1 flex h-3 w-3 items-center justify-center rounded-full bg-[#0d6e5a] ring-4 ring-[#f4f7f4]">
+                  <span className="absolute -left-2 top-1 flex h-3 w-3 items-center justify-center rounded-full bg-[#0d6e5a] ring-4 ring-[#f4f7f4]">
                     <CheckCircle2 className="h-3 w-3 text-white" />
                   </span>
                   <div className="ml-4">
