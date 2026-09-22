@@ -204,7 +204,7 @@ export function RefillSyncView({
                 return (
                   <button
                     key={day}
-                    onClick={() = className="min-h-11 min-w-11"> handleAnchorChange(day)}
+                    onClick={() => handleAnchorChange(day)}
                     disabled={loading}
                     className={`rounded-2xl p-3 text-center transition border ${
                       isSelected
@@ -278,7 +278,7 @@ export function RefillSyncView({
                         <input
                           type="checkbox"
                           checked={isChecked}
-                          onChange={() = className="min-h-11 min-w-11"> {}}
+                          onChange={() => {}}
                           className="mt-1 h-4 w-4 rounded text-[#0d6e5a] focus:ring-[#0d6e5a]"
                         />
                         <div>
@@ -348,7 +348,7 @@ export function RefillSyncView({
             <div className="grid sm:grid-cols-2 gap-3">
               <button
                 type="button"
-                onClick={() = className="min-h-11 min-w-11"> setPreferredPickup("pickup")}
+                onClick={() => setPreferredPickup("pickup")}
                 className={`rounded-2xl p-4 text-left border transition flex items-start gap-3 ${
                   preferredPickup === "pickup"
                     ? "border-[#0d6e5a] bg-teal-50/40 text-[#0c1a14] ring-2 ring-[#0d6e5a]/25 shadow-2xs"
@@ -366,7 +366,7 @@ export function RefillSyncView({
 
               <button
                 type="button"
-                onClick={() = className="min-h-11 min-w-11"> setPreferredPickup("delivery")}
+                onClick={() => setPreferredPickup("delivery")}
                 className={`rounded-2xl p-4 text-left border transition flex items-start gap-3 ${
                   preferredPickup === "delivery"
                     ? "border-[#0d6e5a] bg-teal-50/40 text-[#0c1a14] ring-2 ring-[#0d6e5a]/25 shadow-2xs"
