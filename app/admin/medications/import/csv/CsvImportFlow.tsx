@@ -204,7 +204,7 @@ export function CsvImportFlow() {
       setSummary(payload);
       setStep("done");
       if (payload.errors.length > 0) {
-        toast.warning(
+        toast.info(
           `Processed ${payload.created + payload.matched} medicines; ${payload.errors.length} row(s) need attention.`,
         );
       } else {
