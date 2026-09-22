@@ -233,7 +233,7 @@ export function BarcodeScanFlow() {
             href="/admin/medications/import/ai"
             className={`inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-xl border border-purple-500/20 bg-purple-500/10 px-4 text-sm font-semibold text-purple-700 transition-all hover:bg-purple-500/15 active:scale-[0.99] dark:text-purple-300 ${!cameraSupported ? "sm:col-span-2" : ""}`}
           >
-            <Sparkles className="h-4 w-4" /> Switch to AI Import
+            <Sparkles className="h-4 w-4" /> Switch to AI Import (Premium)
           </Link>
         </div>
 
@@ -297,14 +297,14 @@ export function BarcodeScanFlow() {
               <AlertCircle className="h-4 w-4 shrink-0" /> Not found in the shared library
             </p>
             <p className="mt-2 break-words text-xs leading-relaxed text-amber-800/80 dark:text-amber-200/75">
-              Barcode <code className="rounded bg-amber-500/10 px-1 font-mono">{result.barcode}</code> is not in MedicationMaster yet. AI Import is the fastest fallback; manual entry is available too.
+              Barcode <code className="rounded bg-amber-500/10 px-1 font-mono">{result.barcode}</code> is not in MedicationMaster yet. Manual entry is available on every plan. AI Import is a Premium shortcut when you want assisted extraction.
             </p>
             <div className="mt-4 grid gap-2 sm:grid-cols-2">
               <Link
                 href="/admin/medications/import/ai"
                 className="inline-flex min-h-10 items-center justify-center gap-1.5 rounded-xl bg-purple-500/10 px-3 text-xs font-semibold text-purple-700 transition hover:bg-purple-500/20 dark:text-purple-300"
               >
-                <Sparkles className="h-3.5 w-3.5" /> AI Import <ArrowRight className="h-3 w-3" />
+                <Sparkles className="h-3.5 w-3.5" /> AI Import · Premium <ArrowRight className="h-3 w-3" />
               </Link>
               <Link
                 href="/admin/medications/new"
