@@ -1,7 +1,7 @@
 import { acceptsCareRequests } from "@/app/lib/services/care-request-availability";
 import { medicineDisplayName } from "@/app/lib/prescription-discovery";
 import { NextResponse } from "next/server";
-import { randomUUID } from "node:crypto";
+import { createHash, randomUUID } from "node:crypto";
 import { z } from "zod";
 import { getSessionUser } from "@/app/lib/auth";
 import { prisma } from "@/app/lib/db";
@@ -241,7 +241,21 @@ async function submitRefill(raw: Record<string, unknown>) {
       reservePrescriptionReferralSlot,
     } = await import("@/app/lib/platform/prescription-referrals");
 
-    const reservation = await reservePrescriptionReferralSlot(tenant.pharmacyId);
+    const referralAttemptKey = createHash("sha256")
+      .update(
+        [
+          tenant.pharmacyId,
+          phone,
+          parsed.data.medicine.trim().toLowerCase(),
+          Math.floor(Date.now() / (15 * 60_000)).toString(),
+        ].join(":"),
+      )
+      .digest("hex")
+      .slice(0, 40);
+    const reservation = await reservePrescriptionReferralSlot(
+      tenant.pharmacyId,
+      `rxref:${referralAttemptKey}`,
+    );
     if (!reservation.accepted) {
       const [selectedPharmacy, alternative] = await Promise.all([
         prisma.pharmacy.findUnique({
