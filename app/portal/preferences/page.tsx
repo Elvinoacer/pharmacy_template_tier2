@@ -96,8 +96,8 @@ function PreferenceSummary({
   description: string;
 }) {
   return (
-    <div className="flex min-w-0 items-start gap-2.5">
-      <Icon className="mt-0.5 h-4 w-4 shrink-0 text-[#0d6e5a] dark:text-teal-300" />
+    <div className="flex min-w-0 items-start gap-3">
+      <Icon className="mt-1 h-4 w-4 shrink-0 text-[#0d6e5a] dark:text-teal-300" />
       <div className="min-w-0">
         <p className="break-words font-medium text-[#0c1a14] dark:text-slate-100">{title}</p>
         <p className="break-words text-sm leading-relaxed text-[#5a6b62] dark:text-slate-400">{description}</p>
