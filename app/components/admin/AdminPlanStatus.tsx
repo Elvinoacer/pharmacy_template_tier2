@@ -323,8 +323,8 @@ export function AdminPlanStatusButton() {
         />
       </summary>
 
-      <div className="absolute right-0 top-11 z-50 w-[360px] max-w-[calc(100vw-2rem)] overflow-hidden rounded-2xl border border-[var(--admin-border)] bg-[var(--admin-card)] shadow-2xl shadow-black/15">
-        <div className="border-b border-[var(--admin-border)] p-4">
+      <div className="absolute right-0 top-11 z-50 flex max-h-[calc(100dvh-5rem)] w-[360px] max-w-[calc(100vw-2rem)] flex-col overflow-hidden rounded-2xl border border-[var(--admin-border)] bg-[var(--admin-card)] shadow-2xl shadow-black/15">
+        <div className="shrink-0 border-b border-[var(--admin-border)] p-4">
           <div className="flex items-start justify-between gap-3">
             <div>
               <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-[var(--admin-accent-text)]">
@@ -358,44 +358,48 @@ export function AdminPlanStatusButton() {
           )}
         </div>
 
-        {!status.premium && (
-          <div className="space-y-3 border-b border-[var(--admin-border)] p-4">
-            <p className="text-[10px] font-bold uppercase tracking-[0.12em] text-[var(--admin-text-soft)]">
-              Free usage
-            </p>
-            {usageRows.map((row) => (
-              <PlanUsageMeter
-                key={row.key}
-                label={row.label}
-                entry={status.usage[row.key]}
-                compact
-              />
-            ))}
-          </div>
-        )}
-
-        <div className="space-y-3 p-4">
-          <div>
-            <p className="mb-2 text-[10px] font-bold uppercase tracking-[0.12em] text-[var(--admin-text-soft)]">
-              {status.premium ? "Premium includes" : "Free keeps available"}
-            </p>
-            {status.premium ? <PremiumBenefits /> : <FreePlanBenefits />}
-          </div>
-
+        <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain">
           {!status.premium && (
-            <div className="rounded-xl bg-[var(--admin-inset)] p-3">
-              <p className="text-xs font-semibold text-[var(--admin-text)]">
-                Premium · KES {status.price.premiumMonthlyKes}/month
+            <div className="space-y-3 border-b border-[var(--admin-border)] p-4">
+              <p className="text-[10px] font-bold uppercase tracking-[0.12em] text-[var(--admin-text-soft)]">
+                Free usage
               </p>
-              <p className="mt-1 text-[11px] leading-4 text-[var(--admin-text-muted)]">
-                Unlimited growth capacity plus automation, intelligence and advanced storefront tools.
-              </p>
+              {usageRows.map((row) => (
+                <PlanUsageMeter
+                  key={row.key}
+                  label={row.label}
+                  entry={status.usage[row.key]}
+                  compact
+                />
+              ))}
             </div>
           )}
 
+          <div className="space-y-3 p-4">
+            <div>
+              <p className="mb-2 text-[10px] font-bold uppercase tracking-[0.12em] text-[var(--admin-text-soft)]">
+                {status.premium ? "Premium includes" : "Free keeps available"}
+              </p>
+              {status.premium ? <PremiumBenefits /> : <FreePlanBenefits />}
+            </div>
+
+            {!status.premium && (
+              <div className="rounded-xl bg-[var(--admin-inset)] p-3">
+                <p className="text-xs font-semibold text-[var(--admin-text)]">
+                  Premium · KES {status.price.premiumMonthlyKes}/month
+                </p>
+                <p className="mt-1 text-[11px] leading-4 text-[var(--admin-text-muted)]">
+                  Unlimited growth capacity plus automation, intelligence and advanced storefront tools.
+                </p>
+              </div>
+            )}
+          </div>
+        </div>
+
+        <div className="shrink-0 border-t border-[var(--admin-border)] bg-[var(--admin-card)] p-3">
           <Link
             href="/admin/billing"
-            className="flex min-h-10 w-full items-center justify-center gap-1.5 rounded-xl bg-[var(--admin-accent)] px-3 text-xs font-semibold text-white transition hover:brightness-105"
+            className="flex min-h-10 w-full items-center justify-center gap-1.5 rounded-xl bg-[var(--admin-accent)] px-3 text-xs font-semibold text-white transition hover:brightness-105 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--admin-accent)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--admin-card)]"
           >
             <Sparkles className="h-3.5 w-3.5" />
             {attention
@@ -409,7 +413,7 @@ export function AdminPlanStatusButton() {
           </Link>
 
           {!status.premium && !status.isOwner && (
-            <p className="text-center text-[10px] leading-4 text-[var(--admin-text-soft)]">
+            <p className="mt-2 text-center text-[10px] leading-4 text-[var(--admin-text-soft)]">
               Only the pharmacy owner can activate Premium.
             </p>
           )}
