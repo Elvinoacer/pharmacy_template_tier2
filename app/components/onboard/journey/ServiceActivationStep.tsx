@@ -77,7 +77,7 @@ export function ServiceActivationStep({
       <header className={`${styles.formHead} ${polish.heading}`}>
         <h2>Premium is optional</h2>
         <p>
-          Launch stays free with 5 public medicine listings, 2 services, reservations and bookings. Upgrade only when you need more listings, AI-assisted imports, advanced analytics or POS synchronization.
+          Launch stays free with 5 public medicine listings, 2 services, 10 direct Afyvia prescription referrals per month, reservations and bookings. Upgrade only when you need unlimited direct Afyvia prescription referrals, more listings, AI-assisted imports, advanced analytics or POS synchronization.
         </p>
       </header>
       <p className="mb-4">
