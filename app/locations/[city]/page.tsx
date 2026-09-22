@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import Image from "next/image";
 import { notFound, permanentRedirect } from "next/navigation";
 import { getLocalDiscovery } from "@/app/lib/services/local-discovery";
 import { getBrowseLocation } from "@/app/lib/browse-location";
@@ -47,10 +48,20 @@ export default async function LocalPage({ params }: Props) {
       </article>)}</div>
     </section>
     <section aria-labelledby="local-services"><h2 id="local-services" className="my-5 text-2xl font-semibold">Health services in {data.city}</h2>
-      {services.length ? <div className="grid gap-4 sm:grid-cols-2">{services.map((s, i) => <article key={`${s.pharmacyId}-${s.slug}-${i}`} className="care-glass rounded-2xl p-5"><h3 className="font-semibold"><Link href={`/p/${s.pharmacy.slug}/services/${s.slug}`}>{s.title} at {s.pharmacy.name}</Link></h3><p className="my-2 text-sm">{s.short}</p>{origin && <p className="text-sm">{distanceLabel(distances.get(s.pharmacyId)) || "Distance unavailable"}</p>}<Link href={`/services/${s.slug}`}>Compare providers</Link></article>)}</div> : <p>No services are currently published for this location.</p>}
+      {services.length ? <div className="grid gap-4 sm:grid-cols-2">{services.map((s, i) => <article key={`${s.pharmacyId}-${s.slug}-${i}`} className="care-glass overflow-hidden rounded-2xl">
+        <Link href={`/p/${s.pharmacy.slug}/services/${s.slug}`} className="relative block aspect-[16/9] bg-[var(--card-elev)]">
+          <Image unoptimized src={s.imageUrl || "/images/care/editorial-pharmacy.png"} alt={s.imageUrl ? s.title : ""} fill sizes="(max-width: 640px) 100vw, 50vw" className="object-cover" />
+        </Link>
+        <div className="p-5"><h3 className="font-semibold"><Link href={`/p/${s.pharmacy.slug}/services/${s.slug}`}>{s.title} at {s.pharmacy.name}</Link></h3><p className="my-2 text-sm">{s.short}</p>{origin && <p className="text-sm">{distanceLabel(distances.get(s.pharmacyId)) || "Distance unavailable"}</p>}<Link href={`/services/${s.slug}`}>Compare providers</Link></div>
+      </article>)}</div> : <p>No services are currently published for this location.</p>}
     </section>
     <section aria-labelledby="local-medicines"><h2 id="local-medicines" className="my-5 text-2xl font-semibold">Medicine listings from pharmacies in {data.city}</h2><p className="mb-4 text-sm text-[var(--muted)]">Compare network providers on each medicine page. Availability and prices may change; prescription requirements apply.</p>
-      <ul className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">{data.medicines.map(({ medicationMaster: m }) => <li key={m.slug}><Link href={`/medicines/${m.slug}`}>{m.name}</Link></li>)}</ul>
+      <ul className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">{data.medicines.map(({ medicationMaster: m }) => <li key={m.slug} className="care-glass overflow-hidden rounded-2xl">
+        <Link href={`/medicines/${m.slug}`} className="relative block aspect-[4/3] bg-[var(--card-elev)]">
+          <Image unoptimized src={m.imageUrl || "/images/care/medicine-still-life.png"} alt={m.imageUrl ? m.name : ""} fill sizes="(max-width: 640px) 100vw, 33vw" className={m.imageUrl ? "object-contain p-3" : "object-cover"} />
+        </Link>
+        <div className="p-4"><Link className="font-semibold" href={`/medicines/${m.slug}`}>{m.name}</Link></div>
+      </li>)}</ul>
       {!data.medicines.length && <p>No public medicine listings are currently available for this location.</p>}
     </section>
     <section className="care-glass mt-8 rounded-2xl p-5"><h2 className="text-xl font-semibold">Run a pharmacy in {data.city}?</h2><p className="my-3">Join Afyvia to publish your pharmacy profile, medicine catalogue and services, and receive customer requests.</p><Link href="/for-pharmacies">Explore Afyvia for pharmacies</Link></section>
