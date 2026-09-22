@@ -184,34 +184,34 @@ export function ServiceManager({ initial }: { initial: ServiceRow[] }) {
 
   return (
     <div className="space-y-5">
-      <div className="flex flex-wrap items-center gap-2">
-        <div className="relative min-w-[200px] flex-1">
+      <div className="grid grid-cols-1 gap-2 sm:grid-cols-2 lg:flex lg:flex-wrap lg:items-center">
+        <div className="relative min-w-0 sm:col-span-2 lg:min-w-[240px] lg:flex-1">
           <Search className="pointer-events-none absolute left-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 admin-soft" />
           <input
             value={q}
             onChange={(e) => setQ(e.target.value)}
             placeholder="Search services…"
-            className="input-admin w-full pl-9"
+            className="input-admin min-h-11 w-full pl-9 text-base sm:text-sm"
           />
         </div>
         <button
           type="button"
           onClick={() => setShowInactive((v) => !v)}
-          className="btn-admin-ghost inline-flex items-center gap-1.5 text-xs"
+          className="btn-admin-ghost inline-flex min-h-11 w-full items-center justify-center gap-2 !text-sm lg:w-auto"
         >
           {showInactive ? <Eye className="h-3.5 w-3.5" /> : <EyeOff className="h-3.5 w-3.5" />}
           {showInactive ? "All" : "Active only"}
         </button>
         <Link
           href="/admin/services/bookings"
-          className="btn-admin-ghost inline-flex items-center gap-1.5 text-xs"
+          className="btn-admin-ghost inline-flex min-h-11 w-full items-center justify-center gap-2 !text-sm lg:w-auto"
         >
           <CalendarCheck className="h-3.5 w-3.5" /> Bookings
         </Link>
         <button
           type="button"
           onClick={openCreate}
-          className="btn-admin inline-flex items-center gap-1.5 !rounded-xl px-3 py-2 text-xs"
+          className="btn-admin inline-flex min-h-11 w-full items-center justify-center gap-2 !rounded-xl px-4 py-2 !text-sm lg:w-auto"
         >
           <Plus className="h-3.5 w-3.5" /> New service
         </button>
@@ -220,23 +220,23 @@ export function ServiceManager({ initial }: { initial: ServiceRow[] }) {
       {filtered.length === 0 ? (
         <div className="admin-empty py-10">
           <p className="text-sm font-semibold admin-text">No services yet</p>
-          <p className="mt-1 text-xs admin-muted">
+          <p className="mt-1 text-sm admin-muted">
             Create services customers can browse and book on the public site.
           </p>
           <button
             type="button"
             onClick={openCreate}
-            className="btn-admin mt-4 inline-flex items-center gap-1.5 !rounded-xl px-3 py-2 text-xs"
+            className="btn-admin mt-4 inline-flex min-h-11 items-center gap-2 !rounded-xl px-4 py-2 !text-sm"
           >
             <Plus className="h-3.5 w-3.5" /> Create service
           </button>
         </div>
       ) : (
-        <ul className="divide-y divide-[var(--admin-border)] overflow-hidden rounded-2xl border border-[var(--admin-border)]">
+        <ul className="space-y-3">
           {filtered.map((s) => (
             <li
               key={s.id}
-              className={`flex flex-wrap items-center gap-3 px-4 py-3 transition hover:bg-[var(--admin-inset)] ${
+              className={`grid grid-cols-[64px_minmax(0,1fr)] items-center gap-3 rounded-2xl border border-[var(--admin-border)] p-4 transition hover:bg-[var(--admin-inset)] lg:flex lg:flex-wrap ${
                 !s.active ? "opacity-60" : ""
               }`}
             >
@@ -249,20 +249,20 @@ export function ServiceManager({ initial }: { initial: ServiceRow[] }) {
               </div>
               <div className="min-w-0 flex-1">
                 <div className="flex flex-wrap items-center gap-2">
-                  <p className="font-semibold admin-text">{s.title}</p>
+                  <p className="break-words text-base font-semibold admin-text">{s.title}</p>
                   {!s.active && (
-                    <span className="rounded-full bg-amber-500/15 px-2 py-0.5 text-xs font-semibold text-amber-600">
+                    <span className="rounded-full bg-amber-500/15 px-2 py-0.5 text-sm font-semibold text-amber-600">
                       Inactive
                     </span>
                   )}
                   {!s.bookable && (
-                    <span className="rounded-full bg-[var(--admin-inset-2)] px-2 py-0.5 text-xs font-semibold admin-muted">
+                    <span className="rounded-full bg-[var(--admin-inset-2)] px-2 py-0.5 text-sm font-semibold admin-muted">
                       Not bookable
                     </span>
                   )}
                 </div>
-                <p className="mt-0.5 line-clamp-1 text-xs admin-soft">{s.short}</p>
-                <div className="mt-1 flex flex-wrap gap-2 text-xs admin-muted">
+                <p className="mt-1 break-words text-sm leading-5 admin-soft">{s.short}</p>
+                <div className="mt-2 flex flex-wrap gap-x-3 gap-y-1 text-sm admin-muted">
                   <span className="font-mono">{s.slug}</span>
                   {s.price != null ? (
                     <span className="inline-flex items-center gap-0.5 font-semibold text-emerald-700">
@@ -274,28 +274,32 @@ export function ServiceManager({ initial }: { initial: ServiceRow[] }) {
                   <span>{s.bookingCount} booking{s.bookingCount === 1 ? "" : "s"}</span>
                 </div>
               </div>
-              <Link
-                href={`/services/${s.slug}`}
-                target="_blank"
-                className="btn-admin-ghost inline-flex items-center gap-1 text-xs"
-                title="View public page"
-              >
-                <ExternalLink className="h-3.5 w-3.5" />
-              </Link>
-              <button
-                type="button"
-                onClick={() => openEdit(s)}
-                className="btn-admin-ghost inline-flex items-center gap-1 text-xs"
-              >
-                <Pencil className="h-3.5 w-3.5" /> Edit
-              </button>
-              <button
-                type="button"
-                onClick={() => setModal({ type: "delete", row: s })}
-                className="btn-admin-ghost inline-flex items-center gap-1 text-xs !text-red-600"
-              >
-                <Trash2 className="h-3.5 w-3.5" />
-              </button>
+              <div className="col-span-2 grid grid-cols-3 gap-2 sm:flex sm:flex-wrap sm:justify-end lg:ml-auto">
+                <Link
+                  href={`/services/${s.slug}`}
+                  target="_blank"
+                  aria-label={`View ${s.title} public page`}
+                  className="btn-admin-ghost inline-flex min-h-11 min-w-11 items-center justify-center gap-2 !text-sm"
+                  title="View public page"
+                >
+                  <ExternalLink className="h-4 w-4" />
+                </Link>
+                <button
+                  type="button"
+                  onClick={() => openEdit(s)}
+                  className="btn-admin-ghost inline-flex min-h-11 items-center justify-center gap-2 !text-sm"
+                >
+                  <Pencil className="h-4 w-4" /> Edit
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setModal({ type: "delete", row: s })}
+                  aria-label={`Delete ${s.title}`}
+                  className="btn-admin-ghost inline-flex min-h-11 min-w-11 items-center justify-center gap-2 !text-sm !text-red-600"
+                >
+                  <Trash2 className="h-4 w-4" />
+                </button>
+              </div>
             </li>
           ))}
         </ul>
@@ -331,7 +335,7 @@ export function ServiceManager({ initial }: { initial: ServiceRow[] }) {
               type="submit"
               form="service-form"
               disabled={pending || !title.trim() || !short.trim() || !description.trim()}
-              className="btn-admin inline-flex min-h-11 w-full items-center justify-center gap-1.5 !rounded-xl px-5 text-sm disabled:cursor-not-allowed disabled:opacity-50 sm:w-auto"
+              className="btn-admin inline-flex min-h-11 w-full items-center justify-center gap-2 !rounded-xl px-5 text-sm disabled:cursor-not-allowed disabled:opacity-50 sm:w-auto"
             >
               {pending ? (
                 <Loader2 className="h-4 w-4 animate-spin" />
@@ -349,14 +353,14 @@ export function ServiceManager({ initial }: { initial: ServiceRow[] }) {
           <div className="rounded-2xl border border-[var(--admin-border)] bg-[var(--admin-inset)]/55 p-4 sm:p-5">
             <div className="mb-4">
               <h4 className="text-sm font-semibold text-[var(--admin-text)]">Service details</h4>
-              <p className="mt-1 text-xs leading-relaxed text-[var(--admin-text-muted)]">
+              <p className="mt-1 text-sm leading-relaxed text-[var(--admin-text-muted)]">
                 Give patients a clear name and enough context to understand the service before they book.
               </p>
             </div>
 
             <div className="space-y-4">
               <div>
-                <label className="label-admin" htmlFor="service-title">Service name *</label>
+                <label className="label-admin !text-sm" htmlFor="service-title">Service name *</label>
                 <input
                   id="service-title"
                   name="title"
@@ -365,7 +369,7 @@ export function ServiceManager({ initial }: { initial: ServiceRow[] }) {
                     setTitle(e.target.value);
                     if (!slugTouched) setSlug(slugify(e.target.value));
                   }}
-                  className="input-admin min-h-11"
+                  className="input-admin min-h-11 text-base sm:text-sm"
                   placeholder="e.g. Blood pressure check"
                   autoFocus
                   required
@@ -373,7 +377,7 @@ export function ServiceManager({ initial }: { initial: ServiceRow[] }) {
               </div>
 
               <div>
-                <label className="label-admin" htmlFor="service-short">Short summary *</label>
+                <label className="label-admin !text-sm" htmlFor="service-short">Short summary *</label>
                 <textarea
                   id="service-short"
                   name="short"
@@ -385,13 +389,13 @@ export function ServiceManager({ initial }: { initial: ServiceRow[] }) {
                   placeholder="A quick summary patients can understand at a glance."
                   required
                 />
-                <p className="mt-1 text-xs text-[var(--admin-text-soft)]">
+                <p className="mt-1 text-sm text-[var(--admin-text-soft)]">
                   {short.length}/180 · Used on service cards and search results.
                 </p>
               </div>
 
               <div>
-                <label className="label-admin" htmlFor="service-description">Full description *</label>
+                <label className="label-admin !text-sm" htmlFor="service-description">Full description *</label>
                 <textarea
                   id="service-description"
                   name="description"
@@ -410,14 +414,14 @@ export function ServiceManager({ initial }: { initial: ServiceRow[] }) {
             <section className="rounded-2xl border border-[var(--admin-border)] bg-[var(--admin-card-2)] p-4 sm:p-5">
               <div className="mb-4">
                 <h4 className="text-sm font-semibold text-[var(--admin-text)]">Booking & pricing</h4>
-                <p className="mt-1 text-xs leading-relaxed text-[var(--admin-text-muted)]">
+                <p className="mt-1 text-sm leading-relaxed text-[var(--admin-text-muted)]">
                   Set the fee, visit duration and how customers pay.
                 </p>
               </div>
 
               <div className="grid gap-3 sm:grid-cols-2">
                 <div>
-                  <label className="label-admin" htmlFor="service-price">Price (KES)</label>
+                  <label className="label-admin !text-sm" htmlFor="service-price">Price (KES)</label>
                   <input
                     id="service-price"
                     name="price"
@@ -427,30 +431,30 @@ export function ServiceManager({ initial }: { initial: ServiceRow[] }) {
                     value={price}
                     onChange={(e) => setPrice(e.target.value)}
                     placeholder="Leave blank if free"
-                    className="input-admin min-h-11"
+                    className="input-admin min-h-11 text-base sm:text-sm"
                   />
                 </div>
 
                 <div>
-                  <label className="label-admin" htmlFor="service-duration">Duration</label>
+                  <label className="label-admin !text-sm" htmlFor="service-duration">Duration</label>
                   <input
                     id="service-duration"
                     name="duration"
                     value={duration}
                     onChange={(e) => setDuration(e.target.value)}
                     placeholder="e.g. 15 minutes"
-                    className="input-admin min-h-11"
+                    className="input-admin min-h-11 text-base sm:text-sm"
                   />
                 </div>
 
                 <div className="sm:col-span-2">
-                  <label className="label-admin" htmlFor="service-payment-timing">Payment timing</label>
+                  <label className="label-admin !text-sm" htmlFor="service-payment-timing">Payment timing</label>
                   <select
                     id="service-payment-timing"
                     name="paymentTiming"
                     value={paymentTiming}
                     onChange={(e) => setPaymentTiming(e.target.value as "auto" | "before" | "after")}
-                    className="input-admin min-h-11"
+                    className="input-admin min-h-11 text-base sm:text-sm"
                   >
                     <option value="auto">Online when available, otherwise pay at visit</option>
                     <option value="before">Require online payment before the visit</option>
@@ -459,28 +463,30 @@ export function ServiceManager({ initial }: { initial: ServiceRow[] }) {
                 </div>
               </div>
 
-              <label className="mt-4 flex min-h-14 cursor-pointer items-center justify-between gap-4 rounded-xl border border-[var(--admin-border)] bg-[var(--admin-inset)] px-3 py-2.5">
+              <label className="mt-4 flex min-h-14 cursor-pointer items-center justify-between gap-4 rounded-xl border border-[var(--admin-border)] bg-[var(--admin-inset)] px-3 py-3">
                 <span>
                   <span className="block text-sm font-semibold text-[var(--admin-text)]">Online booking</span>
-                  <span className="mt-0.5 block text-xs text-[var(--admin-text-muted)]">
+                  <span className="mt-0.5 block text-sm text-[var(--admin-text-muted)]">
                     Let patients request this service from the public storefront.
                   </span>
                 </span>
-                <input
-                  type="checkbox"
-                  name="bookable"
-                  checked={bookable}
-                  onChange={(e) => setBookable(e.target.checked)}
-                  value="true"
-                  className="h-5 w-5 shrink-0 rounded"
-                />
+                <span className="flex h-11 w-11 shrink-0 items-center justify-center">
+                  <input
+                    type="checkbox"
+                    name="bookable"
+                    checked={bookable}
+                    onChange={(e) => setBookable(e.target.checked)}
+                    value="true"
+                    className="h-5 w-5 rounded"
+                  />
+                </span>
               </label>
             </section>
 
             <section className="rounded-2xl border border-[var(--admin-border)] bg-[var(--admin-card-2)] p-4 sm:p-5">
               <div className="mb-4">
                 <h4 className="text-sm font-semibold text-[var(--admin-text)]">Service image</h4>
-                <p className="mt-1 text-xs leading-relaxed text-[var(--admin-text-muted)]">
+                <p className="mt-1 text-sm leading-relaxed text-[var(--admin-text-muted)]">
                   A clear image makes the service easier to recognise on the storefront.
                 </p>
               </div>
@@ -499,11 +505,11 @@ export function ServiceManager({ initial }: { initial: ServiceRow[] }) {
           <details className="group rounded-2xl border border-[var(--admin-border)] bg-[var(--admin-card-2)]">
             <summary className="flex min-h-12 cursor-pointer list-none items-center justify-between gap-3 px-4 py-3 text-sm font-semibold text-[var(--admin-text)] outline-none transition hover:bg-[var(--admin-hover)] focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-[var(--admin-accent)] sm:px-5 [&::-webkit-details-marker]:hidden">
               <span>More service details</span>
-              <span className="text-xs font-medium text-[var(--admin-text-soft)]">Optional</span>
+              <span className="text-sm font-medium text-[var(--admin-text-soft)]">Optional</span>
             </summary>
             <div className="grid gap-4 border-t border-[var(--admin-border)] px-4 py-4 sm:grid-cols-2 sm:px-5">
               <div className="sm:col-span-2">
-                <label className="label-admin" htmlFor="service-benefits">Benefits</label>
+                <label className="label-admin !text-sm" htmlFor="service-benefits">Benefits</label>
                 <textarea
                   id="service-benefits"
                   name="benefits"
@@ -516,19 +522,19 @@ export function ServiceManager({ initial }: { initial: ServiceRow[] }) {
               </div>
 
               <div>
-                <label className="label-admin" htmlFor="service-eligibility">Eligibility</label>
+                <label className="label-admin !text-sm" htmlFor="service-eligibility">Eligibility</label>
                 <input
                   id="service-eligibility"
                   name="eligibility"
                   value={eligibility}
                   onChange={(e) => setEligibility(e.target.value)}
                   placeholder="e.g. Adults 18+"
-                  className="input-admin min-h-11"
+                  className="input-admin min-h-11 text-base sm:text-sm"
                 />
               </div>
 
               <div>
-                <label className="label-admin" htmlFor="service-slug">Public URL slug</label>
+                <label className="label-admin !text-sm" htmlFor="service-slug">Public URL slug</label>
                 <input
                   id="service-slug"
                   name="slug"
@@ -537,32 +543,32 @@ export function ServiceManager({ initial }: { initial: ServiceRow[] }) {
                     setSlugTouched(true);
                     setSlug(slugify(e.target.value));
                   }}
-                  className="input-admin min-h-11 font-mono text-xs"
+                  className="input-admin min-h-11 font-mono text-base sm:text-sm"
                   placeholder="Auto-generated from service name"
                 />
               </div>
 
               <div>
-                <label className="label-admin" htmlFor="service-icon">Icon key</label>
+                <label className="label-admin !text-sm" htmlFor="service-icon">Icon key</label>
                 <input
                   id="service-icon"
                   name="icon"
                   value={icon}
                   onChange={(e) => setIcon(e.target.value)}
                   placeholder="pill, heart…"
-                  className="input-admin min-h-11"
+                  className="input-admin min-h-11 text-base sm:text-sm"
                 />
               </div>
 
               <div>
-                <label className="label-admin" htmlFor="service-sort-order">Sort order</label>
+                <label className="label-admin !text-sm" htmlFor="service-sort-order">Sort order</label>
                 <input
                   id="service-sort-order"
                   name="sortOrder"
                   type="number"
                   value={sortOrder}
                   onChange={(e) => setSortOrder(e.target.value)}
-                  className="input-admin min-h-11"
+                  className="input-admin min-h-11 text-base sm:text-sm"
                   placeholder="Optional"
                 />
               </div>
@@ -572,18 +578,20 @@ export function ServiceManager({ initial }: { initial: ServiceRow[] }) {
           <label className="flex min-h-16 cursor-pointer items-center justify-between gap-4 rounded-2xl border border-[var(--admin-border)] bg-[var(--admin-card-2)] px-4 py-3 sm:px-5">
             <span>
               <span className="block text-sm font-semibold text-[var(--admin-text)]">Publish on public site</span>
-              <span className="mt-0.5 block text-xs leading-relaxed text-[var(--admin-text-muted)]">
+              <span className="mt-0.5 block text-sm leading-relaxed text-[var(--admin-text-muted)]">
                 Turn this off if you want to finish preparing the service before patients can see it.
               </span>
             </span>
-            <input
-              type="checkbox"
-              name="active"
-              checked={active}
-              onChange={(e) => setActive(e.target.checked)}
-              value="true"
-              className="h-5 w-5 shrink-0 rounded"
-            />
+            <span className="flex h-11 w-11 shrink-0 items-center justify-center">
+              <input
+                type="checkbox"
+                name="active"
+                checked={active}
+                onChange={(e) => setActive(e.target.checked)}
+                value="true"
+                className="h-5 w-5 rounded"
+              />
+            </span>
           </label>
 
           {!bookable && <input type="hidden" name="bookable" value="false" />}
@@ -605,7 +613,7 @@ export function ServiceManager({ initial }: { initial: ServiceRow[] }) {
             <button
               type="button"
               onClick={() => setModal(null)}
-              className="btn-admin-ghost text-xs"
+              className="btn-admin-ghost min-h-11 px-4 !text-sm"
               disabled={pending}
             >
               Cancel
@@ -617,7 +625,7 @@ export function ServiceManager({ initial }: { initial: ServiceRow[] }) {
               <button
                 type="submit"
                 disabled={pending}
-                className="inline-flex items-center gap-1.5 rounded-xl bg-red-600 px-3 py-2 text-xs font-semibold text-white hover:bg-red-700 disabled:opacity-50"
+                className="inline-flex min-h-11 items-center gap-2 rounded-xl bg-red-600 px-4 py-2 text-sm font-semibold text-white hover:bg-red-700 disabled:opacity-50"
               >
                 {pending ? (
                   <Loader2 className="h-3.5 w-3.5 animate-spin" />
@@ -638,20 +646,20 @@ export function ServiceManager({ initial }: { initial: ServiceRow[] }) {
               Remove <strong className="admin-text">{modal.row.title}</strong>?
             </p>
             {modal.row.bookingCount > 0 ? (
-              <p className="rounded-xl border border-amber-500/30 bg-amber-500/10 p-3 text-xs text-amber-800">
+              <p className="rounded-xl border border-amber-500/30 bg-amber-500/10 p-3 text-sm text-amber-800">
                 This service has {modal.row.bookingCount} booking
                 {modal.row.bookingCount === 1 ? "" : "s"}. It will be deactivated instead of
                 hard-deleted so history is preserved.
               </p>
             ) : (
-              <p className="text-xs admin-soft">No bookings — safe to delete permanently.</p>
+              <p className="text-sm admin-soft">No bookings — safe to delete permanently.</p>
             )}
           </div>
         )}
       </Modal>
 
       {pending && (
-        <p className="flex items-center gap-1.5 text-xs admin-soft">
+        <p className="flex items-center gap-2 text-sm admin-soft">
           <Loader2 className="h-3 w-3 animate-spin" /> Saving…
         </p>
       )}
