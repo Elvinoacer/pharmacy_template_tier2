@@ -94,7 +94,7 @@ export default function DeviceDosageViewer({
           <div className="grid w-full grid-cols-1 gap-1 rounded-2xl bg-white/10 p-1 backdrop-blur-md sm:w-auto sm:grid-cols-2">
             <button
               type="button"
-              onClick={() = className="min-h-11 min-w-11"> {
+              onClick={() => {
                 setGuideCategory("dosage_forms");
                 setActiveStepIndex(0);
                 setCompletedSteps({});
@@ -109,7 +109,7 @@ export default function DeviceDosageViewer({
             </button>
             <button
               type="button"
-              onClick={() = className="min-h-11 min-w-11"> {
+              onClick={() => {
                 setGuideCategory("devices");
                 setActiveStepIndex(0);
                 setCompletedSteps({});
@@ -141,7 +141,7 @@ export default function DeviceDosageViewer({
                     <button
                       key={id}
                       type="button"
-                      onClick={() = className="min-h-11 min-w-11"> handleSelectGuide(id)}
+                      onClick={() => handleSelectGuide(id)}
                       className={`w-full text-left rounded-2xl p-3 transition flex items-center justify-between border ${
                         isSelected
                           ? "border-teal-700 bg-teal-50/90 shadow-xs font-bold text-teal-950"
@@ -168,7 +168,7 @@ export default function DeviceDosageViewer({
                     <button
                       key={id}
                       type="button"
-                      onClick={() = className="min-h-11 min-w-11"> handleSelectGuide(id)}
+                      onClick={() => handleSelectGuide(id)}
                       className={`w-full text-left rounded-2xl p-3 transition flex items-center justify-between border ${
                         isSelected
                           ? "border-teal-700 bg-teal-50/90 shadow-xs font-bold text-teal-950"
@@ -227,7 +227,7 @@ export default function DeviceDosageViewer({
                   <button
                     key={idx}
                     type="button"
-                    onClick={() = className="min-h-11 min-w-11"> setActiveStepIndex(idx)}
+                    onClick={() => setActiveStepIndex(idx)}
                     className={`flex-1 h-2.5 rounded-full transition-all duration-200 ${
                       isActive
                         ? "bg-teal-700 ring-2 ring-teal-300"
@@ -253,7 +253,7 @@ export default function DeviceDosageViewer({
 
                 <button
                   type="button"
-                  onClick={() = className="min-h-11 min-w-11"> toggleStepCompleted(activeStepIndex)}
+                  onClick={() => toggleStepCompleted(activeStepIndex)}
                   className={`flex items-center gap-2 rounded-full px-3 py-1 text-sm font-bold transition ${
                     completedSteps[activeStepIndex]
                       ? "bg-emerald-100 text-emerald-900 border border-emerald-300"
@@ -283,7 +283,7 @@ export default function DeviceDosageViewer({
                 <button
                   type="button"
                   disabled={activeStepIndex === 0}
-                  onClick={() = className="min-h-11 min-w-11"> setActiveStepIndex((prev) => Math.max(0, prev - 1))}
+                  onClick={() => setActiveStepIndex((prev) => Math.max(0, prev - 1))}
                   className="flex items-center gap-1 text-sm font-bold text-teal-900 disabled:opacity-30 disabled:pointer-events-none hover:underline"
                 >
                   <ChevronLeft className="h-4 w-4" /> Previous Step
@@ -292,7 +292,7 @@ export default function DeviceDosageViewer({
                 <button
                   type="button"
                   disabled={activeStepIndex === totalSteps - 1}
-                  onClick={() = className="min-h-11 min-w-11"> setActiveStepIndex((prev) => Math.min(totalSteps - 1, prev + 1))}
+                  onClick={() => setActiveStepIndex((prev) => Math.min(totalSteps - 1, prev + 1))}
                   className="flex items-center gap-1 rounded-full bg-teal-800 px-4 py-2 text-sm font-bold text-white shadow-xs hover:bg-teal-900 transition disabled:opacity-30 disabled:pointer-events-none"
                 >
                   Next Step <ChevronRight className="h-4 w-4" />
