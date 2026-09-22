@@ -65,6 +65,32 @@ describe("admin route access", () => {
     assert.equal(canAccessAdminPath(user, "/admin/medications/inventory-1"), false);
   });
 
+  it("keeps medication acquisition routes write-only", () => {
+    const acquisitionPaths = [
+      "/admin/medications/add",
+      "/admin/medications/library",
+      "/admin/medications/scan",
+      "/admin/medications/import/csv",
+      "/admin/medications/import/ai",
+      "/admin/medications/new",
+    ];
+
+    for (const role of ["staff", "pharmacist"] as const) {
+      const user = sessionFor(role);
+      assert.equal(canAccessAdminPath(user, "/admin/medications"), true);
+      for (const path of acquisitionPaths) {
+        assert.equal(canAccessAdminPath(user, path), false, `${role} should not write via ${path}`);
+      }
+    }
+
+    for (const role of ["manager", "owner"] as const) {
+      const user = sessionFor(role);
+      for (const path of acquisitionPaths) {
+        assert.equal(canAccessAdminPath(user, path), true, `${role} should write via ${path}`);
+      }
+    }
+  });
+
   it("allows manager and owner memberships to reach management surfaces", () => {
     for (const role of ["manager", "owner"] as const) {
       const user = sessionFor(role);
