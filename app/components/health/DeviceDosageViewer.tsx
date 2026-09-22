@@ -72,34 +72,34 @@ export default function DeviceDosageViewer({
   };
 
   return (
-    <div className="overflow-hidden rounded-3xl border border-[var(--health-ui-border)] bg-white shadow-sm">
+    <div className="min-w-0 overflow-hidden rounded-3xl border border-[var(--health-ui-border)] bg-white shadow-sm">
       {/* Category Tabs */}
       <div className="bg-[#0c1a14] p-4 sm:p-6 text-white">
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div>
-            <span className="rounded-full bg-emerald-400/20 px-3 py-0.5 text-[11px] font-bold uppercase tracking-wider text-emerald-200 border border-emerald-400/30">
+            <span className="rounded-full bg-emerald-400/20 px-3 py-0.5 text-sm font-bold uppercase tracking-wider text-emerald-200 border border-emerald-400/30">
               Interactive Technique Masterclass
             </span>
             <h3
-              className="mt-1.5 text-xl font-bold sm:text-2xl text-white"
+              className="mt-2 text-xl font-bold sm:text-2xl text-white"
               style={{ fontFamily: "var(--font-display), serif" }}
             >
               Dosage Forms &amp; Medical Devices Mastery
             </h3>
-            <p className="mt-0.5 text-xs text-emerald-100/80">
+            <p className="mt-0.5 text-sm text-emerald-100/80">
               Up to 70% of medication errors happen due to technique mistakes. Master proper administration:
             </p>
           </div>
 
-          <div className="flex items-center rounded-2xl bg-white/10 p-1 backdrop-blur-md">
+          <div className="grid w-full grid-cols-1 gap-1 rounded-2xl bg-white/10 p-1 backdrop-blur-md sm:w-auto sm:grid-cols-2">
             <button
               type="button"
-              onClick={() => {
+              onClick={() = className="min-h-11 min-w-11"> {
                 setGuideCategory("dosage_forms");
                 setActiveStepIndex(0);
                 setCompletedSteps({});
               }}
-              className={`rounded-xl px-3.5 py-2 text-xs font-bold transition ${
+              className={`rounded-xl px-4 py-2 text-sm font-bold transition ${
                 guideCategory === "dosage_forms"
                   ? "bg-teal-700 text-white shadow-xs"
                   : "text-emerald-100 hover:text-white"
@@ -109,12 +109,12 @@ export default function DeviceDosageViewer({
             </button>
             <button
               type="button"
-              onClick={() => {
+              onClick={() = className="min-h-11 min-w-11"> {
                 setGuideCategory("devices");
                 setActiveStepIndex(0);
                 setCompletedSteps({});
               }}
-              className={`rounded-xl px-3.5 py-2 text-xs font-bold transition ${
+              className={`rounded-xl px-4 py-2 text-sm font-bold transition ${
                 guideCategory === "devices"
                   ? "bg-teal-700 text-white shadow-xs"
                   : "text-emerald-100 hover:text-white"
@@ -129,11 +129,11 @@ export default function DeviceDosageViewer({
       <div className="grid gap-0 lg:grid-cols-12">
         {/* Left Side Selection List */}
         <div className="border-b lg:border-b-0 lg:border-r border-[var(--health-ui-border)] bg-[#f8faf9] p-4 sm:p-5 lg:col-span-4">
-          <p className="text-[11px] font-bold uppercase tracking-wider text-[var(--health-editorial-body)] px-2 mb-3">
+          <p className="text-sm font-bold uppercase tracking-wider text-[var(--health-editorial-body)] px-2 mb-3">
             {guideCategory === "dosage_forms" ? "Select Dosage Formulation:" : "Select Medical Device:"}
           </p>
 
-          <div className="space-y-1.5 max-h-[520px] overflow-y-auto pr-1">
+          <div className="space-y-2 max-h-[520px] overflow-y-auto pr-1">
             {guideCategory === "dosage_forms"
               ? Object.entries(SPECIAL_DOSAGE_FORM_GUIDES).map(([id, guide]) => {
                   const isSelected = activeFormId === id;
@@ -141,7 +141,7 @@ export default function DeviceDosageViewer({
                     <button
                       key={id}
                       type="button"
-                      onClick={() => handleSelectGuide(id)}
+                      onClick={() = className="min-h-11 min-w-11"> handleSelectGuide(id)}
                       className={`w-full text-left rounded-2xl p-3 transition flex items-center justify-between border ${
                         isSelected
                           ? "border-teal-700 bg-teal-50/90 shadow-xs font-bold text-teal-950"
@@ -149,8 +149,8 @@ export default function DeviceDosageViewer({
                       }`}
                     >
                       <div className="min-w-0 pr-2">
-                        <p className="text-xs font-bold truncate">{guide.title}</p>
-                        <p className="text-[10px] text-[var(--health-editorial-body)] truncate mt-0.5">
+                        <p className="text-sm font-bold truncate">{guide.title}</p>
+                        <p className="text-sm text-[var(--health-editorial-body)] truncate mt-0.5">
                           {guide.steps.length} verified clinical steps
                         </p>
                       </div>
@@ -168,7 +168,7 @@ export default function DeviceDosageViewer({
                     <button
                       key={id}
                       type="button"
-                      onClick={() => handleSelectGuide(id)}
+                      onClick={() = className="min-h-11 min-w-11"> handleSelectGuide(id)}
                       className={`w-full text-left rounded-2xl p-3 transition flex items-center justify-between border ${
                         isSelected
                           ? "border-teal-700 bg-teal-50/90 shadow-xs font-bold text-teal-950"
@@ -176,8 +176,8 @@ export default function DeviceDosageViewer({
                       }`}
                     >
                       <div className="min-w-0 pr-2">
-                        <p className="text-xs font-bold truncate">{guide.title}</p>
-                        <p className="text-[10px] text-[var(--health-editorial-body)] truncate mt-0.5">
+                        <p className="text-sm font-bold truncate">{guide.title}</p>
+                        <p className="text-sm text-[var(--health-editorial-body)] truncate mt-0.5">
                           {guide.steps.length} verified clinical steps
                         </p>
                       </div>
@@ -202,7 +202,7 @@ export default function DeviceDosageViewer({
             >
               {activeGuide.title}
             </h4>
-            <p className="mt-1 text-xs text-[var(--health-editorial-body)] leading-relaxed">
+            <p className="mt-1 text-sm text-[var(--health-editorial-body)] leading-relaxed">
               {activeGuide.shortDescription}
             </p>
           </div>
@@ -210,16 +210,16 @@ export default function DeviceDosageViewer({
           {/* Interactive Step Carousel Tracker */}
           <div className="space-y-4">
             <div className="flex items-center justify-between">
-              <span className="text-xs font-bold text-[#0c1a14]">
+              <span className="text-sm font-bold text-[#0c1a14]">
                 Step {activeStepIndex + 1} of {totalSteps}
               </span>
-              <span className="text-xs text-[var(--health-editorial-body)]">
+              <span className="text-sm text-[var(--health-editorial-body)]">
                 {Object.values(completedSteps).filter(Boolean).length}/{totalSteps} steps completed
               </span>
             </div>
 
             {/* Step Progress Circles */}
-            <div className="flex items-center gap-1.5">
+            <div className="flex items-center gap-2">
               {activeGuide.steps.map((st, idx) => {
                 const isActive = idx === activeStepIndex;
                 const isDone = Boolean(completedSteps[idx]);
@@ -227,7 +227,7 @@ export default function DeviceDosageViewer({
                   <button
                     key={idx}
                     type="button"
-                    onClick={() => setActiveStepIndex(idx)}
+                    onClick={() = className="min-h-11 min-w-11"> setActiveStepIndex(idx)}
                     className={`flex-1 h-2.5 rounded-full transition-all duration-200 ${
                       isActive
                         ? "bg-teal-700 ring-2 ring-teal-300"
@@ -243,8 +243,8 @@ export default function DeviceDosageViewer({
 
             {/* Active Step Card */}
             <div className="rounded-3xl border-2 border-teal-200 bg-gradient-to-br from-teal-50/50 via-white to-teal-50/20 p-6 sm:p-7 shadow-xs space-y-4">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2.5">
+              <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                <div className="flex items-center gap-3">
                   <span className="flex h-8 w-8 items-center justify-center rounded-xl bg-teal-800 text-sm font-extrabold text-white shadow-xs">
                     {currentStep.stepNumber}
                   </span>
@@ -253,8 +253,8 @@ export default function DeviceDosageViewer({
 
                 <button
                   type="button"
-                  onClick={() => toggleStepCompleted(activeStepIndex)}
-                  className={`flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-bold transition ${
+                  onClick={() = className="min-h-11 min-w-11"> toggleStepCompleted(activeStepIndex)}
+                  className={`flex items-center gap-2 rounded-full px-3 py-1 text-sm font-bold transition ${
                     completedSteps[activeStepIndex]
                       ? "bg-emerald-100 text-emerald-900 border border-emerald-300"
                       : "border border-[var(--health-ui-border)] bg-white text-[var(--health-editorial-body)] hover:bg-slate-50"
@@ -265,12 +265,12 @@ export default function DeviceDosageViewer({
                 </button>
               </div>
 
-              <p className="text-xs sm:text-sm leading-relaxed text-[#2c3e35]">
+              <p className="text-sm sm:text-sm leading-relaxed text-[#2c3e35]">
                 {currentStep.instruction}
               </p>
 
               {currentStep.keyNote && (
-                <div className="rounded-2xl border border-teal-200 bg-white p-3.5 text-xs text-teal-950 font-medium flex items-start gap-2 shadow-2xs">
+                <div className="rounded-2xl border border-teal-200 bg-white p-4 text-sm text-teal-950 font-medium flex items-start gap-2 shadow-2xs">
                   <span className="text-base shrink-0">💡</span>
                   <div>
                     <strong>Pharmacist Clinical Key:</strong> {currentStep.keyNote}
@@ -279,12 +279,12 @@ export default function DeviceDosageViewer({
               )}
 
               {/* Prev / Next Buttons */}
-              <div className="flex items-center justify-between pt-3 border-t border-teal-100">
+              <div className="flex flex-col gap-2 border-t border-teal-100 pt-3 sm:flex-row sm:items-center sm:justify-between">
                 <button
                   type="button"
                   disabled={activeStepIndex === 0}
-                  onClick={() => setActiveStepIndex((prev) => Math.max(0, prev - 1))}
-                  className="flex items-center gap-1 text-xs font-bold text-teal-900 disabled:opacity-30 disabled:pointer-events-none hover:underline"
+                  onClick={() = className="min-h-11 min-w-11"> setActiveStepIndex((prev) => Math.max(0, prev - 1))}
+                  className="flex items-center gap-1 text-sm font-bold text-teal-900 disabled:opacity-30 disabled:pointer-events-none hover:underline"
                 >
                   <ChevronLeft className="h-4 w-4" /> Previous Step
                 </button>
@@ -292,8 +292,8 @@ export default function DeviceDosageViewer({
                 <button
                   type="button"
                   disabled={activeStepIndex === totalSteps - 1}
-                  onClick={() => setActiveStepIndex((prev) => Math.min(totalSteps - 1, prev + 1))}
-                  className="flex items-center gap-1 rounded-full bg-teal-800 px-4 py-2 text-xs font-bold text-white shadow-xs hover:bg-teal-900 transition disabled:opacity-30 disabled:pointer-events-none"
+                  onClick={() = className="min-h-11 min-w-11"> setActiveStepIndex((prev) => Math.min(totalSteps - 1, prev + 1))}
+                  className="flex items-center gap-1 rounded-full bg-teal-800 px-4 py-2 text-sm font-bold text-white shadow-xs hover:bg-teal-900 transition disabled:opacity-30 disabled:pointer-events-none"
                 >
                   Next Step <ChevronRight className="h-4 w-4" />
                 </button>
@@ -305,10 +305,10 @@ export default function DeviceDosageViewer({
           {"crucialDoList" in activeGuide && (
             <div className="grid gap-4 sm:grid-cols-2">
               <div className="rounded-2xl border border-emerald-200 bg-emerald-50/40 p-4">
-                <h6 className="font-bold text-xs text-emerald-950 flex items-center gap-1.5">
+                <h6 className="font-bold text-sm text-emerald-950 flex items-center gap-2">
                   <CheckCircle2 className="h-4 w-4 text-emerald-700" /> Essential Do&apos;s
                 </h6>
-                <ul className="mt-2 space-y-1.5 text-xs text-emerald-900">
+                <ul className="mt-2 space-y-2 text-sm text-emerald-900">
                   {(activeGuide as any).crucialDoList.map((d: string, i: number) => (
                     <li key={i} className="flex items-start gap-2">
                       <span className="mt-1 h-1.5 w-1.5 shrink-0 rounded-full bg-emerald-700" />
@@ -319,10 +319,10 @@ export default function DeviceDosageViewer({
               </div>
 
               <div className="rounded-2xl border border-rose-200 bg-rose-50/40 p-4">
-                <h6 className="font-bold text-xs text-rose-950 flex items-center gap-1.5">
+                <h6 className="font-bold text-sm text-rose-950 flex items-center gap-2">
                   <AlertOctagon className="h-4 w-4 text-rose-700" /> Crucial Don&apos;ts
                 </h6>
-                <ul className="mt-2 space-y-1.5 text-xs text-rose-900">
+                <ul className="mt-2 space-y-2 text-sm text-rose-900">
                   {(activeGuide as any).crucialDontList.map((d: string, i: number) => (
                     <li key={i} className="flex items-start gap-2">
                       <span className="mt-1 h-1.5 w-1.5 shrink-0 rounded-full bg-rose-600" />
@@ -335,8 +335,8 @@ export default function DeviceDosageViewer({
           )}
 
           {"safetyWarnings" in activeGuide && (
-            <div className="rounded-2xl border border-amber-200 bg-amber-50/50 p-4 text-xs">
-              <h6 className="font-bold text-amber-950 flex items-center gap-1.5">
+            <div className="rounded-2xl border border-amber-200 bg-amber-50/50 p-4 text-sm">
+              <h6 className="font-bold text-amber-950 flex items-center gap-2">
                 <AlertTriangle className="h-4 w-4 text-amber-700" /> Device Safety Warnings &amp; Ranges:
               </h6>
               <ul className="mt-2 space-y-1 text-amber-900">
