@@ -18,12 +18,14 @@ export default async function NewPrescriptionPage() {
       title="New prescription"
       subtitle={`Add one or more drugs to a customer file · times in ${PROJECT_TIMEZONE.replace(/_/g, " ")}`}
     >
-      <AdminPanel
-        title="Prescription details"
-        description="Required fields are marked. Optional fields can be filled later."
-      >
-        <PrescriptionForm action={adminCreatePrescriptionAction} />
-      </AdminPanel>
+      <div className="mx-auto w-full min-w-0 max-w-[1280px]">
+        <AdminPanel
+          title="Prescription details"
+          description="Required fields are marked. Optional fields can be filled later."
+        >
+          <PrescriptionForm action={adminCreatePrescriptionAction} />
+        </AdminPanel>
+      </div>
     </AdminShell>
   );
 }
