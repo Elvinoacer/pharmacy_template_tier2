@@ -88,24 +88,24 @@ export default async function AdminMessagesPage({
       title="Conversations"
       subtitle="Find patient conversations across email, SMS, WhatsApp, and the portal."
     >
-      <div className="space-y-4 sm:space-y-6">
-        <section className="grid grid-cols-2 gap-2.5 sm:grid-cols-3 sm:gap-3 xl:grid-cols-5">
-          <div className="admin-stat col-span-2 min-w-0 p-4 sm:col-span-1">
+      <div className="mx-auto w-full max-w-[1280px] space-y-4 sm:space-y-6">
+        <section className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-5">
+          <div className="admin-stat min-w-0 p-4 sm:col-span-2 lg:col-span-1">
             <div className="flex items-center justify-between gap-2">
-              <p className="text-[10px] font-bold uppercase tracking-wide admin-muted sm:text-xs">Total threads</p>
+              <p className="text-sm font-bold uppercase tracking-wide admin-muted sm:text-sm">Total threads</p>
               <span className="admin-icon-well flex h-7 w-7 items-center justify-center rounded-lg">
                 <MessagesSquare className="h-3.5 w-3.5 admin-accent-text" />
               </span>
             </div>
             <p className="mt-1 text-2xl font-black admin-text">{total}</p>
-            <p className="mt-1 text-[10px] admin-soft sm:text-xs">All communication channels</p>
+            <p className="mt-1 text-sm admin-soft sm:text-sm">All communication channels</p>
           </div>
           {["email", "sms", "whatsapp", "portal"].map((ch) => {
             const Icon = CHANNEL_ICON[ch] || MessageSquare;
             return (
-              <div key={ch} className="admin-stat min-w-0 p-3.5 transition-transform hover:-translate-y-0.5 sm:p-4">
+              <div key={ch} className="admin-stat min-w-0 p-4 transition-transform hover:-translate-y-0.5 sm:p-4">
                 <div className="flex items-center justify-between gap-2">
-                  <p className="truncate text-[10px] font-bold uppercase tracking-wide admin-muted sm:text-xs">{ch}</p>
+                  <p className="break-words text-sm font-bold uppercase tracking-wide admin-muted">{ch}</p>
                   <Icon className="h-3.5 w-3.5 shrink-0 admin-accent-text" />
                 </div>
                 <p className="mt-1 text-xl font-black admin-text sm:text-2xl">{byChannel[ch] || 0}</p>
@@ -120,7 +120,7 @@ export default async function AdminMessagesPage({
           action={
             <Link
               href="/admin/customers"
-              className="inline-flex min-h-9 items-center gap-1.5 rounded-full bg-[var(--admin-accent-soft)] px-3 text-xs font-semibold admin-accent-text transition hover:bg-[var(--admin-hover)]"
+              className="inline-flex min-h-11 items-center gap-2 rounded-full bg-[var(--admin-accent-soft)] px-4 !text-sm font-semibold admin-accent-text transition hover:bg-[var(--admin-hover)]"
             >
               <User className="h-3 w-3" /> Open CRM
             </Link>
@@ -133,14 +133,14 @@ export default async function AdminMessagesPage({
                 name="q"
                 defaultValue={sp.q || ""}
                 placeholder="Search customer, subject, or message…"
-                className="min-h-11 w-full rounded-xl border border-[var(--admin-border)] bg-[var(--admin-inset)] py-2 pl-9 pr-3 text-sm admin-text placeholder:admin-soft focus:border-[var(--admin-accent)] focus:outline-none sm:text-xs"
+                className="min-h-11 w-full rounded-xl border border-[var(--admin-border)] bg-[var(--admin-inset)] py-2 pl-9 pr-3 text-base admin-text placeholder:admin-soft focus:border-[var(--admin-accent)] focus:outline-none sm:text-sm"
               />
             </div>
-            <button type="submit" className="btn-admin-sm min-h-10 w-full justify-center sm:w-auto">
+            <button type="submit" className="btn-admin-sm min-h-11 w-full justify-center !text-sm sm:w-auto">
               <Search className="h-3.5 w-3.5" /> Search
             </button>
             {sp.q && (
-              <Link href="/admin/messages" className="btn-admin-sm min-h-10 w-full justify-center !bg-[var(--admin-inset-2)] sm:w-auto">
+              <Link href="/admin/messages" className="btn-admin-sm min-h-11 w-full justify-center !bg-[var(--admin-inset-2)] !text-sm sm:w-auto">
                 <X className="h-3.5 w-3.5" /> Clear
               </Link>
             )}
@@ -153,7 +153,7 @@ export default async function AdminMessagesPage({
               description={sp.q ? "Try a different search term." : "When staff message a customer from their CRM record, the thread appears here."}
             />
           ) : (
-            <div className="space-y-2.5">
+            <div className="space-y-3">
               {conversations.map((c) => {
                 const Icon = CHANNEL_ICON[c.channel] || MessageSquare;
                 return (
@@ -166,23 +166,23 @@ export default async function AdminMessagesPage({
                       <Icon className="h-5 w-5" />
                     </span>
                     <div className="min-w-0">
-                      <div className="flex min-w-0 flex-wrap items-center gap-1.5 sm:gap-2">
-                        <p className="max-w-full truncate text-sm font-bold admin-text sm:text-base">
+                      <div className="flex min-w-0 flex-wrap items-center gap-2 sm:gap-2">
+                        <p className="max-w-full break-words text-base font-bold admin-text">
                           {c.customer?.fullName || "Unknown customer"}
                         </p>
-                        <span className={`shrink-0 rounded-full px-2 py-0.5 text-[10px] font-bold capitalize sm:text-xs ${STATUS_COLOR[c.status] || "bg-slate-500/15 text-slate-700 dark:text-slate-300"}`}>
+                        <span className={`shrink-0 rounded-full px-2 py-0.5 text-sm font-bold capitalize sm:text-sm ${STATUS_COLOR[c.status] || "bg-slate-500/15 text-slate-700 dark:text-slate-300"}`}>
                           {c.status}
                         </span>
                       </div>
-                      <p className="mt-1 line-clamp-2 text-xs leading-relaxed admin-muted sm:truncate sm:text-sm">
+                      <p className="mt-1 break-words text-base leading-6 admin-muted">
                         {c.subject || c.messages[0]?.body?.slice(0, 100) || "No messages"}
                       </p>
-                      <div className="mt-2 flex min-w-0 flex-wrap items-center gap-x-3 gap-y-1 text-[10px] uppercase tracking-wide admin-soft sm:text-xs">
+                      <div className="mt-2 flex min-w-0 flex-wrap items-center gap-x-3 gap-y-1 text-sm uppercase tracking-wide admin-soft sm:text-sm">
                         <span className="inline-flex items-center gap-1">
                           <Clock className="h-2.5 w-2.5" /> {c.lastMessageAt ? formatDateTime(c.lastMessageAt) : "—"}
                         </span>
                         {c.assignedTo && (
-                          <span className="max-w-full truncate normal-case tracking-normal">Assigned to {c.assignedTo.email}</span>
+                          <span className="max-w-full break-all normal-case tracking-normal">Assigned to {c.assignedTo.email}</span>
                         )}
                       </div>
                     </div>
