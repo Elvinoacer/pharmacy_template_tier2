@@ -14,7 +14,7 @@
   overflow-y: hidden;
   color: #0c1a14;
   background:
-    radial-gradient(circle at 8% 8%, rgba(13, 110, 90, 0.08), transparent 24rem),
+    radial-gradient(circle at 8% 8%, rgba(13, 110, 90, 0.08), transparent 384px),
     var(--loading-bg);
   color-scheme: light;
   transition: background-color 180ms ease, color 180ms ease;
@@ -32,7 +32,7 @@
   --loading-shadow: 0 8px 28px rgba(0, 0, 0, 0.22);
   color: #f1f5f9;
   background:
-    radial-gradient(circle at 8% 8%, rgba(45, 212, 191, 0.07), transparent 24rem),
+    radial-gradient(circle at 8% 8%, rgba(45, 212, 191, 0.07), transparent 384px),
     var(--loading-bg);
   color-scheme: dark;
 }
@@ -48,7 +48,7 @@
   --loading-shadow: 0 8px 28px rgba(8, 40, 32, 0.05);
   color: #0c1a14;
   background:
-    radial-gradient(circle at 8% 8%, rgba(13, 110, 90, 0.08), transparent 24rem),
+    radial-gradient(circle at 8% 8%, rgba(13, 110, 90, 0.08), transparent 384px),
     var(--loading-bg);
   color-scheme: light;
 }
@@ -65,7 +65,7 @@
   --loading-shadow: 0 8px 28px rgba(0, 0, 0, 0.22);
   color: #f1f5f9;
   background:
-    radial-gradient(circle at 8% 8%, rgba(45, 212, 191, 0.07), transparent 24rem),
+    radial-gradient(circle at 8% 8%, rgba(45, 212, 191, 0.07), transparent 384px),
     var(--loading-bg);
   color-scheme: dark;
 }
@@ -81,7 +81,7 @@
   --loading-shadow: 0 8px 28px rgba(8, 40, 32, 0.05);
   color: #0c1a14;
   background:
-    radial-gradient(circle at 8% 8%, rgba(13, 110, 90, 0.08), transparent 24rem),
+    radial-gradient(circle at 8% 8%, rgba(13, 110, 90, 0.08), transparent 384px),
     var(--loading-bg);
   color-scheme: light;
 }
@@ -99,31 +99,31 @@
     --loading-shadow: 0 8px 28px rgba(0, 0, 0, 0.22);
     color: #f1f5f9;
     background:
-      radial-gradient(circle at 8% 8%, rgba(45, 212, 191, 0.07), transparent 24rem),
+      radial-gradient(circle at 8% 8%, rgba(45, 212, 191, 0.07), transparent 384px),
       var(--loading-bg);
     color-scheme: dark;
   }
 }
 
 .wrap {
-  width: min(100%, 80rem);
+  width: min(100%, 1280px);
   min-width: 0;
   margin-inline: auto;
-  padding-inline: clamp(1rem, 3vw, 2rem);
-  padding-bottom: clamp(2rem, 7vw, 5rem);
+  padding-inline: 16px;
+  padding-bottom: 32px;
 }
 
 .public .wrap {
-  padding-top: clamp(5.75rem, 12vw, 8rem);
+  padding-top: 96px;
 }
 
 .workspace .wrap,
 .admin .wrap {
-  padding-top: clamp(1.25rem, 4vw, 2.5rem);
+  padding-top: 24px;
 }
 
 .heading {
-  width: min(100%, 44rem);
+  width: min(100%, 704px);
   min-width: 0;
 }
 
@@ -135,33 +135,33 @@
 
 .skeleton {
   max-width: 100%;
-  border-radius: 0.75rem;
+  border-radius: 12px;
   background: var(--loading-block);
 }
 
 .eyebrow {
-  width: min(8.5rem, 42vw);
-  height: 0.75rem;
+  width: min(136px, 42vw);
+  height: 12px;
 }
 
 .title {
-  width: min(24rem, 78vw);
-  height: clamp(1.9rem, 7vw, 2.65rem);
-  margin-top: 1rem;
+  width: min(384px, 78vw);
+  height: clamp(32px, 7vw, 44px);
+  margin-top: 16px;
   background: var(--loading-block-strong);
 }
 
 .copy {
-  width: min(34rem, 92vw);
-  height: 0.9rem;
-  margin-top: 0.85rem;
+  width: min(544px, 92vw);
+  height: 16px;
+  margin-top: 12px;
 }
 
 .stats {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 0.75rem;
-  margin-top: clamp(1.5rem, 5vw, 2.25rem);
+  gap: 12px;
+  margin-top: 24px;
 }
 
 .statCard,
@@ -173,118 +173,105 @@
 
 .statCard {
   min-width: 0;
-  min-height: 5.75rem;
-  border-radius: 1rem;
-  padding: 1rem;
+  min-height: 92px;
+  border-radius: 16px;
+  padding: 16px;
 }
 
 .statLabel {
   width: 64%;
-  height: 0.65rem;
+  height: 12px;
 }
 
 .statValue {
   width: 42%;
-  height: 1.35rem;
-  margin-top: 0.75rem;
+  height: 20px;
+  margin-top: 12px;
   background: var(--loading-block-strong);
 }
 
 .grid {
   display: grid;
   grid-template-columns: minmax(0, 1fr);
-  gap: 0.9rem;
-  margin-top: 1rem;
+  gap: 16px;
+  margin-top: 16px;
 }
 
 .card {
   min-width: 0;
   overflow: hidden;
-  border-radius: 1.25rem;
+  border-radius: 20px;
 }
 
 .cardMedia {
   width: 100%;
-  height: clamp(5.5rem, 18vw, 8rem);
+  height: clamp(88px, 18vw, 128px);
   border-radius: 0;
   background: var(--loading-card-2);
 }
 
 .cardBody {
   min-width: 0;
-  padding: 1rem;
+  padding: 16px;
 }
 
 .cardTitle {
   width: 62%;
-  height: 0.9rem;
+  height: 16px;
   background: var(--loading-block-strong);
 }
 
 .cardLine {
   width: 90%;
-  height: 0.68rem;
-  margin-top: 0.8rem;
+  height: 12px;
+  margin-top: 12px;
 }
 
 .cardLineShort {
   width: 58%;
-  height: 0.68rem;
-  margin-top: 0.55rem;
+  height: 12px;
+  margin-top: 8px;
 }
 
 @media (min-width: 640px) {
+  .wrap {
+    padding-inline: 24px;
+    padding-bottom: 48px;
+  }
+
+  .public .wrap {
+    padding-top: 112px;
+  }
+
+  .workspace .wrap,
+  .admin .wrap {
+    padding-top: 32px;
+  }
+
   .stats {
-    gap: 1rem;
+    gap: 16px;
   }
 
   .grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 1rem;
   }
 }
 
 @media (min-width: 1024px) {
+  .wrap {
+    padding-inline: 32px;
+  }
+
+  .public .wrap {
+    padding-top: 128px;
+  }
+
   .stats {
     grid-template-columns: repeat(4, minmax(0, 1fr));
   }
 
   .grid {
     grid-template-columns: repeat(3, minmax(0, 1fr));
-  }
-}
-
-@media (max-width: 420px) {
-  .wrap {
-    padding-inline: 0.875rem;
-  }
-
-  .public .wrap {
-    padding-top: 5.25rem;
-  }
-
-  .workspace .wrap,
-  .admin .wrap {
-    padding-top: 1rem;
-  }
-
-  .stats {
-    gap: 0.6rem;
-  }
-
-  .statCard {
-    min-height: 5.25rem;
-    padding: 0.8rem;
-  }
-
-  .cardBody {
-    padding: 0.875rem;
-  }
-}
-
-@media (max-width: 320px) {
-  .stats {
-    grid-template-columns: minmax(0, 1fr);
   }
 }
 
