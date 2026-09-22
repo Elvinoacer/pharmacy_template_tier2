@@ -292,10 +292,10 @@ export default function PrescriptionFinder({
           setReferralFeedback({
             code: "referral_capacity",
             tone: "warning",
-            title: `${selectedName} has used its free direct-referral allowance`,
+            title: `${selectedName} is not taking additional Afyvia-routed prescriptions right now`,
             message: alternativeName
-              ? `Your prescription was not shared without your permission. ${alternativeName} can receive it now, so we selected that pharmacy for you to review before sending.`
-              : "Your prescription was not shared. Choose another pharmacy and send it there instead.",
+              ? `Your prescription was not shared without your permission. ${alternativeName} can receive a new Afyvia referral now, so we selected that pharmacy for you to review before sending.`
+              : "Your prescription was not shared. Choose another available pharmacy and send it there instead.",
             actions: alternativeName
               ? [
                   { id: "retry_submit", label: `Send to ${alternativeName}`, variant: "primary" },
