@@ -151,41 +151,41 @@ export default async function AdminLoyaltyPage({
         <div className="grid grid-cols-2 gap-2 sm:grid-cols-4 sm:gap-3">
           <div className="admin-stat min-w-0 p-3 sm:p-4">
             <div className="flex items-center justify-between gap-2">
-              <p className="truncate text-[11px] font-bold uppercase tracking-wide admin-muted sm:text-xs">Active points</p>
+              <p className="break-words text-sm font-bold uppercase tracking-wide admin-muted">Active points</p>
               <Sparkles className="h-3.5 w-3.5 shrink-0 admin-accent-text" />
             </div>
-            <p className="mt-1 truncate text-xl font-black tabular-nums admin-text sm:text-2xl">{totalPoints.toLocaleString()}</p>
+            <p className="mt-1 break-words text-xl font-black tabular-nums admin-text sm:text-2xl">{totalPoints.toLocaleString()}</p>
           </div>
           <div className="admin-stat min-w-0 p-3 sm:p-4">
             <div className="flex items-center justify-between gap-2">
-              <p className="truncate text-[11px] font-bold uppercase tracking-wide admin-muted sm:text-xs">Lifetime</p>
+              <p className="break-words text-sm font-bold uppercase tracking-wide admin-muted">Lifetime</p>
               <TrendingUp className="h-3.5 w-3.5 shrink-0 admin-accent-text" />
             </div>
-            <p className="mt-1 truncate text-xl font-black tabular-nums admin-text sm:text-2xl">{totalLifetime.toLocaleString()}</p>
+            <p className="mt-1 break-words text-xl font-black tabular-nums admin-text sm:text-2xl">{totalLifetime.toLocaleString()}</p>
           </div>
           <div className="admin-stat min-w-0 p-3 sm:p-4">
             <div className="flex items-center justify-between gap-2">
-              <p className="truncate text-[11px] font-bold uppercase tracking-wide admin-muted sm:text-xs">Coupons</p>
+              <p className="break-words text-sm font-bold uppercase tracking-wide admin-muted">Coupons</p>
               <Tag className="h-3.5 w-3.5 shrink-0 admin-accent-text" />
             </div>
             <p className="mt-1 text-xl font-black tabular-nums admin-text sm:text-2xl">{activeCoupons}</p>
           </div>
           <div className="admin-stat min-w-0 p-3 sm:p-4">
             <div className="flex items-center justify-between gap-2">
-              <p className="truncate text-[11px] font-bold uppercase tracking-wide admin-muted sm:text-xs">Members</p>
+              <p className="break-words text-sm font-bold uppercase tracking-wide admin-muted">Members</p>
               <Award className="h-3.5 w-3.5 shrink-0 admin-accent-text" />
             </div>
             <p className="mt-1 text-xl font-black tabular-nums admin-text sm:text-2xl">{memberCount}</p>
           </div>
         </div>
 
-        <div className="grid gap-4 xl:grid-cols-2">
+        <div className="grid gap-4 lg:grid-cols-2">
           <AdminPanel
             title="Adjust member points"
             description="Add or remove points from a customer balance."
             action={
               recentTx[0] ? (
-                <span className="text-[11px] font-bold uppercase tracking-wide admin-soft">
+                <span className="text-sm font-bold uppercase tracking-wide admin-soft">
                   Last update {formatTimeAgo(recentTx[0].createdAt)}
                 </span>
               ) : undefined
@@ -226,7 +226,7 @@ export default async function AdminLoyaltyPage({
           </AdminPanel>
         </div>
 
-        <div className="grid gap-4 xl:grid-cols-2">
+        <div className="grid gap-4 lg:grid-cols-2">
           <AdminPanel title="Member balances" description={`${accountTotal} matching`}>
             <form className="mb-4 grid grid-cols-[minmax(0,1fr)_auto] gap-2 sm:flex sm:items-center" method="get">
               <div className="relative min-w-0 flex-1">
@@ -246,7 +246,7 @@ export default async function AdminLoyaltyPage({
               {sp.q && (
                 <Link
                   href={`/admin/loyalty${sp.cq ? `?cq=${encodeURIComponent(sp.cq)}` : ""}`}
-                  className="col-span-2 inline-flex min-h-10 items-center justify-center gap-1.5 rounded-xl bg-[var(--admin-inset)] px-3 text-xs font-semibold admin-muted transition hover:text-[var(--admin-text)] sm:col-auto"
+                  className="col-span-2 inline-flex min-h-11 items-center justify-center gap-2 rounded-xl bg-[var(--admin-inset)] px-3 text-sm font-semibold admin-muted transition hover:text-[var(--admin-text)] sm:col-auto"
                 >
                   <X className="h-3.5 w-3.5" /> Clear member search
                 </Link>
@@ -265,7 +265,7 @@ export default async function AdminLoyaltyPage({
                     <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                       <div className="min-w-0">
                         <p className="break-words text-sm font-bold admin-text">{a.customer.fullName}</p>
-                        <p className="mt-1 text-xs leading-5 admin-soft">
+                        <p className="mt-1 text-sm leading-5 admin-soft">
                           Lifetime {a.lifetimePoints.toLocaleString()} pts · Referral {a.referralCode}
                           {a.transactions[0] && <> · Last activity {formatTimeAgo(a.transactions[0].createdAt)}</>}
                         </p>
@@ -273,9 +273,9 @@ export default async function AdminLoyaltyPage({
                       <div className="flex items-center justify-between gap-3 sm:justify-end">
                         <div className="text-left sm:text-right">
                           <p className="text-lg font-black tabular-nums admin-text">{a.points.toLocaleString()}</p>
-                          <p className="text-[11px] font-semibold uppercase tracking-wide admin-soft">available points</p>
+                          <p className="text-sm font-semibold uppercase tracking-wide admin-soft">available points</p>
                         </div>
-                        <span className={`rounded-full px-2.5 py-1 text-[11px] font-bold uppercase ${TIER_COLOR[a.tier] || TIER_COLOR.bronze}`}>
+                        <span className={`rounded-full px-3 py-1 text-sm font-bold uppercase ${TIER_COLOR[a.tier] || TIER_COLOR.bronze}`}>
                           {a.tier}
                         </span>
                       </div>
@@ -314,7 +314,7 @@ export default async function AdminLoyaltyPage({
               {sp.cq && (
                 <Link
                   href={`/admin/loyalty${sp.q ? `?q=${encodeURIComponent(sp.q)}` : ""}`}
-                  className="col-span-2 inline-flex min-h-10 items-center justify-center gap-1.5 rounded-xl bg-[var(--admin-inset)] px-3 text-xs font-semibold admin-muted transition hover:text-[var(--admin-text)] sm:col-auto"
+                  className="col-span-2 inline-flex min-h-11 items-center justify-center gap-2 rounded-xl bg-[var(--admin-inset)] px-3 text-sm font-semibold admin-muted transition hover:text-[var(--admin-text)] sm:col-auto"
                 >
                   <X className="h-3.5 w-3.5" /> Clear coupon search
                 </Link>
@@ -334,14 +334,14 @@ export default async function AdminLoyaltyPage({
                       <div className="min-w-0 flex-1">
                         <div className="flex flex-wrap items-center gap-2">
                           <span className="break-all font-mono text-sm font-black admin-accent-text">{c.code}</span>
-                          <span className={`rounded-full px-2 py-0.5 text-[11px] font-bold ${c.active ? "bg-emerald-500/15 text-emerald-700 dark:text-emerald-300" : "bg-slate-500/15 text-slate-600 dark:text-slate-300"}`}>
+                          <span className={`rounded-full px-2 py-1 text-sm font-bold ${c.active ? "bg-emerald-500/15 text-emerald-700 dark:text-emerald-300" : "bg-slate-500/15 text-slate-600 dark:text-slate-300"}`}>
                             {c.active ? "active" : "archived"}
                           </span>
                         </div>
-                        <p className="mt-1 break-words text-xs leading-5 admin-muted">{c.description || "No description"}</p>
+                        <p className="mt-1 break-words text-sm leading-5 admin-muted">{c.description || "No description"}</p>
                       </div>
 
-                      <div className="grid grid-cols-2 gap-x-4 gap-y-1 text-xs admin-muted sm:min-w-[210px] sm:text-right">
+                      <div className="grid grid-cols-2 gap-x-4 gap-y-1 text-sm admin-muted sm:min-w-52 sm:text-right">
                         <span className="inline-flex items-center gap-1 sm:justify-end">
                           {c.discountType === "percent" ? <Percent className="h-3 w-3" /> : <DollarSign className="h-3 w-3" />}
                           {Number(c.discountValue)}
@@ -374,7 +374,7 @@ export default async function AdminLoyaltyPage({
           title="Automation rules"
           description="Background earning rules. Review these after the member-facing operations above."
           action={
-            <span className={`inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-[11px] font-bold ${
+            <span className={`inline-flex items-center gap-1 rounded-full px-3 py-1 text-sm font-bold ${
               premiumActive
                 ? "bg-emerald-500/10 text-emerald-700 dark:text-emerald-300"
                 : "bg-[var(--admin-accent-soft)] admin-accent-text"
@@ -389,10 +389,10 @@ export default async function AdminLoyaltyPage({
               { trigger: "refill_completed", label: "Refill collected", points: 10, desc: "Rewards refills collected in the previous 24 hours." },
               { trigger: "order_paid", label: "Order paid", points: 0, multiplier: "1 pt / KES 100", desc: "Rewards qualifying paid orders from the previous 24 hours." },
             ].map((r) => (
-              <div key={r.trigger} className="rounded-xl border border-[var(--admin-border)] bg-[var(--admin-inset)] p-3.5">
+              <div key={r.trigger} className="rounded-xl border border-[var(--admin-border)] bg-[var(--admin-inset)] p-4">
                 <div className="flex items-start justify-between gap-2">
                   <p className="text-sm font-bold admin-text">{r.label}</p>
-                  <span className={`rounded-full px-2 py-0.5 text-[11px] font-bold ${
+                  <span className={`rounded-full px-2 py-1 text-sm font-bold ${
                     premiumActive
                       ? "bg-emerald-500/10 text-emerald-700 dark:text-emerald-300"
                       : "bg-[var(--admin-accent-soft)] admin-accent-text"
@@ -400,24 +400,24 @@ export default async function AdminLoyaltyPage({
                     {premiumActive ? "Active" : "Premium"}
                   </span>
                 </div>
-                <p className="mt-1 text-xs leading-5 admin-soft">{r.desc}</p>
+                <p className="mt-1 text-sm leading-5 admin-soft">{r.desc}</p>
                 <p className="mt-3 text-sm font-black admin-accent-text">{r.points > 0 ? `+${r.points} pts` : r.multiplier}</p>
               </div>
             ))}
             {rules.map((r) => (
-              <div key={r.id} className="rounded-xl border border-[var(--admin-border)] bg-[var(--admin-inset)] p-3.5">
+              <div key={r.id} className="rounded-xl border border-[var(--admin-border)] bg-[var(--admin-inset)] p-4">
                 <div className="flex items-start justify-between gap-2">
                   <p className="text-sm font-bold admin-text">{r.name}</p>
-                  <span className={`rounded-full px-2 py-0.5 text-[11px] font-bold ${r.active ? "bg-emerald-500/10 text-emerald-700 dark:text-emerald-300" : "bg-slate-500/10 text-slate-600 dark:text-slate-300"}`}>
+                  <span className={`rounded-full px-2 py-1 text-sm font-bold ${r.active ? "bg-emerald-500/10 text-emerald-700 dark:text-emerald-300" : "bg-slate-500/10 text-slate-600 dark:text-slate-300"}`}>
                     {r.active ? "DB rule" : "Inactive"}
                   </span>
                 </div>
-                <p className="mt-1 text-xs leading-5 admin-soft">Trigger: {r.trigger}</p>
+                <p className="mt-1 text-sm leading-5 admin-soft">Trigger: {r.trigger}</p>
                 <p className="mt-3 text-sm font-black admin-accent-text">+{r.points} pts{r.multiplier ? ` · ×${r.multiplier}` : ""}</p>
               </div>
             ))}
           </div>
-          <p className="mt-3 break-words text-xs leading-5 admin-soft">
+          <p className="mt-3 break-words text-sm leading-5 admin-soft">
             {premiumActive
               ? <>The daily worker runs these loyalty automations for this pharmacy.</>
               : <>Automation is paused on Free; existing balances and manual adjustments remain available.</>}
