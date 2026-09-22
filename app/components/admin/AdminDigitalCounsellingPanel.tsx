@@ -75,10 +75,10 @@ export function AdminDigitalCounsellingPanel({
             <BookOpen className="h-4 w-4" />
           </span>
           <div>
-            <h3 className="font-bold text-xs admin-heading sm:text-sm">
+            <h3 className="font-bold text-sm admin-heading sm:text-sm">
               Pharmacist Digital Patient Counselling Checklist
             </h3>
-            <p className="text-xs admin-muted">
+            <p className="text-sm admin-muted">
               Verify and check off the 12 clinical counselling pillars before dispensing to {customerName || "patient"}.
             </p>
           </div>
@@ -88,14 +88,14 @@ export function AdminDigitalCounsellingPanel({
           <button
             type="button"
             onClick={handleCheckAll}
-            className="btn-admin-secondary text-xs inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl font-bold"
+            className="min-h-11 btn-admin-secondary text-sm inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl font-bold"
           >
             <Check className="h-3.5 w-3.5" /> Verify All 12
           </button>
           <button
             type="button"
             onClick={copyToClipboard}
-            className="btn-admin-secondary text-xs inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl"
+            className="min-h-11 btn-admin-secondary text-sm inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl"
           >
             <Copy className="h-3.5 w-3.5" />
             {copiedText ? "Copied!" : "Copy Leaflet Summary"}
@@ -105,7 +105,7 @@ export function AdminDigitalCounsellingPanel({
               href={whatsappUrl}
               target="_blank"
               rel="noreferrer"
-              className="inline-flex items-center gap-1.5 rounded-xl bg-emerald-600 px-3 py-1.5 text-xs font-bold text-white shadow-xs hover:bg-emerald-700 transition"
+              className="inline-flex items-center gap-1.5 rounded-xl bg-emerald-600 px-3 py-1.5 text-sm font-bold text-white shadow-xs hover:bg-emerald-700 transition"
             >
               <Share2 className="h-3.5 w-3.5" /> Send via WhatsApp
             </a>
@@ -121,7 +121,7 @@ export function AdminDigitalCounsellingPanel({
             style={{ width: `${percentage}%` }}
           />
         </div>
-        <span className="text-xs font-bold text-[var(--admin-text)] dark:text-emerald-300">
+        <span className="text-sm font-bold text-[var(--admin-text)] dark:text-emerald-300">
           {completedCount} / 12 ({percentage}%)
         </span>
       </div>
@@ -214,7 +214,7 @@ export function AdminDigitalCounsellingPanel({
         />
       </div>
 
-      <div className="mt-4 flex items-center justify-between border-t border-[var(--admin-border)] pt-3 text-xs admin-muted">
+      <div className="mt-4 flex items-center justify-between border-t border-[var(--admin-border)] pt-3 text-sm admin-muted">
         <span>
           Verification Status: <strong className={completedCount === 12 ? "text-emerald-600 font-bold" : ""}>{completedCount} / 12 pillars checked.</strong>
         </span>
@@ -254,7 +254,7 @@ function PillarCheckItem({
       }`}
     >
       <div className="flex items-center justify-between">
-        <p className="text-xs font-bold">{title}</p>
+        <p className="text-sm font-bold">{title}</p>
         <input
           type="checkbox"
           checked={checked}
@@ -262,7 +262,7 @@ function PillarCheckItem({
           className="rounded-sm accent-emerald-600 cursor-pointer"
         />
       </div>
-      <p className="mt-1 line-clamp-2 text-xs opacity-80">{detail}</p>
+      <p className="mt-1 line-clamp-2 text-sm opacity-80">{detail}</p>
     </div>
   );
 }
