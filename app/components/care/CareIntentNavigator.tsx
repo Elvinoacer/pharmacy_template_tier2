@@ -1,10 +1,11 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
   ArrowRight,
   Building2,
+  Check,
   FileUp,
   HeartPulse,
   Pill,
@@ -70,6 +71,38 @@ export default function CareIntentNavigator({
   description?: string;
 }) {
   const [intent, setIntent] = useState<CareIntent | null>(initialIntent ?? null);
+  const detailRef = useRef<HTMLDivElement>(null);
+  const selectedIntent = INTENTS.find((item) => item.id === intent) ?? null;
+
+  useEffect(() => {
+    if (!compact || !intent) return;
+
+    const frame = window.requestAnimationFrame(() => {
+      const detail = detailRef.current;
+      if (!detail) return;
+
+      const narrow = window.matchMedia("(max-width: 767px)").matches;
+      if (!narrow) return;
+
+      const rect = detail.getBoundingClientRect();
+      const outsideComfortableView =
+        rect.top < 72 || rect.bottom > window.innerHeight - 24;
+
+      if (outsideComfortableView) {
+        const reduceMotion = window.matchMedia(
+          "(prefers-reduced-motion: reduce)",
+        ).matches;
+        detail.scrollIntoView({
+          behavior: reduceMotion ? "auto" : "smooth",
+          block: "nearest",
+        });
+      }
+
+      detail.focus({ preventScroll: true });
+    });
+
+    return () => window.cancelAnimationFrame(frame);
+  }, [compact, intent]);
 
   return (
     <section
@@ -85,7 +118,8 @@ export default function CareIntentNavigator({
         </div>
       </div>
 
-      <div className={styles.intents} role="list" aria-label="Choose what you need">
+      <div className={styles.flow}>
+        <div className={styles.intents} role="list" aria-label="Choose what you need">
         {INTENTS.map((item) => {
           const Icon = item.icon;
           const active = intent === item.id;
@@ -96,6 +130,7 @@ export default function CareIntentNavigator({
               className={styles.intent}
               data-active={active ? "true" : "false"}
               aria-pressed={active}
+              aria-controls="care-intent-response"
               onClick={() => setIntent(item.id)}
             >
               <span className={styles.icon}>
@@ -105,18 +140,34 @@ export default function CareIntentNavigator({
                 <strong>{item.label}</strong>
                 <small>{item.helper}</small>
               </span>
+              {active && (
+                <span className={styles.selectedBadge} aria-hidden>
+                  <Check size={13} /> Selected
+                </span>
+              )}
               <ArrowRight className={styles.intentArrow} size={16} aria-hidden />
             </button>
           );
         })}
-      </div>
+        </div>
 
-      {intent && (
-        <div className={styles.detail} aria-live="polite">
+        <div id="care-intent-response" className={styles.detailSlot}>
+          {intent ? (
+        <div
+          ref={detailRef}
+          className={styles.detail}
+          aria-live="polite"
+          tabIndex={-1}
+        >
           <div className={styles.detailHeading}>
             <span className={styles.step}>2</span>
             <div>
               <p className={styles.eyebrow}>YOUR NEXT STEP</p>
+              {selectedIntent && (
+                <p className={styles.selectionNote}>
+                  {selectedIntent.label} selected
+                </p>
+              )}
               <h3>
                 {intent === "medicine" && "Search the medicine first."}
                 {intent === "prescription" && "Bring the prescription first."}
@@ -229,7 +280,22 @@ export default function CareIntentNavigator({
             </div>
           )}
         </div>
-      )}
+          ) : (
+            <div className={styles.detailPlaceholder} aria-live="polite">
+              <span className={styles.placeholderIcon}>
+                <ArrowRight size={20} aria-hidden />
+              </span>
+              <div>
+                <strong>Choose one option to continue</strong>
+                <p>
+                  Your next step will appear here immediately, so you never have
+                  to hunt for what changed.
+                </p>
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
 
       <div className={styles.accountBar}>
         {signedIn ? (
