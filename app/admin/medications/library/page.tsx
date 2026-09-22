@@ -1,5 +1,6 @@
 import { redirect } from "next/navigation";
 import { getSessionUser } from "@/app/lib/auth";
+import { requireMedicationWriteContext } from "@/app/lib/services/medication-access";
 import { AdminShell } from "@/app/components/admin/AdminShell";
 import Link from "next/link";
 import { ArrowLeft, BadgeCheck, Library, Search } from "lucide-react";
@@ -10,6 +11,11 @@ export const metadata = { title: "Shared Medication Library" };
 export default async function LibraryPage() {
   const user = await getSessionUser();
   if (!user) redirect("/login");
+  try {
+    await requireMedicationWriteContext(user);
+  } catch {
+    redirect("/admin/medications");
+  }
 
   return (
     <AdminShell
