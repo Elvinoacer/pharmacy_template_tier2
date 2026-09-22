@@ -134,7 +134,7 @@ export function WorkspaceShell({
           {/* Skip link for screen reader accessibility */}
           <a
             href="#workspace-main-content"
-            className="sr-only focus:not-sr-only focus:absolute focus:top-3 focus:left-3 focus:z-50 focus:rounded-xl focus:bg-teal-700 focus:px-4 focus:py-2 focus:text-white"
+            className="sr-only focus:not-sr-only focus:absolute focus:left-3 focus:top-3 focus:z-50 focus:inline-flex focus:min-h-11 focus:items-center focus:rounded-xl focus:bg-teal-700 focus:px-4 focus:py-2 focus:text-white"
           >
             Skip to workspace content
           </a>
@@ -182,7 +182,7 @@ export function WorkspaceShell({
               >
                 <Link
                   href={workspaceHomeHref}
-                  className="shrink-0 text-sm font-semibold uppercase tracking-wider text-[var(--admin-accent-text)] hover:underline"
+                  className="inline-flex min-h-11 shrink-0 items-center text-sm font-semibold uppercase tracking-wider text-[var(--admin-accent-text)] hover:underline"
                 >
                   {workspaceLabel}
                 </Link>
