@@ -61,13 +61,13 @@ export default async function PortalOrdersPage({
       title="Orders & payments"
       subtitle="OTC purchases and refill payments."
       actions={
-        <Link href="/medicines" className="btn-primary w-full justify-center !py-2 text-xs sm:w-auto">
+        <Link href="/medicines" className="btn-primary min-h-11 w-full justify-center text-sm sm:w-auto">
           <Plus className="h-3.5 w-3.5" /> New OTC order
         </Link>
       }
     >
       {sp.placed && (
-        <div className="mb-4 rounded-xl border border-emerald-200 bg-emerald-50 px-3 py-3 text-sm leading-relaxed text-emerald-800 sm:px-4">
+        <div className="mb-4 rounded-xl border border-emerald-200 bg-emerald-50 p-4 text-base leading-relaxed text-emerald-800">
           {placedCanPay
             ? "Order reserved — stock is held. Pay with M-Pesa below or at the counter; staff will dispatch when you collect."
             : "Order reserved — stock is held. This pharmacy will contact you to confirm collection or delivery. Pay when you collect."}
@@ -96,14 +96,14 @@ export default async function PortalOrdersPage({
                       : "border-[var(--line)] bg-[var(--card)]"
                   }`}
                 >
-                  <div className="flex min-w-0 flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+                  <div className="flex min-w-0 flex-col gap-3 md:flex-row md:items-start md:justify-between">
                     <div className="min-w-0 flex-1">
                       <div className="flex min-w-0 flex-wrap items-center gap-2">
-                        <p className="min-w-0 break-words text-sm font-semibold text-[var(--foreground)] sm:text-base">
+                        <p className="min-w-0 break-words text-base font-semibold text-[var(--foreground)]">
                           {o.items.map((i) => `${i.quantity}× ${i.name}`).join(", ")}
                         </p>
                         <span
-                          className={`rounded-full px-2 py-0.5 text-[10px] font-semibold capitalize ${
+                          className={`rounded-full px-2 py-1 text-sm font-semibold capitalize ${
                             o.status === "paid"
                               ? "bg-emerald-100 text-emerald-700"
                               : o.status === "fulfilled"
@@ -116,36 +116,36 @@ export default async function PortalOrdersPage({
                           {o.status}
                         </span>
                         {isDispatched ? (
-                          <span className="rounded-full bg-blue-50 px-2 py-0.5 text-[10px] font-semibold text-blue-700">
+                          <span className="rounded-full bg-blue-50 px-2 py-1 text-sm font-semibold text-blue-700">
                             dispatched
                           </span>
                         ) : o.status === "paid" ? (
-                          <span className="rounded-full bg-amber-50 px-2 py-0.5 text-[10px] font-semibold text-amber-700">
+                          <span className="rounded-full bg-amber-50 px-2 py-1 text-sm font-semibold text-amber-700">
                             ready for collection
                           </span>
                         ) : null}
-                        <span className="rounded-full bg-[var(--card-elev)] px-2 py-0.5 text-[10px] text-[var(--muted)]">
+                        <span className="rounded-full bg-[var(--card-elev)] px-2 py-1 text-sm text-[var(--muted)]">
                           {o.source}
                         </span>
                       </div>
-                      <p className="mt-1 text-xs text-[var(--muted)]">{formatDateTime(o.createdAt)}</p>
+                      <p className="mt-1 text-sm text-[var(--muted)]">{formatDateTime(o.createdAt)}</p>
                       {o.payments[0] && (
-                        <p className="mt-0.5 break-words text-[10px] leading-relaxed text-[var(--muted-2)]">
+                        <p className="mt-1 break-words text-sm leading-relaxed text-[var(--muted-2)]">
                           Last payment: {o.payments[0].provider} · {o.payments[0].status}
                         </p>
                       )}
                     </div>
-                    <div className="flex w-full items-center justify-between gap-3 border-t border-[var(--line)] pt-3 sm:w-auto sm:block sm:border-0 sm:pt-0 sm:text-right">
-                      <p className="shrink-0 font-bold text-[var(--foreground)]">{formatPrice(Number(o.total))}</p>
+                    <div className="flex w-full min-w-0 flex-col items-stretch gap-3 border-t border-[var(--line)] pt-3 md:w-auto md:min-w-64 md:items-end md:border-0 md:pt-0 md:text-right">
+                      <p className="self-start text-base font-bold text-[var(--foreground)] md:self-auto">{formatPrice(Number(o.total))}</p>
                       {pendingPay && paymentReady.has(o.pharmacyId) ? (
-                        <div className="min-w-0 sm:mt-2">
+                        <div className="w-full min-w-0 [&_button]:min-h-11 [&_button]:min-w-11 [&_button]:text-sm [&_input]:min-h-11 [&_input]:text-base [&_p]:text-sm [&_span]:text-sm md:mt-2 md:w-auto">
                           <MpesaPayButton
                             orderId={o.id}
                             defaultPhone={o.guestPhone || profile?.phone || ""}
                           />
                         </div>
                       ) : pendingPay ? (
-                        <p className="mt-2 max-w-48 text-xs leading-5 text-[var(--muted)]">Pay at collection. The pharmacy will confirm the visit.</p>
+                        <p className="w-full text-sm leading-5 text-[var(--muted)] md:mt-2 md:max-w-48">Pay at collection. The pharmacy will confirm the visit.</p>
                       ) : null}
                     </div>
                   </div>
