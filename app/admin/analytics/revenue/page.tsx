@@ -39,6 +39,7 @@ export default async function RevenueAnalyticsPage({
       period={period}
       basePath="/admin/analytics/revenue"
     >
+      <div className="space-y-4 sm:space-y-6 [&_.admin-stat_p:first-child]:!text-sm [&_.admin-stat_p:nth-child(3)]:!text-sm">
       <StatGrid>
         <AdminCard label="Net Sales" value={formatKES(metrics.netSales)} hint={`After ${formatKES(metrics.discounts)} discounts`} icon={TrendingUp} accent="accent" />
         <AdminCard label="Collected" value={formatKES(metrics.collected)} hint="Payments − refunds" icon={Wallet} accent="info" />
@@ -157,6 +158,7 @@ export default async function RevenueAnalyticsPage({
           </table>
         </div>
       </AdminPanel>
+      </div>
     </AnalyticsShell>
   );
 }
