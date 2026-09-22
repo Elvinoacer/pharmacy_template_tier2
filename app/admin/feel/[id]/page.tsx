@@ -101,7 +101,7 @@ export default async function AdminFeelSessionPage({
       actions={
         <Link
           href="/admin/feel"
-          className="inline-flex min-h-11 w-full items-center justify-center gap-1.5 rounded-xl border admin-border px-3 py-2 text-xs font-semibold admin-text transition hover:bg-[var(--admin-inset)] sm:w-auto sm:justify-start"
+          className="inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-xl border admin-border px-3 py-2 text-sm font-semibold admin-text transition hover:bg-[var(--admin-inset)] sm:w-auto sm:justify-start"
         >
           <ArrowLeft className="h-3.5 w-3.5" />
           Back to triage
