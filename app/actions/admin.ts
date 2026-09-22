@@ -15,6 +15,8 @@ import { prisma } from "@/app/lib/db";
 import { listingLimitMessage } from "@/app/lib/platform/plan-policy";
 import { assertPublicMedicineSlot } from "@/app/lib/platform/plan-enforcement";
 import { getTenant } from "@/app/lib/tenant";
+import { requireMedicationWriteContext } from "@/app/lib/services/medication-access";
+import { withPharmacy } from "@/app/lib/tenant-context";
 import {
   updateRefillStatus,
   updateEnquiryStatus,
@@ -1388,6 +1390,21 @@ export async function adminCreateMedicationAction(
   formData: FormData,
 ): Promise<ActionState> {
   const user = await staff();
+  let pharmacyId: string;
+  try {
+    pharmacyId = await requireMedicationWriteContext(user);
+  } catch (error) {
+    if (error instanceof AuthError) return { error: error.message };
+    const code = error instanceof Error ? error.message : "";
+    if (code === "PHARMACY_BILLING_SUSPENDED") {
+      return { error: "This pharmacy workspace is paused because billing needs attention." };
+    }
+    if (code === "PHARMACY_WORKSPACE_PAUSED") {
+      return { error: "This pharmacy workspace is paused. Restore access before changing inventory." };
+    }
+    return { error: "You do not have permission to change this pharmacy inventory." };
+  }
+
   const { parseMedicationFormData } = await import("@/app/lib/services/medication-form-data");
   const { validateMedication, computeEnrichmentScore } = await import(
     "@/app/lib/services/medication-validation"
@@ -1403,7 +1420,7 @@ export async function adminCreateMedicationAction(
   if (!parsed.master.dosageFormId) return { error: "Dosage form is required (Phase 4 rule)." };
 
   // Run the shared validation service.
-  const validation = await validateMedication(
+  const validation = await withPharmacy(pharmacyId, () => validateMedication(
     {
       id: masterId,
       name: parsed.master.name,
@@ -1429,7 +1446,7 @@ export async function adminCreateMedicationAction(
       prescriptionRequired: parsed.inventory.prescriptionRequired,
     },
     { existingMasterId: masterId, existingInventoryId: inventoryId },
-  );
+  ));
 
   if (validation.counts.fail > 0) {
     return {
@@ -1520,20 +1537,19 @@ export async function adminCreateMedicationAction(
 
   if (inventoryData.publicListing && inventoryData.active) {
     const current = inventoryId
-      ? await prisma.pharmacyInventory.findUnique({
-          where: { id: inventoryId },
-          select: { publicListing: true, active: true },
-        })
+      ? await withPharmacy(pharmacyId, () =>
+          prisma.pharmacyInventory.findUnique({
+            where: { id: inventoryId },
+            select: { publicListing: true, active: true },
+          }),
+        )
       : null;
     const alreadyPublic = Boolean(current?.publicListing && current.active);
     if (!alreadyPublic) {
-      const tenant = await getTenant().catch(() => null);
-      if (tenant?.pharmacyId) {
-        try {
-          await assertPublicMedicineSlot(tenant.pharmacyId);
-        } catch (error) {
-          return { error: listingLimitMessage(error) || "This listing needs Premium." };
-        }
+      try {
+        await assertPublicMedicineSlot(pharmacyId);
+      } catch (error) {
+        return { error: listingLimitMessage(error) || "This listing needs Premium." };
       }
     }
   }
@@ -1541,7 +1557,7 @@ export async function adminCreateMedicationAction(
   try {
     if (masterId && inventoryId) {
       // Update both models in a transaction.
-      await prisma.$transaction(async (tx) => {
+      await withPharmacy(pharmacyId, () => prisma.$transaction(async (tx) => {
         const currentMaster = await tx.medicationMaster.findUnique({ where: { id: masterId } });
         const sharedInventoryCount = await tx.pharmacyInventory.count({ where: { medicationMasterId: masterId } });
         const isSharedOrPlatform =
@@ -1620,13 +1636,14 @@ export async function adminCreateMedicationAction(
 
         // Always update pharmacy's own inventory row
         await tx.pharmacyInventory.update({ where: { id: inventoryId }, data: inventoryData });
-      });
-      await writeAuditLog(user.id, "medication_updated", "medication_master", masterId, {
+      }));
+      await withPharmacy(pharmacyId, () => writeAuditLog(user.id, "medication_updated", "medication_master", masterId, {
         inventoryId,
         enrichmentScore: enrichment.score,
-      });
+      }));
       revalidatePath("/admin/medications");
       revalidatePath(`/admin/medications/${inventoryId}`);
+      revalidatePath("/admin/inventory");
       revalidatePath("/medicines");
       return {
         success: `Medication updated. Enrichment: ${enrichment.score}% (${enrichment.status}).${
@@ -1635,39 +1652,44 @@ export async function adminCreateMedicationAction(
       };
     }
 
-    // Create: master first, then inventory linked to it.
-    const newMaster = await prisma.medicationMaster.create({ data: masterData });
+    // Legacy create path retained for edit-form compatibility. Keep master + inventory atomic.
+    const { newMaster, newInventory } = await withPharmacy(pharmacyId, () =>
+      prisma.$transaction(async (tx) => {
+        const newMaster = await tx.medicationMaster.create({ data: masterData });
 
-    // Sync relational fields on the new master.
-    if (parsed.activeIngredientIds.length > 0) {
-      await prisma.medicationActiveIngredient.createMany({
-        data: parsed.activeIngredientIds.map((id) => ({
-          medicationMasterId: newMaster.id,
-          activeIngredientId: id,
-        })),
-        skipDuplicates: true,
-      });
-    }
-    if (parsed.clinicalTagIds.length > 0) {
-      await prisma.medicationClinicalTag.createMany({
-        data: parsed.clinicalTagIds.map((id) => ({
-          medicationMasterId: newMaster.id,
-          clinicalTagId: id,
-        })),
-        skipDuplicates: true,
-      });
-    }
+        if (parsed.activeIngredientIds.length > 0) {
+          await tx.medicationActiveIngredient.createMany({
+            data: parsed.activeIngredientIds.map((id) => ({
+              medicationMasterId: newMaster.id,
+              activeIngredientId: id,
+            })),
+            skipDuplicates: true,
+          });
+        }
+        if (parsed.clinicalTagIds.length > 0) {
+          await tx.medicationClinicalTag.createMany({
+            data: parsed.clinicalTagIds.map((id) => ({
+              medicationMasterId: newMaster.id,
+              clinicalTagId: id,
+            })),
+            skipDuplicates: true,
+          });
+        }
 
-    const newInventory = await prisma.pharmacyInventory.create({
-      data: { ...inventoryData, medicationMasterId: newMaster.id },
-    });
+        const newInventory = await tx.pharmacyInventory.create({
+          data: { pharmacyId, ...inventoryData, medicationMasterId: newMaster.id },
+        });
+        return { newMaster, newInventory };
+      }),
+    );
 
-    await writeAuditLog(user.id, "medication_created", "medication_master", newMaster.id, {
+    await withPharmacy(pharmacyId, () => writeAuditLog(user.id, "medication_created", "medication_master", newMaster.id, {
       inventoryId: newInventory.id,
       acquisitionMethod: parsed.master.acquisitionMethod,
       enrichmentScore: enrichment.score,
-    });
+    }));
     revalidatePath("/admin/medications");
+    revalidatePath("/admin/inventory");
     revalidatePath("/medicines");
     redirect("/admin/medications");
   } catch (e) {
