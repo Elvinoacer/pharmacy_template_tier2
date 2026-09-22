@@ -535,13 +535,18 @@ async function createIntasendBillingCheckoutInPharmacy(
   }
 
   const pendingCutoff = new Date(Date.now() - 30 * 60 * 1000);
-  const existing = await prismaUnscoped.billingPayment.findFirst({
-    where: {
-      invoiceId,
-      status: { in: ["pending", "processing"] },
-    },
-    orderBy: { createdAt: "desc" },
-  });
+  // Billing payments have platform-owned RLS. Read them through an explicit
+  // platform transaction so an already-pending row cannot be invisible to the
+  // tenant-scoped checkout path while still blocking the database unique index.
+  const existing = await withPlatformTx((tx) =>
+    tx.billingPayment.findFirst({
+      where: {
+        invoiceId,
+        status: { in: ["pending", "processing"] },
+      },
+      orderBy: { createdAt: "desc" },
+    }),
+  );
 
   const intasendConfig = getIntasendConfig();
 
@@ -579,16 +584,18 @@ async function createIntasendBillingCheckoutInPharmacy(
   // invoice. Older attempts must be closed before replacing them, otherwise a
   // new hosted checkout succeeds at IntaSend but the local insert fails with P2002.
   if (existing) {
-    await prismaUnscoped.billingPayment.updateMany({
-      where: {
-        invoiceId,
-        status: { in: ["pending", "processing"] },
-      },
-      data: {
-        status: "failed",
-        failureReason: "Stale payment attempt replaced by a new checkout.",
-      },
-    });
+    await withPlatformTx((tx) =>
+      tx.billingPayment.updateMany({
+        where: {
+          invoiceId,
+          status: { in: ["pending", "processing"] },
+        },
+        data: {
+          status: "failed",
+          failureReason: "Stale payment attempt replaced by a new checkout.",
+        },
+      }),
+    );
     logIntasend("warn", "billing.payment.stale_replaced", {
       invoiceId,
       pharmacyId: invoice.pharmacyId,
@@ -624,48 +631,48 @@ async function createIntasendBillingCheckoutInPharmacy(
     };
   }
 
-  let payment: { id: string };
-  try {
-    payment = await prismaUnscoped.billingPayment.create({
-      data: {
-        pharmacyId: invoice.pharmacyId,
-        invoiceId: invoice.id,
-        provider: "intasend",
-        status: "pending",
-        amountKes: invoice.totalKes,
-        phone: invoice.pharmacy.phone,
-        checkoutUrl: checkoutRes.url,
-        checkoutRequestId: checkoutRes.id || checkoutRes.invoiceId,
-        providerRef: checkoutRes.invoiceId,
-      },
-    });
-  } catch (error) {
-    // Two rapid clicks can both reach IntaSend before either request writes its
-    // local payment row. The partial unique index then lets only one survive.
-    // Reuse that winning checkout instead of surfacing a generic billing error.
-    const concurrent = await prismaUnscoped.billingPayment.findFirst({
+  // Persist the hosted checkout under platform RLS and make this operation
+  // idempotent per invoice. A historical pending row may already exist even if
+  // a tenant-scoped read could not see it. Updating that row is both safer and
+  // avoids the billing_payments_one_pending partial unique-index failure.
+  const payment = await withPlatformTx(async (tx) => {
+    const pending = await tx.billingPayment.findFirst({
       where: {
         invoiceId,
         status: { in: ["pending", "processing"] },
       },
       orderBy: { createdAt: "desc" },
+      select: { id: true },
     });
-    if (concurrent?.provider === "intasend" && concurrent.checkoutUrl) {
-      logIntasend("warn", "billing.payment.concurrent_checkout_reused", {
-        invoiceId,
-        pharmacyId: invoice.pharmacyId,
-        paymentId: concurrent.id,
+
+    const data = {
+      provider: "intasend",
+      status: "pending" as const,
+      amountKes: invoice.totalKes,
+      phone: invoice.pharmacy.phone,
+      checkoutUrl: checkoutRes.url,
+      checkoutRequestId: checkoutRes.id || checkoutRes.invoiceId,
+      providerRef: checkoutRes.invoiceId,
+      failureReason: null,
+    };
+
+    if (pending) {
+      return tx.billingPayment.update({
+        where: { id: pending.id },
+        data,
+        select: { id: true },
       });
-      return {
-        ok: true as const,
-        alreadyPaid: false,
-        checkoutUrl: concurrent.checkoutUrl,
-        paymentId: concurrent.id,
-        invoiceId: invoice.id,
-      };
     }
-    throw error;
-  }
+
+    return tx.billingPayment.create({
+      data: {
+        pharmacyId: invoice.pharmacyId,
+        invoiceId: invoice.id,
+        ...data,
+      },
+      select: { id: true },
+    });
+  });
 
   logIntasend("info", "billing.payment.pending", {
     invoiceId: invoice.id,
