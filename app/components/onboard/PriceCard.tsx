@@ -3,11 +3,11 @@ import styles from "./OnboardSurface.module.css";
 
 const included = [
   "24/7 Digital storefront (/p/your-name)",
-  "5 public medicine listings and 2 services",
+  "5 public medicine listings, 2 services and 10 direct Afyvia prescription referrals / month",
   "Customer reservations and service bookings",
   "1,400+ Kenyan medicines with standard doses",
   "M-PESA Till & Paybill payouts",
-  "Optional Premium: more listings, AI imports, analytics and POS sync",
+  "Optional Premium: unlimited direct Afyvia prescription referrals, more listings, AI imports, analytics and POS sync",
 ];
 
 export default function PriceCard({ full = false }: { full?: boolean }) {
@@ -22,7 +22,7 @@ export default function PriceCard({ full = false }: { full?: boolean }) {
         </div>
         <p>Pay only KES 100 once for verification, or use a voucher. No monthly charge to launch.</p>
         <p style={{ marginTop: "0.4rem", fontSize: "0.72rem", color: "var(--brand)", fontWeight: 650 }}>
-          Premium is KES 500/month when you need more than 5 medicine listings, 2 services or premium tools.
+          Premium is KES 500/month when you need more than 5 medicine listings, 2 services, 10 direct Afyvia prescription referrals per month, or premium tools.
         </p>
       </div>
 
