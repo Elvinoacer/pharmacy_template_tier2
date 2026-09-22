@@ -44,22 +44,48 @@ export default async function AdminLocationSettingsPage() {
 
   return (
     <AdminShell user={user} title="Pharmacy details" subtitle={`Keep ${pharmacy.name} easy to find, contact, and trust across every screen size.`}>
-      <div className="location-settings-ux max-w-5xl space-y-4 sm:space-y-5">
-        <div className="flex items-start gap-2.5 rounded-2xl border border-[var(--admin-border)] bg-[var(--admin-accent-soft)] px-3.5 py-3 text-xs leading-5 admin-muted sm:px-4">
-          <MapPinned className="mt-0.5 h-4 w-4 shrink-0 admin-accent-text" />
+      <div className="location-settings-ux mx-auto w-full max-w-5xl space-y-4 sm:space-y-6">
+        <div className="flex items-start gap-3 rounded-2xl border border-[var(--admin-border)] bg-[var(--admin-accent-soft)] p-4 text-base leading-6 admin-muted sm:text-sm">
+          <MapPinned className="mt-1 h-4 w-4 shrink-0 admin-accent-text" />
           <p><strong className="admin-text">Best order:</strong> confirm the map pin first, then public contact details and opening hours. The live preview lets you validate directions before saving.</p>
         </div>
         <LocationSettingsForm defaults={defaults} pharmacyName={pharmacy.name} />
         <style>{`
           .location-settings-ux {
+            width: 100%;
+            min-width: 0;
             color: var(--admin-text);
+            overflow-wrap: anywhere;
           }
 
           .location-settings-ux > form,
+          .location-settings-ux form,
+          .location-settings-ux input,
+          .location-settings-ux textarea,
+          .location-settings-ux select,
+          .location-settings-ux iframe {
+            max-width: 100%;
+            min-width: 0;
+          }
+
+          .location-settings-ux form :is(button, a) {
+            min-height: 44px;
+            font-size: 14px;
+          }
+
+          .location-settings-ux form :is(label, dt, dd) {
+            font-size: 14px;
+          }
+
+          .location-settings-ux form p {
+            font-size: 16px;
+            line-height: 1.5;
+          }
+
           .location-settings-ux input,
           .location-settings-ux textarea,
           .location-settings-ux select {
-            max-width: 100%;
+            font-size: 16px;
           }
 
           .location-settings-ux .location-map-preview {
@@ -78,20 +104,12 @@ export default async function AdminLocationSettingsPage() {
             filter: none;
           }
 
-          @media (max-width: 639px) {
-            .location-settings-ux {
-              width: 100%;
-              min-width: 0;
-            }
-
-            .location-settings-ux form {
-              width: 100%;
-            }
-
+          @media (min-width: 640px) {
+            .location-settings-ux form p,
             .location-settings-ux input,
             .location-settings-ux textarea,
             .location-settings-ux select {
-              min-width: 0;
+              font-size: 14px;
             }
           }
 
