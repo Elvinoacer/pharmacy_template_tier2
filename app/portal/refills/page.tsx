@@ -135,7 +135,7 @@ export default async function PortalRefillsPage() {
                       <p className="text-sm text-[#5a6b62]">{rx.dosage || "Standard regimen"}</p>
                     </div>
                     <span
-                      className={`text-sm font-bold px-2 py-0.5 rounded-full ${
+                      className={`text-sm font-bold px-2 py-1 rounded-full ${
                         (rx.refillsRemaining ?? 0) > 0 ? "bg-emerald-100 text-emerald-800" : "bg-rose-100 text-rose-800"
                       }`}
                     >
@@ -176,7 +176,7 @@ export default async function PortalRefillsPage() {
 
                   <div className="pt-2 border-t border-black/5 flex items-center justify-between">
                     {rx.hasOpenRequest ? (
-                      <span className="inline-flex items-center gap-1 text-sm font-semibold text-emerald-700 bg-emerald-50 px-2.5 py-1 rounded-lg w-full justify-center">
+                      <span className="inline-flex items-center gap-1 text-sm font-semibold text-emerald-700 bg-emerald-50 px-3 py-1 rounded-lg w-full justify-center">
                         <Sparkles className="h-3 w-3" /> Refill Processing in Queue
                       </span>
                     ) : (
@@ -272,7 +272,7 @@ export default async function PortalRefillsPage() {
                         const isCurrent = idx === currentStepIdx;
 
                         return (
-                          <div key={step.id} className="flex min-w-0 items-center gap-3 rounded-xl border border-[#e3ebe6] bg-[#fafbfa] p-3 text-left sm:block sm:space-y-1.5 sm:border-0 sm:bg-transparent sm:p-0 sm:text-center">
+                          <div key={step.id} className="flex min-w-0 items-center gap-3 rounded-xl border border-[#e3ebe6] bg-[#fafbfa] p-3 text-left sm:block sm:space-y-2 sm:border-0 sm:bg-transparent sm:p-0 sm:text-center">
                             <div className="relative flex items-center justify-center">
                               <div
                                 className={`flex h-6 w-6 sm:h-7 sm:w-7 items-center justify-center rounded-full text-sm sm:text-sm font-bold transition ${
@@ -312,7 +312,7 @@ export default async function PortalRefillsPage() {
                       </div>
                       <div className="flex items-center gap-2">
                         {order.amountPaid >= order.total ? (
-                          <span className="text-emerald-700 font-bold bg-emerald-100 px-2 py-0.5 rounded-md">
+                          <span className="text-emerald-700 font-bold bg-emerald-100 px-2 py-1 rounded-md">
                             Paid in Full
                           </span>
                         ) : (
