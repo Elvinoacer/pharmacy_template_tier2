@@ -8,6 +8,7 @@ import {
   Check,
   CircleGauge,
   CreditCard,
+  FileText,
   Package,
   PlugZap,
   ShieldCheck,
@@ -31,7 +32,9 @@ import { hasPremiumPlan } from "@/app/lib/platform/entitlements";
 import {
   FREE_MEDICINE_LIMIT,
   FREE_SERVICE_LIMIT,
+  FREE_MONTHLY_PRESCRIPTION_REFERRAL_LIMIT,
 } from "@/app/lib/platform/plan-policy";
+import { getPrescriptionReferralUsage } from "@/app/lib/platform/prescription-referrals";
 import { isIntasendConfigured } from "@/app/lib/services/intasend";
 import { withPharmacy } from "@/app/lib/tenant-context";
 
@@ -102,6 +105,11 @@ const comparison = [
     premium: "Free-plan cap removed",
   },
   {
+    feature: "Direct Afyvia prescription referrals",
+    free: `${FREE_MONTHLY_PRESCRIPTION_REFERRAL_LIMIT} / month`,
+    premium: "Unlimited",
+  },
+  {
     feature: "Storefront, orders, reservations & bookings",
     free: "Included",
     premium: "Included",
@@ -159,7 +167,7 @@ export default async function AdminBillingPage() {
   const isOwner = pharmacy.ownerUserId === user.id;
   const premiumActive = await hasPremiumPlan(pharmacy.id);
 
-  const [tenantData, grant] = await Promise.all([
+  const [tenantData, grant, prescriptionReferralUsage] = await Promise.all([
     withPharmacy(pharmacy.id, async () => {
       const [publicMedicines, activeServices, subscription, invoices] =
         await Promise.all([
@@ -206,6 +214,7 @@ export default async function AdminBillingPage() {
         },
       }),
     ).catch(() => null),
+    getPrescriptionReferralUsage(pharmacy.id),
   ]);
 
   const paymentAvailable = isIntasendConfigured();
@@ -247,7 +256,7 @@ export default async function AdminBillingPage() {
                   : "Start free. Upgrade only when the limits begin to matter."}
               </h2>
               <p className="mt-2 max-w-2xl text-sm leading-6 text-[var(--admin-text-muted)]">
-                Free keeps the core pharmacy presence live. Premium removes the free listing caps and unlocks AI-assisted imports, advanced analytics and POS synchronization.
+                Free keeps the core pharmacy presence live. Premium removes the free listing caps, unlocks unlimited direct Afyvia prescription referrals, AI-assisted imports, advanced analytics and POS synchronization.
               </p>
 
               <div className="mt-5 flex flex-wrap gap-2 text-xs text-[var(--admin-text-muted)]">
@@ -353,7 +362,7 @@ export default async function AdminBillingPage() {
                 </h2>
               </div>
             </div>
-            <div className="grid gap-3 md:grid-cols-2">
+            <div className="grid gap-3 md:grid-cols-3">
               <UsageMeter
                 label="Public medicine listings"
                 used={tenantData.publicMedicines}
@@ -366,7 +375,16 @@ export default async function AdminBillingPage() {
                 limit={FREE_SERVICE_LIMIT}
                 icon={<Stethoscope className="h-4 w-4 text-[var(--admin-accent)]" />}
               />
+              <UsageMeter
+                label="Direct prescription referrals this month"
+                used={prescriptionReferralUsage.used}
+                limit={FREE_MONTHLY_PRESCRIPTION_REFERRAL_LIMIT}
+                icon={<FileText className="h-4 w-4 text-[var(--admin-accent)]" />}
+              />
             </div>
+            <p className="mt-3 text-xs leading-5 text-[var(--admin-text-soft)]">
+              The prescription allowance applies only to new referrals generated through the Afyvia marketplace. Existing patients, pharmacy storefront requests, staff-entered prescriptions and in-person care are never blocked by this limit.
+            </p>
           </section>
         )}
 
