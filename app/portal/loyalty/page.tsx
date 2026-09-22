@@ -159,7 +159,7 @@ export default async function PortalLoyaltyPage() {
                 return (
                   <li
                     key={c.id}
-                    className="flex min-w-0 flex-col gap-3 rounded-2xl border border-[var(--line)] bg-[var(--card)] p-3.5 transition hover:border-[#0d6e5a]/30 hover:shadow-md sm:p-4"
+                    className="flex min-w-0 flex-col gap-3 rounded-2xl border border-[var(--line)] bg-[var(--card)] p-4 transition hover:border-[#0d6e5a]/30 hover:shadow-md sm:p-4"
                   >
                     <div className="flex min-w-0 items-start justify-between gap-2">
                       <div className="min-w-0">
@@ -172,7 +172,7 @@ export default async function PortalLoyaltyPage() {
                     </div>
                     {c.pointsCost > 0 ? (
                       <div className="flex flex-wrap items-center justify-between gap-2">
-                        <span className="inline-flex min-h-7 items-center gap-1.5 rounded-full bg-[var(--accent-soft)] px-3 py-1 text-sm font-semibold text-[var(--accent-deep)]">
+                        <span className="inline-flex min-h-7 items-center gap-2 rounded-full bg-[var(--accent-soft)] px-3 py-1 text-sm font-semibold text-[var(--accent-deep)]">
                           <Sparkles className="h-4 w-4" /> {c.pointsCost} pts
                         </span>
                         <div className="[&_button]:min-h-11 [&_button]:min-w-11 [&_button]:text-sm [&_p]:text-sm">
