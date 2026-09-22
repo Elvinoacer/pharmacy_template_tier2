@@ -91,22 +91,22 @@ export function DoseConfirmButton({
       late: "bg-orange-100 text-orange-700",
     };
     return (
-      <span className={`inline-flex items-center gap-1 rounded-full px-3 py-1.5 text-xs font-semibold ${colorMap[logged]}`}>
+      <span className={`inline-flex min-h-11 items-center gap-1 rounded-full px-3 py-2 text-sm font-semibold ${colorMap[logged]}`}>
         <Check className="h-3 w-3" /> {logged} {scheduledTime ? `· ${scheduledTime}` : ""}
       </span>
     );
   }
 
   return (
-    <div className="space-y-2">
-      <div className="flex items-center gap-1.5 text-xs text-[#8a9a92]">
+    <div className="w-full min-w-0 space-y-2">
+      <div className="flex items-center gap-1.5 text-sm text-[#8a9a92]">
         <Calendar className="h-3.5 w-3.5 shrink-0" />
         <span>
           {formatDate(today)}
           {scheduledTime ? ` · ${scheduledTime}` : ""}
         </span>
       </div>
-      <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
+      <div className="grid grid-cols-2 gap-2 lg:grid-cols-4">
         <button
           type="button"
           disabled={busy}

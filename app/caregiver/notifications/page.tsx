@@ -38,7 +38,7 @@ export default async function CaregiverNotificationsPage() {
       subtitle="Pickup, refill, and reminder notifications for patients who granted you pickup notification permission."
     >
       {notifications.length === 0 ? (
-        <div className="rounded-2xl border border-[#e3ebe6] bg-white p-8 text-center">
+        <div className="rounded-2xl border border-[#e3ebe6] bg-white p-6 text-center sm:p-8">
           <Bell className="mx-auto h-10 w-10 text-[#8a9a92]" />
           <p className="mt-3 font-semibold text-[#0c1a14]">No notifications yet</p>
           <p className="mt-1 text-sm text-[#5a6b62]">
@@ -48,11 +48,11 @@ export default async function CaregiverNotificationsPage() {
           </p>
         </div>
       ) : (
-        <div className="space-y-2">
+        <div className="space-y-3">
           {notifications.map((n) => (
             <div
               key={n.id}
-              className={`rounded-xl border px-4 py-3 ${
+              className={`rounded-xl border px-4 py-3.5 sm:px-5 sm:py-4 ${
                 n.type === "pickup"
                   ? "border-emerald-200 bg-emerald-50"
                   : n.type === "reminder"
@@ -60,26 +60,26 @@ export default async function CaregiverNotificationsPage() {
                     : "border-[#e3ebe6] bg-white"
               }`}
             >
-              <div className="flex flex-wrap items-start justify-between gap-2">
-                <div className="min-w-0">
+              <div className="flex flex-col items-stretch gap-3 sm:flex-row sm:items-start sm:justify-between">
+                <div className="min-w-0 flex-1">
                   <p className="text-sm font-semibold text-[#0c1a14]">{n.title}</p>
-                  {n.body && <p className="mt-0.5 text-xs text-[#5a6b62]">{n.body}</p>}
-                  <p className="mt-1 text-[10px] text-[#8a9a92]">
+                  {n.body && <p className="mt-0.5 text-sm text-[#5a6b62]">{n.body}</p>}
+                  <p className="mt-1 text-sm text-[#8a9a92]">
                     {n.customer?.fullName} · {formatDateTime(n.createdAt)} · {formatTimeAgo(n.createdAt)}
                   </p>
                 </div>
                 {n.type === "pickup" && (
-                  <span className="rounded-full bg-emerald-100 px-2 py-0.5 text-[10px] font-semibold text-emerald-700">
+                  <span className="self-start rounded-full bg-emerald-100 px-2.5 py-1 text-sm font-semibold text-emerald-700">
                     Pickup
                   </span>
                 )}
                 {n.type === "reminder" && (
-                  <span className="rounded-full bg-blue-100 px-2 py-0.5 text-[10px] font-semibold text-blue-700">
+                  <span className="self-start rounded-full bg-blue-100 px-2.5 py-1 text-sm font-semibold text-blue-700">
                     Reminder
                   </span>
                 )}
                 {n.type === "refill" && (
-                  <span className="rounded-full bg-[#e6f4ef] px-2 py-0.5 text-[10px] font-semibold text-[#0d6e5a]">
+                  <span className="self-start rounded-full bg-[#e6f4ef] px-2.5 py-1 text-sm font-semibold text-[#0d6e5a]">
                     Refill
                   </span>
                 )}

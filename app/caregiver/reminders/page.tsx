@@ -4,7 +4,7 @@ import { prisma } from "@/app/lib/db";
 import { CaregiverShell } from "@/app/components/caregiver/CaregiverShell";
 import { getActiveCaregiverLinks } from "@/app/lib/services/caregiver-permissions";
 import { formatDateTime, formatTimeAgo } from "@/app/lib/time";
-import { Clock, Bell, Pill, Activity, Calendar } from "lucide-react";
+import { Clock, Calendar } from "lucide-react";
 
 export const metadata = { title: "Reminders" };
 
@@ -43,7 +43,7 @@ export default async function CaregiverRemindersPage() {
       subtitle="Medication, pickup, and follow-up reminders for your patients (read-only)."
     >
       {reminders.length === 0 ? (
-        <div className="rounded-2xl border border-[#e3ebe6] bg-white p-8 text-center">
+        <div className="rounded-2xl border border-[#e3ebe6] bg-white p-6 text-center sm:p-8">
           <Clock className="mx-auto h-10 w-10 text-[#8a9a92]" />
           <p className="mt-3 font-semibold text-[#0c1a14]">No reminders scheduled</p>
           <p className="mt-1 text-sm text-[#5a6b62]">
@@ -51,30 +51,30 @@ export default async function CaregiverRemindersPage() {
           </p>
         </div>
       ) : (
-        <div className="space-y-6">
-          <section className="card-premium p-5">
-            <h2 className="mb-4 flex items-center gap-2 text-sm font-semibold text-[#0c1a14]">
+        <div className="space-y-4 sm:space-y-6">
+          <section className="card-premium p-4 sm:p-5">
+            <h2 className="mb-4 flex items-center gap-2 text-base font-semibold text-[#0c1a14] sm:text-lg">
               <Calendar className="h-4 w-4 text-[#0d6e5a]" /> Upcoming ({upcoming.length})
             </h2>
             {upcoming.length === 0 ? (
-              <p className="text-xs text-[#5a6b62]">No upcoming reminders.</p>
+              <p className="text-sm text-[#5a6b62]">No upcoming reminders.</p>
             ) : (
               <ul className="space-y-2">
                 {upcoming.map((r) => (
                   <li
                     key={r.id}
-                    className="flex flex-wrap items-center justify-between gap-2 rounded-xl bg-[#f4f7f4] px-3 py-2.5"
+                    className="flex flex-col items-stretch gap-3 rounded-xl bg-[#f4f7f4] px-3 py-3 sm:flex-row sm:items-center sm:justify-between sm:gap-4 sm:px-4"
                   >
-                    <div className="min-w-0">
+                    <div className="min-w-0 flex-1">
                       <p className="text-sm font-semibold text-[#0c1a14]">{r.title}</p>
-                      {r.body && <p className="text-xs text-[#5a6b62]">{r.body}</p>}
-                      <p className="text-[10px] text-[#8a9a92]">
+                      {r.body && <p className="text-sm text-[#5a6b62]">{r.body}</p>}
+                      <p className="text-sm text-[#8a9a92]">
                         {r.customer?.fullName} · {r.type.replace(/_/g, " ")}
                       </p>
                     </div>
-                    <div className="text-right">
-                      <p className="text-xs font-semibold text-[#0d6e5a]">{formatDateTime(r.scheduledFor)}</p>
-                      <span className={`inline-block rounded-full px-2 py-0.5 text-[10px] font-semibold ${
+                    <div className="flex flex-wrap items-center justify-between gap-2 text-left sm:block sm:text-right">
+                      <p className="text-sm font-semibold text-[#0d6e5a]">{formatDateTime(r.scheduledFor)}</p>
+                      <span className={`inline-block rounded-full px-2 py-0.5 text-sm font-semibold ${
                         r.status === "sent" ? "bg-blue-100 text-blue-700"
                         : r.status === "answered" ? "bg-emerald-100 text-emerald-700"
                         : r.status === "escalated" ? "bg-rose-100 text-rose-700"
@@ -89,26 +89,26 @@ export default async function CaregiverRemindersPage() {
             )}
           </section>
 
-          <section className="card-premium p-5">
-            <h2 className="mb-4 flex items-center gap-2 text-sm font-semibold text-[#0c1a14]">
+          <section className="card-premium p-4 sm:p-5">
+            <h2 className="mb-4 flex items-center gap-2 text-base font-semibold text-[#0c1a14] sm:text-lg">
               <Clock className="h-4 w-4 text-[#8a9a92]" /> Recent ({past.length})
             </h2>
             {past.length === 0 ? (
-              <p className="text-xs text-[#5a6b62]">No recent reminders.</p>
+              <p className="text-sm text-[#5a6b62]">No recent reminders.</p>
             ) : (
               <ul className="space-y-1.5">
                 {past.slice(0, 30).map((r) => (
                   <li
                     key={r.id}
-                    className="flex flex-wrap items-center justify-between gap-2 rounded-lg bg-[#fafbfa] px-3 py-2 text-xs"
+                    className="flex flex-col items-stretch gap-2 rounded-xl bg-[#fafbfa] px-3 py-3 text-sm sm:flex-row sm:items-center sm:justify-between sm:gap-4 sm:px-4"
                   >
-                    <div>
+                    <div className="min-w-0 flex-1">
                       <span className="font-medium text-[#0c1a14]">{r.title}</span>
-                      <span className="ml-2 text-[#8a9a92]">{r.customer?.fullName} · {r.type.replace(/_/g, " ")}</span>
+                      <span className="mt-1 block text-[#8a9a92] sm:ml-2 sm:mt-0 sm:inline">{r.customer?.fullName} · {r.type.replace(/_/g, " ")}</span>
                     </div>
-                    <div className="flex items-center gap-2">
-                      <span className="text-[10px] text-[#5a6b62]">{formatTimeAgo(r.scheduledFor)}</span>
-                      <span className={`rounded-full px-2 py-0.5 text-[10px] font-semibold ${
+                    <div className="flex flex-wrap items-center justify-between gap-2 sm:justify-end">
+                      <span className="text-sm text-[#5a6b62]">{formatTimeAgo(r.scheduledFor)}</span>
+                      <span className={`rounded-full px-2 py-0.5 text-sm font-semibold ${
                         r.status === "answered" ? "bg-emerald-100 text-emerald-700"
                         : r.status === "escalated" ? "bg-rose-100 text-rose-700"
                         : r.status === "sent" ? "bg-blue-100 text-blue-700"

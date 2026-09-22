@@ -49,7 +49,7 @@ export default async function CaregiverAdherencePage() {
       subtitle="Real-time 14-day adherence tracking, missed dose alerts, and caregiver action center."
     >
       {patientStats.length === 0 ? (
-        <div className="rounded-3xl border border-[#e3ebe6] bg-white p-12 text-center shadow-sm">
+        <div className="rounded-3xl border border-[#e3ebe6] bg-white p-6 text-center shadow-sm sm:p-10 lg:p-12">
           <Activity className="mx-auto h-12 w-12 text-[#8a9a92]" />
           <h3 className="mt-4 text-lg font-bold text-[#0c1a14]">No linked patients yet</h3>
           <p className="mt-1 text-sm text-[#5a6b62]">
@@ -57,23 +57,23 @@ export default async function CaregiverAdherencePage() {
           </p>
         </div>
       ) : (
-        <div className="space-y-8">
+        <div className="space-y-5 sm:space-y-6 lg:space-y-8">
           {/* Top Operational Command Stats */}
-          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-            <div className="rounded-2xl border border-white/60 bg-gradient-to-br from-white to-[#f4f7f4] p-5 shadow-sm">
+          <div className="grid gap-3 sm:grid-cols-2 sm:gap-4 lg:grid-cols-4">
+            <div className="rounded-2xl border border-white/60 bg-gradient-to-br from-white to-[#f4f7f4] p-4 shadow-sm sm:p-5">
               <div className="flex items-center justify-between">
-                <span className="text-xs font-bold uppercase tracking-wider text-[#5a6b62]">Supported Patients</span>
+                <span className="text-sm font-bold uppercase tracking-wider text-[#5a6b62]">Supported Patients</span>
                 <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-[#0d6e5a]/10 text-[#0d6e5a]">
                   <UserCheck className="h-5 w-5" />
                 </span>
               </div>
               <p className="mt-3 text-3xl font-extrabold text-[#0c1a14]">{totalPatients}</p>
-              <p className="mt-1 text-[11px] text-[#5a6b62]">Linked active patient accounts</p>
+              <p className="mt-1 text-sm text-[#5a6b62]">Linked active patient accounts</p>
             </div>
 
-            <div className="rounded-2xl border border-white/60 bg-gradient-to-br from-white to-emerald-50/40 p-5 shadow-sm">
+            <div className="rounded-2xl border border-white/60 bg-gradient-to-br from-white to-emerald-50/40 p-4 shadow-sm sm:p-5">
               <div className="flex items-center justify-between">
-                <span className="text-xs font-bold uppercase tracking-wider text-[#5a6b62]">Avg Adherence Rate</span>
+                <span className="text-sm font-bold uppercase tracking-wider text-[#5a6b62]">Avg Adherence Rate</span>
                 <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-emerald-100 text-emerald-700">
                   <TrendingUp className="h-5 w-5" />
                 </span>
@@ -81,51 +81,51 @@ export default async function CaregiverAdherencePage() {
               <p className={`mt-3 text-3xl font-extrabold ${avgAdherence >= 85 ? "text-emerald-700" : avgAdherence >= 70 ? "text-amber-700" : "text-rose-700"}`}>
                 {avgAdherence}%
               </p>
-              <p className="mt-1 text-[11px] text-[#5a6b62]">14-day calculated patient compliance</p>
+              <p className="mt-1 text-sm text-[#5a6b62]">14-day calculated patient compliance</p>
             </div>
 
-            <div className="rounded-2xl border border-white/60 bg-gradient-to-br from-white to-rose-50/50 p-5 shadow-sm">
+            <div className="rounded-2xl border border-white/60 bg-gradient-to-br from-white to-rose-50/50 p-4 shadow-sm sm:p-5">
               <div className="flex items-center justify-between">
-                <span className="text-xs font-bold uppercase tracking-wider text-rose-800">Missed Doses Watchlist</span>
+                <span className="text-sm font-bold uppercase tracking-wider text-rose-800">Missed Doses Watchlist</span>
                 <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-rose-100 text-rose-700">
                   <ShieldAlert className="h-5 w-5" />
                 </span>
               </div>
               <p className="mt-3 text-3xl font-extrabold text-rose-700">{totalMissedCount}</p>
-              <p className="mt-1 text-[11px] text-rose-700">Total missed doses in last 14 days</p>
+              <p className="mt-1 text-sm text-rose-700">Total missed doses in last 14 days</p>
             </div>
 
-            <div className="rounded-2xl border border-white/60 bg-gradient-to-br from-white to-amber-50/50 p-5 shadow-sm">
+            <div className="rounded-2xl border border-white/60 bg-gradient-to-br from-white to-amber-50/50 p-4 shadow-sm sm:p-5">
               <div className="flex items-center justify-between">
-                <span className="text-xs font-bold uppercase tracking-wider text-amber-800">Patients at Risk</span>
+                <span className="text-sm font-bold uppercase tracking-wider text-amber-800">Patients at Risk</span>
                 <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-amber-100 text-amber-700">
                   <AlertTriangle className="h-5 w-5" />
                 </span>
               </div>
               <p className="mt-3 text-3xl font-extrabold text-amber-700">{patientsAtRisk.length}</p>
-              <p className="mt-1 text-[11px] text-amber-700">Require caregiver follow-up action</p>
+              <p className="mt-1 text-sm text-amber-700">Require caregiver follow-up action</p>
             </div>
           </div>
 
           {/* Patients At Risk Action Watchlist */}
           {patientsAtRisk.length > 0 && (
-            <div className="overflow-hidden rounded-3xl border border-rose-200 bg-gradient-to-r from-rose-500/10 via-rose-50 to-amber-50 p-6 shadow-sm">
+            <div className="overflow-hidden rounded-3xl border border-rose-200 bg-gradient-to-r from-rose-500/10 via-rose-50 to-amber-50 p-4 shadow-sm sm:p-5 lg:p-6">
               <div className="flex items-center gap-2 text-rose-800 mb-3">
                 <AlertTriangle className="h-5 w-5 text-rose-600" />
                 <h3 className="font-bold text-base">Action Required: Patients Needing Attention</h3>
               </div>
               <div className="grid gap-3 sm:grid-cols-2">
                 {patientsAtRisk.map(({ link, stats }) => (
-                  <div key={link.id} className="flex items-center justify-between rounded-2xl bg-white/90 p-4 border border-rose-100 shadow-2xs">
+                  <div key={link.id} className="flex flex-col items-stretch gap-3 rounded-2xl border border-rose-100 bg-white/90 p-4 shadow-2xs sm:flex-row sm:items-center sm:justify-between">
                     <div>
                       <h4 className="font-bold text-sm text-[#0c1a14]">{link.customer.fullName}</h4>
-                      <p className="text-xs text-rose-700 font-semibold mt-0.5">
+                      <p className="text-sm text-rose-700 font-semibold mt-0.5">
                         Adherence Rate: {stats.adherenceRate}% · {stats.missedCount} Missed Doses
                       </p>
                     </div>
                     <Link
                       href={`/caregiver/patients/${link.customerId}`}
-                      className="inline-flex items-center gap-1 rounded-full bg-rose-600 px-3 py-1.5 text-xs font-bold text-white transition hover:bg-rose-700"
+                      className="inline-flex min-h-11 w-full items-center justify-center gap-1 rounded-xl bg-rose-600 px-4 py-2.5 text-sm font-bold text-white transition hover:bg-rose-700 sm:w-auto"
                     >
                       Take Action <ArrowRight className="h-3.5 w-3.5" />
                     </Link>
@@ -138,17 +138,17 @@ export default async function CaregiverAdherencePage() {
           {/* Per Patient Dashboard Cards */}
           <div className="space-y-6">
             {patientStats.map(({ link, stats, perRx, recentLogs }) => (
-              <section key={link.id} className="rounded-3xl border border-[#e3ebe6] bg-white p-6 shadow-sm transition hover:shadow-md">
+              <section key={link.id} className="rounded-3xl border border-[#e3ebe6] bg-white p-4 shadow-sm transition hover:shadow-md sm:p-5 lg:p-6">
                 {/* Header */}
-                <div className="mb-5 flex flex-wrap items-start justify-between gap-4 pb-4 border-b border-[#e3ebe6]">
+                <div className="mb-5 flex flex-col items-stretch justify-between gap-4 border-b border-[#e3ebe6] pb-4 sm:flex-row sm:items-start">
                   <div>
-                    <div className="flex items-center gap-2">
+                    <div className="flex flex-wrap items-center gap-2">
                       <h2 className="text-xl font-extrabold text-[#0c1a14]">{link.customer.fullName}</h2>
-                      <span className="rounded-full bg-[#e6f4ef] px-3 py-0.5 text-xs font-bold text-[#0d6e5a]">
+                      <span className="rounded-full bg-[#e6f4ef] px-3 py-0.5 text-sm font-bold text-[#0d6e5a]">
                         {link.relationship || "Caregiver"}
                       </span>
                     </div>
-                    <p className="mt-1 text-xs text-[#5a6b62]">
+                    <p className="mt-1 text-sm text-[#5a6b62]">
                       {link.canLogAdherence
                         ? "✓ Granted Adherence Permission — You can confirm doses on behalf of patient"
                         : "🔒 Read-only view (patient has not granted logging permission)"}
@@ -157,16 +157,16 @@ export default async function CaregiverAdherencePage() {
 
                   <Link
                     href={`/caregiver/patients/${link.customerId}`}
-                    className="inline-flex items-center gap-1 text-xs font-bold text-[#0d6e5a] hover:underline"
+                    className="inline-flex min-h-11 w-full items-center justify-center gap-1 rounded-xl px-2 text-sm font-bold text-[#0d6e5a] hover:bg-[#f4f7f4] hover:underline sm:w-auto sm:justify-start"
                   >
                     Full Patient Profile →
                   </Link>
                 </div>
 
                 {/* Big Stat Row */}
-                <div className="grid gap-3 sm:grid-cols-4">
+                <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
                   <div className="rounded-2xl bg-gradient-to-br from-[#0d6e5a]/10 to-[#0d6e5a]/5 p-4">
-                    <p className="flex items-center gap-1 text-[11px] font-bold uppercase tracking-wider text-[#0d6e5a]">
+                    <p className="flex items-center gap-1 text-sm font-bold uppercase tracking-wider text-[#0d6e5a]">
                       <Activity className="h-3.5 w-3.5" /> 14-Day Rate
                     </p>
                     <p className={`mt-2 text-3xl font-extrabold ${
@@ -177,21 +177,21 @@ export default async function CaregiverAdherencePage() {
                   </div>
 
                   <div className="rounded-2xl bg-[#f4f7f4] p-4">
-                    <p className="flex items-center gap-1 text-[11px] font-bold uppercase tracking-wider text-[#8a9a92]">
+                    <p className="flex items-center gap-1 text-sm font-bold uppercase tracking-wider text-[#8a9a92]">
                       <Award className="h-3.5 w-3.5 text-[#0d6e5a]" /> Streak
                     </p>
                     <p className="mt-2 text-3xl font-extrabold text-[#0d6e5a]">{stats.currentStreakDays}d</p>
                   </div>
 
                   <div className="rounded-2xl bg-[#f4f7f4] p-4">
-                    <p className="flex items-center gap-1 text-[11px] font-bold uppercase tracking-wider text-[#8a9a92]">
+                    <p className="flex items-center gap-1 text-sm font-bold uppercase tracking-wider text-[#8a9a92]">
                       <Calendar className="h-3.5 w-3.5" /> Doses Logged
                     </p>
                     <p className="mt-2 text-3xl font-extrabold text-[#0c1a14]">{stats.totalLogged}</p>
                   </div>
 
                   <div className="rounded-2xl bg-[#f4f7f4] p-4">
-                    <p className="flex items-center gap-1 text-[11px] font-bold uppercase tracking-wider text-[#8a9a92]">
+                    <p className="flex items-center gap-1 text-sm font-bold uppercase tracking-wider text-[#8a9a92]">
                       <TrendingUp className="h-3.5 w-3.5 text-rose-600" /> Missed
                     </p>
                     <p className="mt-2 text-3xl font-extrabold text-rose-700">{stats.missedCount}</p>
@@ -200,10 +200,10 @@ export default async function CaregiverAdherencePage() {
 
                 {/* Last 7 Days Dot Matrix */}
                 <div className="mt-5">
-                  <p className="mb-2 text-xs font-bold uppercase tracking-wider text-[#5a6b62]">
+                  <p className="mb-2 text-sm font-bold uppercase tracking-wider text-[#5a6b62]">
                     7-Day Visual Adherence Calendar
                   </p>
-                  <div className="grid grid-cols-7 gap-2">
+                  <div className="grid grid-cols-1 gap-2 sm:grid-cols-7">
                     {stats.last7Days.map((d) => {
                       const colors: Record<string, string> = {
                         taken: "bg-emerald-500 text-white shadow-xs",
@@ -216,22 +216,22 @@ export default async function CaregiverAdherencePage() {
                       return (
                         <div
                           key={d.date}
-                          className={`rounded-xl px-2 py-3 text-center transition ${colors[d.status]}`}
+                          className={`flex min-w-0 items-center justify-between gap-3 rounded-xl px-3 py-2.5 text-left transition sm:block sm:px-2 sm:py-3 sm:text-center ${colors[d.status]}`}
                           title={`${d.date}: ${d.status}`}
                         >
-                          <p className="text-[10px] uppercase font-semibold opacity-80">
+                          <p className="text-sm uppercase font-semibold opacity-80">
                             {new Date(d.date + "T00:00:00Z").toLocaleDateString(PROJECT_LOCALE, {
                               weekday: "short",
                               timeZone: PROJECT_TIMEZONE,
                             })}
                           </p>
-                          <p className="text-xs font-extrabold mt-0.5">
+                          <p className="text-sm font-extrabold mt-0.5">
                             {new Date(d.date + "T00:00:00Z").toLocaleDateString(PROJECT_LOCALE, {
                               day: "numeric",
                               timeZone: PROJECT_TIMEZONE,
                             })}
                           </p>
-                          <p className="mt-1 text-[9px] font-extrabold uppercase tracking-tight">
+                          <p className="mt-1 text-sm font-extrabold uppercase tracking-tight">
                             {d.status === "none" ? "—" : d.status}
                           </p>
                         </div>
@@ -242,27 +242,27 @@ export default async function CaregiverAdherencePage() {
 
                 {/* Per Medication Breakdown */}
                 <div className="mt-6">
-                  <p className="mb-3 text-xs font-bold uppercase tracking-wider text-[#5a6b62]">
+                  <p className="mb-3 text-sm font-bold uppercase tracking-wider text-[#5a6b62]">
                     Active Medications & Compliance Breakdown
                   </p>
                   {perRx.length === 0 ? (
-                    <p className="text-xs text-[#5a6b62]">No active prescriptions on file.</p>
+                    <p className="text-sm text-[#5a6b62]">No active prescriptions on file.</p>
                   ) : (
                     <div className="grid gap-2 sm:grid-cols-2">
                       {perRx.map((rx) => (
                         <div
                           key={rx.prescriptionId}
-                          className="flex items-center justify-between rounded-xl bg-[#f4f7f4] p-3 text-xs border border-[#e3ebe6]"
+                          className="flex flex-col items-stretch gap-3 rounded-xl border border-[#e3ebe6] bg-[#f4f7f4] p-3 text-sm sm:flex-row sm:items-center sm:justify-between"
                         >
                           <div>
                             <p className="font-bold text-[#0c1a14]">{rx.medicineName}</p>
-                            <p className="text-[11px] text-[#5a6b62]">{rx.dosage || "Standard Dose"}</p>
+                            <p className="text-sm text-[#5a6b62]">{rx.dosage || "Standard Dose"}</p>
                           </div>
 
-                          <div className="flex items-center gap-2">
+                          <div className="flex w-full flex-col items-stretch gap-2 sm:w-auto sm:flex-row sm:flex-wrap sm:items-center">
                             {rx.adherenceRate != null && (
                               <span
-                                className={`rounded-full px-2.5 py-1 text-[11px] font-bold ${
+                                className={`rounded-full px-2.5 py-1 text-sm font-bold ${
                                   rx.adherenceRate >= 80
                                     ? "bg-emerald-100 text-emerald-800"
                                     : rx.adherenceRate >= 60
@@ -291,25 +291,25 @@ export default async function CaregiverAdherencePage() {
                 {/* Recent Dose Activity Audit Trail */}
                 {recentLogs.length > 0 && (
                   <div className="mt-6 pt-4 border-t border-[#e3ebe6]">
-                    <p className="mb-2 text-xs font-bold uppercase tracking-wider text-[#5a6b62]">
+                    <p className="mb-2 text-sm font-bold uppercase tracking-wider text-[#5a6b62]">
                       Recent Dose Activity Audit Trail
                     </p>
                     <div className="space-y-1.5">
                       {recentLogs.map((log) => (
                         <div
                           key={log.id}
-                          className="flex items-center justify-between rounded-xl border border-black/5 bg-[#fafbfa] px-3 py-2 text-xs"
+                          className="flex flex-col items-stretch gap-2 rounded-xl border border-black/5 bg-[#fafbfa] px-3 py-3 text-sm sm:flex-row sm:items-center sm:justify-between"
                         >
                           <div>
                             <span className="font-bold text-[#0c1a14]">{log.prescription.medicineName}</span>
-                            <span className="ml-2 text-[11px] text-[#8a9a92]">
+                            <span className="mt-1 block text-sm text-[#8a9a92] sm:ml-2 sm:mt-0 sm:inline">
                               {formatDate(log.scheduledDate)}{log.scheduledTime ? ` @ ${log.scheduledTime}` : ""}
                             </span>
                           </div>
 
-                          <div className="flex items-center gap-2">
+                          <div className="flex flex-wrap items-center gap-2">
                             <span
-                              className={`rounded-full px-2 py-0.5 text-[10px] font-bold capitalize ${
+                              className={`rounded-full px-2 py-0.5 text-sm font-bold capitalize ${
                                 log.status === "taken" ? "bg-emerald-100 text-emerald-800"
                                 : log.status === "late" ? "bg-amber-100 text-amber-800"
                                 : log.status === "missed" ? "bg-rose-100 text-rose-800"
@@ -318,7 +318,7 @@ export default async function CaregiverAdherencePage() {
                             >
                               {log.status}
                             </span>
-                            <span className="text-[10px] text-[#8a9a92]">
+                            <span className="text-sm text-[#8a9a92]">
                               by {log.recordedBy}
                             </span>
                           </div>
