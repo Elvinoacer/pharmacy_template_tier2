@@ -5,7 +5,10 @@ import { prisma } from "@/app/lib/db";
 import { getTenant } from "@/app/lib/tenant";
 import { AdminShell } from "@/app/components/admin/AdminShell";
 import StorefrontCustomizer from "@/app/components/admin/StorefrontCustomizer";
+import BasicStorefrontForm from "@/app/components/admin/BasicStorefrontForm";
+import { PremiumFeatureNotice } from "@/app/components/admin/PremiumFeatureNotice";
 import { Eye, LayoutTemplate, MousePointerClick } from "lucide-react";
+import { hasPremiumPlan } from "@/app/lib/platform/entitlements";
 
 export const metadata: Metadata = { title: "Storefront studio" };
 export const dynamic = "force-dynamic";
@@ -15,6 +18,9 @@ export default async function AdminStorefrontStudioPage() {
   if (!user) redirect("/login");
   const tenant = await getTenant();
   const slug = tenant.slug;
+  const premiumActive = tenant.pharmacyId
+    ? await hasPremiumPlan(tenant.pharmacyId)
+    : false;
   let savedDoc: Record<string, unknown> = {};
   const basics = { tagline: "", about: "", logoUrl: "", coverImageUrl: "", deliveryNotes: "", deliveryFeeKes: "", deliveryRadiusKm: "", careersEmail: "" };
 
@@ -45,16 +51,39 @@ export default async function AdminStorefrontStudioPage() {
   return (
     <AdminShell user={user} title="Website appearance" subtitle="Shape the public pharmacy experience with a mobile-first editing flow and clear publishing priority.">
       <div className="storefront-studio-ux max-w-6xl space-y-4 sm:space-y-5">
-        <section aria-label="Storefront editing priority" className="grid grid-cols-3 gap-2 rounded-2xl border border-[var(--admin-border)] bg-[var(--admin-inset)] p-2.5 sm:gap-3 sm:p-3">
-          {prioritySteps.map(({ icon: StepIcon, step, title, hint }) => (
-            <div key={step} className="min-w-0 rounded-xl bg-[var(--admin-panel)] px-2.5 py-2.5 sm:px-3 sm:py-3">
-              <div className="flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-[0.12em] admin-soft sm:text-[11px]"><StepIcon className="h-3.5 w-3.5 admin-accent-text" /> Step {step}</div>
-              <p className="mt-1 truncate text-xs font-semibold admin-text sm:text-sm">{title}</p>
-              <p className="mt-0.5 hidden text-[11px] admin-muted sm:block">{hint}</p>
-            </div>
-          ))}
-        </section>
-        <StorefrontCustomizer slug={slug} savedDoc={savedDoc} savedOverridesCount={Object.keys(savedDoc).length > 0} basics={basics} />
+        {premiumActive ? (
+          <>
+            <section aria-label="Storefront editing priority" className="grid grid-cols-3 gap-2 rounded-2xl border border-[var(--admin-border)] bg-[var(--admin-inset)] p-2.5 sm:gap-3 sm:p-3">
+              {prioritySteps.map(({ icon: StepIcon, step, title, hint }) => (
+                <div key={step} className="min-w-0 rounded-xl bg-[var(--admin-panel)] px-2.5 py-2.5 sm:px-3 sm:py-3">
+                  <div className="flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-[0.12em] admin-soft sm:text-[11px]"><StepIcon className="h-3.5 w-3.5 admin-accent-text" /> Step {step}</div>
+                  <p className="mt-1 truncate text-xs font-semibold admin-text sm:text-sm">{title}</p>
+                  <p className="mt-0.5 hidden text-[11px] admin-muted sm:block">{hint}</p>
+                </div>
+              ))}
+            </section>
+            <StorefrontCustomizer slug={slug} savedDoc={savedDoc} savedOverridesCount={Object.keys(savedDoc).length > 0} basics={basics} />
+          </>
+        ) : (
+          <>
+            <PremiumFeatureNotice
+              title="Free gets you online. Premium helps you stand out."
+              description="Your basic pharmacy identity and delivery information remain editable on Free. Premium unlocks the full storefront studio: custom hero content, sections, team and gallery, FAQ, careers, social links, brand colours and conversion CTAs."
+              benefits={["Advanced branding", "Custom home sections", "Gallery & team", "Conversion CTAs"]}
+            />
+            <BasicStorefrontForm
+              slug={slug}
+              basics={{
+                tagline: basics.tagline,
+                about: basics.about,
+                logoUrl: basics.logoUrl,
+                deliveryNotes: basics.deliveryNotes,
+                deliveryFeeKes: basics.deliveryFeeKes,
+                deliveryRadiusKm: basics.deliveryRadiusKm,
+              }}
+            />
+          </>
+        )}
         <style>{`
           .storefront-studio-ux form { min-width: 0; }
           .storefront-studio-ux form > div[class*="overflow-x-auto"] { scroll-snap-type: x proximity; overscroll-behavior-x: contain; scrollbar-width: thin; }
