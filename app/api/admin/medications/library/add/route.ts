@@ -28,7 +28,7 @@ const Body = z.object({
 
 export async function POST(req: Request) {
   const user = await getSessionUser();
-  if (!user || !isStaff(user.role)) {
+  if (!user || (!isStaff(user.role) && !user.platformAdmin)) {
     return NextResponse.json(
       { error: "forbidden", message: "You do not have permission to add medications to this inventory." },
       { status: 403 },
