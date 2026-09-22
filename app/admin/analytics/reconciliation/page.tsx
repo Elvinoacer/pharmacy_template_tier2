@@ -42,7 +42,7 @@ export default async function ReconciliationPage({
       period={period}
       basePath="/admin/analytics/reconciliation"
     >
-      <div className="mx-auto w-full max-w-7xl space-y-4 sm:space-y-6">
+      <div className="reconciliation-ux mx-auto w-full max-w-7xl space-y-4 sm:space-y-6">
         <AdminPanel
           title="Reconciliation status"
           description="Collections + waivers − refunds − expected sales. A healthy result should be close to zero."
@@ -91,6 +91,23 @@ export default async function ReconciliationPage({
             <Row label="Difference" value={formatKES(report.difference)} strong accent={differenceTone} />
           </div>
         </AdminPanel>
+
+        <style>{`
+          .reconciliation-ux .admin-stat p[class*="text-[11px]"],
+          .reconciliation-ux .admin-stat p[class*="text-xs"] {
+            font-size: 14px;
+          }
+
+          .reconciliation-ux .admin-panel-heading p {
+            font-size: 16px;
+          }
+
+          @media (min-width: 640px) {
+            .reconciliation-ux .admin-panel-heading p {
+              font-size: 14px;
+            }
+          }
+        `}</style>
       </div>
     </AnalyticsShell>
   );
