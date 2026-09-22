@@ -5,19 +5,20 @@ import { prismaUnscoped } from "@/app/lib/db";
 
 export const DEFAULT_PLAN_FEATURES: Record<string, Record<string, { enabled: boolean; limitInt: number | null }>> = {
   starter: {
-    ai_import: { enabled: true, limitInt: null },
+    ai_import: { enabled: false, limitInt: null },
     staff: { enabled: true, limitInt: 2 },
     branches: { enabled: true, limitInt: 1 },
     messages: { enabled: true, limitInt: 500 },
     ai: { enabled: true, limitInt: 50 },
-    analytics: { enabled: true, limitInt: null },
+    analytics: { enabled: false, limitInt: null },
     api: { enabled: false, limitInt: null },
     sso: { enabled: false, limitInt: null },
-    pos_sync: { enabled: true, limitInt: null },
+    pos_sync: { enabled: false, limitInt: null },
     loyalty: { enabled: true, limitInt: null },
     online_orders: { enabled: true, limitInt: null },
   },
   professional: {
+    ai_import: { enabled: true, limitInt: null },
     staff: { enabled: true, limitInt: 10 },
     branches: { enabled: true, limitInt: 3 },
     messages: { enabled: true, limitInt: 5000 },
@@ -30,6 +31,7 @@ export const DEFAULT_PLAN_FEATURES: Record<string, Record<string, { enabled: boo
     online_orders: { enabled: true, limitInt: null },
   },
   enterprise: {
+    ai_import: { enabled: true, limitInt: null },
     staff: { enabled: true, limitInt: null },
     branches: { enabled: true, limitInt: null },
     messages: { enabled: true, limitInt: null },
