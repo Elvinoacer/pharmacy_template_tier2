@@ -2,7 +2,8 @@ import { listingLimitMessage } from "@/app/lib/platform/plan-policy";
 import { NextResponse } from "next/server";
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
-import { getSessionUser, isStaff, writeAuditLog } from "@/app/lib/auth";
+import { AuthError, getSessionUser, isStaff, writeAuditLog } from "@/app/lib/auth";
+import { requireMedicationWriteContext } from "@/app/lib/services/medication-access";
 import { addSharedMasterToPharmacy } from "@/app/lib/services/shared-medication-library";
 import { withPharmacy } from "@/app/lib/tenant-context";
 
@@ -34,21 +35,24 @@ export async function POST(req: Request) {
     );
   }
 
-  const pharmacyId = user.activePharmacyId;
-  const activeMembership = pharmacyId
-    ? user.memberships.some(
-        (membership) => membership.pharmacyId === pharmacyId && membership.status === "active",
-      )
-    : false;
-
-  if (!pharmacyId || !activeMembership) {
-    return NextResponse.json(
-      {
-        error: "pharmacy_required",
-        message: "Choose an active pharmacy workspace before adding medicine to inventory.",
-      },
-      { status: 409 },
-    );
+  let pharmacyId: string;
+  try {
+    pharmacyId = await requireMedicationWriteContext(user);
+  } catch (error) {
+    const status =
+      error instanceof AuthError
+        ? error.status
+        : Number((error as { status?: number })?.status || 403);
+    const code = error instanceof Error ? error.message : "forbidden";
+    const message =
+      code === "PHARMACY_BILLING_SUSPENDED"
+        ? "This pharmacy workspace is paused because billing needs attention."
+        : code === "PHARMACY_WORKSPACE_PAUSED"
+          ? "This pharmacy workspace is paused. Restore access before changing inventory."
+          : code.includes("permission")
+            ? "You do not have permission to add medications to this inventory."
+            : "Choose an active pharmacy workspace before adding medicine to inventory.";
+    return NextResponse.json({ error: code, message }, { status });
   }
 
   let body: z.infer<typeof Body>;
