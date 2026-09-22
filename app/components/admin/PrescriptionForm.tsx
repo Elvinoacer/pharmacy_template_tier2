@@ -216,18 +216,18 @@ function FieldLabel({
 }) {
   return (
     <div className="mb-1.5 flex flex-wrap items-center gap-1.5">
-      <label htmlFor={htmlFor} className="text-xs font-semibold admin-muted">{children}</label>
+      <label htmlFor={htmlFor} className="text-sm font-semibold admin-muted">{children}</label>
       {required && (
-        <span className="rounded-full bg-rose-500/15 px-1.5 py-0.5 text-xs font-bold uppercase tracking-wide text-rose-700">
+        <span className="rounded-full bg-rose-500/15 px-1.5 py-0.5 text-sm font-bold uppercase tracking-wide text-rose-700">
           Required
         </span>
       )}
       {optional && !required && (
-        <span className="rounded-full bg-[var(--admin-inset-2)] px-1.5 py-0.5 text-xs font-bold uppercase tracking-wide admin-soft">
+        <span className="rounded-full bg-[var(--admin-inset-2)] px-1.5 py-0.5 text-sm font-bold uppercase tracking-wide admin-soft">
           Optional
         </span>
       )}
-      {hint && <span className="text-xs admin-soft">· {hint}</span>}
+      {hint && <span className="text-sm admin-soft">· {hint}</span>}
     </div>
   );
 }
@@ -254,7 +254,7 @@ function SectionCard({
           </span>
           <div>
             <h3 className="text-sm font-bold admin-text">{title}</h3>
-            {description && <p className="mt-0.5 text-xs admin-soft">{description}</p>}
+            {description && <p className="mt-0.5 text-sm admin-soft">{description}</p>}
           </div>
         </div>
         {action}
@@ -668,7 +668,7 @@ export default function PrescriptionForm({
         icon={FileText}
       >
         <input type="hidden" name="intakeChannel" value={intakeChannel} />
-        <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-3">
+        <div className="grid grid-cols-1 gap-3 sm:grid-cols-3 lg:grid-cols-3">
           {Object.entries(INTAKE_CHANNEL_LABELS).map(([key, info]) => {
             const isSelected = intakeChannel === key;
             return (
@@ -683,12 +683,12 @@ export default function PrescriptionForm({
                 }`}
               >
                 <div className="flex items-center gap-2 mb-1">
-                  <span className={`text-xs font-bold ${isSelected ? "text-emerald-800 dark:text-emerald-300" : "admin-text"}`}>
+                  <span className={`text-sm font-bold ${isSelected ? "text-emerald-800 dark:text-emerald-300" : "admin-text"}`}>
                     {info.label}
                   </span>
-                  {isSelected && <span className="text-xs text-emerald-600 font-bold">✓</span>}
+                  {isSelected && <span className="text-sm text-emerald-600 font-bold">✓</span>}
                 </div>
-                <span className="line-clamp-2 text-xs admin-soft leading-tight">
+                <span className="line-clamp-2 text-sm admin-soft leading-tight">
                   {info.description}
                 </span>
               </button>
@@ -703,20 +703,20 @@ export default function PrescriptionForm({
           <div className="flex items-start gap-3">
             <AlertTriangle className="mt-0.5 h-5 w-5 shrink-0 text-amber-600" />
             <div className="space-y-1">
-              <h4 className="text-xs font-bold text-amber-900 dark:text-amber-200">
+              <h4 className="text-sm font-bold text-amber-900 dark:text-amber-200">
                 Potential Duplicate Therapy Detected
               </h4>
-              <p className="text-xs text-amber-800 dark:text-amber-300">
+              <p className="text-sm text-amber-800 dark:text-amber-300">
                 This patient already has active prescription(s) for this medication or class:
               </p>
-              <ul className="list-disc list-inside text-xs text-amber-900 dark:text-amber-200 font-medium pt-1 space-y-0.5">
+              <ul className="list-disc list-inside text-sm text-amber-900 dark:text-amber-200 font-medium pt-1 space-y-0.5">
                 {duplicateAlerts.duplicates.map((dup: any) => (
                   <li key={dup.id}>
                     <strong>{dup.medicineName}</strong> (Dose: {dup.dosage || "—"}) · Started {formatDate(dup.startDate || dup.createdAt)}
                   </li>
                 ))}
               </ul>
-              <p className="text-xs text-amber-700/90 dark:text-amber-300/90 pt-1">
+              <p className="text-sm text-amber-700/90 dark:text-amber-300/90 pt-1">
                 Please verify if this is a dose adjustment, therapeutic substitution, or concurrent regimen.
               </p>
             </div>
@@ -743,7 +743,7 @@ export default function PrescriptionForm({
           </div>
 
           <div className="flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-[var(--admin-border)] bg-[var(--admin-inset)] p-3.5">
-            <label className="flex items-center gap-2.5 cursor-pointer text-xs font-bold admin-text">
+            <label className="flex items-center gap-2.5 cursor-pointer text-sm font-bold admin-text">
               <input
                 type="checkbox"
                 name="patientVerified"
@@ -753,7 +753,7 @@ export default function PrescriptionForm({
               />
               <span>Patient identity &amp; clinical file verified</span>
             </label>
-            <span className="text-xs admin-soft font-semibold">
+            <span className="text-sm admin-soft font-semibold">
               {patientVerified ? "✓ Verified against patient ID" : "Verification pending"}
             </span>
           </div>
@@ -767,7 +767,7 @@ export default function PrescriptionForm({
               value={patientVerificationNotes}
               onChange={(e) => setPatientVerificationNotes(e.target.value)}
               placeholder="e.g. Verified photo ID, allergy: Penicillin, pregnancy: No"
-              className="input-admin text-xs"
+              className="input-admin min-h-11 text-sm"
             />
           </div>
         </div>
@@ -787,7 +787,7 @@ export default function PrescriptionForm({
             <button
               type="button"
               onClick={addDrug}
-              className="inline-flex items-center gap-1.5 rounded-full border border-[var(--admin-border)] bg-[var(--admin-inset)] px-3 py-1.5 text-xs font-semibold admin-accent-text transition hover:brightness-110"
+              className="min-h-11 inline-flex items-center gap-1.5 rounded-full border border-[var(--admin-border)] bg-[var(--admin-inset)] px-3 py-1.5 text-sm font-semibold admin-accent-text transition hover:brightness-110"
             >
               <Plus className="h-3.5 w-3.5" /> Add drug
             </button>
@@ -802,7 +802,7 @@ export default function PrescriptionForm({
             >
               <div className="mb-4 flex items-center justify-between gap-2">
                 <p className="text-sm font-bold admin-text">
-                  <span className="mr-2 inline-flex h-6 w-6 items-center justify-center rounded-lg bg-emerald-500/15 text-xs font-extrabold text-emerald-700">
+                  <span className="mr-2 inline-flex h-6 w-6 items-center justify-center rounded-lg bg-emerald-500/15 text-sm font-extrabold text-emerald-700">
                     {idx + 1}
                   </span>
                   {drug.medicineName || `Drug ${idx + 1}`}
@@ -811,7 +811,7 @@ export default function PrescriptionForm({
                   <button
                     type="button"
                     onClick={() => removeDrug(drug.key)}
-                    className="inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-xs font-semibold text-rose-600 transition hover:bg-rose-500/10"
+                    className="inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-sm font-semibold text-rose-600 transition hover:bg-rose-500/10"
                   >
                     <Trash2 className="h-3.5 w-3.5" /> Remove
                   </button>
@@ -842,7 +842,7 @@ export default function PrescriptionForm({
                       value={drug.medicineName}
                       onChange={(e) => updateDrug(drug.key, { medicineName: e.target.value })}
                       placeholder="Lisinopril 10mg"
-                      className="input-admin pl-9"
+                      className="input-admin min-h-11 pl-9"
                     />
                   </div>
                 </div>
@@ -869,7 +869,7 @@ export default function PrescriptionForm({
                       value={drug.rxReference}
                       onChange={(e) => updateDrug(drug.key, { rxReference: e.target.value })}
                       placeholder="RX-2024-88421"
-                      className="input-admin pl-9 font-mono"
+                      className="input-admin min-h-11 pl-9 font-mono"
                     />
                   </div>
                 </div>
@@ -879,7 +879,7 @@ export default function PrescriptionForm({
                     value={drug.dosage}
                     onChange={(e) => updateDrug(drug.key, { dosage: e.target.value })}
                     placeholder="10mg tablet"
-                    className="input-admin"
+                    className="input-admin min-h-11"
                   />
                 </div>
                 <div>
@@ -892,7 +892,7 @@ export default function PrescriptionForm({
                     step="0.25"
                     value={drug.unitsPerDose}
                     onChange={(e) => updateDrug(drug.key, { unitsPerDose: e.target.value })}
-                    className="input-admin"
+                    className="input-admin min-h-11"
                     placeholder="1"
                   />
                 </div>
@@ -907,7 +907,7 @@ export default function PrescriptionForm({
                       value={drug.unitPrice}
                       onChange={(e) => updateDrug(drug.key, { unitPrice: e.target.value })}
                       placeholder="500"
-                      className="input-admin pl-9"
+                      className="input-admin min-h-11 pl-9"
                     />
                   </div>
                 </div>
@@ -916,10 +916,10 @@ export default function PrescriptionForm({
               {/* Schedule */}
               <div className="mt-4 rounded-xl border border-[var(--admin-border)] bg-[var(--admin-card)] p-4">
                 <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
-                  <p className="flex items-center gap-1.5 text-xs font-bold admin-text">
+                  <p className="flex items-center gap-1.5 text-sm font-bold admin-text">
                     <Clock className="h-3.5 w-3.5 text-emerald-600" /> Dose schedule
                   </p>
-                  <span className="text-xs admin-soft">
+                  <span className="text-sm admin-soft">
                     Drives reminders · {tzLabel}
                   </span>
                 </div>
@@ -930,7 +930,7 @@ export default function PrescriptionForm({
                     <select id={`${fieldPrefix}-${drug.key}-7`}
                       value={drug.frequency}
                       onChange={(e) => onFrequencyChange(drug.key, e.target.value)}
-                      className="input-admin"
+                      className="input-admin min-h-11"
                     >
                       {Object.entries(FREQUENCY_PRESETS).map(([value, meta]) => (
                         <option key={value} value={value}>
@@ -950,7 +950,7 @@ export default function PrescriptionForm({
                       onChange={(e) =>
                         updateDrug(drug.key, { foodCondition: e.target.value as FoodCondition })
                       }
-                      className="input-admin"
+                      className="input-admin min-h-11"
                     >
                       <option value="none">No restriction</option>
                       <option value="with_food">With food</option>
@@ -980,7 +980,7 @@ export default function PrescriptionForm({
                             }}
                             onBlur={() => normalizeDrugSchedule(drug.key)}
                             placeholder={inferLabelFromTime(t, ti)}
-                            className="input-admin !h-7 !w-[7.5rem] !px-2 !py-0 text-xs font-semibold"
+                            className="input-admin min-h-11 !h-7 !w-full sm:!w-[7.5rem] !px-2 !py-0 text-sm font-semibold"
                             aria-label={`Label for dose ${ti + 1}`}
                             title="Dose label (e.g. Morning, Evening)"
                           />
@@ -1005,7 +1005,7 @@ export default function PrescriptionForm({
                                 });
                               }}
                               onBlur={() => normalizeDrugSchedule(drug.key)}
-                              className="input-admin !w-[7.5rem] font-mono"
+                              className="input-admin min-h-11 !w-full sm:!w-[7.5rem] font-mono"
                             />
                             {drug.times.length > 1 && (
                               <button
@@ -1039,7 +1039,7 @@ export default function PrescriptionForm({
                             { sort: true },
                           );
                         }}
-                        className="inline-flex items-center gap-1 rounded-full border border-dashed border-[var(--admin-border)] px-2.5 py-1.5 text-xs font-semibold admin-muted transition hover:admin-accent-text"
+                        className="inline-flex items-center gap-1 rounded-full border border-dashed border-[var(--admin-border)] px-2.5 py-1.5 text-sm font-semibold admin-muted transition hover:admin-accent-text"
                       >
                         <Plus className="h-3 w-3" /> Time
                       </button>
@@ -1047,7 +1047,7 @@ export default function PrescriptionForm({
                         <button
                           type="button"
                           onClick={() => normalizeDrugSchedule(drug.key)}
-                          className="inline-flex items-center gap-1 rounded-full border border-amber-500/40 bg-amber-500/10 px-2.5 py-1.5 text-xs font-semibold text-amber-800 dark:text-amber-200"
+                          className="inline-flex items-center gap-1 rounded-full border border-amber-500/40 bg-amber-500/10 px-2.5 py-1.5 text-sm font-semibold text-amber-800 dark:text-amber-200"
                         >
                           Sort chronologically
                         </button>
@@ -1061,12 +1061,12 @@ export default function PrescriptionForm({
                   return (
                     <div className="mt-3 space-y-2">
                       {preview.warning && (
-                        <p className="flex items-start gap-1.5 rounded-lg border border-amber-500/30 bg-amber-500/10 px-2.5 py-2 text-xs text-amber-900 dark:text-amber-100">
+                        <p className="flex items-start gap-1.5 rounded-lg border border-amber-500/30 bg-amber-500/10 px-2.5 py-2 text-sm text-amber-900 dark:text-amber-100">
                           <AlertCircle className="mt-0.5 h-3.5 w-3.5 shrink-0" />
                           <span>{preview.warning}</span>
                         </p>
                       )}
-                      <p className="rounded-lg bg-emerald-500/10 px-2.5 py-1.5 text-xs text-emerald-900 dark:text-emerald-200">
+                      <p className="rounded-lg bg-emerald-500/10 px-2.5 py-1.5 text-sm text-emerald-900 dark:text-emerald-200">
                         <span className="font-semibold">Saved as: </span>
                         {preview.scheduleText}
                       </p>
@@ -1083,18 +1083,18 @@ export default function PrescriptionForm({
                       value={drug.freeTextSchedule}
                       onChange={(e) => updateDrug(drug.key, { freeTextSchedule: e.target.value })}
                       placeholder="e.g. 1 tablet twice daily after meals"
-                      className="input-admin flex-1"
+                      className="input-admin min-h-11 flex-1"
                     />
                     <button
                       type="button"
                       onClick={() => applyLegacyParse(drug.key)}
-                      className="inline-flex shrink-0 items-center justify-center gap-1 rounded-xl border border-[var(--admin-border)] bg-[var(--admin-inset)] px-3 py-2 text-xs font-semibold admin-text transition hover:brightness-110"
+                      className="inline-flex shrink-0 items-center justify-center gap-1 rounded-xl border border-[var(--admin-border)] bg-[var(--admin-inset)] px-3 py-2 text-sm font-semibold admin-text transition hover:brightness-110"
                     >
                       Parse &amp; pre-fill
                     </button>
                   </div>
                   {showLegacyConfirm && drug.freeTextSchedule && (
-                    <p className="mt-2 rounded-lg bg-emerald-500/10 px-2.5 py-1.5 text-xs text-emerald-800 dark:text-emerald-300">
+                    <p className="mt-2 rounded-lg bg-emerald-500/10 px-2.5 py-1.5 text-sm text-emerald-800 dark:text-emerald-300">
                       Understood as <strong>{drug.times.length}×/day</strong> at{" "}
                       <strong>
                         {drug.times
@@ -1143,7 +1143,7 @@ export default function PrescriptionForm({
                           ? String(Math.min(30, Math.max(0, drug.stockQty)))
                           : "30"
                       }
-                      className={`input-admin pl-9 ${
+                      className={`input-admin min-h-11 pl-9 ${
                         drug.stockQty !== null && qtyNumber(drug.quantity) > drug.stockQty
                           ? "border-rose-500/60 ring-1 ring-rose-500/30"
                           : drug.stockQty !== null && drug.stockQty <= 0
@@ -1162,7 +1162,7 @@ export default function PrescriptionForm({
                     const daysSupplyNum = Number(drug.daysSupply) || 30;
                     const autoCalculatedTotalQty = Math.ceil(unitsPerDoseNum * dosesCount * daysSupplyNum);
                     return (
-                      <div className="mt-1.5 flex items-center justify-between gap-1 rounded-xl bg-emerald-500/10 px-2 py-1 text-xs text-emerald-800 dark:text-emerald-300 border border-emerald-500/20">
+                      <div className="mt-1.5 flex items-center justify-between gap-1 rounded-xl bg-emerald-500/10 px-2 py-1 text-sm text-emerald-800 dark:text-emerald-300 border border-emerald-500/20">
                         <span>💡 Auto: {unitsPerDoseNum} dose × {dosesCount}/d × {daysSupplyNum}d = <strong>{autoCalculatedTotalQty}</strong></span>
                         {drug.quantity !== String(autoCalculatedTotalQty) && (
                           <button
@@ -1179,15 +1179,15 @@ export default function PrescriptionForm({
                   {drug.stockQty !== null && (
                     <div className="mt-1.5 flex flex-wrap items-center gap-2">
                       {drug.stockQty <= 0 ? (
-                        <p className="text-xs font-semibold text-rose-600">
+                        <p className="text-sm font-semibold text-rose-600">
                           Out of stock — receive inventory first.
                         </p>
                       ) : qtyNumber(drug.quantity) > drug.stockQty ? (
-                        <p className="text-xs font-semibold text-rose-600">
+                        <p className="text-sm font-semibold text-rose-600">
                           Only {drug.stockQty} available. Quantity will be capped.
                         </p>
                       ) : (
-                        <p className="text-xs admin-soft">
+                        <p className="text-sm admin-soft">
                           Max this fill: <strong>{drug.stockQty}</strong>
                           {drug.lowStockThreshold !== null &&
                             drug.stockQty <= drug.lowStockThreshold && (
@@ -1201,7 +1201,7 @@ export default function PrescriptionForm({
                           onClick={() =>
                             updateDrug(drug.key, { quantity: String(drug.stockQty) })
                           }
-                          className="rounded-full border border-[var(--admin-border)] bg-[var(--admin-card)] px-2 py-0.5 text-xs font-semibold admin-accent-text hover:brightness-110"
+                          className="rounded-full border border-[var(--admin-border)] bg-[var(--admin-card)] px-2 py-0.5 text-sm font-semibold admin-accent-text hover:brightness-110"
                         >
                           Use all {drug.stockQty}
                         </button>
@@ -1216,7 +1216,7 @@ export default function PrescriptionForm({
                   <select id={`${fieldPrefix}-${drug.key}-11`}
                     value={drug.billingUnit || "UNIT"}
                     onChange={(e) => updateDrug(drug.key, { billingUnit: e.target.value })}
-                    className="input-admin"
+                    className="input-admin min-h-11"
                   >
                     <option value="TABLET">Tablets</option>
                     <option value="CAPSULE">Capsules</option>
@@ -1237,7 +1237,7 @@ export default function PrescriptionForm({
                     value={drug.daysSupply}
                     onChange={(e) => updateDrug(drug.key, { daysSupply: e.target.value })}
                     placeholder="30"
-                    className="input-admin"
+                    className="input-admin min-h-11"
                   />
                 </div>
                 <div>
@@ -1247,7 +1247,7 @@ export default function PrescriptionForm({
                     min="0"
                     value={drug.refillsRemaining}
                     onChange={(e) => updateDrug(drug.key, { refillsRemaining: e.target.value })}
-                    className="input-admin"
+                    className="input-admin min-h-11"
                   />
                 </div>
               </div>
@@ -1276,7 +1276,7 @@ export default function PrescriptionForm({
                   defaultValue={
                     initial?.startDate?.slice(0, 10) || (!isEdit ? todayLocal : "")
                   }
-                  className="input-admin pl-9"
+                  className="input-admin min-h-11 pl-9"
                 />
               </div>
             </div>
@@ -1288,7 +1288,7 @@ export default function PrescriptionForm({
                   name="nextRefillDue"
                   type="date"
                   defaultValue={initial?.nextRefillDue?.slice(0, 10) ?? ""}
-                  className="input-admin pl-9"
+                  className="input-admin min-h-11 pl-9"
                 />
               </div>
             </div>
@@ -1300,7 +1300,7 @@ export default function PrescriptionForm({
                   name="endDate"
                   type="date"
                   defaultValue={initial?.endDate?.slice(0, 10) ?? ""}
-                  className="input-admin pl-9"
+                  className="input-admin min-h-11 pl-9"
                 />
               </div>
             </div>
@@ -1308,7 +1308,7 @@ export default function PrescriptionForm({
               <FieldLabel htmlFor={`${fieldPrefix}-17`} optional>Status</FieldLabel>
               <select id={`${fieldPrefix}-17`}
                 name="status"
-                className="input-admin"
+                className="input-admin min-h-11"
                 defaultValue={initial?.status ?? "active"}
               >
                 <option value="active">Active</option>
@@ -1333,10 +1333,10 @@ export default function PrescriptionForm({
                 value={prescriber}
                 onChange={(e) => setPrescriber(e.target.value)}
                 placeholder="e.g. Dr. Jane Mutua, MD"
-                className="input-admin text-xs"
+                className="input-admin min-h-11 text-sm"
               />
             </div>
-            <div className="grid grid-cols-2 gap-3">
+            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
               <div>
                 <FieldLabel htmlFor={`${fieldPrefix}-19`} optional hint="Board / KMPDC #">License / Reg #</FieldLabel>
                 <input id={`${fieldPrefix}-19`}
@@ -1344,7 +1344,7 @@ export default function PrescriptionForm({
                   value={prescriberLicense}
                   onChange={(e) => setPrescriberLicense(e.target.value)}
                   placeholder="e.g. KMPDC-A48291"
-                  className="input-admin text-xs font-mono"
+                  className="input-admin min-h-11 text-sm font-mono"
                 />
               </div>
               <div>
@@ -1354,11 +1354,11 @@ export default function PrescriptionForm({
                   value={prescriberFacility}
                   onChange={(e) => setPrescriberFacility(e.target.value)}
                   placeholder="e.g. Nairobi Hospital"
-                  className="input-admin text-xs"
+                  className="input-admin min-h-11 text-sm"
                 />
               </div>
             </div>
-            <div className="grid grid-cols-2 gap-3">
+            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
               <div>
                 <FieldLabel htmlFor={`${fieldPrefix}-21`} optional>Prescriber phone</FieldLabel>
                 <input id={`${fieldPrefix}-21`}
@@ -1366,7 +1366,7 @@ export default function PrescriptionForm({
                   value={prescriberPhone}
                   onChange={(e) => setPrescriberPhone(e.target.value)}
                   placeholder="+254 700 000000"
-                  className="input-admin text-xs"
+                  className="input-admin min-h-11 text-sm"
                 />
               </div>
               <div>
@@ -1376,12 +1376,12 @@ export default function PrescriptionForm({
                   value={prescriberEmail}
                   onChange={(e) => setPrescriberEmail(e.target.value)}
                   placeholder="doctor@hospital.org"
-                  className="input-admin text-xs"
+                  className="input-admin min-h-11 text-sm"
                 />
               </div>
             </div>
-            <div className="flex items-center justify-between rounded-xl border border-[var(--admin-border)] bg-[var(--admin-inset)] p-3">
-              <label className="flex items-center gap-2 cursor-pointer text-xs font-semibold admin-text">
+            <div className="flex flex-col items-start gap-2 rounded-xl border border-[var(--admin-border)] bg-[var(--admin-inset)] p-3 sm:flex-row sm:items-center sm:justify-between">
+              <label className="flex min-h-11 items-center gap-2 cursor-pointer text-sm font-semibold admin-text">
                 <input
                   type="checkbox"
                   name="prescriberVerified"
@@ -1391,7 +1391,7 @@ export default function PrescriptionForm({
                 />
                 <span>Prescriber license &amp; credentials verified</span>
               </label>
-              <span className="text-xs admin-soft">
+              <span className="text-sm admin-soft">
                 {prescriberVerified ? "✓ Verified Practitioner" : "Unverified"}
               </span>
             </div>
@@ -1407,8 +1407,8 @@ export default function PrescriptionForm({
           icon={HelpCircle}
         >
           <div className="space-y-3.5">
-            <div className="flex items-center justify-between rounded-xl border border-amber-500/30 bg-amber-500/10 p-3">
-              <label className="flex items-center gap-2 cursor-pointer text-xs font-bold text-amber-900 dark:text-amber-300">
+            <div className="flex flex-col items-start gap-2 rounded-xl border border-amber-500/30 bg-amber-500/10 p-3 sm:flex-row sm:items-center sm:justify-between">
+              <label className="flex min-h-11 items-center gap-2 cursor-pointer text-sm font-bold text-amber-900 dark:text-amber-300">
                 <input
                   type="checkbox"
                   name="isUnclear"
@@ -1419,7 +1419,7 @@ export default function PrescriptionForm({
                 <span>Flag prescription as unclear / ambiguous</span>
               </label>
               {isUnclear && (
-                <span className="rounded-full bg-amber-500/20 px-2 py-0.5 text-xs font-bold uppercase text-amber-800 dark:text-amber-300">
+                <span className="rounded-full bg-amber-500/20 px-2 py-0.5 text-sm font-bold uppercase text-amber-800 dark:text-amber-300">
                   Hold for clarification
                 </span>
               )}
@@ -1432,7 +1432,7 @@ export default function PrescriptionForm({
                   name="unclearReason"
                   value={unclearReason}
                   onChange={(e) => setUnclearReason(e.target.value)}
-                  className="input-admin text-xs"
+                  className="input-admin min-h-11 text-sm"
                 >
                   <option value="">Select reason...</option>
                   <option value="Illegible / unclear handwriting">Illegible / unclear handwriting</option>
@@ -1455,7 +1455,7 @@ export default function PrescriptionForm({
                 rows={3}
                 defaultValue={initial?.notes ?? ""}
                 placeholder="Internal notes, allergy verification, or prescriber instructions…"
-                className="input-admin resize-y text-xs"
+                className="input-admin min-h-11 resize-y text-sm"
               />
             </div>
           </div>
@@ -1477,10 +1477,10 @@ export default function PrescriptionForm({
                 value={attachmentUrls}
                 onChange={(e) => setAttachmentUrls(e.target.value)}
                 placeholder="https://.../uploads/prescription-scan.jpg&#10;https://.../whatsapp-rx.pdf"
-                className="input-admin resize-y font-mono text-xs"
+                className="input-admin min-h-11 resize-y font-mono text-sm"
               />
             </div>
-            <p className="text-xs admin-soft leading-tight">
+            <p className="text-sm admin-soft leading-tight">
               Attached source files remain viewable on the review cockpit for audit compliance.
             </p>
           </div>
@@ -1492,12 +1492,12 @@ export default function PrescriptionForm({
           <AlertCircle className="mt-0.5 h-3.5 w-3.5 shrink-0" />
           <div className="space-y-0.5">
             <p className="font-semibold">Cannot save — quantity exceeds stock on hand</p>
-            <ul className="list-inside list-disc text-xs opacity-90">
+            <ul className="list-inside list-disc text-sm opacity-90">
               {stockIssues.map((msg) => (
                 <li key={msg}>{msg}</li>
               ))}
             </ul>
-            <p className="text-xs opacity-90">
+            <p className="text-sm opacity-90">
               Lower the quantity, split the course, or receive stock first.
             </p>
           </div>
@@ -1505,7 +1505,7 @@ export default function PrescriptionForm({
       )}
 
       <div className="flex flex-col gap-3 rounded-2xl border border-[var(--admin-border)] bg-[var(--admin-inset)] p-4 sm:flex-row sm:items-center sm:justify-between">
-        <div className="flex items-start gap-2 text-xs admin-soft">
+        <div className="flex items-start gap-2 text-sm admin-soft">
           <Info className="mt-0.5 h-3.5 w-3.5 shrink-0" />
           <div>
             <p className="font-semibold admin-text">
@@ -1526,7 +1526,7 @@ export default function PrescriptionForm({
           type="submit"
           disabled={pending || hasStockBlock}
           title={hasStockBlock ? "Fix stock quantity issues before saving" : undefined}
-          className="btn-admin shrink-0 !rounded-xl px-6 py-2.5 disabled:opacity-50 sm:min-w-[220px]"
+          className="btn-admin min-h-11 w-full shrink-0 !rounded-xl px-6 py-2.5 disabled:opacity-50 sm:w-auto sm:min-w-[220px]"
         >
           {pending ? (
             <>
