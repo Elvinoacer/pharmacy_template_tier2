@@ -5,12 +5,15 @@ import { prisma } from "@/app/lib/db";
 import { adminCreateCampaignAction, adminLaunchCampaignAction } from "@/app/actions/admin";
 import { AdminPanel, AdminEmptyState } from "@/app/components/admin/AdminUI";
 import { AdminShell } from "@/app/components/admin/AdminShell";
+import { PremiumFeatureNotice } from "@/app/components/admin/PremiumFeatureNotice";
 import CampaignForm from "@/app/components/admin/CampaignForm";
 import { Pagination } from "@/app/components/Pagination";
 import { parsePageParam } from "@/app/lib/pagination";
 import { Megaphone, Rocket, Mail, MessageSquare, MessageCircle, Zap, Calendar, Users, Search, X } from "lucide-react";
 import { formatDateTime } from "@/app/lib/time";
 import type { Prisma } from "@/app/generated/prisma/client";
+import { hasPremiumPlan } from "@/app/lib/platform/entitlements";
+import { FREE_MONTHLY_CAMPAIGN_LAUNCH_LIMIT } from "@/app/lib/platform/plan-policy";
 
 export const metadata = { title: "Campaigns" };
 
@@ -40,6 +43,16 @@ export default async function AdminCampaignsPage({
   if (!user) redirect("/login");
   const sp = await searchParams;
 
+  const pharmacyId =
+    user.activePharmacyId ||
+    user.memberships.find((membership) => membership.status === "active")?.pharmacyId;
+  if (!pharmacyId) redirect("/admin/select");
+
+  const premiumActive = await hasPremiumPlan(pharmacyId);
+  const now = new Date();
+  const monthStart = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), 1));
+  const nextMonth = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth() + 1, 1));
+
   const where: Prisma.CampaignWhereInput = sp.q
     ? {
         OR: [
@@ -51,10 +64,20 @@ export default async function AdminCampaignsPage({
       }
     : {};
 
-  const [total, statusGroups, segments] = await Promise.all([
+  const [total, statusGroups, segments, monthlyLaunches] = await Promise.all([
     prisma.campaign.count({ where }),
     prisma.campaign.groupBy({ by: ["status"], _count: true }),
     prisma.segment.findMany({ orderBy: { name: "asc" } }),
+    premiumActive
+      ? Promise.resolve(0)
+      : prisma.campaign.count({
+          where: {
+            OR: [
+              { sentAt: { gte: monthStart, lt: nextMonth } },
+              { status: "sending", updatedAt: { gte: monthStart, lt: nextMonth } },
+            ],
+          },
+        }),
   ]);
 
   const page = parsePageParam(sp.page, total, PAGE_SIZE);
@@ -74,6 +97,9 @@ export default async function AdminCampaignsPage({
   };
 
   const queryParams: Record<string, string | undefined> = { q: sp.q };
+  const freeLaunchesRemaining = premiumActive
+    ? null
+    : Math.max(0, FREE_MONTHLY_CAMPAIGN_LAUNCH_LIMIT - monthlyLaunches);
 
   return (
     <AdminShell
@@ -81,6 +107,16 @@ export default async function AdminCampaignsPage({
       title="Campaigns"
       subtitle="Create outreach campaigns and review their audience, schedule, and progress."
     >
+      {!premiumActive && (
+        <div className="mb-5">
+          <PremiumFeatureNotice
+            title="Bring customers back automatically"
+            description={`Free includes ${FREE_MONTHLY_CAMPAIGN_LAUNCH_LIMIT} campaign launch per month and unlimited drafts. Premium removes the launch cap and unlocks scheduling, custom patient groups and multi-channel outreach.`}
+            benefits={["Unlimited launches", "Scheduled campaigns", "Custom audiences", "Multi-channel delivery"]}
+          />
+        </div>
+      )}
+
       <div className="mb-6 grid grid-cols-2 gap-3 md:grid-cols-4">
         {[
           { label: "Total", value: stats.total, color: "admin-text" },
@@ -132,6 +168,14 @@ export default async function AdminCampaignsPage({
               {campaigns.map((c) => {
                 const ChannelIcon = CHANNEL_ICON[c.channel] || Mail;
                 const canLaunch = (c.status === "draft" || c.status === "scheduled") && user.role === "manager";
+                const requiresPremium =
+                  !premiumActive &&
+                  (Boolean(c.scheduledFor) ||
+                    c.channel === "multi" ||
+                    Boolean(c.segment && !c.segment.isSystem));
+                const launchBlocked =
+                  requiresPremium ||
+                  (!premiumActive && freeLaunchesRemaining === 0);
                 const cStats = c.stats as { sent?: number; delivered?: number; failed?: number; opened?: number; clicked?: number } | null;
                 return (
                   <li
@@ -190,8 +234,19 @@ export default async function AdminCampaignsPage({
                       {canLaunch && (
                         <form action={adminLaunchCampaignAction} className="shrink-0">
                           <input type="hidden" name="id" value={c.id} />
-                          <button type="submit" className="btn-admin-sm w-full justify-center sm:w-auto">
-                            <Rocket className="h-3.5 w-3.5" /> Launch
+                          <button
+                            type="submit"
+                            disabled={launchBlocked}
+                            title={
+                              requiresPremium
+                                ? "This campaign uses Premium scheduling, targeting or delivery."
+                                : launchBlocked
+                                  ? "Free monthly campaign launch already used."
+                                  : undefined
+                            }
+                            className="btn-admin-sm w-full justify-center disabled:cursor-not-allowed disabled:opacity-50 sm:w-auto"
+                          >
+                            <Rocket className="h-3.5 w-3.5" /> {launchBlocked ? "Premium" : "Launch"}
                           </button>
                         </form>
                       )}
@@ -218,7 +273,9 @@ export default async function AdminCampaignsPage({
         >
           <CampaignForm
             action={adminCreateCampaignAction}
-            segments={segments.map((s) => ({ id: s.id, name: s.name }))}
+            segments={segments.map((s) => ({ id: s.id, name: s.name, isSystem: s.isSystem }))}
+            premiumActive={premiumActive}
+            freeLaunchesRemaining={freeLaunchesRemaining}
           />
         </AdminPanel>
       </div>
