@@ -139,12 +139,12 @@ export default function CareIntentNavigator({
               <span className={styles.intentCopy}>
                 <strong>{item.label}</strong>
                 <small>{item.helper}</small>
+                {active && (
+                  <span className={styles.selectedBadge} aria-hidden>
+                    <Check size={13} /> Selected
+                  </span>
+                )}
               </span>
-              {active && (
-                <span className={styles.selectedBadge} aria-hidden>
-                  <Check size={13} /> Selected
-                </span>
-              )}
               <ArrowRight className={styles.intentArrow} size={16} aria-hidden />
             </button>
           );
