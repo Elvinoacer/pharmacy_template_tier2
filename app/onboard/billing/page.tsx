@@ -189,7 +189,7 @@ export default async function PharmacyBillingPage(props: PageProps) {
         Simple, frictionless billing.
       </h1>
       <p className="mt-1.5 max-w-md text-xs sm:text-sm leading-relaxed text-[var(--muted)]">
-        Complete the one-time KES 100 verification fee, then launch free with 5 medicine listings and 2 services. Premium remains optional at KES 500/month.
+        Complete the one-time KES 100 verification fee, then launch free with 5 medicine listings, 2 services and 10 direct Afyvia prescription referrals per month. Premium remains optional at KES 500/month.
       </p>
 
       {/* ACTIVE PROMOTION BANNER */}
@@ -286,7 +286,7 @@ export default async function PharmacyBillingPage(props: PageProps) {
           <ul className="mt-2 space-y-1.5 text-xs text-[var(--muted)]">
             <li className="flex items-start gap-1.5">
               <CheckCircle2 className="mt-0.5 h-3.5 w-3.5 shrink-0 text-[var(--brand)]" />
-              <span><strong>Storefront &amp; AI:</strong> More than 5 medicine listings and 2 active services, with AI-assisted imports.</span>
+              <span><strong>Reach &amp; AI:</strong> Unlimited direct Afyvia prescription referrals, more than 5 medicine listings and 2 active services, with AI-assisted imports.</span>
             </li>
             <li className="flex items-start gap-1.5">
               <CheckCircle2 className="mt-0.5 h-3.5 w-3.5 shrink-0 text-[var(--brand)]" />
