@@ -330,6 +330,7 @@ export default function NetworkServiceComparison({
                       </span>
                     </div>
                   </div>
+                  </div>
 
                   <div className="flex flex-wrap items-center gap-2 shrink-0">
                     {item.pharmacy.latitude != null && item.pharmacy.longitude != null && (
