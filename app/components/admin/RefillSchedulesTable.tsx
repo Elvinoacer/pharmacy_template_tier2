@@ -178,14 +178,14 @@ export function RefillSchedulesTable({
               <button
                 key={chip.id}
                 onClick={() => setFilter(chip.id)}
-                className={`flex items-center gap-1.5 rounded-xl px-3 py-1.5 text-xs font-bold transition ${
+                className={`flex items-center gap-1.5 rounded-xl px-3 py-1.5 text-sm font-bold transition ${
                   active
                     ? "bg-[var(--admin-accent)] text-[var(--admin-btn-fg)] shadow-sm"
                     : "border border-[var(--admin-border)] bg-[var(--admin-card)] admin-muted hover:bg-[var(--admin-inset)]"
                 }`}
               >
                 <span>{chip.label}</span>
-                <span className={`rounded-full px-1.5 py-0.2 text-xs font-bold ${active ? "bg-white/20 text-white" : chip.color || "bg-black/5 admin-soft"}`}>
+                <span className={`rounded-full px-1.5 py-0.2 text-sm font-bold ${active ? "bg-white/20 text-white" : chip.color || "bg-black/5 admin-soft"}`}>
                   {chip.count}
                 </span>
               </button>
@@ -194,13 +194,13 @@ export function RefillSchedulesTable({
         </div>
 
         {/* Search */}
-        <div className="relative min-w-[240px]">
+        <div className="relative w-full min-w-0 sm:min-w-[240px]">
           <Search className="pointer-events-none absolute left-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 admin-soft" />
           <input
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder="Search patient, medicine, phone…"
-            className="input-admin pl-9 text-xs w-full"
+            className="input-admin min-h-11 pl-9 text-sm w-full"
           />
         </div>
       </div>
@@ -210,21 +210,21 @@ export function RefillSchedulesTable({
         <div className="flex items-center justify-between rounded-xl border border-emerald-500/30 bg-emerald-500/10 px-4 py-2.5 shadow-sm">
           <div className="flex items-center gap-2">
             <CheckSquare className="h-4 w-4 text-emerald-600" />
-            <span className="text-xs font-bold text-emerald-900 dark:text-emerald-200">
+            <span className="text-sm font-bold text-emerald-900 dark:text-emerald-200">
               {selectedIds.size} patient {selectedIds.size === 1 ? "schedule" : "schedules"} selected
             </span>
           </div>
           <div className="flex items-center gap-2">
             <button
               onClick={() => setSelectedIds(new Set())}
-              className="text-xs admin-soft hover:underline font-bold px-2"
+              className="text-sm admin-soft hover:underline font-bold px-2"
             >
               Clear
             </button>
             <button
               disabled={bulkSending}
               onClick={handleBulkSendReminders}
-              className="inline-flex items-center gap-1.5 rounded-lg bg-emerald-600 px-3.5 py-1.5 text-xs font-bold text-white shadow-sm hover:bg-emerald-700 disabled:opacity-50 transition"
+              className="min-h-11 inline-flex items-center gap-1.5 rounded-lg bg-emerald-600 px-3.5 py-1.5 text-sm font-bold text-white shadow-sm hover:bg-emerald-700 disabled:opacity-50 transition"
             >
               <MessageSquare className="h-3.5 w-3.5" />
               {bulkSending ? "Sending…" : `Send WhatsApp Reminders (${selectedIds.size})`}
@@ -236,11 +236,11 @@ export function RefillSchedulesTable({
       {/* Table */}
       <div className="overflow-hidden rounded-2xl border border-[var(--admin-border)] bg-[var(--admin-card)] shadow-sm">
         <div tabIndex={0} role="region" aria-label="Scrollable records" className="admin-table-region overflow-x-auto">
-          <table className="w-full text-left text-xs border-collapse">
+          <table className="w-full text-left text-sm border-collapse">
             <thead>
-              <tr className="border-b border-[var(--admin-border)] bg-[var(--admin-inset)]/60 text-xs font-bold uppercase tracking-wider admin-soft">
+              <tr className="border-b border-[var(--admin-border)] bg-[var(--admin-inset)]/60 text-sm font-bold uppercase tracking-wider admin-soft">
                 <th className="py-3 px-3.5 w-8">
-                  <button onClick={toggleSelectAll} className="flex items-center">
+                  <button onClick={toggleSelectAll} className="min-h-11 flex items-center">
                     {selectedIds.size > 0 && selectedIds.size === filtered.length ? (
                       <CheckSquare className="h-4 w-4 text-emerald-600" />
                     ) : (
@@ -273,8 +273,8 @@ export function RefillSchedulesTable({
                 <tr>
                   <td colSpan={7} className="py-12 text-center admin-soft">
                     <Pill className="mx-auto h-8 w-8 opacity-40 mb-2" />
-                    <p className="font-bold text-xs">No refill schedules matching criteria</p>
-                    <p className="text-xs mt-0.5">Try changing filters or search terms</p>
+                    <p className="font-bold text-sm">No refill schedules matching criteria</p>
+                    <p className="text-sm mt-0.5">Try changing filters or search terms</p>
                   </td>
                 </tr>
               ) : (
@@ -302,7 +302,7 @@ export function RefillSchedulesTable({
                     >
                       {/* Checkbox */}
                       <td className="py-3 px-3.5">
-                        <button onClick={() => toggleSelectOne(sch.prescriptionId)} className="flex items-center">
+                        <button onClick={() => toggleSelectOne(sch.prescriptionId)} className="min-h-11 flex items-center">
                           {isSelected ? (
                             <CheckSquare className="h-4 w-4 text-emerald-600" />
                           ) : (
@@ -314,12 +314,12 @@ export function RefillSchedulesTable({
                       {/* Patient */}
                       <td className="py-3 px-3">
                         <div className="flex items-center gap-2">
-                          <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-[var(--admin-inset)] font-bold text-xs admin-text border border-[var(--admin-border)]">
+                          <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-[var(--admin-inset)] font-bold text-sm admin-text border border-[var(--admin-border)]">
                             {sch.customerName.charAt(0)}
                           </div>
                           <div>
                             <strong className="admin-text font-bold block">{sch.customerName}</strong>
-                            <span className="font-mono text-xs admin-soft block">
+                            <span className="font-mono text-sm admin-soft block">
                               {sch.phone || sch.email || "No direct phone"}
                             </span>
                           </div>
@@ -329,8 +329,8 @@ export function RefillSchedulesTable({
                       {/* Medication */}
                       <td className="py-3 px-3">
                         <div className="space-y-0.5">
-                          <strong className="admin-text font-bold text-xs">{sch.medicineName}</strong>
-                          <div className="flex items-center gap-1.5 text-xs admin-soft">
+                          <strong className="admin-text font-bold text-sm">{sch.medicineName}</strong>
+                          <div className="flex items-center gap-1.5 text-sm admin-soft">
                             <span>{sch.dosage || "Standard Dose"}</span>
                             <span>•</span>
                             <span className="font-mono">Rx {sch.rxReference || "On File"}</span>
@@ -342,7 +342,7 @@ export function RefillSchedulesTable({
                       <td className="py-3 px-3">
                         <div className="flex items-center gap-1.5">
                           <span
-                            className={`inline-flex items-center rounded-full px-2 py-0.5 text-xs font-bold ${
+                            className={`inline-flex items-center rounded-full px-2 py-0.5 text-sm font-bold ${
                               sch.refillsRemaining > 2
                                 ? "bg-emerald-500/15 text-emerald-700 dark:text-emerald-300"
                                 : sch.refillsRemaining > 0
@@ -354,7 +354,7 @@ export function RefillSchedulesTable({
                           </span>
                         </div>
                         {sch.refillsRemaining === 0 && (
-                          <span className="text-xs font-bold text-rose-600 block mt-0.5">
+                          <span className="text-sm font-bold text-rose-600 block mt-0.5">
                             Prescriber renewal required
                           </span>
                         )}
@@ -363,7 +363,7 @@ export function RefillSchedulesTable({
                       {/* Supply Countdown */}
                       <td className="py-3 px-3">
                         <div className="space-y-1 min-w-[140px]">
-                          <div className="flex items-center justify-between text-xs">
+                          <div className="flex items-center justify-between text-sm">
                             <span className={`font-bold ${
                               daysRem < 0 ? "text-rose-600" : daysRem <= 3 ? "text-amber-600" : "text-emerald-700"
                             }`}>
@@ -386,14 +386,14 @@ export function RefillSchedulesTable({
                       {/* Stock Buffer */}
                       <td className="py-3 px-3">
                         {sch.currentStock !== null ? (
-                          <div className="text-xs space-y-0.5">
+                          <div className="text-sm space-y-0.5">
                             <span className={`font-bold ${sch.currentStock > 10 ? "text-emerald-700" : "text-amber-700"}`}>
                               {sch.currentStock} units on hand
                             </span>
-                            <span className="block text-xs admin-soft">FEFO Verified</span>
+                            <span className="block text-sm admin-soft">FEFO Verified</span>
                           </div>
                         ) : (
-                          <span className="text-xs admin-soft">Unlinked item</span>
+                          <span className="text-sm admin-soft">Unlinked item</span>
                         )}
                       </td>
 
