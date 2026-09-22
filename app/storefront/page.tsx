@@ -339,7 +339,7 @@ export default async function StorefrontPage() {
                     >
                       <div className="relative h-44 overflow-hidden bg-[#eef5f1]">
                         {s.imageUrl ? (
-                          <Image
+                          <Image unoptimized
                             src={s.imageUrl}
                             alt={s.title}
                             fill
@@ -384,7 +384,7 @@ export default async function StorefrontPage() {
             <Reveal>
               <div className="glass-panel-strong group/card grid overflow-hidden rounded-[2rem] lg:grid-cols-2">
                 <div className="relative min-h-[260px] overflow-hidden lg:min-h-[400px]">
-                  <Image
+                  <Image unoptimized
                     src={content.whyChooseUs.imageUrl || content.gallery[3]?.src || heroCover}
                     alt="Pharmacist consulting with a patient"
                     fill
