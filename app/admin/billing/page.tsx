@@ -370,6 +370,7 @@ export default async function AdminBillingPage() {
 
   const periodEnd = formatDate(tenantData.subscription?.currentPeriodEnd);
   const latestInvoice = tenantData.invoices[0];
+  const hasPremiumHistory = Boolean(planState.subscription);
 
 
   return (
@@ -401,7 +402,11 @@ export default async function AdminBillingPage() {
               <h2 className="mt-4 max-w-2xl text-2xl font-bold tracking-tight text-[var(--admin-text)] sm:text-3xl">
                 {premiumActive
                   ? "Your pharmacy has Premium capacity."
-                  : "Start free. Upgrade only when the limits begin to matter."}
+                  : planState.billingStatus === "premium_pending_activation"
+                    ? "Premium is paid. Finish setup to activate it."
+                    : hasPremiumHistory
+                      ? "Your pharmacy is on Free. Premium can be restored in one step."
+                      : "Start free. Upgrade only when the limits begin to matter."}
               </h2>
               <p className="mt-2 max-w-2xl text-sm leading-6 text-[var(--admin-text-muted)]">
                 Free keeps the pharmacy operating and visible. Premium removes growth limits and adds automation: unlimited campaigns and referrals, custom audiences, automatic follow-up, loyalty automation, inventory intelligence, AI-assisted imports, advanced analytics and POS synchronization.
@@ -425,23 +430,7 @@ export default async function AdminBillingPage() {
                 <span className="text-3xl font-bold tracking-tight text-[var(--admin-text)]">
                   {premiumActive ? "Premium" : "KES 500"}
                 </span>
-                <PremiumPaymentReturn />
-        <section className="rounded-2xl border border-[var(--admin-border)] bg-[var(--admin-card)] p-5">
-          <h2 className="text-lg font-bold">{premiumActive ? "If Premium ended today" : "Reactivate Premium and regain"}</h2>
-          {planState.blockedReason && <p className="mt-2">{planState.billingStatus === "premium_pending_activation" ? "Premium paid — " : ""}{planState.blockedReason}</p>}
-          {planState.periodEnd && <p className="mt-2">Premium {premiumActive ? "expires" : "period ended"} on {formatDate(planState.periodEnd)}.</p>}
-          {premiumActive && planState.periodEnd && planState.periodEnd.getTime() - now.getTime() <= 7 * 86400000 && <p role="status" className="mt-2 font-semibold text-amber-700">{Math.max(1, Math.ceil((planState.periodEnd.getTime() - now.getTime()) / 86400000))} days left on Premium. Review the impact below before your period ends.</p>}
-          <ul className="mt-3 space-y-2 text-sm">
-            <li>{tenantData.publicMedicines + pausedMedicines} public or plan-paused medicines → Free keeps 5 public. {premiumActive ? Math.max(0, tenantData.publicMedicines - 5) : pausedMedicines} {premiumActive ? "would become private" : "can be restored"}.</li>
-            <li>{tenantData.activeServices + pausedServices} active or plan-paused services → Free keeps 2 active. {premiumActive ? Math.max(0, tenantData.activeServices - 2) : pausedServices} {premiumActive ? "would be paused" : "can be restored"}.</li>
-            <li>Marketplace referrals: {prescriptionReferralUsage.used}/10 Free allowance this month. Existing prescriptions and dispensing continue.</li>
-            <li>Campaigns: {tenantData.campaignLaunches}/1 Free launch this month. Drafts remain available.</li>
-            <li>Premium restores scheduling, automation, AI import, advanced analytics, inventory intelligence and POS sync.</li>
-          </ul>
-          <p className="mt-3 text-sm">Medicines, services, bookings, patient records, configuration and history are preserved. Existing bookings continue even when a service cannot accept new public bookings.</p>
-        </section>
-
-        {!premiumActive && (
+                {!premiumActive && (
                   <span className="pb-1 text-sm text-[var(--admin-text-muted)]">/ month</span>
                 )}
               </div>
@@ -491,6 +480,71 @@ export default async function AdminBillingPage() {
               </Link>
             </div>
           </div>
+        </section>
+
+        <PremiumPaymentReturn />
+
+        <section className="rounded-2xl border border-[var(--admin-border)] bg-[var(--admin-card)] p-5 sm:p-6">
+          <h2 className="text-lg font-bold text-[var(--admin-text)]">
+            {premiumActive
+              ? "If Premium ended today"
+              : hasPremiumHistory
+                ? "Reactivate Premium and regain"
+                : "Upgrade to Premium and unlock"}
+          </h2>
+          {planState.blockedReason && (
+            <p className="mt-2 text-sm text-[var(--admin-text-muted)]">
+              {planState.billingStatus === "premium_pending_activation" ? "Premium paid — " : ""}
+              {planState.blockedReason}
+            </p>
+          )}
+          {planState.periodEnd && (premiumActive || hasPremiumHistory) ? (
+            <p className="mt-2 text-sm text-[var(--admin-text-muted)]">
+              Premium {premiumActive ? "expires" : "last paid period ended"} on {formatDate(planState.periodEnd)}.
+            </p>
+          ) : null}
+          {premiumActive &&
+          planState.periodEnd &&
+          planState.periodEnd.getTime() - now.getTime() <= 7 * 86400000 ? (
+            <p
+              role="status"
+              className="mt-2 rounded-xl border border-amber-500/25 bg-amber-500/[0.08] px-3 py-2 text-sm font-semibold text-amber-700 dark:text-amber-300"
+            >
+              {Math.max(
+                1,
+                Math.ceil((planState.periodEnd.getTime() - now.getTime()) / 86400000),
+              )}{" "}
+              days left on Premium. Review the plan-change impact before your period ends.
+            </p>
+          ) : null}
+          <ul className="mt-4 space-y-2 text-sm text-[var(--admin-text-muted)]">
+            <li>
+              {tenantData.publicMedicines + pausedMedicines} public or plan-paused medicines → Free keeps {FREE_MEDICINE_LIMIT} public.{" "}
+              {premiumActive
+                ? Math.max(0, tenantData.publicMedicines - FREE_MEDICINE_LIMIT)
+                : pausedMedicines}{" "}
+              {premiumActive ? "would become private" : "can be restored"}.
+            </li>
+            <li>
+              {tenantData.activeServices + pausedServices} active or plan-paused services → Free keeps {FREE_SERVICE_LIMIT} active.{" "}
+              {premiumActive
+                ? Math.max(0, tenantData.activeServices - FREE_SERVICE_LIMIT)
+                : pausedServices}{" "}
+              {premiumActive ? "would be paused" : "can be restored"}.
+            </li>
+            <li>
+              Marketplace referrals: {prescriptionReferralUsage.used}/{FREE_MONTHLY_PRESCRIPTION_REFERRAL_LIMIT} Free allowance this month. Existing prescriptions and dispensing continue.
+            </li>
+            <li>
+              Campaigns: {tenantData.campaignLaunches}/{FREE_MONTHLY_CAMPAIGN_LAUNCH_LIMIT} Free launch this month. Drafts remain available.
+            </li>
+            <li>
+              Premium restores scheduling, automation, AI import, advanced analytics, inventory intelligence and POS sync.
+            </li>
+          </ul>
+          <p className="mt-3 text-sm text-[var(--admin-text-soft)]">
+            Medicines, services, bookings, patient records, configuration and history are preserved. Existing bookings continue even when a service cannot accept new public bookings.
+          </p>
         </section>
 
         {!premiumActive && (

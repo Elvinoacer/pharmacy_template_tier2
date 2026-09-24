@@ -6,6 +6,7 @@ import { adminCreateCampaignAction, adminLaunchCampaignAction } from "@/app/acti
 import { AdminPanel, AdminEmptyState } from "@/app/components/admin/AdminUI";
 import { AdminShell } from "@/app/components/admin/AdminShell";
 import { PremiumFeatureNotice } from "@/app/components/admin/PremiumFeatureNotice";
+import { PremiumGate } from "@/app/components/admin/PremiumGate";
 import CampaignForm from "@/app/components/admin/CampaignForm";
 import { Pagination } from "@/app/components/Pagination";
 import { parsePageParam } from "@/app/lib/pagination";
@@ -232,23 +233,30 @@ export default async function AdminCampaignsPage({
                         )}
                       </div>
                       {canLaunch && (
-                        <form action={adminLaunchCampaignAction} className="shrink-0">
-                          <input type="hidden" name="id" value={c.id} />
-                          <button
-                            type="submit"
-                            disabled={launchBlocked}
-                            title={
-                              requiresPremium
-                                ? "This campaign uses Premium scheduling, targeting or delivery."
-                                : launchBlocked
-                                  ? "Free monthly campaign launch already used."
-                                  : undefined
-                            }
-                            className="btn-admin-sm min-h-11 w-full justify-center text-sm disabled:cursor-not-allowed disabled:opacity-50 sm:w-auto"
-                          >
-                            <Rocket className="h-3.5 w-3.5" /> {launchBlocked ? "Premium" : "Launch"}
-                          </button>
-                        </form>
+                        launchBlocked ? (
+                          <div className="shrink-0">
+                            <PremiumGate
+                              feature={requiresPremium ? "Premium campaign tools" : "Campaign launch allowance reached"}
+                              description={
+                                requiresPremium
+                                  ? "This campaign uses Premium scheduling, targeting or multi-channel delivery. Your draft is preserved."
+                                  : "Your Free monthly campaign launch is already used. Keep this campaign as a draft or reactivate Premium for unlimited launches."
+                              }
+                              label={requiresPremium ? "Unlock Premium" : "Unlock launches"}
+                              usageKey="campaigns"
+                            />
+                          </div>
+                        ) : (
+                          <form action={adminLaunchCampaignAction} className="shrink-0">
+                            <input type="hidden" name="id" value={c.id} />
+                            <button
+                              type="submit"
+                              className="btn-admin-sm min-h-11 w-full justify-center text-sm sm:w-auto"
+                            >
+                              <Rocket className="h-3.5 w-3.5" /> Launch
+                            </button>
+                          </form>
+                        )
                       )}
                     </div>
                   </li>
