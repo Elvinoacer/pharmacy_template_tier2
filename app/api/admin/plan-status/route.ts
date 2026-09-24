@@ -10,6 +10,7 @@ import {
   FREE_SERVICE_LIMIT,
 } from "@/app/lib/platform/plan-policy";
 import { getPrescriptionReferralUsage } from "@/app/lib/platform/prescription-referrals";
+import { roleHasPermission } from "@/app/lib/platform/permissions";
 
 export const dynamic = "force-dynamic";
 
@@ -90,6 +91,9 @@ export async function GET() {
   }
 
   const premium = planState.premiumEntitlementsActive;
+  const canManageBilling =
+    pharmacy.ownerUserId === user.id ||
+    Boolean(membership && roleHasPermission(membership.role, "billing.manage"));
   const subscription = planState.subscription;
   const subscriptionStatus = subscription?.status ?? null;
   const paymentAttention = planState.paymentAttention;
@@ -107,6 +111,7 @@ export async function GET() {
       plan: premium ? "premium" : "free",
       premium,
       isOwner: pharmacy.ownerUserId === user.id,
+      canManageBilling,
       subscription: {
         status: subscriptionStatus,
         periodStart: iso(subscription?.currentPeriodStart),
