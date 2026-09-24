@@ -30,6 +30,7 @@ import { publicStorefrontMedicines, publicStorefrontServices } from "@/app/lib/s
 import { publicStorefrontRoute } from "@/app/lib/public-storefront";
 import { prismaUnscoped } from "@/app/lib/db";
 import { buildPublicInventoryWhere } from "@/app/lib/services/public-medication-visibility";
+import { resolvePharmacyCover } from "@/app/lib/media-fallbacks";
 import styles from "../Storefront.module.css";
 import { StorefrontMedicineShelf, StorefrontServiceShelf } from "../StorefrontShelf";
 
@@ -200,7 +201,16 @@ export default async function PublicStorefrontPage({ params, searchParams }: Pro
             {hasLocation && <p className={styles.location}><MapPin size={17} aria-hidden />{p.address.full}</p>}
             <div className={styles.actions}><Link href={`${base}/medicines`}>Browse medicines <ArrowUpRight size={17} aria-hidden /></Link><Link href={`${base}/location`}>Plan a visit</Link></div>
           </div>
-          <div className={styles.cover}>{p.coverImageUrl ? <Image src={p.coverImageUrl} alt={`${p.name}, photo supplied by the pharmacy`} fill priority unoptimized sizes="(max-width: 700px) 100vw, 50vw" /> : <div className={styles.placeholder}><Store size={48} aria-hidden /><span>Welcome to {p.name}</span></div>}</div>
+          <div className={styles.cover}>
+            <Image
+              src={resolvePharmacyCover(p.coverImageUrl, p.slug)}
+              alt={`${p.name}, pharmacy interior and dispensary`}
+              fill
+              priority
+              unoptimized
+              sizes="(max-width: 700px) 100vw, 50vw"
+            />
+          </div>
         </section>}
         {(section === "home" || section === "about") && <section className={styles.panel}><p className={styles.eyebrow}>About your pharmacy</p><h2>Care, close to you.</h2><p className={styles.copy}>{p.about?.trim() || p.description?.trim() || "This pharmacy hasn’t published its story yet."}</p>{p.deliveryNotes && <><h3>Delivery information</h3><p className={styles.copy}>{p.deliveryNotes}</p></>}</section>}
         {section === "medicines" && <>

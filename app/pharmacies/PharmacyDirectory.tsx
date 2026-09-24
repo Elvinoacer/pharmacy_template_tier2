@@ -17,13 +17,7 @@ import styles from "@/app/components/listing/listing.module.css";
 import CareRadar, { type RadarItem } from "@/app/components/radar/CareRadar";
 import { distanceKm, distanceLabel } from "@/app/lib/proximity";
 import type { DirectoryPharmacy } from "@/app/lib/services/pharmacy-directory";
-
-const FALLBACK_COVERS = [
-  "https://pub-cc07856d657b4a7197710051042b3eda.r2.dev/images/gallery/welcoming_retail_floor.webp",
-  "https://pub-cc07856d657b4a7197710051042b3eda.r2.dev/images/gallery/curated_wellness_aisle.webp",
-  "https://pub-cc07856d657b4a7197710051042b3eda.r2.dev/images/gallery/comfortable_waiting_area.webp",
-  "https://pub-cc07856d657b4a7197710051042b3eda.r2.dev/images/gallery/careful_dispensing.webp",
-];
+import { resolvePharmacyCover } from "@/app/lib/media-fallbacks";
 
 type Props = {
   pharmacies: DirectoryPharmacy[];
@@ -325,8 +319,8 @@ export default function PharmacyDirectory({
           <PharmacyPlace
             href={`/pharmacies/${lead.slug}`}
             name={lead.name}
-            imageUrl={lead.coverImageUrl || FALLBACK_COVERS[0]}
-            imageAlt={lead.coverImageUrl ? lead.name : ""}
+            imageUrl={resolvePharmacyCover(lead.coverImageUrl, lead.slug || lead.name || 0)}
+            imageAlt={lead.coverImageUrl ? lead.name : `${lead.name} pharmacy interior`}
             logoUrl={lead.logoUrl}
             featured={lead.featured}
             meta={placeMeta(lead)}
@@ -348,8 +342,8 @@ export default function PharmacyDirectory({
                     key={pharmacy.id}
                     href={`/pharmacies/${pharmacy.slug}`}
                     name={pharmacy.name}
-                    imageUrl={pharmacy.coverImageUrl || FALLBACK_COVERS[(index + 1) % FALLBACK_COVERS.length]}
-                    imageAlt={pharmacy.coverImageUrl ? pharmacy.name : ""}
+                    imageUrl={resolvePharmacyCover(pharmacy.coverImageUrl, pharmacy.slug || pharmacy.name || index + 1)}
+                    imageAlt={pharmacy.coverImageUrl ? pharmacy.name : `${pharmacy.name} pharmacy interior`}
                     meta={placeMeta(pharmacy)}
                   />
                 ))}
@@ -364,8 +358,8 @@ export default function PharmacyDirectory({
                     key={pharmacy.id}
                     href={`/pharmacies/${pharmacy.slug}`}
                     name={pharmacy.name}
-                    imageUrl={pharmacy.coverImageUrl || FALLBACK_COVERS[(index + windows.length + 1) % FALLBACK_COVERS.length]}
-                    imageAlt={pharmacy.coverImageUrl ? pharmacy.name : ""}
+                    imageUrl={resolvePharmacyCover(pharmacy.coverImageUrl, pharmacy.slug || pharmacy.name || index + windows.length + 1)}
+                    imageAlt={pharmacy.coverImageUrl ? pharmacy.name : `${pharmacy.name} dispensary`}
                     meta={placeMeta(pharmacy)}
                     callHref={phoneHref(pharmacy.phone)}
                   />

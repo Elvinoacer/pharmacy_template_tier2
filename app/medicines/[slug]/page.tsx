@@ -281,11 +281,15 @@ export default async function CategoryOrMedicinePage({ params }: Props) {
             <div id="overview" className="scroll-mt-32 overflow-hidden rounded-3xl border border-[var(--medicine-ui-border)] bg-[var(--card)]/90 backdrop-blur-xl shadow-[var(--glass-shadow)] transition-all">
               <div className="grid min-w-0 lg:grid-cols-[minmax(0,.88fr)_minmax(0,1.12fr)]">
                 <div className="relative min-h-52 overflow-hidden bg-[var(--card-elev)] sm:min-h-64 lg:min-h-[360px]">
-                  {cat.imageUrl ? (
-                    <Image src={cat.imageUrl} alt={cat.name} fill priority className="object-cover" sizes="(max-width:1024px) 100vw,44vw" />
-                  ) : (
-                    <div className="flex h-full min-h-52 items-center justify-center text-6xl opacity-40">💊</div>
-                  )}
+                  <MedicineProductImage
+                    src={cat.imageUrl}
+                    alt={cat.name}
+                    category={cat.slug}
+                    name={cat.name}
+                    priority
+                    className="object-cover"
+                    sizes="(max-width:1024px) 100vw,44vw"
+                  />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent" />
                   <span className="absolute bottom-3 left-3 rounded-full border border-white/20 bg-black/50 px-3.5 py-1.5 text-[11px] font-bold uppercase tracking-[.12em] text-white backdrop-blur-md sm:bottom-4 sm:left-4 sm:text-xs">
                     {cat.name}
@@ -553,18 +557,29 @@ export default async function CategoryOrMedicinePage({ params }: Props) {
                 </div>
               </div>
 
-              {med.medicationMaster.imageUrl ? (
-                <MedicineProductImage src={med.medicationMaster.imageUrl} alt={med.medicationMaster.name} priority className="object-contain p-6 sm:p-8" sizes="(max-width:1024px) 100vw,45vw" />
-              ) : (
-                <Image src="/images/care/medicine-still-life.png" alt="Illustrative medicine supplies; product photo not provided" fill className="object-cover" sizes="(max-width: 768px) 100vw, 50vw" />
-              )}
+              <MedicineProductImage
+                src={med.medicationMaster.imageUrl}
+                alt={med.medicationMaster.name}
+                category={med.medicationMaster.category}
+                name={med.medicationMaster.name}
+                priority
+                className="object-cover transition-transform duration-500 hover:scale-105"
+                sizes="(max-width:1024px) 100vw,45vw"
+              />
             </div>
 
             {gallery.length > 0 && (
               <div className="grid grid-cols-4 gap-2 sm:gap-3">
                 {gallery.map((src, index) => (
                   <div key={`${src}-${index}`} className="relative aspect-square overflow-hidden rounded-2xl border border-[var(--medicine-ui-border)] bg-[var(--card)]/80 backdrop-blur-md transition hover:border-[var(--brand)]">
-                    <MedicineProductImage src={src} alt={`${med.medicationMaster.name} view ${index + 2}`} className="object-contain p-2" sizes="140px" />
+                    <MedicineProductImage
+                      src={src}
+                      alt={`${med.medicationMaster.name} view ${index + 2}`}
+                      category={med.medicationMaster.category}
+                      name={med.medicationMaster.name}
+                      className="object-cover"
+                      sizes="140px"
+                    />
                   </div>
                 ))}
               </div>
@@ -836,11 +851,14 @@ export default async function CategoryOrMedicinePage({ params }: Props) {
               {related.map((item) => (
                 <Link key={item.id} href={`${base}/medicines/${item.slug}`} className="group min-w-0 overflow-hidden rounded-2xl border border-[var(--medicine-ui-border)] bg-[var(--card)]/90 backdrop-blur-md shadow-sm transition hover:-translate-y-0.5 hover:shadow-md sm:rounded-3xl">
                   <div className="relative aspect-[4/3] overflow-hidden bg-[var(--card-elev)]">
-                    {item.medicationMaster.imageUrl ? (
-                      <Image src={item.medicationMaster.imageUrl} alt={item.medicationMaster.name} fill className="object-contain p-2 transition duration-300 group-hover:scale-[1.02] sm:p-3" sizes="(max-width:640px) 50vw,25vw" />
-                    ) : (
-                      <div className="flex h-full items-center justify-center text-3xl opacity-50">💊</div>
-                    )}
+                    <MedicineProductImage
+                      src={item.medicationMaster.imageUrl}
+                      alt={item.medicationMaster.name}
+                      category={med.medicationMaster.category}
+                      name={item.medicationMaster.name}
+                      className="object-cover transition duration-300 group-hover:scale-105"
+                      sizes="(max-width:640px) 50vw,25vw"
+                    />
                   </div>
                   <div className="min-w-0 p-3 sm:p-4">
                     <p className="line-clamp-2 text-xs font-semibold leading-snug text-[var(--foreground)] sm:text-sm">{item.medicationMaster.name}</p>

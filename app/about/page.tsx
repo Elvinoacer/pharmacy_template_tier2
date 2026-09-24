@@ -7,6 +7,7 @@ import Reveal from "../components/Reveal";
 import StorefrontUnavailable from "@/app/components/StorefrontUnavailable";
 import { platform } from "../lib/data";
 import { getStorefrontView } from "../lib/services/storefront-content";
+import { resolvePharmacyCover } from "../lib/media-fallbacks";
 import { ArrowRight, HeartPulse, ShieldCheck, Building2 } from "lucide-react";
 
 export const dynamic = "force-dynamic";
@@ -165,7 +166,7 @@ export default async function AboutPage() {
           <Reveal>
             <div className="relative aspect-[16/11] overflow-hidden rounded-[1.4rem] shadow-lg ring-1 ring-[var(--line-2)] sm:aspect-[4/3] sm:rounded-[2rem] sm:shadow-xl">
               <Image
-                src={pharmacy.coverImageUrl || "https://pub-cc07856d657b4a7197710051042b3eda.r2.dev/images/gallery/welcoming_retail_floor.webp"}
+                src={resolvePharmacyCover(pharmacy.coverImageUrl, pharmacy.slug || pharmacy.name || 0)}
                 alt={`${pharmacy.name} interior`}
                 fill
                 className="object-cover"

@@ -9,6 +9,8 @@ import CtaBanner from "@/app/components/CtaBanner";
 import PageHero from "@/app/components/PageHero";
 import { getBrowseLocation } from "@/app/lib/browse-location";
 import { listNetworkListingsForSlug } from "@/app/lib/services/network-catalog";
+import { resolveMedicineImage } from "@/app/lib/media-fallbacks";
+import { ResilientImage } from "@/app/components/listing/pieces";
 import NetworkMedicineComparison from "./NetworkMedicineComparison";
 
 export default async function NetworkMedicineView({ slug }: { slug: string }) {
@@ -42,11 +44,15 @@ export default async function NetworkMedicineView({ slug }: { slug: string }) {
       <section className="px-4 pb-10 sm:px-6 sm:pb-14">
         <div className="mx-auto grid max-w-6xl gap-8 lg:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)]">
           <div className="relative aspect-[4/3] overflow-hidden rounded-3xl border border-[var(--medicine-ui-border)] bg-[var(--card)] shadow-sm">
-            {master.imageUrl ? (
-              <Image unoptimized src={master.imageUrl} alt={master.name} fill className="object-contain p-6" sizes="(max-width:1024px) 100vw,40vw" />
-            ) : (
-              <Image src="/images/care/medicine-still-life.png" alt="" fill className="object-cover" sizes="(max-width:1024px) 100vw,40vw" />
-            )}
+            <ResilientImage
+              src={resolveMedicineImage(master.imageUrl, master.category, master.name)}
+              fallbackSrc={resolveMedicineImage(null, master.category, master.name)}
+              alt={master.name}
+              fill
+              className="object-cover transition-transform duration-500 hover:scale-105"
+              sizes="(max-width:1024px) 100vw,40vw"
+              priority
+            />
           </div>
           <div className="space-y-4">
             <p className="text-sm text-[var(--muted)]">

@@ -23,6 +23,8 @@ import CareRadar, { type RadarItem } from "@/app/components/radar/CareRadar";
 import { distanceKm, distanceLabel } from "@/app/lib/proximity";
 import { setBrowseLocation } from "@/app/actions/browse-location";
 import { formatPrice } from "@/app/lib/format";
+import { resolveMedicineImage } from "@/app/lib/media-fallbacks";
+import { ResilientImage } from "@/app/components/listing/pieces";
 import type { NetworkMedicineListing } from "@/app/lib/services/network-catalog";
 
 type Props = {
@@ -273,13 +275,13 @@ export default function NetworkMedicineComparison({
                 <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                   <div className="flex min-w-0 items-start gap-3">
                     <Link href={item.href} className="relative h-20 w-20 shrink-0 overflow-hidden rounded-2xl border border-[var(--medicine-ui-border)] bg-[var(--card)]" aria-label={`View ${masterName}`}>
-                      <Image
-                        unoptimized
-                        src={item.medicationMaster.imageUrl || "/images/care/medicine-still-life.png"}
-                        alt={item.medicationMaster.imageUrl ? item.medicationMaster.name : ""}
+                      <ResilientImage
+                        src={resolveMedicineImage(item.medicationMaster.imageUrl, item.medicationMaster.category, masterName)}
+                        fallbackSrc={resolveMedicineImage(null, item.medicationMaster.category, masterName)}
+                        alt={item.medicationMaster.name || masterName}
                         fill
                         sizes="80px"
-                        className={item.medicationMaster.imageUrl ? "object-contain p-2" : "object-cover"}
+                        className="object-cover transition-transform duration-300 hover:scale-105"
                       />
                     </Link>
                     <div className="min-w-0">

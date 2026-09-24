@@ -48,8 +48,9 @@ export default async function LocalPage({ params }: Props) {
         <PharmacyPlace
           href={`/pharmacies/${lead.slug}`}
           name={lead.name}
-          imageUrl={null}
-          imageAlt=""
+          imageUrl={lead.coverImageUrl}
+          imageAlt={lead.name}
+          logoUrl={lead.logoUrl}
           meta={joinMeta([[lead.city, lead.county].filter(Boolean).join(", "), origin ? distanceLabel(lead.distanceKm) : null])}
           actions={[
             { href: `/p/${lead.slug}/medicines`, label: "Medicines" },
@@ -65,8 +66,8 @@ export default async function LocalPage({ params }: Props) {
                 key={pharmacy.id}
                 href={`/pharmacies/${pharmacy.slug}`}
                 name={pharmacy.name}
-                imageUrl={null}
-                imageAlt=""
+                imageUrl={pharmacy.coverImageUrl}
+                imageAlt={pharmacy.name}
                 meta={joinMeta([[pharmacy.city, pharmacy.county].filter(Boolean).join(", "), origin ? distanceLabel(pharmacy.distanceKm) : null])}
               />
             ))}
@@ -104,6 +105,7 @@ export default async function LocalPage({ params }: Props) {
                 href={`/medicines/${medicine.slug}`}
                 name={medicine.name}
                 imageUrl={medicine.imageUrl}
+                category={medicine.category}
                 priceLabel="Compare"
               />
             ))}

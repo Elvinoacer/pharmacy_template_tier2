@@ -11,6 +11,7 @@ import {
 import { toast } from "@/app/components/Toaster";
 import { Modal } from "@/app/components/Modal";
 import ImageUploadField from "@/app/components/admin/ImageUploadField";
+import { resolveServiceImage } from "@/app/lib/media-fallbacks";
 import {
   Check,
   Eye,
@@ -241,11 +242,14 @@ export function ServiceManager({ initial }: { initial: ServiceRow[] }) {
               }`}
             >
               <div className="relative h-12 w-16 shrink-0 overflow-hidden rounded-xl bg-[var(--admin-inset-2)]">
-                {s.imageUrl ? (
-                  <Image unoptimized src={s.imageUrl} alt="" fill className="object-cover" sizes="64px" />
-                ) : (
-                  <div className="flex h-full items-center justify-center text-lg">💊</div>
-                )}
+                <Image
+                  unoptimized
+                  src={resolveServiceImage(s.imageUrl, s.title, s.short || s.description)}
+                  alt=""
+                  fill
+                  className="object-cover"
+                  sizes="64px"
+                />
               </div>
               <div className="min-w-0 flex-1">
                 <div className="flex flex-wrap items-center gap-2">

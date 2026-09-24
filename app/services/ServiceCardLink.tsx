@@ -12,6 +12,8 @@ import {
   Sparkles,
   Store,
 } from "lucide-react";
+import { resolveServiceImage } from "@/app/lib/media-fallbacks";
+import { ResilientImage } from "@/app/components/listing/pieces";
 import styles from "./ServicesPage.module.css";
 
 type Props = {
@@ -69,19 +71,13 @@ export default function ServiceCardLink({
       className={`${styles.serviceCard} ${featured ? styles.featuredCard : ""} ${opening ? styles.cardOpening : ""}`}
     >
       <div className={styles.cardMedia}>
-        {imageUrl ? (
-          <Image unoptimized
-            src={imageUrl}
-            alt={title}
-            fill
-            className={styles.cardImage}
-            sizes={featured ? "(max-width: 760px) 100vw, 58vw" : "(max-width: 760px) 100vw, (max-width: 1200px) 50vw, 33vw"}
-          />
-        ) : (
-          <div className={styles.cardFallback} aria-hidden="true">
-            <Sparkles className="h-8 w-8" />
-          </div>
-        )}
+        <ResilientImage
+          src={resolveServiceImage(imageUrl, title, short)}
+          fallbackSrc={resolveServiceImage(null, title, short)}
+          alt={title}
+          className={styles.cardImage}
+          sizes={featured ? "(max-width: 760px) 100vw, 58vw" : "(max-width: 760px) 100vw, (max-width: 1200px) 50vw, 33vw"}
+        />
         <div className={styles.cardMediaShade} aria-hidden="true" />
 
         <div className={styles.cardBadges}>

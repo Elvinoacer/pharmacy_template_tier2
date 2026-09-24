@@ -35,6 +35,8 @@ import { prismaUnscoped } from "@/app/lib/db";
 import { acceptingCareRequests } from "@/app/lib/services/care-request-availability";
 import { redirect } from "next/navigation";
 import { loadStorefront } from "@/app/components/StorefrontGate";
+import { resolveServiceImage } from "@/app/lib/media-fallbacks";
+import { ResilientImage } from "@/app/components/listing/pieces";
 import NetworkServiceView from "../NetworkServiceView";
 import styles from "./ServiceDetail.module.css";
 
@@ -240,20 +242,15 @@ export default async function ServiceDetailPage({ params }: Props) {
             </div>
 
             <div className={styles.mediaFrame}>
-              {service.imageUrl ? (
-                <Image
-                  src={service.imageUrl}
-                  alt={service.title}
-                  fill
-                  className={styles.heroImage}
-                  sizes="(max-width: 899px) 100vw, 56vw"
-                  priority
-                />
-              ) : (
-                <div className="flex h-full items-center justify-center bg-[var(--card-elev)] text-6xl opacity-35 sm:text-7xl" aria-hidden="true">
-                  🏥
-                </div>
-              )}
+              <ResilientImage
+                src={resolveServiceImage(service.imageUrl, service.title, service.short || service.description)}
+                fallbackSrc={resolveServiceImage(null, service.title, service.short || service.description)}
+                alt={service.title}
+                fill
+                className={styles.heroImage}
+                sizes="(max-width: 899px) 100vw, 56vw"
+                priority
+              />
               <div className={styles.mediaShade} aria-hidden="true" />
               <span className={styles.mediaBadge}>
                 <ShieldCheck className="h-3.5 w-3.5" aria-hidden="true" />

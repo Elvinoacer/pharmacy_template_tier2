@@ -21,6 +21,7 @@ import {
 import ContactForm from "@/app/components/ContactForm";
 import { Aisle, EmptyShelf, MedicineTile, ServicePoster, joinMeta, shelfPrice } from "@/app/components/listing/pieces";
 import listStyles from "@/app/components/listing/listing.module.css";
+import { resolvePharmacyCover } from "@/app/lib/media-fallbacks";
 import { publicPharmacyProfile } from "@/app/lib/services/public-pharmacy-profile";
 import {
   listNetworkMedicineListings,
@@ -146,7 +147,7 @@ export default async function PharmacyProfilePage({
     },
   };
 
-  const heroImageSrc = p.coverImageUrl || "/images/care/editorial-pharmacy.png";
+  const heroImageSrc = resolvePharmacyCover(p.coverImageUrl, p.slug || p.name || 0);
 
   return (
     <div className={styles.page}>
@@ -373,6 +374,8 @@ export default async function PharmacyProfilePage({
                   href={item.href}
                   name={item.medicationMaster.name}
                   imageUrl={item.medicationMaster.imageUrl}
+                  category={item.medicationMaster.category}
+                  prescriptionRequired={item.prescriptionRequired}
                   priceLabel={item.availableStock > 0 ? shelfPrice(item.price) : "Out"}
                   meta={joinMeta([
                     item.prescriptionRequired ? "Prescription" : "No prescription",

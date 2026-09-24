@@ -222,6 +222,7 @@ export default function MedicinesDirectory({
       compareHref={`/medicines/${item.medicationMaster.slug || item.slug}`}
       name={item.medicationMaster.name}
       imageUrl={item.medicationMaster.imageUrl}
+      category={item.medicationMaster.category}
       kicker={categoryName(item.medicationMaster.category, categories)}
       trust={medicineTrust(item)}
       priceLabel={item.availableStock > 0 ? shelfPrice(item.price, false) : "Out of stock"}
@@ -345,6 +346,8 @@ export default function MedicinesDirectory({
                     href={item.href}
                     name={item.medicationMaster.name}
                     imageUrl={item.medicationMaster.imageUrl}
+                    category={item.medicationMaster.category}
+                    prescriptionRequired={item.prescriptionRequired}
                     priceLabel={item.availableStock > 0 ? shelfPrice(item.price) : "Out"}
                     meta={medicineMeta(item)}
                   />
@@ -361,6 +364,8 @@ export default function MedicinesDirectory({
                     href={item.href}
                     name={item.medicationMaster.name}
                     imageUrl={item.medicationMaster.imageUrl}
+                    category={item.medicationMaster.category}
+                    prescriptionRequired={item.prescriptionRequired}
                     priceLabel={item.availableStock > 0 ? shelfPrice(item.price) : "Out"}
                     meta={medicineMeta(item)}
                   />
@@ -379,6 +384,8 @@ export default function MedicinesDirectory({
               href={item.href}
               name={item.medicationMaster.name}
               imageUrl={item.medicationMaster.imageUrl}
+              category={item.medicationMaster.category}
+              prescriptionRequired={item.prescriptionRequired}
               priceLabel={item.availableStock > 0 ? shelfPrice(item.price) : "Out"}
               meta={medicineMeta(item)}
             />

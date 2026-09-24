@@ -88,6 +88,10 @@ export async function savePharmacyVerificationProfileAction(
       return { error: "Confirm that you are authorised to represent this pharmacy before continuing." };
     }
 
+    if (!draft && !licenseDocumentUrl && !businessDocumentUrl) {
+      return { error: "Please upload at least one verification image (licence or business registration) to continue." };
+    }
+
     if (licenseDocumentUrl && !validVerificationReference(licenseDocumentUrl, pharmacyId, "license")) {
       return { error: "Upload the PPB licence through the secure document uploader." };
     }

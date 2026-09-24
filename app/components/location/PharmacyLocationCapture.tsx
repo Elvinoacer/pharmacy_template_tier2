@@ -100,6 +100,14 @@ export default function PharmacyLocationCapture({
   }, [onLocationChange]);
 
   useEffect(() => {
+    if (initialLatitude != null) setLatitude(String(initialLatitude));
+    if (initialLongitude != null) setLongitude(String(initialLongitude));
+    if (initialCity !== undefined && initialCity !== null) setCity(initialCity);
+    if (initialCounty !== undefined && initialCounty !== null) setCounty(initialCounty);
+    if (initialCountry !== undefined && initialCountry !== null) setCountry(initialCountry);
+  }, [initialLatitude, initialLongitude, initialCity, initialCounty, initialCountry]);
+
+  useEffect(() => {
     const nav = navigator as Navigator & { userAgentData?: { mobile?: boolean } };
     const mobileUa =
       nav.userAgentData?.mobile === true ||

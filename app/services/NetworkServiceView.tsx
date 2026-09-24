@@ -11,6 +11,8 @@ import PageHero from "@/app/components/PageHero";
 import { formatPrice } from "@/app/lib/format";
 import { getBrowseLocation } from "@/app/lib/browse-location";
 import { listNetworkServicesForSlug } from "@/app/lib/services/network-catalog";
+import { resolveServiceImage } from "@/app/lib/media-fallbacks";
+import { ResilientImage } from "@/app/components/listing/pieces";
 import NetworkServiceComparison from "./NetworkServiceComparison";
 
 export default async function NetworkServiceView({ slug }: { slug: string }) {
@@ -43,20 +45,15 @@ export default async function NetworkServiceView({ slug }: { slug: string }) {
       <section className="px-4 pb-10 sm:px-6 sm:pb-14">
         <div className="mx-auto grid max-w-6xl gap-8 lg:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)]">
           <div className="relative aspect-[4/3] overflow-hidden rounded-3xl border border-[var(--service-ui-border)] bg-[var(--card)] shadow-sm">
-            {first.imageUrl ? (
-              <Image unoptimized
-                src={first.imageUrl}
-                alt={first.title}
-                fill
-                className="object-cover"
-                sizes="(max-width:1024px) 100vw,40vw"
-                priority
-              />
-            ) : (
-              <div className="flex h-full items-center justify-center bg-[var(--card-elev)] text-6xl opacity-35 sm:text-7xl">
-                🏥
-              </div>
-            )}
+            <ResilientImage
+              src={resolveServiceImage(first.imageUrl, first.title, first.description)}
+              fallbackSrc={resolveServiceImage(null, first.title, first.description)}
+              alt={first.title}
+              fill
+              className="object-cover transition-transform duration-500 hover:scale-105"
+              sizes="(max-width:1024px) 100vw,40vw"
+              priority
+            />
             <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
             <div className="absolute bottom-4 left-4 right-4 text-white">
               <span className="inline-flex items-center gap-1.5 rounded-full bg-black/60 px-3 py-1 text-xs font-bold backdrop-blur-md">

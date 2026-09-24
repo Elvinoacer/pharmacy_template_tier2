@@ -24,6 +24,8 @@ import CareRadar, { type RadarItem } from "@/app/components/radar/CareRadar";
 import { distanceKm, distanceLabel } from "@/app/lib/proximity";
 import { setBrowseLocation } from "@/app/actions/browse-location";
 import { formatPrice } from "@/app/lib/format";
+import { resolveServiceImage } from "@/app/lib/media-fallbacks";
+import { ResilientImage } from "@/app/components/listing/pieces";
 import type { NetworkServiceListing } from "@/app/lib/services/network-catalog";
 
 type Props = {
@@ -280,13 +282,13 @@ export default function NetworkServiceComparison({
                 <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                   <div className="flex min-w-0 items-start gap-3">
                     <Link href={item.href} className="relative h-20 w-20 shrink-0 overflow-hidden rounded-2xl border border-[var(--service-ui-border)] bg-[var(--card)]" aria-label={`View ${item.title}`}>
-                      <Image
-                        unoptimized
-                        src={item.imageUrl || "/images/care/editorial-pharmacy.png"}
-                        alt={item.imageUrl ? item.title : ""}
+                      <ResilientImage
+                        src={resolveServiceImage(item.imageUrl, item.title, item.description)}
+                        fallbackSrc={resolveServiceImage(null, item.title, item.description)}
+                        alt={item.title}
                         fill
                         sizes="80px"
-                        className="object-cover"
+                        className="object-cover transition-transform duration-300 hover:scale-105"
                       />
                     </Link>
                     <div className="min-w-0">

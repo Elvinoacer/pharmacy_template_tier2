@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
+import { LayoutGrid, Rows } from "lucide-react";
 import ListingChrome from "@/app/components/listing/ListingChrome";
 import {
   Aisle,
@@ -65,6 +66,7 @@ export function StorefrontMedicineShelf({
   const [category, setCategory] = useState("all");
   const [rx, setRx] = useState<"all" | "otc" | "rx">("all");
   const [sort, setSort] = useState<"name" | "price-asc" | "price-desc">("name");
+  const [viewMode, setViewMode] = useState<"aisles" | "grid">("aisles");
 
   if (initialQuery !== seenQuery) {
     setSeenQuery(initialQuery);
@@ -185,6 +187,34 @@ export function StorefrontMedicineShelf({
         onClear={reset}
       />
 
+      {groups ? (
+        <div className={styles.viewBar}>
+          <span className="text-xs font-semibold text-[var(--muted)]">
+            {shown.length} in-stock medicines
+          </span>
+          <div className={styles.viewSwitch} role="group" aria-label="Shelf layout">
+            <button
+              type="button"
+              aria-pressed={viewMode === "aisles"}
+              onClick={() => setViewMode("aisles")}
+              title="Browse by curated category aisles"
+            >
+              <Rows className="h-3.5 w-3.5" aria-hidden />
+              Aisles
+            </button>
+            <button
+              type="button"
+              aria-pressed={viewMode === "grid"}
+              onClick={() => setViewMode("grid")}
+              title="View full gallery grid"
+            >
+              <LayoutGrid className="h-3.5 w-3.5" aria-hidden />
+              Grid
+            </button>
+          </div>
+        </div>
+      ) : null}
+
       {shown.length === 0 ? (
         <EmptyShelf title={initialQuery ? "Nothing matches that name" : "The shelf is still being stocked"}>
           <p>
@@ -193,24 +223,29 @@ export function StorefrontMedicineShelf({
               : `${pharmacyName} hasn’t published medicine listings yet.`}
           </p>
         </EmptyShelf>
-      ) : groups ? (
+      ) : groups && viewMode === "aisles" ? (
         <>
           <MedicineFeature
             href={groups.lead.href}
             name={groups.lead.name}
             imageUrl={groups.lead.imageUrl}
+            category={groups.lead.category}
             kicker={prettyCategory(groups.lead.category)}
             trust={
               groups.lead.prescriptionRequired
                 ? `A pharmacist at ${pharmacyName} reviews this before dispensing.`
-                : `No prescription. Reserve it from ${pharmacyName}.`
+                : `No prescription needed. Reserve it directly from ${pharmacyName}.`
             }
             priceLabel={groups.lead.price > 0 ? shelfPrice(groups.lead.price, false) : "Ask the pharmacy"}
             meta={groups.lead.detail || (groups.lead.prescriptionRequired ? "Prescription" : "No prescription")}
             priority
           />
           {groups.shelves.map((aisle) => (
-            <Aisle key={aisle.slug} title={aisle.name} aside={<span className={styles.aisleCount}>{aisle.items.length}</span>}>
+            <Aisle
+              key={aisle.slug}
+              title={aisle.name}
+              aside={<span className={styles.aisleCount}>{aisle.items.length}</span>}
+            >
               <div className={styles.rail}>
                 {aisle.items.slice(0, 8).map((item) => (
                   <MedicineTile
@@ -218,6 +253,8 @@ export function StorefrontMedicineShelf({
                     href={item.href}
                     name={item.name}
                     imageUrl={item.imageUrl}
+                    category={item.category}
+                    prescriptionRequired={item.prescriptionRequired}
                     priceLabel={item.price > 0 ? shelfPrice(item.price) : "Ask"}
                     meta={item.detail || (item.prescriptionRequired ? "Prescription" : "No prescription")}
                   />
@@ -234,6 +271,8 @@ export function StorefrontMedicineShelf({
                     href={item.href}
                     name={item.name}
                     imageUrl={item.imageUrl}
+                    category={item.category}
+                    prescriptionRequired={item.prescriptionRequired}
                     priceLabel={item.price > 0 ? shelfPrice(item.price) : "Ask"}
                     meta={item.detail}
                   />
@@ -249,11 +288,12 @@ export function StorefrontMedicineShelf({
               href={shown[0].href}
               name={shown[0].name}
               imageUrl={shown[0].imageUrl}
+              category={shown[0].category}
               kicker={prettyCategory(shown[0].category)}
               trust={
                 shown[0].prescriptionRequired
                   ? `A pharmacist at ${pharmacyName} reviews this before dispensing.`
-                  : `No prescription. Reserve it from ${pharmacyName}.`
+                  : `No prescription needed. Reserve it directly from ${pharmacyName}.`
               }
               priceLabel={shown[0].price > 0 ? shelfPrice(shown[0].price, false) : "Ask the pharmacy"}
               meta={shown[0].detail || (shown[0].prescriptionRequired ? "Prescription" : "No prescription")}
@@ -267,6 +307,8 @@ export function StorefrontMedicineShelf({
               href={item.href}
               name={item.name}
               imageUrl={item.imageUrl}
+              category={item.category}
+              prescriptionRequired={item.prescriptionRequired}
               priceLabel={item.price > 0 ? shelfPrice(item.price) : "Ask"}
               meta={item.detail}
             />
@@ -274,13 +316,21 @@ export function StorefrontMedicineShelf({
         </div>
       )}
       {shown.length > 0 ? (
-        <p className={styles.footnote}>Prices and stock are published by {pharmacyName}. Confirm a prescription item with the team before you collect it.</p>
+        <p className={styles.footnote}>
+          Prices and stock are published by {pharmacyName}. Confirm a prescription item with the team before you collect it.
+        </p>
       ) : null}
     </div>
   );
 }
 
-export function StorefrontServiceShelf({ pharmacyName, services }: { pharmacyName: string; services: StoreService[] }) {
+export function StorefrontServiceShelf({
+  pharmacyName,
+  services,
+}: {
+  pharmacyName: string;
+  services: StoreService[];
+}) {
   const [query, setQuery] = useState("");
   const [lane, setLane] = useState("all");
   const [bookableOnly, setBookableOnly] = useState(false);
@@ -365,6 +415,7 @@ export function StorefrontServiceShelf({ pharmacyName, services }: { pharmacyNam
                 meta={joinMeta([service.short, service.duration])}
                 action={`${service.bookable ? "Book" : "View"} · ${shelfPrice(service.price, false)}`}
                 priority={index === 0}
+                bookable={service.bookable}
               />
             ))}
           </div>
