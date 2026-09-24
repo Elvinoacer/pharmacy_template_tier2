@@ -1,4 +1,5 @@
 import "server-only";
+import { getPharmacyPlanState } from "./plan-state";
 import { PREMIUM_FEATURES } from "./plan-policy";
 
 import { prismaUnscoped } from "@/app/lib/db";
@@ -71,19 +72,7 @@ export const DEFAULT_PLAN_FEATURES: Record<string, Record<string, { enabled: boo
 };
 
 export async function hasPremiumPlan(pharmacyId: string): Promise<boolean> {
-  const now = new Date();
-  return Boolean(await prismaUnscoped.subscription.findFirst({
-    where: {
-      pharmacyId,
-      currentPeriodEnd: { gt: now },
-      OR: [
-        { status: "active", currentPeriodStart: { lte: now } },
-        { status: "trialing", trialEndsAt: null },
-        { status: "trialing", trialEndsAt: { gt: now } },
-      ],
-    },
-    select: { id: true },
-  }));
+  return (await getPharmacyPlanState(pharmacyId)).premiumEntitlementsActive;
 }
 
 export async function isFeatureEnabled(pharmacyId: string, key: string): Promise<boolean> {

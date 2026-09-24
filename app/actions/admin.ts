@@ -218,7 +218,7 @@ export async function adminCreateCampaignAction(
     await assertCampaignConfiguration(pharmacyId, { scheduledFor, channel, segmentId });
     if (sendNow) await assertMonthlyCampaignLaunchSlot(pharmacyId);
 
-    const status = sendNow ? "sending" : scheduledFor ? "scheduled" : "draft";
+    const status = scheduledFor ? "scheduled" : "draft";
 
     const campaign = await prisma.campaign.create({
       data: {
@@ -239,7 +239,7 @@ export async function adminCreateCampaignAction(
       try {
         await launchCampaign(campaign.id, user.id);
       } catch (err) {
-        console.error("[campaign] immediate launch failed:", err);
+        return { error: growthLimitMessage(err) || "Campaign saved as a draft but could not launch. Please retry." };
       }
     }
 

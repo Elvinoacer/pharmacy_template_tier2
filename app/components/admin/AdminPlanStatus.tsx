@@ -9,6 +9,7 @@ import React, {
   useState,
 } from "react";
 import Link from "next/link";
+import { PremiumGate } from "./PremiumGate";
 import { usePathname } from "next/navigation";
 import {
   AlertTriangle,
@@ -31,6 +32,7 @@ type UsageEntry = {
 };
 
 export type AdminPlanStatus = {
+  planState: { billingStatus: string; pharmacyReady: boolean; blockedReason: string | null };
   pharmacy: {
     id: string;
     name: string;
@@ -155,6 +157,14 @@ export function AdminPlanStatusProvider({
     return () => controller.abort();
   }, [enabled, activePharmacyId, version]);
 
+  useEffect(() => {
+    if (!enabled) return;
+    const refresh = () => setVersion(current => current + 1);
+    const timer = setInterval(refresh, 30000);
+    window.addEventListener("focus", refresh);
+    return () => { clearInterval(timer); window.removeEventListener("focus", refresh); };
+  }, [enabled]);
+
   const value = useMemo<PlanContextValue>(
     () => ({
       status,
@@ -165,7 +175,7 @@ export function AdminPlanStatusProvider({
     [status, loading, error],
   );
 
-  return <PlanContext.Provider value={value}>{children}</PlanContext.Provider>;
+  return <PlanContext.Provider value={value}>{children}<PremiumGate global feature="Premium capacity" /></PlanContext.Provider>;
 }
 
 export function useAdminPlanStatus() {
@@ -358,7 +368,7 @@ export function AdminPlanStatusButton() {
                 Current plan
               </p>
               <h2 className="mt-1 text-lg font-bold text-[var(--admin-text)]">
-                {attention ? "Afyvia Premium" : status.premium ? "Afyvia Premium" : "Afyvia Free"}
+                {status.premium ? "Afyvia Premium" : "Afyvia Free"}
               </h2>
             </div>
             <span className="rounded-full bg-[var(--admin-inset)] px-2.5 py-1 text-[10px] font-semibold text-[var(--admin-text-muted)]">
@@ -380,7 +390,7 @@ export function AdminPlanStatusButton() {
             </p>
           ) : (
             <p className="mt-2 text-xs leading-5 text-[var(--admin-text-muted)]">
-              Your pharmacy is operating on Free. Core pharmacy work continues normally; Premium expands capacity, automation and intelligence.
+              {status.planState.billingStatus === "premium_pending_activation" ? "Premium paid — finish pharmacy setup to activate Premium features." : "Your pharmacy is operating on Free. Core pharmacy work continues normally; Premium expands capacity, automation and intelligence."}
             </p>
           )}
         </div>
@@ -580,7 +590,7 @@ export function AdminPlanDashboardCard() {
             </div>
             <p className="mt-1 max-w-2xl text-xs leading-5 text-[var(--admin-text-muted)]">
               {status.subscription.paymentAttention
-                ? "Review billing before Premium capacity is interrupted. Core Free-plan operations remain available."
+                ? "Premium capacity is paused. Core Free-plan operations remain available."
                 : status.premium
                   ? `Premium capacity and advanced tools are active${periodEnd ? ` through ${periodEnd}` : ""}.`
                   : "Core pharmacy work is included. Upgrade only when you need more listings, referrals, automation or intelligence."}
@@ -656,7 +666,7 @@ export function AdminPlanContextNotice() {
               Premium payment needs attention
             </p>
             <p className="mt-1 text-xs leading-5 text-[var(--admin-text-muted)]">
-              Review billing before Premium capacity is interrupted. Your core Free-plan pharmacy workspace remains available.
+              Premium capacity is paused. Your core Free-plan pharmacy workspace remains available.
             </p>
           </div>
         </div>
@@ -670,7 +680,11 @@ export function AdminPlanContextNotice() {
     );
   }
 
-  if (status.premium) return null;
+  if (status.premium) {
+    const days = status.subscription.periodEnd ? Math.ceil((new Date(status.subscription.periodEnd).getTime() - Date.now()) / 86400000) : null;
+    return days != null && days <= 7 ? <p role="status" className="mb-4 rounded-xl border border-amber-500/25 p-3 text-sm">{days} days left on Premium. <Link href="/admin/billing" className="underline">Review renewal and your plan-change impact</Link>.</p> : null;
+  }
+  if (status.planState.billingStatus === "premium_pending_activation") return <p className="mb-4 rounded-xl border p-3 text-sm">Premium paid — finish pharmacy setup to activate Premium features. <Link href="/admin/setup" className="underline">Finish setup</Link></p>;
 
   let key: keyof AdminPlanStatus["usage"] | null = null;
   let noun = "";
@@ -679,15 +693,15 @@ export function AdminPlanContextNotice() {
   if (pathname.startsWith("/admin/medications")) {
     key = "medicines";
     noun = "public medicine listings";
-    unaffected = "Existing published medicines stay available.";
+    unaffected = "Manual medicine management and stock tracking stay available.";
   } else if (pathname.startsWith("/admin/services")) {
     key = "services";
     noun = "active services";
-    unaffected = "Existing active services and bookings stay available.";
+    unaffected = "Existing bookings stay operational. Overflow services remain saved but cannot accept new public bookings.";
   } else if (pathname.startsWith("/admin/prescriptions")) {
     key = "prescriptionReferrals";
     noun = "direct Afyvia prescription referrals this month";
-    unaffected = "Existing patients, staff-entered prescriptions and storefront requests are not blocked by this allowance.";
+    unaffected = "Existing patients, staff-entered prescriptions and dispensing are not blocked. Once the allowance is exhausted, new marketplace referrals are offered another available pharmacy until next month or Premium reactivation.";
   } else if (pathname.startsWith("/admin/campaigns")) {
     key = "campaigns";
     noun = "campaign launches this month";
@@ -697,8 +711,7 @@ export function AdminPlanContextNotice() {
   if (!key) return null;
 
   const entry = status.usage[key];
-  const tone = usageTone(entry);
-  if (tone === "normal" || entry.limit == null) return null;
+  if (entry.limit == null) return null;
 
   const remaining = Math.max(0, entry.limit - entry.used);
   const atLimit = remaining === 0;

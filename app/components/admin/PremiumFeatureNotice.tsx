@@ -1,5 +1,5 @@
-import Link from "next/link";
-import { ArrowRight, Sparkles } from "lucide-react";
+import { PremiumGate } from "./PremiumGate";
+import { Sparkles } from "lucide-react";
 
 export function PremiumFeatureNotice({
   title,
@@ -39,13 +39,7 @@ export function PremiumFeatureNotice({
             </div>
           )}
         </div>
-        <Link
-          href="/admin/billing"
-          className="inline-flex min-h-10 shrink-0 items-center justify-center gap-1.5 rounded-xl bg-[var(--admin-accent)] px-4 py-2 text-xs font-bold text-white shadow-sm transition hover:brightness-105"
-        >
-          Explore Premium
-          <ArrowRight className="h-3.5 w-3.5" />
-        </Link>
+        <PremiumGate feature={title} description={description} />
       </div>
     </section>
   );

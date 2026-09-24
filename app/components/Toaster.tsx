@@ -38,6 +38,9 @@ function emit() {
 }
 
 function push(kind: ToastKind, message: string, opts?: ToastOptions) {
+  if (kind === "error" && typeof window !== "undefined" && window.location.pathname.startsWith("/admin") && /Premium|FREE_.*LIMIT|upgrade_required/i.test(message)) {
+    window.dispatchEvent(new CustomEvent("afyvia:premium-required", { detail: message }));
+  }
   const id = nextId++;
   const durationMs =
     opts?.durationMs ?? (kind === "urgent" ? 12_000 : kind === "error" ? 6_000 : 4_000);

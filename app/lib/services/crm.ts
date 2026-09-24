@@ -4,6 +4,7 @@ import { notifyCareRequest } from "./care-request-notifications";
 import { acceptsCareRequests } from "./care-request-availability";
 import { withPlatformBypass } from "@/app/lib/tenant-context";
 import { requireTenantId } from "@/app/lib/tenant";
+import { assertCampaignConfiguration } from "@/app/lib/platform/plan-enforcement";
 import { prisma } from "@/app/lib/db";
 import type { RefillStatus, EnquiryStatus, FeedbackStatus, CampaignStatus } from "@/app/generated/prisma/client";
 import { addTimelineEvent } from "@/app/lib/timeline";
@@ -1012,6 +1013,14 @@ export async function launchCampaign(campaignId: string, actorId: string) {
     include: { segment: { include: { members: true } } },
   });
   if (!campaign) throw new Error("Campaign not found");
+  await assertCampaignConfiguration(campaign.pharmacyId, campaign);
+  // The database trigger serializes the Free monthly allowance across all launch paths.
+  const claimed = await prisma.campaign.updateMany({
+    where: { id: campaign.id, status: { in: ["draft", "scheduled"] } },
+    data: { status: "sending" },
+  });
+  if (!claimed.count) throw new Error("This campaign is already sending or has been sent.");
+
 
   const memberIds =
     campaign.segment?.members.map((m) => m.customerId) ??

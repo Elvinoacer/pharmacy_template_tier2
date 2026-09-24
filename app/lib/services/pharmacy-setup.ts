@@ -194,7 +194,7 @@ export async function loadPharmacySetup(pharmacyId: string) {
         required: false,
         label: "Premium (optional)",
         hint: "Free: 5 medicine listings and 2 services. Upgrade for KES 500/month when needed.",
-        href: "/onboard/billing",
+        href: "/admin/billing",
       },
       {
         key: "payments",

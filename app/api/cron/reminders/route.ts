@@ -56,20 +56,7 @@ async function processScheduledCampaigns(): Promise<number> {
     } catch (err) {
       const planMessage = growthLimitMessage(err);
       if (planMessage) {
-        // Premium may have lapsed after the campaign was scheduled. Preserve the
-        // draft instead of repeatedly retrying a paid automation every five minutes.
-        await prisma.campaign.update({
-          where: { id: c.id },
-          data: { status: "draft", scheduledFor: null },
-        });
-        await recordAdminNotification({
-          type: "campaign_failed",
-          title: "Scheduled campaign paused",
-          body: `Campaign "${c.name}" returned to draft because its Premium automation is no longer active. ${planMessage}`,
-          severity: "warning",
-          relatedType: "campaign",
-          relatedId: c.id,
-        });
+        // Preserve the schedule and content; the job can resume after renewal.
         continue;
       }
 

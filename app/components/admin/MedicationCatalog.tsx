@@ -242,7 +242,11 @@ export function MedicationCatalog({ rows, deleteAction }: Props) {
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ ids: selectedIds, action }),
         });
-        if (!response.ok) throw new Error();
+        if (!response.ok) {
+          const failure = await response.json().catch(() => ({}));
+          toast.error(failure.message || "Could not update medicine listings.");
+          return;
+        }
         const payload = (await response.json().catch(() => ({}))) as { message?: string };
         toast.success(payload.message || `Updated ${selectedIds.length} medication(s).`);
         window.location.reload();

@@ -1940,6 +1940,7 @@ model PharmacyInventory {
   overTheCounter  Boolean  @default(false) @map("over_the_counter")
   prescriptionRequired Boolean @default(true) @map("prescription_required")
   publicListing   Boolean  @default(false) @map("public_listing")
+  planPaused      Boolean  @default(false) @map("plan_paused")
   active          Boolean  @default(true)
   /// Last time the POS sync touched this row.
   syncedAt       DateTime? @map("synced_at")
@@ -2468,6 +2469,8 @@ model PharmacyService {
   /// Optional fixed price in KES. Null = no online payment required to confirm.
   price       Decimal? @db.Decimal(10, 2)
   /// Accept online booking forms.
+  planPaused  Boolean  @default(false) @map("plan_paused")
+  planWasBookable Boolean @default(false) @map("plan_was_bookable")
   bookable    Boolean  @default(true)
   active      Boolean  @default(true)
   sortOrder   Int      @default(0) @map("sort_order")

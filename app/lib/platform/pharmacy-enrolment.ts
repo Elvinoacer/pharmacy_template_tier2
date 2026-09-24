@@ -584,7 +584,12 @@ export async function startPharmacyService(pharmacyId: string) {
           where: { pharmacyId, status: { not: "cancelled" } },
           orderBy: { createdAt: "desc" },
         });
-        if (existing) return existing;
+        if (existing) {
+          const outstanding = await tx.invoice.findFirst({ where: { subscriptionId: existing.id, status: "open" }, orderBy: { createdAt: "asc" } });
+          if (outstanding || existing.currentPeriodEnd > new Date()) return existing;
+          const start = new Date();
+          return tx.subscription.update({ where: { id: existing.id }, data: { status: "past_due", currentPeriodStart: start, currentPeriodEnd: nextBillingMonth(start), cancelAt: null, cancelledAt: null } });
+        }
         const start = new Date();
         return tx.subscription.create({
           data: {
@@ -600,6 +605,7 @@ export async function startPharmacyService(pharmacyId: string) {
       { timeout: 30000, maxWait: 15000 },
     );
     await syncEntitlementsFromPlan(pharmacyId, plan.id);
-    return issueSubscriptionInvoice(sub.id);
+    const outstanding = await db.invoice.findFirst({ where: { subscriptionId: sub.id, status: "open" }, orderBy: { createdAt: "asc" } });
+    return outstanding ?? issueSubscriptionInvoice(sub.id);
   });
 }

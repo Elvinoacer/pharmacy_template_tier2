@@ -3,7 +3,7 @@ import { MONTHLY_FEE_KES, VERIFICATION_FEE_KES, nextBillingMonth } from "./prici
 
 import type { Prisma } from "@/app/generated/prisma/client";
 import { prismaUnscoped, withPlatformTx } from "@/app/lib/db";
-import { releasePremiumOverflow } from "@/app/lib/platform/plan-enforcement";
+import { releasePremiumOverflow, syncPlanCapacity } from "@/app/lib/platform/plan-enforcement";
 import { withPharmacy, withPlatformBypass } from "@/app/lib/tenant-context";
 import { DEFAULT_PLAN_FEATURES } from "@/app/lib/platform/entitlements";
 import { recordAuditRequired } from "@/app/lib/platform/audit";
@@ -110,7 +110,7 @@ export async function issueSubscriptionInvoice(subscriptionId: string, period?: 
     if (sub.status === "cancelled") throw new Error("subscription_cancelled");
     const [grant, priorSubscriptionInvoices, bundleCredit] = await Promise.all([
       tx.pharmacyPromotionGrant.findUnique({ where: { pharmacyId: sub.pharmacyId } }),
-      tx.invoice.count({ where: { subscriptionId } }),
+      tx.invoice.count({ where: { pharmacyId: sub.pharmacyId, subscriptionId: { not: null } } }),
       tx.pharmacyOnboardingEvent.findFirst({
         where: { pharmacyId: sub.pharmacyId, type: "bundle_prepaid_credit_granted" },
         select: { id: true },
@@ -203,7 +203,7 @@ export async function settleInvoice(tx: Prisma.TransactionClient, invoiceId: str
     if (unpaid === 0) {
       const activated = await tx.subscription.updateMany({
         where: { id: invoice.subscriptionId, status: "past_due", currentPeriodStart: invoice.periodStart },
-        data: { status: "active" },
+        data: { status: "active", ...(current.status !== "paid" && invoice.periodEnd <= new Date() ? { currentPeriodStart: new Date(), currentPeriodEnd: nextBillingMonth(new Date()), cancelAt: null } : {}) },
       });
       if (activated.count) {
         await tx.pharmacy.updateMany({
@@ -213,6 +213,7 @@ export async function settleInvoice(tx: Prisma.TransactionClient, invoiceId: str
       }
     }
   }
+  if (invoice.subscriptionId) await syncPlanCapacity(tx, invoice.pharmacyId);
   if (current.status !== "paid") {
     await tx.auditLog.create({ data: { actorId, pharmacyId: invoice.pharmacyId, action: "billing.invoice.paid", entityType: "invoice", entityId: invoiceId } });
   }
@@ -246,7 +247,7 @@ export async function applyDunning(invoiceId: string) {
   // Premium expiry removes premium access through entitlement checks. The free
   // storefront and existing orders remain available; billing cannot suspend them.
   // After the grace window, extra public listings and services fall back to the free caps.
-  if (status === "suspended") await releasePremiumOverflow(invoice.pharmacyId);
+  await releasePremiumOverflow(invoice.pharmacyId);
   return row;
 }
 
@@ -295,7 +296,10 @@ export async function processSubscriptionCycle() {
   }
 
   const unfinished = await prismaUnscoped.subscription.findMany({ where: { status: "past_due" }, take: 100 });
-  for (const sub of unfinished) await issueSubscriptionInvoice(sub.id);
+  for (const sub of unfinished) {
+    await issueSubscriptionInvoice(sub.id);
+    await releasePremiumOverflow(sub.pharmacyId);
+  }
   return { invoiced, activated, cancelled: cancelling.length };
 }
 
@@ -557,7 +561,7 @@ async function createIntasendBillingCheckoutInPharmacy(
   const requestedPath =
     opts?.redirectPath && opts.redirectPath.startsWith("/")
       ? opts.redirectPath
-      : "/onboard?payment=returned";
+      : invoice.subscriptionId ? "/admin/billing?payment=returned" : "/onboard?payment=returned";
   const defaultRedirect = `${intasendConfig.appBaseUrl}${requestedPath}`;
   const redirectUrl = opts?.redirectUrl || defaultRedirect;
 
@@ -604,6 +608,18 @@ async function createIntasendBillingCheckoutInPharmacy(
     });
   }
 
+  // Claim locally before contacting IntaSend: simultaneous clicks cannot create two hosted checkouts.
+  let claimId: string;
+  try {
+    const claim = await withPlatformTx(tx => tx.billingPayment.create({ data: {
+      pharmacyId, invoiceId, provider: "intasend", status: "processing", amountKes: invoice.totalKes,
+    }, select: { id: true } }));
+    claimId = claim.id;
+  } catch (error) {
+    if ((error as { code?: string }).code !== "P2002") throw error;
+    return { ok: false as const, error: "billing_payment_in_progress", message: "Secure checkout is already being prepared. Retry shortly." };
+  }
+
   const apiRef = invoice.number;
 
   const checkoutRes = await createIntasendCheckout({
@@ -615,9 +631,13 @@ async function createIntasendBillingCheckoutInPharmacy(
     phone: invoice.pharmacy.phone || undefined,
     redirectUrl,
     comment: `Invoice ${invoice.number} for ${invoice.pharmacy.name}`,
+  }).catch(async (error: unknown) => {
+    await withPlatformTx(tx => tx.billingPayment.updateMany({ where: { id: claimId, status: "processing" }, data: { status: "failed", failureReason: "Checkout could not be prepared. Retry." } }));
+    throw error;
   });
 
   if (!checkoutRes.ok) {
+    await withPlatformTx(tx => tx.billingPayment.updateMany({ where: { id: claimId, status: "processing" }, data: { status: "failed", failureReason: "Checkout provider unavailable. Retry." } }));
     logIntasend("error", "billing.checkout.failed", {
       invoiceId,
       pharmacyId: invoice.pharmacyId,
@@ -635,44 +655,11 @@ async function createIntasendBillingCheckoutInPharmacy(
   // idempotent per invoice. A historical pending row may already exist even if
   // a tenant-scoped read could not see it. Updating that row is both safer and
   // avoids the billing_payments_one_pending partial unique-index failure.
-  const payment = await withPlatformTx(async (tx) => {
-    const pending = await tx.billingPayment.findFirst({
-      where: {
-        invoiceId,
-        status: { in: ["pending", "processing"] },
-      },
-      orderBy: { createdAt: "desc" },
-      select: { id: true },
-    });
-
-    const data = {
-      provider: "intasend",
-      status: "pending" as const,
-      amountKes: invoice.totalKes,
-      phone: invoice.pharmacy.phone,
-      checkoutUrl: checkoutRes.url,
-      checkoutRequestId: checkoutRes.id || checkoutRes.invoiceId,
-      providerRef: checkoutRes.invoiceId,
-      failureReason: null,
-    };
-
-    if (pending) {
-      return tx.billingPayment.update({
-        where: { id: pending.id },
-        data,
-        select: { id: true },
-      });
-    }
-
-    return tx.billingPayment.create({
-      data: {
-        pharmacyId: invoice.pharmacyId,
-        invoiceId: invoice.id,
-        ...data,
-      },
-      select: { id: true },
-    });
-  });
+  const payment = await withPlatformTx(tx => tx.billingPayment.update({
+    where: { id: claimId },
+    data: { status: "pending", checkoutUrl: checkoutRes.url, checkoutRequestId: checkoutRes.id || checkoutRes.invoiceId, providerRef: checkoutRes.invoiceId },
+    select: { id: true },
+  }));
 
   logIntasend("info", "billing.payment.pending", {
     invoiceId: invoice.id,

@@ -112,7 +112,7 @@ export async function getPharmacyWorkspaceAccess(
   if (billingSuspended) {
     return {
       mode: "billing_suspended",
-      blocksOperations: true,
+      blocksOperations: false,
       pharmacy,
       subscriptionStatus,
       dunningStatus,

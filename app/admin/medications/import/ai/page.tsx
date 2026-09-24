@@ -1,3 +1,4 @@
+import { PremiumGate } from "@/app/components/admin/PremiumGate";
 import { redirect } from "next/navigation";
 import Link from "next/link";
 import { getSessionUser } from "@/app/lib/auth";
@@ -31,7 +32,7 @@ export default async function AiImportPage() {
           <p className="text-base leading-6 admin-muted">
             The free plan includes manual entry and the shared medicine library, with up to 5 public listings. Premium is KES 500/month and adds AI-assisted imports, more listings, advanced analytics and POS synchronization.
           </p>
-          <Link href="/admin/billing" className="btn-primary inline-flex min-h-11 items-center justify-center px-4 text-sm">View Premium</Link>
+          <PremiumGate feature="AI-assisted medication import" />
         </section>
       </AdminShell>
     );

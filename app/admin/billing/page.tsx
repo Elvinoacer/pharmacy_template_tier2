@@ -23,13 +23,12 @@ import {
 import { AdminShell } from "@/app/components/admin/AdminShell";
 import {
   CancelServiceForm,
-  PharmacyEnrolmentPricingSelector,
   PromoCardForm,
-  RetryOverdueForm,
 } from "@/app/components/onboard/BillingForms";
 import { getSessionUser } from "@/app/lib/auth";
 import { prisma, prismaUnscoped, withPlatformTx } from "@/app/lib/db";
-import { hasPremiumPlan } from "@/app/lib/platform/entitlements";
+import { getPharmacyPlanState } from "@/app/lib/platform/plan-state";
+import { PremiumGate, PremiumPaymentReturn } from "@/app/components/admin/PremiumGate";
 import {
   FREE_MEDICINE_LIMIT,
   FREE_SERVICE_LIMIT,
@@ -37,7 +36,6 @@ import {
   FREE_MONTHLY_CAMPAIGN_LAUNCH_LIMIT,
 } from "@/app/lib/platform/plan-policy";
 import { getPrescriptionReferralUsage } from "@/app/lib/platform/prescription-referrals";
-import { isIntasendConfigured } from "@/app/lib/services/intasend";
 import { withPharmacy } from "@/app/lib/tenant-context";
 
 export const dynamic = "force-dynamic";
@@ -302,7 +300,12 @@ export default async function AdminBillingPage() {
   if (!pharmacy) redirect("/admin/select");
 
   const isOwner = pharmacy.ownerUserId === user.id;
-  const premiumActive = await hasPremiumPlan(pharmacy.id);
+  const planState = await getPharmacyPlanState(pharmacy.id);
+  const premiumActive = planState.premiumEntitlementsActive;
+  const [pausedMedicines, pausedServices] = await Promise.all([
+    prismaUnscoped.pharmacyInventory.count({ where: { pharmacyId, planPaused: true } }),
+    prismaUnscoped.pharmacyService.count({ where: { pharmacyId, planPaused: true } }),
+  ]);
   const now = new Date();
   const monthStart = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), 1));
   const nextMonth = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth() + 1, 1));
@@ -365,12 +368,9 @@ export default async function AdminBillingPage() {
     getPrescriptionReferralUsage(pharmacy.id),
   ]);
 
-  const paymentAvailable = isIntasendConfigured();
   const periodEnd = formatDate(tenantData.subscription?.currentPeriodEnd);
   const latestInvoice = tenantData.invoices[0];
-  const needsRenewal = ["past_due", "unpaid"].includes(
-    tenantData.subscription?.status || "",
-  );
+
 
   return (
     <AdminShell
@@ -389,7 +389,7 @@ export default async function AdminBillingPage() {
                   ) : (
                     <ShieldCheck className="h-3.5 w-3.5 text-[var(--admin-accent)]" />
                   )}
-                  {premiumActive ? "Premium active" : "Free plan"}
+                  {premiumActive ? "Premium active" : planState.billingStatus === "premium_pending_activation" ? "Premium paid — finish setup" : "Afyvia Free"}
                 </span>
                 {tenantData.subscription?.status && (
                   <span className="rounded-full bg-[var(--admin-inset)] px-3 py-1 text-sm font-semibold capitalize text-[var(--admin-text-soft)]">
@@ -425,7 +425,23 @@ export default async function AdminBillingPage() {
                 <span className="text-3xl font-bold tracking-tight text-[var(--admin-text)]">
                   {premiumActive ? "Premium" : "KES 500"}
                 </span>
-                {!premiumActive && (
+                <PremiumPaymentReturn />
+        <section className="rounded-2xl border border-[var(--admin-border)] bg-[var(--admin-card)] p-5">
+          <h2 className="text-lg font-bold">{premiumActive ? "If Premium ended today" : "Reactivate Premium and regain"}</h2>
+          {planState.blockedReason && <p className="mt-2">{planState.billingStatus === "premium_pending_activation" ? "Premium paid — " : ""}{planState.blockedReason}</p>}
+          {planState.periodEnd && <p className="mt-2">Premium {premiumActive ? "expires" : "period ended"} on {formatDate(planState.periodEnd)}.</p>}
+          {premiumActive && planState.periodEnd && planState.periodEnd.getTime() - now.getTime() <= 7 * 86400000 && <p role="status" className="mt-2 font-semibold text-amber-700">{Math.max(1, Math.ceil((planState.periodEnd.getTime() - now.getTime()) / 86400000))} days left on Premium. Review the impact below before your period ends.</p>}
+          <ul className="mt-3 space-y-2 text-sm">
+            <li>{tenantData.publicMedicines + pausedMedicines} public or plan-paused medicines → Free keeps 5 public. {premiumActive ? Math.max(0, tenantData.publicMedicines - 5) : pausedMedicines} {premiumActive ? "would become private" : "can be restored"}.</li>
+            <li>{tenantData.activeServices + pausedServices} active or plan-paused services → Free keeps 2 active. {premiumActive ? Math.max(0, tenantData.activeServices - 2) : pausedServices} {premiumActive ? "would be paused" : "can be restored"}.</li>
+            <li>Marketplace referrals: {prescriptionReferralUsage.used}/10 Free allowance this month. Existing prescriptions and dispensing continue.</li>
+            <li>Campaigns: {tenantData.campaignLaunches}/1 Free launch this month. Drafts remain available.</li>
+            <li>Premium restores scheduling, automation, AI import, advanced analytics, inventory intelligence and POS sync.</li>
+          </ul>
+          <p className="mt-3 text-sm">Medicines, services, bookings, patient records, configuration and history are preserved. Existing bookings continue even when a service cannot accept new public bookings.</p>
+        </section>
+
+        {!premiumActive && (
                   <span className="pb-1 text-sm text-[var(--admin-text-muted)]">/ month</span>
                 )}
               </div>
@@ -458,30 +474,7 @@ export default async function AdminBillingPage() {
                 </div>
               ) : isOwner ? (
                 <div className="mt-4">
-                  {needsRenewal ? (
-                    <div className="rounded-2xl border border-amber-500/25 bg-amber-500/[0.06] p-4">
-                      <p className="text-sm font-semibold text-[var(--admin-text)]">
-                        Premium payment needs attention
-                      </p>
-                      <p className="mt-1 text-sm leading-5 text-[var(--admin-text-muted)]">
-                        Settle the outstanding monthly invoice to restore Premium entitlements. Your Free plan remains available.
-                      </p>
-                      <div className="[&_p]:!text-sm">
-                        <RetryOverdueForm
-                          pharmacyId={pharmacy.id}
-                          suspended={tenantData.subscription?.status === "unpaid"}
-                        />
-                      </div>
-                    </div>
-                  ) : (
-                    <PharmacyEnrolmentPricingSelector
-                      pharmacyId={pharmacy.id}
-                      grant={grant}
-                      verificationPaid
-                      subscriptionActive={false}
-                      paymentAvailable={paymentAvailable}
-                    />
-                  )}
+                  <PremiumGate feature="Afyvia Premium" description="Restore unlimited public listings, services, marketplace referrals and campaigns, plus Premium tools." />
                 </div>
               ) : (
                 <div className="mt-4 rounded-2xl border border-[var(--admin-border)] bg-[var(--admin-card)] p-4 text-sm text-[var(--admin-text-muted)]">
@@ -490,7 +483,7 @@ export default async function AdminBillingPage() {
               )}
 
               <Link
-                href="/onboard/billing"
+                href="#billing-history"
                 className="mt-4 inline-flex items-center gap-2 text-sm font-semibold text-[var(--admin-accent-text)] hover:underline"
               >
                 Billing history & payment management
@@ -676,10 +669,10 @@ export default async function AdminBillingPage() {
             <div>
               <div className="flex items-center gap-2 text-sm font-bold text-[var(--admin-text)]">
                 <CircleGauge className="h-4 w-4 text-[var(--admin-accent)]" />
-                Billing snapshot
+                Billing history
               </div>
               <p className="mt-1 text-sm text-[var(--admin-text-muted)]">
-                Latest platform invoice activity for {pharmacy.name}.
+                <span id="billing-history">Latest platform invoice activity for {pharmacy.name}.</span>
               </p>
             </div>
             {latestInvoice ? (

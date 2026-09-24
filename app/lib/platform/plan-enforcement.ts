@@ -1,6 +1,8 @@
 import "server-only";
 
 import { prismaUnscoped } from "@/app/lib/db";
+import { getPharmacyPlanState } from "./plan-state";
+import type { Prisma } from "@/app/generated/prisma/client";
 import { hasPremiumPlan } from "@/app/lib/platform/entitlements";
 import {
   FREE_MEDICINE_LIMIT,
@@ -106,34 +108,25 @@ export async function assertActiveServiceSlot(pharmacyId: string, additional = 1
  * After Premium lapses, keep the newest free allowance public and hide the rest.
  * Stock and booking history stay; only the public catalogue is reduced.
  */
-export async function releasePremiumOverflow(pharmacyId: string) {
-  if (await hasPremiumPlan(pharmacyId)) return { medicines: 0, services: 0 };
-
-  const listings = await prismaUnscoped.pharmacyInventory.findMany({
-    where: { pharmacyId, active: true, publicListing: true },
-    orderBy: { updatedAt: "desc" },
-    select: { id: true },
-  });
+export async function syncPlanCapacity(tx: Prisma.TransactionClient, pharmacyId: string) {
+  await tx.$executeRaw`SELECT pg_advisory_xact_lock(hashtext(${pharmacyId}))`;
+  const state = await getPharmacyPlanState(pharmacyId, tx);
+  if (state.premiumEntitlementsActive) {
+    const medicines = await tx.pharmacyInventory.updateMany({ where: { pharmacyId, planPaused: true, active: true }, data: { publicListing: true, planPaused: false } });
+    const services = await tx.pharmacyService.findMany({ where: { pharmacyId, planPaused: true }, select: { id: true, planWasBookable: true } });
+    for (const service of services) await tx.pharmacyService.update({ where: { id: service.id }, data: { active: true, bookable: service.planWasBookable, planPaused: false } });
+    return { medicines: medicines.count, services: services.length };
+  }
+  const listings = await tx.pharmacyInventory.findMany({ where: { pharmacyId, active: true, publicListing: true }, orderBy: [{ createdAt: "asc" }, { id: "asc" }], select: { id: true } });
   const extraListings = listings.slice(FREE_MEDICINE_LIMIT);
-  if (extraListings.length > 0) {
-    await prismaUnscoped.pharmacyInventory.updateMany({
-      where: { id: { in: extraListings.map((row) => row.id) } },
-      data: { publicListing: false },
-    });
-  }
-
-  const services = await prismaUnscoped.pharmacyService.findMany({
-    where: { pharmacyId, active: true },
-    orderBy: { updatedAt: "desc" },
-    select: { id: true },
-  });
+  if (extraListings.length) await tx.pharmacyInventory.updateMany({ where: { pharmacyId, id: { in: extraListings.map(r => r.id) } }, data: { publicListing: false, planPaused: true } });
+  const services = await tx.pharmacyService.findMany({ where: { pharmacyId, active: true }, orderBy: [{ createdAt: "asc" }, { id: "asc" }], select: { id: true, bookable: true } });
   const extraServices = services.slice(FREE_SERVICE_LIMIT);
-  if (extraServices.length > 0) {
-    await prismaUnscoped.pharmacyService.updateMany({
-      where: { id: { in: extraServices.map((row) => row.id) } },
-      data: { active: false, bookable: false },
-    });
-  }
-
+  for (const service of extraServices) await tx.pharmacyService.update({ where: { id: service.id }, data: { active: false, bookable: false, planPaused: true, planWasBookable: service.bookable } });
   return { medicines: extraListings.length, services: extraServices.length };
+}
+
+/** Reversible reconciliation; never changes stock, bookings or clinical records. */
+export async function releasePremiumOverflow(pharmacyId: string) {
+  return prismaUnscoped.$transaction(tx => syncPlanCapacity(tx, pharmacyId), { timeout: 30000 });
 }

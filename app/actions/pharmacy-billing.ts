@@ -1,5 +1,6 @@
 "use server";
 
+import { getPharmacyPlanState } from "@/app/lib/platform/plan-state";
 import { revalidatePath } from "next/cache";
 
 import { getSessionUser } from "@/app/lib/auth";
@@ -274,8 +275,9 @@ export async function pharmacyBillingAction(
     }
 
     // 6. ACTIVATE SERVICE
-    if (intent === "activate") {
-      if (!(await loadPharmacySetup(pharmacyId)).profileReady) {
+    if (intent === "activate" || intent === "premium_checkout") {
+      const planState = await getPharmacyPlanState(pharmacyId);
+      if (!planState.pharmacyReady || !(await loadPharmacySetup(pharmacyId)).profileReady) {
         throw new Error(
           "Finish verification and storefront setup, then launch on the free plan. Premium can be added afterwards from Admin → Plans & billing.",
         );
@@ -302,7 +304,7 @@ export async function pharmacyBillingAction(
         }
         return {
           success:
-            "Your promotional service period is active! No payment required.",
+            "Premium restored. Your voucher covered this period.",
           settled: true,
           waived: true,
         };

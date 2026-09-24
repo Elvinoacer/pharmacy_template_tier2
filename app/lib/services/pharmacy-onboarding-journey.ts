@@ -1,4 +1,5 @@
 import "server-only";
+import { getPharmacyPlanState } from "@/app/lib/platform/plan-state";
 
 import { prismaUnscoped, withPlatformTx } from "@/app/lib/db";
 import { withPharmacy } from "@/app/lib/tenant-context";
@@ -344,13 +345,7 @@ export async function loadPharmacyOnboardingSnapshot(input: {
       }),
     ),
     loadPharmacySetup(pid).catch(() => null),
-    withPharmacy(pid, () =>
-      prismaUnscoped.subscription.findFirst({
-        where: { pharmacyId: pid, status: { not: "cancelled" } },
-        orderBy: { createdAt: "desc" },
-        select: { status: true, currentPeriodEnd: true },
-      }),
-    ),
+    getPharmacyPlanState(pid),
     prismaUnscoped.pharmacyOnboardingEvent.findFirst({
       where: { pharmacyId: pid, type: "bundle_prepaid_credit_granted" },
       select: { id: true },
@@ -425,9 +420,9 @@ export async function loadPharmacyOnboardingSnapshot(input: {
 
   const subscription = dbSubscription
     ? {
-        active: dbSubscription.status === "active" && Boolean(dbSubscription.currentPeriodEnd && dbSubscription.currentPeriodEnd > new Date()),
-        status: dbSubscription.status,
-        currentPeriodEnd: dbSubscription.currentPeriodEnd,
+        active: dbSubscription.premiumEntitlementsActive,
+        status: dbSubscription.billingStatus,
+        currentPeriodEnd: dbSubscription.periodEnd,
       }
     : null;
 

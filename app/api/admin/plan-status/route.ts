@@ -1,3 +1,4 @@
+import { getPharmacyPlanState } from "@/app/lib/platform/plan-state";
 import { NextResponse } from "next/server";
 
 import { getSessionUser } from "@/app/lib/auth";
@@ -45,8 +46,7 @@ export async function GET() {
 
   const [
     pharmacy,
-    premiumSubscription,
-    latestSubscription,
+    planState,
     publicMedicines,
     activeServices,
     campaignLaunches,
@@ -63,38 +63,7 @@ export async function GET() {
         verifiedAt: true,
       },
     }),
-    prismaUnscoped.subscription.findFirst({
-      where: {
-        pharmacyId,
-        currentPeriodEnd: { gt: now },
-        OR: [
-          { status: "active", currentPeriodStart: { lte: now } },
-          { status: "trialing", trialEndsAt: null },
-          { status: "trialing", trialEndsAt: { gt: now } },
-        ],
-      },
-      orderBy: { createdAt: "desc" },
-      select: {
-        id: true,
-        status: true,
-        currentPeriodStart: true,
-        currentPeriodEnd: true,
-        trialEndsAt: true,
-        cancelAt: true,
-      },
-    }),
-    prismaUnscoped.subscription.findFirst({
-      where: { pharmacyId, status: { not: "cancelled" } },
-      orderBy: { createdAt: "desc" },
-      select: {
-        id: true,
-        status: true,
-        currentPeriodStart: true,
-        currentPeriodEnd: true,
-        trialEndsAt: true,
-        cancelAt: true,
-      },
-    }),
+    getPharmacyPlanState(pharmacyId),
     prismaUnscoped.pharmacyInventory.count({
       where: { pharmacyId, active: true, publicListing: true },
     }),
@@ -120,14 +89,10 @@ export async function GET() {
     return NextResponse.json({ error: "pharmacy_not_found" }, { status: 404 });
   }
 
-  const premium = Boolean(premiumSubscription);
-  const subscription = premiumSubscription || latestSubscription;
+  const premium = planState.premiumEntitlementsActive;
+  const subscription = planState.subscription;
   const subscriptionStatus = subscription?.status ?? null;
-  const paymentAttention = Boolean(
-    !premium &&
-      subscriptionStatus &&
-      ["past_due", "unpaid"].includes(subscriptionStatus),
-  );
+  const paymentAttention = planState.paymentAttention;
 
   return NextResponse.json(
     {
@@ -138,6 +103,7 @@ export async function GET() {
         setupCompleted: Boolean(pharmacy.setupCompletedAt),
         verified: Boolean(pharmacy.verifiedAt),
       },
+      planState,
       plan: premium ? "premium" : "free",
       premium,
       isOwner: pharmacy.ownerUserId === user.id,

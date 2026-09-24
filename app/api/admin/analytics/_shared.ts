@@ -1,4 +1,5 @@
 import "server-only";
+import { hasPremiumPlan } from "@/app/lib/platform/entitlements";
 
 import type { NextRequest } from "next/server";
 import { getSessionUser } from "@/app/lib/auth";
@@ -30,6 +31,7 @@ export async function requireStaffForAnalytics() {
           : "Pharmacy workspace is paused",
     };
   }
+  if (!user.platformAdmin && !(await hasPremiumPlan(user.activePharmacyId))) return { ok: false as const, status: 402, error: "Advanced analytics is Premium-only." };
   return { ok: true as const, user };
 }
 

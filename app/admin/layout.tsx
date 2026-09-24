@@ -69,7 +69,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
 
     // A newly verified, operable pharmacy stays inside guided setup until the
     // owner finishes it. Paused tenants are handled by the recovery guard above.
-    if (!access.blocksOperations && !pathname.startsWith("/admin/setup")) {
+    if (!access.blocksOperations && !pathname.startsWith("/admin/setup") && !pathname.startsWith("/admin/billing")) {
       const activePharmacy = access.pharmacy;
       if (
         activePharmacy?.verifiedAt &&

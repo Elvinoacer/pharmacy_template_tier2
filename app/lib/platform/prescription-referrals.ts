@@ -1,4 +1,5 @@
 import "server-only";
+import { getPharmacyPlanState } from "./plan-state";
 
 import { randomUUID } from "node:crypto";
 import type { Prisma } from "@/app/generated/prisma/client";
@@ -43,18 +44,7 @@ async function premiumInTransaction(
   pharmacyId: string,
   now: Date,
 ) {
-  return Boolean(await tx.subscription.findFirst({
-    where: {
-      pharmacyId,
-      currentPeriodEnd: { gt: now },
-      OR: [
-        { status: "active", currentPeriodStart: { lte: now } },
-        { status: "trialing", trialEndsAt: null },
-        { status: "trialing", trialEndsAt: { gt: now } },
-      ],
-    },
-    select: { id: true },
-  }));
+  return (await getPharmacyPlanState(pharmacyId, tx, now)).premiumEntitlementsActive;
 }
 
 export async function getPrescriptionReferralUsage(
@@ -65,18 +55,7 @@ export async function getPrescriptionReferralUsage(
   const now = date;
   return withPlatformBypass(async () => {
     const [subscription, usedAgg, overflowAgg] = await Promise.all([
-      prismaUnscoped.subscription.findFirst({
-        where: {
-          pharmacyId,
-          currentPeriodEnd: { gt: now },
-          OR: [
-            { status: "active", currentPeriodStart: { lte: now } },
-            { status: "trialing", trialEndsAt: null },
-            { status: "trialing", trialEndsAt: { gt: now } },
-          ],
-        },
-        select: { id: true },
-      }),
+      getPharmacyPlanState(pharmacyId, prismaUnscoped, now),
       prismaUnscoped.usageRecord.aggregate({
         where: { pharmacyId, metric: PRESCRIPTION_REFERRAL_USAGE_METRIC, period },
         _sum: { quantity: true },
@@ -87,7 +66,7 @@ export async function getPrescriptionReferralUsage(
       }),
     ]);
 
-    const premium = Boolean(subscription);
+    const premium = subscription.premiumEntitlementsActive;
     const used = usedAgg._sum.quantity ?? 0;
     const overflowed = overflowAgg._sum.quantity ?? 0;
     return {
