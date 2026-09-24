@@ -920,12 +920,19 @@
   white-space: nowrap;
 }
 
-.posterTitle {
+/* Keep service-card titles readable over photography. The storefront shell
+   styles .main h2, so this selector intentionally has higher specificity. */
+.poster .posterTitle {
   margin: 0;
-  color: white;
+  color: #fff;
+  font-family: var(--font-display), Georgia, serif;
   font-size: 1.6rem;
+  font-weight: 600;
   line-height: 1.05;
-  text-shadow: 0 1px 14px rgba(0, 0, 0, 0.35);
+  letter-spacing: -0.035em;
+  text-shadow:
+    0 2px 3px rgba(0, 0, 0, 0.72),
+    0 4px 18px rgba(0, 0, 0, 0.72);
   display: -webkit-box;
   overflow: hidden;
   -webkit-box-orient: vertical;
