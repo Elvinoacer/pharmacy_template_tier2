@@ -6,7 +6,7 @@ import Link from "next/link";
 import { pharmacyBillingAction } from "@/app/actions/pharmacy-billing";
 import { useAdminPlanStatus } from "./AdminPlanStatus";
 
-export function PremiumGate({ feature, description, label, usageKey, global = false }: { global?: boolean; feature: string; description?: string; label?: string; usageKey?: "medicines" | "services" | "campaigns" | "prescriptionReferrals" }) {
+export function PremiumGate({ feature, description, label, usageKey, global = false, directCheckout = false }: { global?: boolean; directCheckout?: boolean; feature: string; description?: string; label?: string; usageKey?: "medicines" | "services" | "campaigns" | "prescriptionReferrals" }) {
   const { status, refresh } = useAdminPlanStatus();
   const dialog = useRef<HTMLDialogElement>(null);
   const titleId = useId();
@@ -21,6 +21,7 @@ export function PremiumGate({ feature, description, label, usageKey, global = fa
   const [error, setError] = useState("");
   const router = useRouter();
   const state = status?.planState;
+  const canManageBilling = status?.canManageBilling ?? status?.isOwner ?? false;
   const reactivation = Boolean(status?.subscription.status);
   const pendingSetup = state?.billingStatus === "premium_pending_activation";
   async function checkout() {
@@ -28,7 +29,8 @@ export function PremiumGate({ feature, description, label, usageKey, global = fa
     setBusy(true); setError("");
     try {
       const form = new FormData();
-      form.set("pharmacyId", status.pharmacy.id); form.set("intent", "premium_checkout");
+      form.set("pharmacyId", status.pharmacy.id);
+      form.set("intent", status.subscription.paymentAttention ? "retry_overdue" : "premium_checkout");
       const result = await pharmacyBillingAction({}, form);
       if (result.error) setError(result.error);
       else if (result.checkoutUrl) window.location.assign(result.checkoutUrl);
@@ -37,7 +39,7 @@ export function PremiumGate({ feature, description, label, usageKey, global = fa
     finally { setBusy(false); }
   }
   return <>
-    <button style={global ? { display: "none" } : undefined} type="button" onClick={() => dialog.current?.showModal()} className="inline-flex min-h-11 items-center justify-center rounded-xl bg-[var(--admin-accent)] px-4 py-2 text-sm font-semibold text-white">{label ?? (reactivation ? "Reactivate Premium" : "Upgrade to Premium")}</button>
+    <button style={global ? { display: "none" } : undefined} type="button" disabled={busy} onClick={() => (directCheckout || status?.subscription.paymentAttention ? void checkout() : dialog.current?.showModal())} className="inline-flex min-h-11 items-center justify-center rounded-xl bg-[var(--admin-accent)] px-4 py-2 text-sm font-semibold text-white disabled:cursor-wait disabled:opacity-60">{busy ? "Preparing secure checkout…" : label ?? (reactivation ? "Reactivate Premium" : "Upgrade to Premium")}</button>
     <dialog ref={dialog} className="m-auto w-[min(32rem,calc(100%-2rem))] max-h-[85svh] overflow-y-auto rounded-2xl border border-[var(--admin-border)] bg-[var(--admin-card)] p-6 text-[var(--admin-text)] shadow-xl backdrop:bg-black/50" aria-labelledby={titleId}>
       <h2 id={titleId} className="text-xl font-bold">{feature}</h2>
       {!status ? <p className="my-4">Plan status is unavailable. Close and retry shortly.</p> : <>
@@ -47,7 +49,7 @@ export function PremiumGate({ feature, description, label, usageKey, global = fa
         {(context || description) && <p className="mt-3 text-sm">{context || description}</p>}
         <p className="mt-3 text-sm">Free keeps your existing prescriptions, dispensing, patients, orders, stock and bookings available. Your work is preserved.</p>
         <p className="my-4 font-semibold">Afyvia Premium · KES 500/month before any active voucher or subsidy</p>
-        {!status.isOwner ? <p>Only the pharmacy owner can manage billing.</p> : state && !state.pharmacyReady ? <Link href="/admin/setup" className="underline">Finish pharmacy setup</Link> : <button type="button" disabled={busy} onClick={checkout} className="min-h-11 rounded-xl bg-[var(--admin-accent)] px-4 py-2 font-semibold text-white disabled:opacity-50">{busy ? "Preparing secure checkout…" : error ? "Retry checkout" : reactivation ? "Reactivate Premium" : "Continue to Premium checkout"}</button>}
+        {!canManageBilling ? <p>You do not have billing permission for this pharmacy.</p> : state && !state.pharmacyReady ? <Link href="/admin/setup" className="underline">Finish pharmacy setup</Link> : <button type="button" disabled={busy} onClick={checkout} className="min-h-11 rounded-xl bg-[var(--admin-accent)] px-4 py-2 font-semibold text-white disabled:opacity-50">{busy ? "Preparing secure checkout…" : error ? "Retry checkout" : reactivation ? "Reactivate Premium" : "Continue to Premium checkout"}</button>}
       </>}
       {error && <p role="alert" className="mt-3 text-red-600">{error}</p>}
       <form method="dialog" className="mt-4"><button className="min-h-11 rounded-xl border px-4 py-2">Not now</button></form>
