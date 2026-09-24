@@ -1,0 +1,881 @@
+/* app/components/onboard/cinema/Cinematic3D.module.css */
+/* Cinematic 3D Spatial Environment & Movie Odyssey Styles */
+
+/* ==========================================================================
+   1. STAGE VIEWPORT & PERSPECTIVE ENGINE
+   ========================================================================== */
+.stageViewport {
+  position: relative;
+  width: 100%;
+  height: 380px;
+  perspective: 1200px;
+  perspective-origin: 50% 40%;
+  overflow: hidden;
+  border-radius: 1.5rem;
+  background:
+    radial-gradient(circle at 50% 30%, rgba(16, 185, 129, 0.12), transparent 60%),
+    radial-gradient(circle at 80% 80%, rgba(6, 182, 212, 0.08), transparent 50%),
+    linear-gradient(175deg, rgba(7, 24, 21, 0.98), rgba(2, 10, 9, 0.99));
+  border: 1px solid rgba(16, 185, 129, 0.25);
+  box-shadow:
+    0 24px 60px -12px rgba(0, 0, 0, 0.65),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1),
+    inset 0 0 40px rgba(16, 185, 129, 0.08);
+  user-select: none;
+  touch-action: pan-y;
+  cursor: grab;
+}
+
+.stageViewport:active {
+  cursor: grabbing;
+}
+
+.stageCompact {
+  height: 260px !important;
+}
+
+.stageFullHeight {
+  height: 100% !important;
+  min-height: 420px;
+}
+
+@media (max-width: 640px) {
+  .stageViewport:not(.stageFullHeight) {
+    height: 270px !important;
+  }
+}
+
+/* Dynamic Ambient Glow */
+.ambientHalo {
+  position: absolute;
+  inset: -10%;
+  background: radial-gradient(
+    ellipse at 50% 40%,
+    rgba(16, 185, 129, 0.22) 0%,
+    rgba(6, 182, 212, 0.12) 35%,
+    transparent 70%
+  );
+  filter: blur(40px);
+  pointer-events: none;
+  z-index: 1;
+  transition: opacity 600ms ease;
+}
+
+/* 3D Preserved World Frame */
+.stageWorld {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transform-style: preserve-3d;
+  transition: transform 750ms cubic-bezier(0.16, 1, 0.3, 1);
+  z-index: 2;
+}
+
+/* Camera presets */
+.camOrbit {
+  transform: rotateX(18deg) rotateY(-22deg) scale(0.96);
+}
+
+.camStorefront {
+  transform: rotateX(4deg) rotateY(0deg) scale(1.12);
+}
+
+.camScanner {
+  transform: rotateX(14deg) rotateY(32deg) scale(1.04);
+}
+
+.camMidnight {
+  transform: rotateX(24deg) rotateY(-38deg) scale(0.98);
+}
+
+/* ==========================================================================
+   2. 3D CYBER PEDESTAL & GROUND RADAR
+   ========================================================================== */
+.groundPlane {
+  position: absolute;
+  width: 440px;
+  height: 440px;
+  transform: rotateX(72deg) translateZ(-65px);
+  transform-style: preserve-3d;
+  pointer-events: none;
+}
+
+.groundGrid {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background-image:
+    linear-gradient(rgba(16, 185, 129, 0.25) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(16, 185, 129, 0.25) 1px, transparent 1px);
+  background-size: 28px 28px;
+  background-position: center center;
+  mask-image: radial-gradient(circle at center, black 30%, transparent 72%);
+  box-shadow: 0 0 60px rgba(16, 185, 129, 0.2);
+}
+
+.radarSweepRing {
+  position: absolute;
+  inset: 12%;
+  border-radius: 50%;
+  border: 1px dashed rgba(6, 182, 212, 0.45);
+  animation: radarRotate 18s linear infinite;
+}
+
+.radarPulseRing {
+  position: absolute;
+  inset: 28%;
+  border-radius: 50%;
+  border: 1.5px solid rgba(16, 185, 129, 0.6);
+  animation: radarPulse 3.6s ease-out infinite;
+}
+
+.pedestalShadow {
+  position: absolute;
+  inset: 22%;
+  border-radius: 50%;
+  background: radial-gradient(circle at center, rgba(0, 0, 0, 0.85) 0%, transparent 75%);
+  filter: blur(14px);
+}
+
+/* ==========================================================================
+   3. 3D PHARMACY ARCHITECTURE
+   ========================================================================== */
+.buildingBase {
+  position: relative;
+  width: 250px;
+  height: 195px;
+  transform-style: preserve-3d;
+  margin-top: -20px;
+}
+
+/* Facade Wall */
+.facadeWall {
+  position: absolute;
+  inset: 0;
+  border-radius: 1rem;
+  background: linear-gradient(165deg, #092c24 0%, #041914 60%, #020c09 100%);
+  border: 1.5px solid rgba(16, 185, 129, 0.45);
+  box-shadow:
+    0 16px 36px rgba(0, 0, 0, 0.7),
+    inset 0 1px 0 rgba(255, 255, 255, 0.2),
+    inset 0 0 25px rgba(16, 185, 129, 0.15);
+  transform-style: preserve-3d;
+  overflow: hidden;
+}
+
+/* Glass Storefront Window */
+.storefrontWindow {
+  position: absolute;
+  bottom: 12px;
+  left: 12px;
+  right: 12px;
+  height: 112px;
+  border-radius: 0.65rem;
+  background: linear-gradient(
+    135deg,
+    rgba(6, 182, 212, 0.15) 0%,
+    rgba(16, 185, 129, 0.08) 50%,
+    rgba(4, 30, 24, 0.6) 100%
+  );
+  border: 1px solid rgba(6, 182, 212, 0.35);
+  box-shadow: inset 0 0 20px rgba(6, 182, 212, 0.12);
+  display: flex;
+  overflow: hidden;
+  transform: translateZ(12px);
+  transform-style: preserve-3d;
+}
+
+/* Interior Apothecary Shelves */
+.interiorShelves {
+  position: absolute;
+  inset: 8px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+  pointer-events: none;
+}
+
+.shelfRow {
+  display: flex;
+  align-items: flex-end;
+  gap: 5px;
+  padding-bottom: 2px;
+  border-bottom: 1px solid rgba(16, 185, 129, 0.3);
+}
+
+.shelfBottle {
+  width: 9px;
+  border-radius: 2px 2px 0 0;
+  box-shadow: 0 0 6px currentColor;
+}
+
+/* Store Entrance Door */
+.doorFrame {
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 58px;
+  height: 72px;
+  border: 1px solid rgba(16, 185, 129, 0.5);
+  border-bottom: none;
+  border-radius: 4px 4px 0 0;
+  background: rgba(16, 185, 129, 0.08);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.doorMat {
+  position: absolute;
+  bottom: -4px;
+  width: 48px;
+  height: 6px;
+  border-radius: 2px;
+  background: #10b981;
+  box-shadow: 0 0 10px #10b981;
+}
+
+/* 3D Overhanging Canopy Awning */
+.canopyAwning {
+  position: absolute;
+  top: 48px;
+  left: -10px;
+  right: -10px;
+  height: 28px;
+  border-radius: 6px;
+  background: linear-gradient(180deg, #10b981 0%, #047857 70%, #064e3b 100%);
+  box-shadow:
+    0 8px 18px rgba(0, 0, 0, 0.5),
+    inset 0 1px 0 rgba(255, 255, 255, 0.35);
+  transform: translateZ(28px) rotateX(18deg);
+  transform-origin: top center;
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  padding-inline: 12px;
+  border-bottom: 2px solid #065f46;
+}
+
+.canopyRib {
+  width: 2px;
+  height: 100%;
+  background: rgba(255, 255, 255, 0.2);
+}
+
+/* 3D Neon Signboard */
+.neonSignboard {
+  position: absolute;
+  top: 10px;
+  left: 50%;
+  transform: translateX(-50%) translateZ(38px);
+  padding: 5px 14px;
+  border-radius: 8px;
+  background: rgba(3, 20, 16, 0.92);
+  border: 1.5px solid #10b981;
+  box-shadow:
+    0 0 16px rgba(16, 185, 129, 0.5),
+    inset 0 0 8px rgba(16, 185, 129, 0.3);
+  text-align: center;
+  white-space: nowrap;
+  transform-style: preserve-3d;
+}
+
+.neonText {
+  font-size: 0.72rem;
+  font-weight: 850;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #a7f3d0;
+  text-shadow:
+    0 0 4px #10b981,
+    0 0 10px #10b981,
+    0 0 20px #059669;
+  animation: neonGlowPulse 3s ease-in-out infinite;
+}
+
+.neonLocation {
+  display: block;
+  font-size: 0.52rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  color: #67e8f9;
+  text-shadow: 0 0 6px #06b6d4;
+  margin-top: 1px;
+}
+
+/* 3D Spinning Emerald Medical Cross */
+.crossContainer {
+  position: absolute;
+  top: -24px;
+  right: 14px;
+  width: 32px;
+  height: 32px;
+  transform: translateZ(46px);
+  transform-style: preserve-3d;
+}
+
+.rotatingCross {
+  width: 100%;
+  height: 100%;
+  transform-style: preserve-3d;
+  animation: spinCross 7s linear infinite;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  filter: drop-shadow(0 0 10px rgba(16, 185, 129, 0.8));
+}
+
+.crossArmHorizontal {
+  position: absolute;
+  width: 28px;
+  height: 9px;
+  background: linear-gradient(135deg, #34d399, #10b981);
+  border-radius: 3px;
+  border: 1px solid rgba(255, 255, 255, 0.6);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.5);
+}
+
+.crossArmVertical {
+  position: absolute;
+  width: 9px;
+  height: 28px;
+  background: linear-gradient(135deg, #34d399, #10b981);
+  border-radius: 3px;
+  border: 1px solid rgba(255, 255, 255, 0.6);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.5);
+}
+
+/* ==========================================================================
+   4. ACTIVE PPB SECURITY LASER SCANNER BEAM
+   ========================================================================== */
+.scannerBeam {
+  position: absolute;
+  inset-inline: -15px;
+  height: 3px;
+  background: linear-gradient(90deg, transparent, #34d399, #ffffff, #34d399, transparent);
+  box-shadow:
+    0 0 14px #10b981,
+    0 0 28px #10b981;
+  pointer-events: none;
+  transform: translateZ(30px);
+  animation: scanVertical 3.2s cubic-bezier(0.45, 0.05, 0.55, 0.95) infinite;
+  z-index: 10;
+}
+
+.scannerGridOverlay {
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(52, 211, 153, 0.12) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(52, 211, 153, 0.12) 1px, transparent 1px);
+  background-size: 14px 14px;
+  pointer-events: none;
+  opacity: 0.7;
+}
+
+/* ==========================================================================
+   5. FLOATING 3D INTERACTIVE ORBITALS
+   ========================================================================== */
+.orbitalPill {
+  position: absolute;
+  top: 15%;
+  left: -20px;
+  transform: translateZ(52px);
+  cursor: pointer;
+  transform-style: preserve-3d;
+  animation: floatBob 4s ease-in-out infinite;
+  transition: transform 200ms ease;
+}
+
+.orbitalPill:hover {
+  transform: translateZ(64px) scale(1.1);
+}
+
+.capsuleBody {
+  width: 44px;
+  height: 18px;
+  border-radius: 999px;
+  display: flex;
+  overflow: hidden;
+  box-shadow:
+    0 6px 14px rgba(0, 0, 0, 0.45),
+    0 0 12px rgba(16, 185, 129, 0.5);
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  transform: rotate(-18deg);
+}
+
+.capsuleLeft {
+  flex: 1;
+  background: linear-gradient(135deg, #10b981, #059669);
+}
+
+.capsuleRight {
+  flex: 1;
+  background: linear-gradient(135deg, #ffffff, #d1fae5);
+}
+
+.orbitalMpesa {
+  position: absolute;
+  bottom: 22%;
+  right: -24px;
+  transform: translateZ(48px);
+  cursor: pointer;
+  animation: floatBob 3.5s ease-in-out infinite 0.7s;
+  transition: transform 200ms ease;
+}
+
+.orbitalMpesa:hover {
+  transform: translateZ(60px) scale(1.12);
+}
+
+.mpesaOrb {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #059669, #022c22);
+  border: 1.5px solid #34d399;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  box-shadow:
+    0 6px 16px rgba(0, 0, 0, 0.5),
+    0 0 16px rgba(52, 211, 153, 0.6);
+}
+
+.orbitalPpb {
+  position: absolute;
+  top: 8%;
+  right: -15px;
+  transform: translateZ(44px);
+  cursor: pointer;
+  animation: floatBob 4.2s ease-in-out infinite 1.4s;
+  transition: transform 200ms ease;
+}
+
+.orbitalPpb:hover {
+  transform: translateZ(58px) scale(1.12);
+}
+
+.ppbShieldBadge {
+  padding: 4px 8px;
+  border-radius: 6px;
+  background: rgba(3, 20, 16, 0.95);
+  border: 1.5px solid #fbbf24;
+  color: #fef3c7;
+  font-size: 0.58rem;
+  font-weight: 800;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  box-shadow:
+    0 6px 14px rgba(0, 0, 0, 0.5),
+    0 0 14px rgba(251, 191, 36, 0.4);
+}
+
+/* ==========================================================================
+   6. DIRECTOR CINEMA HUD & TIME-CODE BAR
+   ========================================================================== */
+.directorHud {
+  position: absolute;
+  inset-inline: 0;
+  top: 0;
+  padding: 0.6rem 0.85rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  background: linear-gradient(180deg, rgba(2, 10, 9, 0.92) 0%, transparent 100%);
+  z-index: 10;
+  pointer-events: auto;
+}
+
+.directorHudBottom {
+  position: absolute;
+  inset-inline: 0;
+  bottom: 0;
+  padding: 0.6rem 0.85rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  background: linear-gradient(0deg, rgba(2, 10, 9, 0.94) 0%, transparent 100%);
+  z-index: 10;
+  pointer-events: auto;
+}
+
+.hudBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 0.64rem;
+  font-weight: 750;
+  color: #6ee7b7;
+  letter-spacing: 0.06em;
+  background: rgba(16, 185, 129, 0.12);
+  padding: 0.2rem 0.5rem;
+  border-radius: 999px;
+  border: 1px solid rgba(16, 185, 129, 0.3);
+}
+
+.recDot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #ef4444;
+  box-shadow: 0 0 8px #ef4444;
+  animation: blink 1.2s ease infinite;
+}
+
+.cameraChipGroup {
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  background: rgba(4, 21, 17, 0.8);
+  padding: 0.2rem;
+  border-radius: 0.5rem;
+  border: 1px solid rgba(16, 185, 129, 0.25);
+}
+
+.cameraChip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.18rem 0.45rem;
+  border-radius: 0.35rem;
+  font-size: 0.6rem;
+  font-weight: 700;
+  color: #94a3b8;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  transition: all 180ms ease;
+}
+
+.cameraChip:hover {
+  color: #e2e8f0;
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.cameraChipActive {
+  color: #04211a !important;
+  background: #10b981 !important;
+  font-weight: 800;
+  box-shadow: 0 0 10px rgba(16, 185, 129, 0.5);
+}
+
+/* Audio visualizer equalizer button */
+.audioToggleBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0.22rem 0.55rem;
+  border-radius: 0.45rem;
+  font-size: 0.62rem;
+  font-weight: 750;
+  color: #a7f3d0;
+  background: rgba(16, 185, 129, 0.12);
+  border: 1px solid rgba(16, 185, 129, 0.35);
+  cursor: pointer;
+  transition: all 180ms ease;
+}
+
+.audioToggleBtn:hover {
+  background: rgba(16, 185, 129, 0.22);
+  border-color: #10b981;
+}
+
+.eqWaves {
+  display: flex;
+  align-items: flex-end;
+  gap: 1.5px;
+  height: 10px;
+}
+
+.eqBar {
+  width: 2px;
+  background: #10b981;
+  border-radius: 1px;
+}
+
+.eqBarPlaying:nth-child(1) { height: 40%; animation: eqBounce 0.8s ease-in-out infinite 0.1s; }
+.eqBarPlaying:nth-child(2) { height: 90%; animation: eqBounce 0.8s ease-in-out infinite 0.25s; }
+.eqBarPlaying:nth-child(3) { height: 60%; animation: eqBounce 0.8s ease-in-out infinite 0.15s; }
+.eqBarPlaying:nth-child(4) { height: 100%; animation: eqBounce 0.8s ease-in-out infinite 0.35s; }
+
+.eqBarMuted {
+  height: 25%;
+  background: #64748b;
+}
+
+/* ==========================================================================
+   7. 3D CYBER CONDUIT CHAPTER STEPPER
+   ========================================================================== */
+.conduitStepper {
+  position: relative;
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 0.5rem;
+  margin-bottom: 1.25rem;
+  padding: 0.4rem;
+  border-radius: 1rem;
+  background: rgba(5, 23, 19, 0.7);
+  border: 1px solid rgba(16, 185, 129, 0.25);
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(12px);
+}
+
+.conduitTrack {
+  position: absolute;
+  top: 50%;
+  left: 10%;
+  right: 10%;
+  height: 2px;
+  background: rgba(16, 185, 129, 0.15);
+  transform: translateY(-50%);
+  z-index: 0;
+  pointer-events: none;
+}
+
+.conduitFill {
+  height: 100%;
+  background: linear-gradient(90deg, #10b981, #06b6d4);
+  box-shadow: 0 0 10px #10b981;
+  transition: width 500ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.conduitNode {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.35rem 0.2rem;
+  border-radius: 0.75rem;
+  text-align: center;
+  transition: all 250ms ease;
+  cursor: default;
+}
+
+.conduitBeacon {
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.68rem;
+  font-weight: 800;
+  transition: all 250ms ease;
+}
+
+.conduitNodeActive .conduitBeacon {
+  background: #10b981;
+  color: #04211a;
+  box-shadow:
+    0 0 0 4px rgba(16, 185, 129, 0.25),
+    0 0 18px rgba(16, 185, 129, 0.8);
+  transform: scale(1.12);
+}
+
+.conduitNodeCompleted .conduitBeacon {
+  background: rgba(16, 185, 129, 0.2);
+  border: 1.5px solid #10b981;
+  color: #34d399;
+}
+
+.conduitNodeUpcoming .conduitBeacon {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  color: #64748b;
+}
+
+.conduitTitle {
+  font-size: 0.65rem;
+  font-weight: 750;
+  letter-spacing: 0.02em;
+  transition: color 200ms ease;
+}
+
+.conduitNodeActive .conduitTitle {
+  color: #a7f3d0;
+  text-shadow: 0 0 8px rgba(16, 185, 129, 0.5);
+}
+
+.conduitNodeCompleted .conduitTitle {
+  color: #e2e8f0;
+}
+
+.conduitNodeUpcoming .conduitTitle {
+  color: #64748b;
+}
+
+/* ==========================================================================
+   8. CINEMATIC 3D SCENE ENTER / EXIT TRANSITIONS
+   ========================================================================== */
+.sceneContainer {
+  display: block;
+  opacity: 1;
+  transform: translate3d(0, 0, 0) scale(1);
+  transition:
+    display 0.4s,
+    opacity 0.4s cubic-bezier(0.16, 1, 0.3, 1),
+    transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  transition-behavior: allow-discrete;
+}
+
+@starting-style {
+  .sceneContainer {
+    opacity: 0;
+    transform: translate3d(0, 18px, -40px) scale(0.96);
+  }
+}
+
+/* 3D Tactile Card Tilt effect */
+.tiltCard {
+  transition: transform 220ms cubic-bezier(0.16, 1, 0.3, 1), box-shadow 220ms ease;
+  transform-style: preserve-3d;
+}
+
+.tiltCard:hover {
+  box-shadow:
+    0 20px 40px -10px rgba(0, 0, 0, 0.5),
+    0 0 25px rgba(16, 185, 129, 0.15);
+}
+
+/* ==========================================================================
+   9. FULL-SCREEN 3D CINEMA MODAL
+   ========================================================================== */
+.cinemaModalBackdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 10000;
+  background: rgba(1, 10, 8, 0.94);
+  backdrop-filter: blur(16px);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  animation: fadeIn 300ms ease-out both;
+}
+
+.cinemaModalContent {
+  position: relative;
+  width: 100%;
+  max-width: 900px;
+  height: 85vh;
+  border-radius: 1.5rem;
+  overflow: hidden;
+  border: 1.5px solid rgba(16, 185, 129, 0.4);
+  box-shadow:
+    0 30px 90px rgba(0, 0, 0, 0.8),
+    0 0 60px rgba(16, 185, 129, 0.25);
+  display: flex;
+  flex-direction: column;
+}
+
+.cinemaModalClose {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  z-index: 30;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: rgba(3, 20, 16, 0.8);
+  border: 1px solid rgba(16, 185, 129, 0.4);
+  color: #e2e8f0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 180ms ease;
+}
+
+.cinemaModalClose:hover {
+  background: #10b981;
+  color: #04211a;
+  transform: rotate(90deg);
+}
+
+/* ==========================================================================
+   KEYFRAME ANIMATIONS
+   ========================================================================== */
+@keyframes radarRotate {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+@keyframes radarPulse {
+  0% { transform: scale(0.65); opacity: 0.8; }
+  50% { opacity: 0.4; }
+  100% { transform: scale(1.35); opacity: 0; }
+}
+
+@keyframes spinCross {
+  from { transform: rotateY(0deg); }
+  to { transform: rotateY(360deg); }
+}
+
+@keyframes scanVertical {
+  0% { top: 10%; opacity: 0; }
+  15% { opacity: 1; }
+  85% { opacity: 1; }
+  100% { top: 92%; opacity: 0; }
+}
+
+@keyframes floatBob {
+  0%, 100% { transform: translateZ(52px) translateY(0); }
+  50% { transform: translateZ(52px) translateY(-8px); }
+}
+
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.25; }
+}
+
+@keyframes eqBounce {
+  0%, 100% { height: 25%; }
+  50% { height: 100%; }
+}
+
+@keyframes neonGlowPulse {
+  0%, 100% { opacity: 1; text-shadow: 0 0 6px #10b981, 0 0 16px #10b981; }
+  50% { opacity: 0.88; text-shadow: 0 0 3px #10b981, 0 0 10px #10b981; }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+/* ==========================================================================
+   REDUCED MOTION SAFEGUARDS
+   ========================================================================== */
+@media (prefers-reduced-motion: reduce) {
+  .stageWorld,
+  .rotatingCross,
+  .radarSweepRing,
+  .radarPulseRing,
+  .scannerBeam,
+  .orbitalPill,
+  .orbitalMpesa,
+  .orbitalPpb,
+  .recDot,
+  .eqBarPlaying,
+  .neonText {
+    animation: none !important;
+    transition: none !important;
+  }
+
+  .sceneContainer {
+    transition: none !important;
+    transform: none !important;
+  }
+}

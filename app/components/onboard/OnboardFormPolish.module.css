@@ -879,3 +879,71 @@
   background: color-mix(in srgb, var(--foreground) 7%, var(--card-elev)) !important;
   color: var(--muted) !important;
 }
+
+/* ==========================================================================
+   3D TACTILE BUTTON INTERACTIONS & INPUT GLOW (CINEMATIC POLISH)
+   ========================================================================== */
+.primaryAction {
+  position: relative;
+  overflow: hidden;
+  transform: perspective(600px) translateZ(0);
+  transition: transform 180ms cubic-bezier(0.16, 1, 0.3, 1), box-shadow 180ms ease, background 180ms ease !important;
+  box-shadow:
+    0 10px 24px -4px rgba(16, 185, 129, 0.45),
+    0 4px 10px -2px rgba(0, 0, 0, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.35) !important;
+}
+
+.primaryAction:hover:not(:disabled) {
+  transform: perspective(600px) translateZ(4px) translateY(-1px);
+  box-shadow:
+    0 16px 32px -4px rgba(16, 185, 129, 0.6),
+    0 6px 14px -2px rgba(0, 0, 0, 0.35),
+    inset 0 1px 0 rgba(255, 255, 255, 0.5) !important;
+}
+
+.primaryAction:active:not(:disabled) {
+  transform: perspective(600px) translateZ(-4px) scale(0.98);
+  box-shadow:
+    0 4px 12px rgba(16, 185, 129, 0.3),
+    inset 0 2px 4px rgba(0, 0, 0, 0.2) !important;
+}
+
+.primaryAction::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 60%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.25), transparent);
+  transform: skewX(-20deg);
+  transition: left 600ms ease;
+  pointer-events: none;
+}
+
+.primaryAction:hover::after {
+  left: 140%;
+}
+
+.formField :global(.input-admin) {
+  transition: border-color 200ms ease, box-shadow 200ms ease, transform 200ms ease !important;
+}
+
+.formField :global(.input-admin):focus {
+  transform: translateY(-1px);
+  border-color: #10b981 !important;
+  box-shadow:
+    0 0 0 3px rgba(16, 185, 129, 0.22),
+    0 4px 12px rgba(16, 185, 129, 0.12) !important;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .primaryAction,
+  .primaryAction::after,
+  .formField :global(.input-admin) {
+    transform: none !important;
+    transition: none !important;
+  }
+}
+

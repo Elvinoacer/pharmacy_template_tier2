@@ -19,6 +19,9 @@ import JoinValuePanel from "@/app/components/onboard/JoinValuePanel";
 import styles from "@/app/components/onboard/OnboardSurface.module.css";
 import { isIntasendConfigured } from "@/app/lib/services/intasend";
 
+import { ClickParticles } from "@/app/components/onboard/cinema/ClickParticles";
+import { CinematicSceneWrapper } from "@/app/components/onboard/cinema/CinematicSceneWrapper";
+
 export const dynamic = "force-dynamic";
 export const metadata = {
   title: "Join as a pharmacy | Afyvia",
@@ -56,14 +59,17 @@ export default async function OnboardPage({ searchParams }: PageProps) {
     redirect("/admin");
   }
 
-  // Stage 1 (New visitor with no pharmacy draft yet): render conversion pitch split
+  // Stage 1 (New visitor with no pharmacy draft yet): render conversion pitch split with 3D Cinema
   if (stage === "ACCOUNT" && !snapshot.pharmacy) {
     return (
       <div className={styles.frame}>
+        <ClickParticles />
         <div className={styles.split}>
           <JoinValuePanel />
           <div id="pharmacy-application" className={styles.work}>
-            <AccountStep snapshot={snapshot} />
+            <CinematicSceneWrapper stageKey="ACCOUNT">
+              <AccountStep snapshot={snapshot} />
+            </CinematicSceneWrapper>
           </div>
         </div>
       </div>
