@@ -1,27 +1,19 @@
 "use client";
-import { setBrowseLocation } from "@/app/actions/browse-location";
 
-import Image from "next/image";
+import { setBrowseLocation } from "@/app/actions/browse-location";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
+import ListingChrome from "@/app/components/listing/ListingChrome";
 import {
-  ArrowRight,
-  CheckCircle2,
-  ChevronDown,
-  LayoutGrid,
-  LocateFixed,
-  MapPin,
-  MessageCircle,
-  Navigation,
-  PackageCheck,
-  PhoneCall,
-  Radio,
-  Search,
-  SlidersHorizontal,
-  Truck,
-  X,
-} from "lucide-react";
+  Aisle,
+  EmptyShelf,
+  PharmacyPlace,
+  PharmacyStreet,
+  PharmacyWindow,
+  joinMeta,
+} from "@/app/components/listing/pieces";
+import styles from "@/app/components/listing/listing.module.css";
 import CareRadar, { type RadarItem } from "@/app/components/radar/CareRadar";
 import { distanceKm, distanceLabel } from "@/app/lib/proximity";
 import type { DirectoryPharmacy } from "@/app/lib/services/pharmacy-directory";
@@ -46,6 +38,28 @@ type Props = {
   initialLocation?: { latitude: number; longitude: number } | null;
 };
 
+type Pharmacy = DirectoryPharmacy & { distance: number | null };
+
+function phoneHref(phone: string | null) {
+  return phone ? `tel:${phone.replace(/[^\d+]/g, "")}` : null;
+}
+
+function whatsappHref(pharmacy: DirectoryPharmacy) {
+  if (!pharmacy.whatsapp) return null;
+  const text = `Hello ${pharmacy.name}, I found you on the network directory and would like to ask about a medicine or service.`;
+  return `https://wa.me/${pharmacy.whatsapp.replace(/\D/g, "")}?text=${encodeURIComponent(text)}`;
+}
+
+function placeMeta(pharmacy: Pharmacy) {
+  return joinMeta([
+    [pharmacy.city, pharmacy.county].filter(Boolean).join(", ") || pharmacy.country,
+    pharmacy.distance != null ? distanceLabel(pharmacy.distance) : null,
+    pharmacy.stockCount ? `${pharmacy.stockCount} on the shelf` : null,
+    pharmacy.hasDelivery ? "Delivers" : null,
+    pharmacy.hasSearchedMedicine ? `${pharmacy.searchedMedicineCount} stock match${pharmacy.searchedMedicineCount === 1 ? "" : "es"}` : null,
+  ]);
+}
+
 export default function PharmacyDirectory({
   pharmacies,
   cities,
@@ -60,28 +74,17 @@ export default function PharmacyDirectory({
 }: Props) {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const searchInputRef = useRef<HTMLInputElement>(null);
   const [query, setQuery] = useState(initialQuery);
   const [city, setCity] = useState(initialCity);
   const [county, setCounty] = useState(initialCounty);
   const [category, setCategory] = useState(initialCategory);
   const [delivery, setDelivery] = useState(initialDelivery);
-  const [showFilters, setShowFilters] = useState(false);
   const [sort, setSort] = useState<"near" | "featured" | "name">(initialLocation ? "near" : "featured");
-  const [position, setPosition] = useState<{ lat: number; lng: number } | null>(initialLocation ? { lat: initialLocation.latitude, lng: initialLocation.longitude } : null);
+  const [position, setPosition] = useState<{ lat: number; lng: number } | null>(
+    initialLocation ? { lat: initialLocation.latitude, lng: initialLocation.longitude } : null,
+  );
   const [locationState, setLocationState] = useState<"idle" | "loading" | "denied">("idle");
-  const [viewMode, setViewMode] = useState<"grid" | "radar">("grid");
-
-  useEffect(() => {
-    if (searchParams.get("focus") !== "search") return;
-
-    const frame = requestAnimationFrame(() => {
-      searchInputRef.current?.focus({ preventScroll: true });
-      searchInputRef.current?.scrollIntoView({ behavior: "smooth", block: "center" });
-    });
-
-    return () => cancelAnimationFrame(frame);
-  }, [searchParams]);
+  const [viewMode, setViewMode] = useState<"shelf" | "radar">("shelf");
 
   const syncUrl = useCallback(
     (next: Partial<{ q: string; city: string; county: string; category: string; delivery: boolean }>) => {
@@ -93,13 +96,11 @@ export default function PharmacyDirectory({
         category: "category" in next ? next.category! : category,
         delivery: "delivery" in next ? next.delivery! : delivery,
       };
-
       if (merged.q.trim()) params.set("q", merged.q.trim());
       if (merged.city) params.set("city", merged.city);
       if (merged.county) params.set("county", merged.county);
       if (merged.category) params.set("category", merged.category);
       if (merged.delivery) params.set("delivery", "1");
-
       const qs = params.toString();
       router.replace(qs ? `/pharmacies?${qs}` : "/pharmacies", { scroll: false });
     },
@@ -108,8 +109,7 @@ export default function PharmacyDirectory({
 
   useEffect(() => {
     const current = (searchParams.get("q") || "").trim();
-    const next = query.trim();
-    if (current === next) return;
+    if (current === query.trim()) return;
     const timer = window.setTimeout(() => syncUrl({ q: query }), 350);
     return () => window.clearTimeout(timer);
   }, [query, searchParams, syncUrl]);
@@ -146,9 +146,7 @@ export default function PharmacyDirectory({
         longitude: pharmacy.longitude,
         distanceKm: pharmacy.distance,
         detail: [pharmacy.city, pharmacy.county].filter(Boolean).join(", "),
-        subDetail:
-          pharmacy.services?.slice(0, 2).join(" • ") ||
-          (pharmacy.hasDelivery ? "Delivery Available" : undefined),
+        subDetail: pharmacy.services?.slice(0, 2).join(" • ") || (pharmacy.hasDelivery ? "Delivery Available" : undefined),
         phone: pharmacy.phone,
         whatsapp: pharmacy.whatsapp,
         actionLabel: "Visit Storefront",
@@ -163,7 +161,6 @@ export default function PharmacyDirectory({
       setLocationState("denied");
       return;
     }
-
     setLocationState("loading");
     navigator.geolocation.getCurrentPosition(
       ({ coords }) => {
@@ -186,538 +183,204 @@ export default function PharmacyDirectory({
     syncUrl({ q: "", city: "", county: "", category: "", delivery: false });
   };
 
-  const activeFilterCount = [city, county, category, delivery ? "delivery" : ""].filter(Boolean).length;
+  const shownCategories = categories.slice(0, 8);
+  const selectedCategory = categories.find((item) => item.slug === category);
+  const chipCategories =
+    selectedCategory && !shownCategories.some((item) => item.slug === selectedCategory.slug)
+      ? [...shownCategories, selectedCategory]
+      : shownCategories;
+  const lead = sorted[0];
+  const windows = sorted.length > 4 ? sorted.slice(1, 5) : [];
+  const street = sorted.length > 4 ? sorted.slice(5) : sorted.slice(1);
+  const summary = [
+    query.trim() && sorted.some((pharmacy) => pharmacy.hasSearchedMedicine) ? `Stock matches for “${query.trim()}”` : null,
+    city || null,
+    county || null,
+    locationState === "denied" ? "Location is off" : null,
+  ]
+    .filter(Boolean)
+    .join(" · ");
 
   return (
-    <div id="directory" className="scroll-mt-28 text-[var(--foreground)]">
-      <div className="glass-panel rounded-[28px] border !border-[color-mix(in_srgb,var(--foreground)_48%,var(--card))] p-3 shadow-sm sm:p-4">
-        <div className="flex flex-col gap-2.5 lg:flex-row lg:items-center">
-          <div className="relative min-w-0 flex-1">
-            <Search className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-[var(--muted)]" aria-hidden />
-            <input
-              ref={searchInputRef}
-              type="search"
-              value={query}
-              onChange={(event) => setQuery(event.target.value)}
-              onBlur={() => syncUrl({ q: query })}
-              onKeyDown={(event) => {
-                if (event.key === "Enter") syncUrl({ q: query });
-              }}
-              placeholder="Search pharmacy, medicine, service or area"
-              aria-label="Search pharmacies"
-              className="h-[50px] w-full rounded-2xl border border-[color-mix(in_srgb,var(--foreground)_48%,var(--card))] bg-[var(--card-elev)] pl-11 pr-10 text-sm text-[var(--foreground)] outline-none transition placeholder:text-[var(--muted)] focus:border-[var(--brand)] focus:bg-[var(--card)] focus:ring-4 focus:ring-teal-500/10"
-            />
-            {query && (
-              <button
-                type="button"
-                onClick={() => {
-                  setQuery("");
-                  syncUrl({ q: "" });
-                }}
-                aria-label="Clear search"
-                className="absolute right-2.5 top-1/2 flex h-8 w-8 -translate-y-1/2 items-center justify-center rounded-full text-[var(--muted)] transition hover:bg-[var(--brand-soft)] hover:text-[var(--foreground)]"
-              >
-                <X className="h-4 w-4" aria-hidden />
-              </button>
-            )}
-          </div>
-
-          <div className="grid grid-cols-2 gap-2 lg:flex lg:shrink-0">
-            <button
-              type="button"
-              onClick={requestLocation}
-              disabled={locationState === "loading"}
-              className="inline-flex h-[46px] items-center justify-center gap-2 rounded-2xl bg-[var(--brand)] px-4 text-xs font-bold text-[var(--background)] shadow-sm transition hover:brightness-95 disabled:cursor-not-allowed disabled:opacity-100 disabled:border disabled:border-[color-mix(in_srgb,var(--foreground)_48%,var(--card))] disabled:bg-[color-mix(in_srgb,var(--foreground)_10%,var(--card))] disabled:text-[var(--foreground)] sm:text-sm"
-            >
-              <LocateFixed className="h-4 w-4" aria-hidden />
-              <span>{locationState === "loading" ? "Finding…" : position ? "Nearby" : "Near me"}</span>
-            </button>
-
-            <button
-              type="button"
-              onClick={() => setShowFilters((value) => !value)}
-              aria-expanded={showFilters}
-              className="inline-flex h-[46px] items-center justify-center gap-2 rounded-2xl border border-[color-mix(in_srgb,var(--foreground)_48%,var(--card))] bg-[var(--card)] px-4 text-xs font-bold text-[var(--brand-deep)] transition hover:bg-[var(--brand-tint)] lg:hidden"
-            >
-              <SlidersHorizontal className="h-4 w-4" aria-hidden />
-              Filters
-              {activeFilterCount > 0 && (
-                <span className="rounded-full bg-[var(--brand)] px-1.5 py-0.5 text-[9px] font-bold text-[var(--background)]">{activeFilterCount}</span>
-              )}
-            </button>
-          </div>
-        </div>
-
-        {/* Quick horizontal filter pills for 1-tap mobile browsing */}
-        <div className="mt-2.5 flex items-center gap-1.5 overflow-x-auto pb-1 text-xs">
-          <button
-            type="button"
-            onClick={() => {
+    <div id="directory" className="scroll-mt-28">
+      <ListingChrome
+        query={query}
+        onQueryChange={setQuery}
+        searchLabel="Search pharmacies"
+        searchPlaceholder="Pharmacy, medicine, or town"
+        openSearch={searchParams.get("focus") === "search"}
+        chips={[
+          {
+            id: "all",
+            label: "All",
+            pressed: !category && !delivery,
+            onSelect: () => {
               setCategory("");
               setDelivery(false);
               syncUrl({ category: "", delivery: false });
-            }}
-            className={`inline-flex min-h-11 shrink-0 items-center rounded-full px-3 py-1 text-[11px] font-semibold transition border ${
-              !category && !delivery
-                ? "bg-[var(--brand)] border-[var(--brand)] text-[var(--background)] shadow-xs"
-                : "bg-[var(--card)] border-[color-mix(in_srgb,var(--foreground)_48%,var(--card))] text-[var(--muted)] hover:text-[var(--foreground)]"
-            }`}
-          >
-            All
-          </button>
-          <button
-            type="button"
-            onClick={() => {
+            },
+          },
+          {
+            id: "delivery",
+            label: "Delivery",
+            pressed: delivery,
+            onSelect: () => {
               const next = !delivery;
               setDelivery(next);
               syncUrl({ delivery: next });
-            }}
-            className={`inline-flex min-h-11 shrink-0 items-center rounded-full px-3 py-1 text-[11px] font-semibold transition border ${
-              delivery
-                ? "bg-[var(--brand)] border-[var(--brand)] text-[var(--background)] shadow-xs"
-                : "bg-[var(--card)] border-[color-mix(in_srgb,var(--foreground)_48%,var(--card))] text-[var(--muted)] hover:text-[var(--foreground)]"
-            }`}
-          >
-            🚚 Delivery
-          </button>
-          {categories.slice(0, 6).map((cat) => (
-            <button
-              key={cat.slug}
-              type="button"
-              onClick={() => {
-                const next = category === cat.slug ? "" : cat.slug;
-                setCategory(next);
-                syncUrl({ category: next });
-              }}
-              className={`inline-flex min-h-11 shrink-0 items-center rounded-full px-3 py-1 text-[11px] font-semibold transition border ${
-                category === cat.slug
-                  ? "bg-[var(--brand)] border-[var(--brand)] text-[var(--background)] shadow-xs"
-                  : "bg-[var(--card)] border-[color-mix(in_srgb,var(--foreground)_48%,var(--card))] text-[var(--muted)] hover:text-[var(--foreground)]"
-              }`}
-            >
-              {cat.name}
-            </button>
-          ))}
-        </div>
-
-        <div
-          className={`${showFilters ? "grid" : "hidden"} mt-3 gap-2.5 border-t border-[color-mix(in_srgb,var(--foreground)_48%,var(--card))] pt-3 sm:grid-cols-2 lg:grid lg:grid-cols-4`}
-        >
-          <Select
-            value={city}
-            onChange={(value) => {
+            },
+          },
+          ...chipCategories.map((item) => ({
+            id: item.slug,
+            label: item.name,
+            pressed: category === item.slug,
+            onSelect: () => {
+              const next = category === item.slug ? "" : item.slug;
+              setCategory(next);
+              syncUrl({ category: next });
+            },
+          })),
+        ]}
+        count={sorted.length}
+        countLabel={`${sorted.length} ${sorted.length === 1 ? "pharmacy" : "pharmacies"}`}
+        sortValue={sort}
+        sortOptions={[
+          { value: "featured", label: "Recommended" },
+          { value: "near", label: position ? "Nearest" : "Nearest (turn on location)", disabled: !position },
+          { value: "name", label: "Name A–Z" },
+        ]}
+        onSort={(value) => setSort(value as typeof sort)}
+        fields={[
+          {
+            id: "city",
+            label: "City",
+            value: city,
+            placeholder: "All cities",
+            options: cities.map((value) => ({ value, label: value })),
+            onChange: (value) => {
               setCity(value);
               syncUrl({ city: value });
-            }}
-            placeholder="All cities"
-            label="Filter by city"
-            options={cities.map((value) => ({ label: value, value }))}
-          />
-          <Select
-            value={county}
-            onChange={(value) => {
+            },
+          },
+          {
+            id: "county",
+            label: "County",
+            value: county,
+            placeholder: "All counties",
+            options: counties.map((value) => ({ value, label: value })),
+            onChange: (value) => {
               setCounty(value);
               syncUrl({ county: value });
-            }}
-            placeholder="All counties"
-            label="Filter by county"
-            options={counties.map((value) => ({ label: value, value }))}
-          />
-          <Select
-            value={category}
-            onChange={(value) => {
+            },
+          },
+          {
+            id: "category",
+            label: "Medicine category",
+            value: category,
+            placeholder: "All categories",
+            options: categories.map((item) => ({ value: item.slug, label: item.name })),
+            onChange: (value) => {
               setCategory(value);
               syncUrl({ category: value });
-            }}
-            placeholder="All categories"
-            label="Filter by medicine category"
-            options={categories.map((item) => ({ label: item.name, value: item.slug }))}
-          />
-          <button
-            type="button"
-            onClick={() => {
-              const next = !delivery;
-              setDelivery(next);
-              syncUrl({ delivery: next });
-            }}
-            aria-pressed={delivery}
-            className={`inline-flex h-11 items-center justify-center gap-2 rounded-xl border px-3 text-xs font-semibold transition ${
-              delivery
-                ? "border-[var(--brand)] bg-[var(--brand)] text-[var(--background)] shadow-xs"
-                : "border-[color-mix(in_srgb,var(--foreground)_48%,var(--card))] bg-[var(--card)] text-[var(--brand-deep)] hover:bg-[var(--brand-tint)]"
-            }`}
-          >
-            <Truck className="h-4 w-4" aria-hidden /> Delivery available
-          </button>
-        </div>
-
-        {(activeFilterCount > 0 || position || locationState === "denied") && (
-          <div className="mt-3 flex flex-wrap items-center gap-2 border-t border-[color-mix(in_srgb,var(--foreground)_48%,var(--card))] pt-3">
-            {position && (
-              <span className="inline-flex items-center gap-1.5 rounded-full border border-[color-mix(in_srgb,var(--foreground)_48%,var(--card))] bg-[var(--brand-soft)] px-2.5 py-1.5 text-[10px] font-bold text-[var(--brand-deep)]">
-                <Navigation className="h-3 w-3" aria-hidden /> Distance enabled
-              </span>
-            )}
-            {locationState === "denied" && (
-              <span className="rounded-full border border-[color-mix(in_srgb,var(--foreground)_48%,var(--card))] bg-[var(--brand-soft)] px-2.5 py-1.5 text-[10px] font-semibold text-[var(--brand-deep)]">
-                Location unavailable
-              </span>
-            )}
-            {city && <FilterChip label={city} onRemove={() => { setCity(""); syncUrl({ city: "" }); }} />}
-            {county && <FilterChip label={county} onRemove={() => { setCounty(""); syncUrl({ county: "" }); }} />}
-            {category && (
-              <FilterChip
-                label={categories.find((item) => item.slug === category)?.name ?? category}
-                onRemove={() => { setCategory(""); syncUrl({ category: "" }); }}
-              />
-            )}
-            {delivery && <FilterChip label="Delivery" onRemove={() => { setDelivery(false); syncUrl({ delivery: false }); }} />}
-            {activeFilterCount > 0 && (
-              <button type="button" onClick={reset} className="ml-auto inline-flex min-h-11 items-center px-1 text-[10px] font-bold text-[var(--brand)] hover:underline">
-                Clear filters
-              </button>
-            )}
-          </div>
-        )}
-      </div>
-
-      <div className="mt-6 flex items-end justify-between gap-3 sm:mt-7">
-        <div className="min-w-0">
-          <p className="text-base font-bold tracking-tight text-[var(--foreground)]">
-            {sorted.length} {sorted.length === 1 ? "pharmacy" : "pharmacies"}
-          </p>
-          <p className="mt-0.5 truncate text-[11px] text-[var(--muted)]">
-            {query ? `Results for “${query}”` : "Verified public listings on the network"}
-          </p>
-        </div>
-
-        <div className="flex shrink-0 items-center gap-2">
-          <div className="care-glass flex items-center rounded-xl border !border-[color-mix(in_srgb,var(--foreground)_48%,var(--card))] p-1">
-            <button
-              type="button"
-              onClick={() => setViewMode("grid")}
-              className={`inline-flex min-h-10 min-w-10 items-center justify-center gap-1.5 rounded-lg px-2.5 py-1 text-xs font-semibold transition ${
-                viewMode === "grid"
-                  ? "bg-[var(--brand)] text-[var(--background)] shadow-xs"
-                  : "text-[var(--muted)] hover:text-[var(--foreground)]"
-              }`}
-              aria-label="Grid view"
-              aria-pressed={viewMode === "grid"}
-            >
-              <LayoutGrid className="h-3.5 w-3.5" aria-hidden="true" />
-              <span className="hidden sm:inline">Grid</span>
-            </button>
-            <button
-              type="button"
-              onClick={() => setViewMode("radar")}
-              className={`inline-flex min-h-10 min-w-10 items-center justify-center gap-1.5 rounded-lg px-2.5 py-1 text-xs font-semibold transition ${
-                viewMode === "radar"
-                  ? "bg-[var(--brand)] text-[var(--background)] shadow-xs"
-                  : "text-[var(--muted)] hover:text-[var(--foreground)]"
-              }`}
-              aria-label="Radar proximity view"
-              aria-pressed={viewMode === "radar"}
-            >
-              <Radio className="h-3.5 w-3.5 animate-pulse" aria-hidden="true" />
-              <span className="hidden sm:inline">Radar</span>
-            </button>
-          </div>
-
-          <label className="flex shrink-0 items-center gap-2 text-[10px] font-bold uppercase tracking-wider text-[var(--muted)]">
-            <span className="hidden sm:inline">Sort</span>
-            <select
-              value={sort}
-              onChange={(event) => setSort(event.target.value as typeof sort)}
-              className="h-10 rounded-xl border border-[color-mix(in_srgb,var(--foreground)_48%,var(--card))] bg-[var(--card)] px-3 text-[11px] font-semibold normal-case tracking-normal text-[var(--foreground)] outline-none focus:border-[var(--brand)]"
-            >
-              <option value="featured">Recommended</option>
-              <option value="near" disabled={!position}>Nearest{position ? "" : " · enable location"}</option>
-              <option value="name">Name A–Z</option>
-            </select>
-          </label>
-        </div>
-      </div>
-
-      {query && sorted.some((pharmacy) => pharmacy.hasSearchedMedicine) && (
-        <div className="mt-4 flex items-center gap-3 rounded-2xl border border-teal-400/20 bg-[#084c3f] px-3.5 py-3 text-white shadow-sm sm:px-4">
-          <PackageCheck className="h-4 w-4 shrink-0" aria-hidden />
-          <div className="min-w-0 flex-1">
-            <p className="text-[11px] font-bold">Public stock matches found</p>
-            <p className="mt-0.5 truncate text-[10px] text-teal-100">Listings below include visible in-stock matches for “{query}”.</p>
-          </div>
-          <span className="shrink-0 rounded-full border border-white/40 bg-black/20 px-2 py-1 text-[9px] font-bold">Live</span>
-        </div>
-      )}
+            },
+          },
+        ]}
+        near={{
+          label: locationState === "loading" ? "Finding you…" : position ? "Update my location" : "Use my location",
+          busy: locationState === "loading",
+          onClick: requestLocation,
+        }}
+        radar={{ on: viewMode === "radar", onChange: (on) => setViewMode(on ? "radar" : "shelf") }}
+        tuneCount={[city, county, category, delivery ? "delivery" : ""].filter(Boolean).length}
+        summary={summary || null}
+        onClear={reset}
+      />
 
       {viewMode === "radar" ? (
-        <div className="mt-5">
+        <>
+          <div className={styles.back}>
+            <button type="button" className={styles.textLink} onClick={() => setViewMode("shelf")}>
+              Back to pharmacies
+            </button>
+          </div>
           <CareRadar
             items={radarItems}
             userLocation={position}
             onRequestLocation={requestLocation}
-            title="Nearby Pharmacies Radar"
-            subtitle="Geographic proximity scan of verified pharmacies in relation to your position."
+            title="Pharmacies nearby"
+            subtitle="Verified pharmacies placed by distance."
           />
-        </div>
+        </>
       ) : sorted.length === 0 ? (
-        <div className="care-glass mt-5 rounded-[28px] border border-dashed !border-[color-mix(in_srgb,var(--foreground)_48%,var(--card))] bg-[var(--card-elev)] p-7 text-center sm:p-12">
-          <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-2xl bg-[var(--brand-soft)] text-[var(--brand)]">
-            <PackageCheck className="h-5 w-5" aria-hidden />
+        <EmptyShelf title="No pharmacy matches">
+          <p>Try a town or a medicine name, or clear the refine.</p>
+          <div className={styles.emptyActions}>
+            <button type="button" className={styles.primary} onClick={reset}>
+              Clear
+            </button>
           </div>
-          <h2 className="mt-4 text-base font-bold text-[var(--foreground)]">No matching pharmacies yet</h2>
-          <p className="mx-auto mt-1.5 max-w-md text-xs leading-5 text-[var(--muted)]">
-            Try a broader area or medicine name, or remove one of the active filters.
-          </p>
-          <button
-            type="button"
-            onClick={reset}
-            className="mt-5 rounded-xl bg-[var(--brand)] px-4 py-2.5 text-xs font-bold text-[var(--background)] shadow-sm transition hover:brightness-95"
-          >
-            Reset search
-          </button>
-        </div>
+        </EmptyShelf>
       ) : (
-        <div className="mt-4 grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
-          {sorted.map((pharmacy, index) => (
-            <PharmacyCard
-              key={pharmacy.id}
-              pharmacy={pharmacy}
-              index={index}
-              searchQuery={query}
-              distance={pharmacy.distance}
-            />
-          ))}
-        </div>
-      )}
-
-      <div className="mt-7 text-center sm:hidden">
-        <Link href="/for-pharmacies" className="text-xs font-bold text-[var(--brand)] hover:underline">
-          Own a pharmacy? Join the network →
-        </Link>
-      </div>
-    </div>
-  );
-}
-
-function Select({
-  value,
-  onChange,
-  placeholder,
-  options,
-  label,
-}: {
-  value: string;
-  onChange: (value: string) => void;
-  placeholder: string;
-  options: { label: string; value: string }[];
-  label: string;
-}) {
-  return (
-    <div className="relative">
-      <select
-        value={value}
-        onChange={(event) => onChange(event.target.value)}
-        aria-label={label}
-        className="h-11 w-full appearance-none rounded-xl border border-[color-mix(in_srgb,var(--foreground)_48%,var(--card))] bg-[var(--card)] px-3 pr-9 text-xs font-medium text-[var(--foreground)] outline-none transition focus:border-[var(--brand)]"
-      >
-        <option value="">{placeholder}</option>
-        {options.map((option) => (
-          <option key={option.value} value={option.value}>
-            {option.label}
-          </option>
-        ))}
-      </select>
-      <ChevronDown className="pointer-events-none absolute right-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-[var(--muted)]" aria-hidden />
-    </div>
-  );
-}
-
-function FilterChip({ label, onRemove }: { label: string; onRemove: () => void }) {
-  return (
-    <button
-      type="button"
-      onClick={onRemove}
-      aria-label={`Remove filter ${label}`}
-      className="inline-flex min-h-11 items-center gap-1 rounded-full border border-[color-mix(in_srgb,var(--foreground)_48%,var(--card))] bg-[var(--brand-soft)] px-2.5 py-1.5 text-[10px] font-semibold text-[var(--brand-deep)] transition hover:bg-[var(--brand-tint)]"
-    >
-      {label}
-      <X className="h-3 w-3" aria-hidden />
-    </button>
-  );
-}
-
-function PharmacyCard({
-  pharmacy,
-  index,
-  searchQuery,
-  distance,
-}: {
-  pharmacy: DirectoryPharmacy & { distance?: number | null };
-  index: number;
-  searchQuery: string;
-  distance: number | null;
-}) {
-  const whatsapp = pharmacy.whatsapp
-    ? `https://wa.me/${pharmacy.whatsapp.replace(/\D/g, "")}?text=${encodeURIComponent(
-        `Hello ${pharmacy.name}, I found you on the network directory and would like to ask about a medicine or service.`,
-      )}`
-    : null;
-  const phoneHref = pharmacy.phone ? `tel:${pharmacy.phone.replace(/[^\d+]/g, "")}` : null;
-  const location = [pharmacy.city, pharmacy.county].filter(Boolean).join(", ") || pharmacy.country;
-  const cover = pharmacy.coverImageUrl || FALLBACK_COVERS[index % FALLBACK_COVERS.length];
-  const medicineHref = searchQuery
-    ? `/p/${pharmacy.slug}/medicines?q=${encodeURIComponent(searchQuery)}`
-    : `/p/${pharmacy.slug}/medicines`;
-  const visibleTags = [
-    ...pharmacy.topCategories.slice(0, 3).map((label) => ({ label, tone: "teal" as const })),
-    ...pharmacy.services.slice(0, 1).map((label) => ({ label, tone: "amber" as const })),
-  ];
-
-  return (
-    <article className="care-glass group flex min-w-0 flex-col overflow-hidden rounded-[26px] border !border-[color-mix(in_srgb,var(--foreground)_48%,var(--card))] bg-[var(--card-elev)] transition duration-300 hover:-translate-y-0.5 hover:!border-[var(--brand)]">
-      <div className="relative h-40 overflow-hidden bg-[#084c3f] sm:h-44">
-        <Image
-          src={cover}
-          alt={pharmacy.name}
-          fill
-          sizes="(max-width: 640px) 100vw, (max-width: 1280px) 50vw, 380px"
-          className="object-cover transition duration-500 group-hover:scale-[1.03]"
-        />
-        <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-black/10 to-black/10" aria-hidden />
-
-        <div className="absolute left-3 top-3 flex max-w-[calc(100%-24px)] flex-wrap gap-1.5">
-          {pharmacy.featured && <Badge>Featured</Badge>}
-          <Badge>
-            <CheckCircle2 className="h-3 w-3" aria-hidden /> Verified
-          </Badge>
-        </div>
-
-        <div className="absolute inset-x-3 bottom-3 flex items-end justify-between gap-3 text-white">
-          <div className="min-w-0">
-            <h2 className="truncate text-[17px] font-bold tracking-tight sm:text-lg">{pharmacy.name}</h2>
-            <p className="mt-1 flex min-w-0 items-center gap-1 text-[10px] text-teal-50/85">
-              <MapPin className="h-3.5 w-3.5 shrink-0 text-amber-300" aria-hidden />
-              <span className="truncate">{location}</span>
-            </p>
-          </div>
-          {pharmacy.logoUrl && (
-            <div className="relative h-10 w-10 shrink-0 overflow-hidden rounded-xl border border-white/30 bg-white shadow-sm">
-              <Image src={pharmacy.logoUrl} alt="" fill sizes="40px" className="object-contain p-1" />
-            </div>
-          )}
-        </div>
-      </div>
-
-      <div className="flex flex-1 flex-col p-4">
-        <div className="flex min-w-0 items-start justify-between gap-2.5">
-          <p className="line-clamp-2 min-h-9 flex-1 text-[11px] leading-[18px] text-[var(--muted)]">
-            {pharmacy.tagline || pharmacy.description || "Active pharmacy on the network."}
+        <>
+          <PharmacyPlace
+            href={`/pharmacies/${lead.slug}`}
+            name={lead.name}
+            imageUrl={lead.coverImageUrl || FALLBACK_COVERS[0]}
+            imageAlt={lead.coverImageUrl ? lead.name : ""}
+            logoUrl={lead.logoUrl}
+            featured={lead.featured}
+            meta={placeMeta(lead)}
+            priority
+            actions={[
+              {
+                href: query.trim() ? `/p/${lead.slug}/medicines?q=${encodeURIComponent(query.trim())}` : `/p/${lead.slug}/medicines`,
+                label: "Medicines",
+              },
+              ...(phoneHref(lead.phone) ? [{ href: phoneHref(lead.phone)!, label: "Call", external: true }] : []),
+              ...(whatsappHref(lead) ? [{ href: whatsappHref(lead)!, label: "WhatsApp", external: true }] : []),
+            ]}
+          />
+          {windows.length > 0 ? (
+            <Aisle title="Along the way">
+              <div className={styles.windowRail}>
+                {windows.map((pharmacy, index) => (
+                  <PharmacyWindow
+                    key={pharmacy.id}
+                    href={`/pharmacies/${pharmacy.slug}`}
+                    name={pharmacy.name}
+                    imageUrl={pharmacy.coverImageUrl || FALLBACK_COVERS[(index + 1) % FALLBACK_COVERS.length]}
+                    imageAlt={pharmacy.coverImageUrl ? pharmacy.name : ""}
+                    meta={placeMeta(pharmacy)}
+                  />
+                ))}
+              </div>
+            </Aisle>
+          ) : null}
+          {street.length > 0 ? (
+            <Aisle title={windows.length > 0 ? "More pharmacies" : "Also nearby"}>
+              <div className={styles.streetList}>
+                {street.map((pharmacy, index) => (
+                  <PharmacyStreet
+                    key={pharmacy.id}
+                    href={`/pharmacies/${pharmacy.slug}`}
+                    name={pharmacy.name}
+                    imageUrl={pharmacy.coverImageUrl || FALLBACK_COVERS[(index + windows.length + 1) % FALLBACK_COVERS.length]}
+                    imageAlt={pharmacy.coverImageUrl ? pharmacy.name : ""}
+                    meta={placeMeta(pharmacy)}
+                    callHref={phoneHref(pharmacy.phone)}
+                  />
+                ))}
+              </div>
+            </Aisle>
+          ) : null}
+          <p className={styles.footnote}>
+            Verified pharmacies on Afyvia.{" "}
+            <Link href="/for-pharmacies" className={styles.textLink}>
+              List a pharmacy
+            </Link>
           </p>
-          {distance != null && (
-            <span className="shrink-0 rounded-full border border-[color-mix(in_srgb,var(--foreground)_48%,var(--card))] bg-[var(--brand-soft)] px-2 py-1 text-[9px] font-bold text-[var(--brand-deep)]">
-              {distance < 1 ? `${Math.round(distance * 1000)} m` : `${distance.toFixed(1)} km`}
-            </span>
-          )}
-        </div>
-
-        {visibleTags.length > 0 && (
-          <div className="mt-3 flex gap-1.5 overflow-hidden">
-            {visibleTags.map((tag) => (
-              <span
-                key={`${tag.tone}-${tag.label}`}
-                className={`max-w-[145px] truncate rounded-full px-2.5 py-1 text-[9px] font-semibold ${
-                  tag.tone === "teal"
-                    ? "bg-[var(--brand-tint)] text-[var(--brand-deep)]"
-                    : "bg-[var(--brand-soft)] text-[var(--brand-deep)]"
-                }`}
-              >
-                {tag.label}
-              </span>
-            ))}
-          </div>
-        )}
-
-        <div className="mt-3 grid grid-cols-2 divide-x divide-[color-mix(in_srgb,var(--foreground)_48%,var(--card))] rounded-2xl border border-[color-mix(in_srgb,var(--foreground)_48%,var(--card))] bg-[var(--card-elev)] py-2.5">
-          <div className="px-3">
-            <p className="text-[9px] font-semibold uppercase tracking-wider text-[var(--muted)]">Public stock</p>
-            <p className="mt-0.5 text-sm font-bold text-[var(--foreground)]">{pharmacy.stockCount}</p>
-          </div>
-          <div className="px-3">
-            <p className="text-[9px] font-semibold uppercase tracking-wider text-[var(--muted)]">OTC in stock</p>
-            <p className="mt-0.5 text-sm font-bold text-[var(--foreground)]">{pharmacy.otcCount}</p>
-          </div>
-        </div>
-
-        {(pharmacy.hasDelivery || pharmacy.hasSearchedMedicine) && (
-          <div className="mt-3 flex flex-wrap gap-1.5">
-            {pharmacy.hasDelivery && (
-              <span className="inline-flex items-center gap-1 rounded-full border border-[color-mix(in_srgb,var(--foreground)_48%,var(--card))] bg-[var(--brand-soft)] px-2 py-1 text-[9px] font-bold text-[var(--brand-deep)]">
-                <Truck className="h-3 w-3" aria-hidden /> Delivery
-              </span>
-            )}
-            {pharmacy.hasSearchedMedicine && (
-              <span className="inline-flex items-center gap-1 rounded-full border border-[color-mix(in_srgb,var(--foreground)_48%,var(--card))] bg-[var(--brand-soft)] px-2 py-1 text-[9px] font-bold text-[var(--brand-deep)]">
-                <PackageCheck className="h-3 w-3" aria-hidden /> {pharmacy.searchedMedicineCount} stock match
-                {pharmacy.searchedMedicineCount === 1 ? "" : "es"}
-              </span>
-            )}
-          </div>
-        )}
-
-        <div className="mt-auto pt-4">
-          <div className="flex gap-2">
-            <Link
-              href={`/pharmacies/${pharmacy.slug}`}
-              className="inline-flex h-11 min-w-0 flex-1 items-center justify-center gap-1.5 rounded-xl bg-[var(--brand)] px-3 text-[11px] font-bold text-[var(--background)] shadow-xs transition hover:brightness-95"
-            >
-              Visit storefront <ArrowRight className="h-3.5 w-3.5 shrink-0" aria-hidden />
-            </Link>
-            {phoneHref && (
-              <a
-                href={phoneHref}
-                aria-label={`Call ${pharmacy.name}`}
-                className="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border border-[color-mix(in_srgb,var(--foreground)_48%,var(--card))] text-[var(--brand-deep)] transition hover:bg-[var(--brand-tint)]"
-              >
-                <PhoneCall className="h-4 w-4" aria-hidden />
-              </a>
-            )}
-            {whatsapp && (
-              <a
-                href={whatsapp}
-                target="_blank"
-                rel="noopener noreferrer"
-                aria-label={`WhatsApp ${pharmacy.name}`}
-                className="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border border-[color-mix(in_srgb,var(--foreground)_48%,var(--card))] text-[var(--brand-deep)] transition hover:bg-[var(--brand-tint)]"
-              >
-                <MessageCircle className="h-4 w-4" aria-hidden />
-              </a>
-            )}
-          </div>
-
-          <div className="mt-2 grid grid-cols-2 gap-2">
-            <Link
-              href="/refill"
-              className="inline-flex min-h-11 items-center justify-center rounded-xl border border-[color-mix(in_srgb,var(--foreground)_48%,var(--card))] px-2 py-2 text-center text-[10px] font-bold text-[var(--brand-deep)] transition hover:bg-[var(--brand-tint)]"
-            >
-              Request refill
-            </Link>
-            <Link
-              href={medicineHref}
-              className="inline-flex min-h-11 items-center justify-center rounded-xl border border-[color-mix(in_srgb,var(--foreground)_48%,var(--card))] px-2 py-2 text-center text-[10px] font-bold text-[var(--brand-deep)] transition hover:bg-[var(--brand-tint)]"
-            >
-              Browse medicines
-            </Link>
-          </div>
-        </div>
-      </div>
-    </article>
-  );
-}
-
-function Badge({ children }: { children: React.ReactNode }) {
-  return (
-    <span className="inline-flex items-center gap-1 rounded-full bg-black/75 px-2.5 py-1 text-[8px] font-bold uppercase tracking-[0.08em] text-white backdrop-blur-md">
-      {children}
-    </span>
+        </>
+      )}
+    </div>
   );
 }

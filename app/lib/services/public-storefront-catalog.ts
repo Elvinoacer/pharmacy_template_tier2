@@ -25,7 +25,7 @@ export async function publicStorefrontMedicines(slug: string, q = "", page = 1, 
     },
     select: {
       id: true, slug: true, price: true, prescriptionRequired: true,
-      medicationMaster: { select: { name: true, genericName: true, strengthDisplay: true, packSize: true, description: true, imageUrl: true } },
+      medicationMaster: { select: { name: true, genericName: true, strengthDisplay: true, packSize: true, description: true, imageUrl: true, category: true } },
     },
     orderBy: [{ medicationMaster: { name: "asc" } }, { id: "asc" }],
     skip: detail ? 0 : (page - 1) * 24,
@@ -39,7 +39,7 @@ export async function publicStorefrontServices(slug: string, detail?: string) {
   const pharmacyId = data.profile.id;
   return withPharmacy(pharmacyId, () => prismaUnscoped.pharmacyService.findMany({
     where: { pharmacyId, active: true, ...(detail ? { slug: detail } : {}) },
-    select: { id: true, slug: true, title: true, short: true, description: true, duration: true, price: true, eligibility: true, imageUrl: true },
+    select: { id: true, slug: true, title: true, short: true, description: true, duration: true, price: true, eligibility: true, imageUrl: true, bookable: true },
     orderBy: [{ sortOrder: "asc" }, { title: "asc" }],
   }), data.profile.slug);
 }

@@ -8,7 +8,6 @@ import {
   ArrowLeft,
   ArrowUpRight,
   Camera,
-  ChevronRight,
   Clock,
   Mail,
   MapPin,
@@ -20,6 +19,8 @@ import {
   Store,
 } from "lucide-react";
 import ContactForm from "@/app/components/ContactForm";
+import { Aisle, EmptyShelf, MedicineTile, ServicePoster, joinMeta, shelfPrice } from "@/app/components/listing/pieces";
+import listStyles from "@/app/components/listing/listing.module.css";
 import { publicPharmacyProfile } from "@/app/lib/services/public-pharmacy-profile";
 import {
   listNetworkMedicineListings,
@@ -355,194 +356,80 @@ export default async function PharmacyProfilePage({
         </section>
       </div>
 
-      {/* ── In-Stock Medicines Preview ── */}
-      <section id="medicines" className="mt-14 scroll-mt-24">
-        <div className="mb-6 flex flex-wrap items-end justify-between gap-4">
-          <div>
-            <p className={styles.kicker}>MEDICATION DISPENSARY</p>
-            <h2 className="text-2xl font-bold tracking-tight text-[var(--foreground)] sm:text-3xl" style={{ fontFamily: "var(--font-display), serif" }}>
-              In-stock medicines at {p.name}
-            </h2>
-            <p className="mt-1 text-xs text-[var(--muted)] sm:text-sm">
-              Authentic prescription and OTC essentials available for pickup or rapid local delivery.
-            </p>
-          </div>
-          <Link
-            href={`/p/${slug}/medicines`}
-            className="inline-flex items-center gap-1.5 text-xs font-semibold text-[var(--brand)] hover:underline sm:text-sm"
-          >
-            View all {inventoryData.total > 0 ? `${inventoryData.total} ` : ""}medicines
-            <ArrowUpRight size={15} aria-hidden />
-          </Link>
-        </div>
-
-        {inventoryData.items.length > 0 ? (
-          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            {inventoryData.items.map((item) => (
-              <div
-                key={item.id}
-                className="liquid-glass care-glass flex flex-col justify-between rounded-2xl border !border-[color-mix(in_srgb,var(--foreground)_48%,var(--card))] bg-[var(--card-elev)] p-4 shadow-sm backdrop-blur-xl transition hover:!border-[var(--brand)] hover:shadow-md sm:p-5"
-              >
-                <div>
-                  <Link
-                    href={`/p/${slug}/medicines/${encodeURIComponent(item.slug)}`}
-                    className="relative mb-4 block aspect-[4/3] overflow-hidden rounded-xl bg-[var(--card)]"
-                    aria-label={`View ${item.medicationMaster.name}`}
-                  >
-                    <Image
-                      unoptimized
-                      src={item.medicationMaster.imageUrl || "/images/care/medicine-still-life.png"}
-                      alt={item.medicationMaster.imageUrl ? item.medicationMaster.name : ""}
-                      fill
-                      sizes="(max-width: 640px) 100vw, 33vw"
-                      className={item.medicationMaster.imageUrl ? "object-contain p-3" : "object-cover"}
-                    />
-                  </Link>
-                  <div className="flex items-start justify-between gap-2">
-                    <span className="rounded-full border border-[color-mix(in_srgb,var(--foreground)_48%,var(--card))] bg-[var(--brand-soft)] px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-[var(--brand-deep)]">
-                      {item.medicationMaster.category || "Healthcare"}
-                    </span>
-                    {item.prescriptionRequired && (
-                      <span className="rounded-full border border-amber-700/40 bg-amber-500/15 px-2 py-0.5 text-[10px] font-semibold text-amber-800 dark:border-amber-300/50 dark:text-amber-200">
-                        Rx Required
-                      </span>
-                    )}
-                  </div>
-                  <h3 className="mt-2 text-base font-semibold text-[var(--foreground)]">
-                    {item.medicationMaster.name}
-                  </h3>
-                  {item.medicationMaster.description && (
-                    <p className="mt-1 line-clamp-2 text-xs text-[var(--muted)]">{item.medicationMaster.description}</p>
-                  )}
-                </div>
-
-                <div className="mt-4 flex items-center justify-between border-t border-[color-mix(in_srgb,var(--foreground)_48%,var(--card))] pt-3">
-                  <span className="text-sm font-bold text-[var(--foreground)]">
-                    KES {Math.round(item.price).toLocaleString("en-KE")}
-                  </span>
-                  <Link
-                    href={`/p/${slug}/medicines/${encodeURIComponent(item.slug)}`}
-                    className="inline-flex items-center gap-1 text-xs font-semibold text-[var(--brand)] hover:underline"
-                  >
-                    View details
-                    <ChevronRight size={14} />
-                  </Link>
-                </div>
-              </div>
-            ))}
-          </div>
-        ) : (
-          <div className="liquid-glass care-glass rounded-2xl border border-dashed !border-[color-mix(in_srgb,var(--foreground)_48%,var(--card))] bg-[var(--card-elev)] p-8 text-center backdrop-blur-xl">
-            <Pill className="mx-auto h-8 w-8 text-[var(--brand)]" aria-hidden />
-            <p className="mt-2 text-sm font-semibold text-[var(--foreground)]">
-              Digital medicine catalog available online
-            </p>
-            <p className="mx-auto mt-1 max-w-md text-xs text-[var(--muted)]">
-              Browse the live storefront to order or request a prescription refill directly from {p.name}.
-            </p>
-            <Link
-              href={`/p/${slug}/medicines`}
-              className="mt-4 inline-flex min-h-10 items-center justify-center rounded-xl bg-[var(--brand)] px-4 text-xs font-semibold text-white"
-            >
-              Open Dispensary Storefront
+      <section id="medicines" className={listStyles.block}>
+        <Aisle
+          title="On the shelf"
+          aside={
+            <Link className={listStyles.textLink} href={`/p/${slug}/medicines`}>
+              {inventoryData.total > inventoryData.items.length ? `All ${inventoryData.total}` : "All medicines"}
             </Link>
-          </div>
-        )}
+          }
+        >
+          {inventoryData.items.length > 0 ? (
+            <div className={listStyles.rail}>
+              {inventoryData.items.map((item) => (
+                <MedicineTile
+                  key={item.id}
+                  href={item.href}
+                  name={item.medicationMaster.name}
+                  imageUrl={item.medicationMaster.imageUrl}
+                  priceLabel={item.availableStock > 0 ? shelfPrice(item.price) : "Out"}
+                  meta={joinMeta([
+                    item.prescriptionRequired ? "Prescription" : "No prescription",
+                    item.medicationMaster.category && item.medicationMaster.category !== "general"
+                      ? item.medicationMaster.category.replace(/[-_]+/g, " ")
+                      : null,
+                  ])}
+                />
+              ))}
+            </div>
+          ) : (
+            <EmptyShelf title="The shelf is still being stocked">
+              <p>Browse the live storefront to order or request a refill from {p.name}.</p>
+              <div className={listStyles.emptyActions}>
+                <Link className={listStyles.primary} href={`/p/${slug}/medicines`}>
+                  Open the shelf
+                </Link>
+              </div>
+            </EmptyShelf>
+          )}
+        </Aisle>
       </section>
 
-      {/* ── Care Services Preview ── */}
-      <section id="services" className="mt-14 scroll-mt-24">
-        <div className="mb-6 flex flex-wrap items-end justify-between gap-4">
-          <div>
-            <p className={styles.kicker}>CLINICAL & WELLNESS CARE</p>
-            <h2 className="text-2xl font-bold tracking-tight text-[var(--foreground)] sm:text-3xl" style={{ fontFamily: "var(--font-display), serif" }}>
-              Clinical services at {p.name}
-            </h2>
-            <p className="mt-1 text-xs text-[var(--muted)] sm:text-sm">
-              Professional pharmacist consultations, health screenings, and wellness checks.
-            </p>
-          </div>
-          <Link
-            href={`/p/${slug}/services`}
-            className="inline-flex items-center gap-1.5 text-xs font-semibold text-[var(--brand)] hover:underline sm:text-sm"
-          >
-            Explore all care services
-            <ArrowUpRight size={15} aria-hidden />
-          </Link>
-        </div>
-
-        {servicesData.services.length > 0 ? (
-          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            {servicesData.services.slice(0, 6).map((service) => (
-              <div
-                key={service.id}
-                className="liquid-glass care-glass flex flex-col justify-between rounded-2xl border !border-[color-mix(in_srgb,var(--foreground)_48%,var(--card))] bg-[var(--card-elev)] p-4 shadow-sm backdrop-blur-xl transition hover:!border-[var(--brand)] hover:shadow-md sm:p-5"
-              >
-                <div>
-                  <Link
-                    href={`/p/${slug}/services/${encodeURIComponent(service.slug)}`}
-                    className="relative mb-4 block aspect-[4/3] overflow-hidden rounded-xl bg-[var(--card)]"
-                    aria-label={`View ${service.title}`}
-                  >
-                    <Image
-                      unoptimized
-                      src={service.imageUrl || "/images/care/editorial-pharmacy.png"}
-                      alt={service.imageUrl ? service.title : ""}
-                      fill
-                      sizes="(max-width: 640px) 100vw, 33vw"
-                      className="object-cover"
-                    />
-                  </Link>
-                  <div className="flex items-center justify-between gap-2">
-                    <span className="rounded-full border border-teal-800/40 bg-teal-500/15 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-teal-800 dark:border-teal-200/45 dark:text-teal-100">
-                      Clinical Care
-                    </span>
-                    {service.duration && (
-                      <span className="text-[11px] text-[var(--muted)]">
-                        {service.duration}
-                      </span>
-                    )}
-                  </div>
-                  <h3 className="mt-2 text-base font-semibold text-[var(--foreground)]">
-                    {service.title}
-                  </h3>
-                  <p className="mt-1 line-clamp-2 text-xs leading-relaxed text-[var(--muted)]">
-                    {service.short || service.description}
-                  </p>
-                </div>
-
-                <div className="mt-4 flex items-center justify-between border-t border-[color-mix(in_srgb,var(--foreground)_48%,var(--card))] pt-3">
-                  <span className="text-xs font-semibold text-[var(--foreground)]">
-                    {service.price ? `KES ${Number(service.price).toLocaleString("en-KE")}` : "Free Consultation"}
-                  </span>
-                  <Link
-                    href={`/p/${slug}/services/${encodeURIComponent(service.slug)}`}
-                    className="inline-flex items-center gap-1 text-xs font-semibold text-[var(--brand)] hover:underline"
-                  >
-                    Book / Learn more
-                    <ChevronRight size={14} />
-                  </Link>
-                </div>
-              </div>
-            ))}
-          </div>
-        ) : (
-          <div className="liquid-glass care-glass rounded-2xl border border-dashed !border-[color-mix(in_srgb,var(--foreground)_48%,var(--card))] bg-[var(--card-elev)] p-8 text-center backdrop-blur-xl">
-            <Activity className="mx-auto h-8 w-8 text-[var(--brand)]" aria-hidden />
-            <p className="mt-2 text-sm font-semibold text-[var(--foreground)]">
-              Consultations & Clinical Screenings
-            </p>
-            <p className="mx-auto mt-1 max-w-md text-xs text-[var(--muted)]">
-              Visit {p.name} or view available clinical screening and vaccination options online.
-            </p>
-            <Link
-              href={`/p/${slug}/services`}
-              className="mt-4 inline-flex min-h-10 items-center justify-center rounded-xl bg-[var(--brand)] px-4 text-xs font-semibold text-white"
-            >
-              Browse Pharmacy Services
+      <section id="services" className={listStyles.block}>
+        <Aisle
+          title="Care here"
+          aside={
+            <Link className={listStyles.textLink} href={`/p/${slug}/services`}>
+              All services
             </Link>
-          </div>
-        )}
+          }
+        >
+          {servicesData.services.length > 0 ? (
+            <div className={listStyles.posterRail}>
+              {servicesData.services.slice(0, 6).map((service, index) => (
+                <ServicePoster
+                  key={service.id}
+                  href={service.href}
+                  title={service.title}
+                  imageUrl={service.imageUrl}
+                  meta={joinMeta([service.short, service.duration])}
+                  action={`${service.bookable ? "Book" : "View"} · ${service.price != null ? shelfPrice(Number(service.price), false) : "Ask the pharmacy"}`}
+                  priority={index === 0}
+                />
+              ))}
+            </div>
+          ) : (
+            <EmptyShelf title="Care visits are listed on the storefront">
+              <p>See screenings, vaccines, and consultations published by {p.name}.</p>
+              <div className={listStyles.emptyActions}>
+                <Link className={listStyles.primary} href={`/p/${slug}/services`}>
+                  See services
+                </Link>
+              </div>
+            </EmptyShelf>
+          )}
+        </Aisle>
       </section>
 
       {/* ── Visit & Directions ── */}
