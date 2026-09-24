@@ -36,6 +36,7 @@ import {
   FREE_MONTHLY_CAMPAIGN_LAUNCH_LIMIT,
 } from "@/app/lib/platform/plan-policy";
 import { getPrescriptionReferralUsage } from "@/app/lib/platform/prescription-referrals";
+import { roleHasPermission } from "@/app/lib/platform/permissions";
 import { withPharmacy } from "@/app/lib/tenant-context";
 
 export const dynamic = "force-dynamic";
@@ -299,7 +300,9 @@ export default async function AdminBillingPage() {
   });
   if (!pharmacy) redirect("/admin/select");
 
-  const isOwner = pharmacy.ownerUserId === user.id;
+  const canManageBilling =
+    pharmacy.ownerUserId === user.id ||
+    Boolean(membership && roleHasPermission(membership.role, "billing.manage"));
   const planState = await getPharmacyPlanState(pharmacy.id);
   const premiumActive = planState.premiumEntitlementsActive;
   const [pausedMedicines, pausedServices] = await Promise.all([
@@ -447,7 +450,7 @@ export default async function AdminBillingPage() {
                       Auto-renewal is set to stop at period end.
                     </p>
                   ) : null}
-                  {isOwner && !tenantData.subscription?.cancelAt ? (
+                  {canManageBilling && !tenantData.subscription?.cancelAt ? (
                     <details className="rounded-xl border border-[var(--admin-border)] bg-[var(--admin-card)]">
                       <summary className="cursor-pointer list-none px-3 py-3 text-sm font-semibold text-[var(--admin-text-muted)]">
                         Manage Premium renewal
@@ -461,9 +464,9 @@ export default async function AdminBillingPage() {
                     </details>
                   ) : null}
                 </div>
-              ) : isOwner ? (
+              ) : canManageBilling ? (
                 <div className="mt-4">
-                  <PremiumGate feature="Afyvia Premium" description="Restore unlimited public listings, services, marketplace referrals and campaigns, plus Premium tools." />
+                  <PremiumGate directCheckout feature="Afyvia Premium" description="Restore unlimited public listings, services, marketplace referrals and campaigns, plus Premium tools." />
                 </div>
               ) : (
                 <div className="mt-4 rounded-2xl border border-[var(--admin-border)] bg-[var(--admin-card)] p-4 text-sm text-[var(--admin-text-muted)]">
@@ -696,7 +699,7 @@ export default async function AdminBillingPage() {
           ))}
         </section>
 
-        {isOwner && (
+        {canManageBilling && (
           <details className="group rounded-2xl border border-[var(--admin-border)] bg-[var(--admin-card)]">
             <summary className="flex cursor-pointer list-none items-center justify-between gap-4 px-4 py-3 text-sm font-semibold text-[var(--admin-text)]">
               <span className="inline-flex items-center gap-2">
