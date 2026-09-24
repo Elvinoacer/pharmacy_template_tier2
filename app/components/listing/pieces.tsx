@@ -212,7 +212,8 @@ export function MedicineFeature({
             fallbackUrl={fallbackSrc}
             imageAlt={name}
             frameClass={styles.frame}
-            fit="cover"
+            pad={Boolean(imageUrl)}
+            fit={imageUrl ? "contain" : "cover"}
             sizes="(max-width: 800px) 100vw, 360px"
             priority={priority}
           />
@@ -293,7 +294,8 @@ export function MedicineTile({
           fallbackUrl={fallbackSrc}
           imageAlt={name}
           frameClass={styles.frame}
-          fit="cover"
+          pad={Boolean(imageUrl)}
+          fit={imageUrl ? "contain" : "cover"}
           sizes={layout === "cell" ? "(max-width: 640px) 45vw, 220px" : "160px"}
           priority={priority}
         />
