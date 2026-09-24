@@ -43,6 +43,7 @@ export type AdminPlanStatus = {
   plan: "free" | "premium";
   premium: boolean;
   isOwner: boolean;
+  canManageBilling: boolean;
   subscription: {
     status: string | null;
     periodStart: string | null;
@@ -443,15 +444,15 @@ export function AdminPlanStatusButton() {
               ? "Review billing"
               : status.premium
                 ? "Manage plan & billing"
-                : status.isOwner
+                : status.canManageBilling
                   ? `Explore Premium · KES ${status.price.premiumMonthlyKes}/month`
                   : "View plan details"}
             <ArrowRight className="h-3.5 w-3.5" />
           </Link>
 
-          {!status.premium && !status.isOwner && (
+          {!status.premium && !status.canManageBilling && (
             <p className="mt-2 text-center text-[10px] leading-4 text-[var(--admin-text-soft)]">
-              Only the pharmacy owner can activate Premium.
+              Only a user with billing permission can activate Premium.
             </p>
           )}
         </div>
@@ -670,11 +671,12 @@ export function AdminPlanContextNotice() {
             </p>
           </div>
         </div>
-        {status.isOwner ? (
+        {status.canManageBilling ? (
           <PremiumGate
             feature="Restore Afyvia Premium"
             description="Settle the outstanding Premium invoice to restore your paused Premium capacity and tools."
             label="Reactivate Premium"
+            directCheckout={pathname === "/admin/billing"}
           />
         ) : (
           <Link
@@ -747,11 +749,12 @@ export function AdminPlanContextNotice() {
             </p>
           </div>
         </div>
-        {status.isOwner ? (
+        {status.canManageBilling ? (
           <PremiumGate
             feature="Reactivate Afyvia Premium"
             description="Restore paused Premium capacity, automation and advanced tools without recreating your records."
             label="Reactivate Premium"
+            directCheckout={pathname === "/admin/billing"}
           />
         ) : (
           <Link
@@ -823,7 +826,7 @@ export function AdminPlanContextNotice() {
         href="/admin/billing"
         className="inline-flex min-h-9 shrink-0 items-center justify-center gap-1.5 rounded-xl border border-[var(--admin-border)] bg-[var(--admin-card)] px-3 text-xs font-semibold text-[var(--admin-accent-text)] transition hover:bg-[var(--admin-hover)]"
       >
-        {status.isOwner ? "See Premium capacity" : "View plan details"}
+        {status.canManageBilling ? "See Premium capacity" : "View plan details"}
         <ArrowRight className="h-3.5 w-3.5" />
       </Link>
     </section>
@@ -921,7 +924,7 @@ export function AdminPlanWelcomeBanner() {
             >
               View plan & limits <ArrowRight className="h-3.5 w-3.5" />
             </Link>
-            {status.isOwner && (
+            {status.canManageBilling && (
               <Link
                 href="/admin/billing"
                 className="inline-flex min-h-9 items-center gap-1.5 text-xs font-semibold text-[var(--admin-accent-text)] hover:underline"
