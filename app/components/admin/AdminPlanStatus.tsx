@@ -666,25 +666,104 @@ export function AdminPlanContextNotice() {
               Premium payment needs attention
             </p>
             <p className="mt-1 text-xs leading-5 text-[var(--admin-text-muted)]">
-              Premium capacity is paused. Your core Free-plan pharmacy workspace remains available.
+              Premium capacity is paused. Your core Afyvia Free workspace remains available, and your Premium-era data is preserved.
             </p>
           </div>
         </div>
-        <Link
-          href="/admin/billing"
-          className="inline-flex min-h-9 shrink-0 items-center justify-center gap-1.5 rounded-xl bg-amber-600 px-3 text-xs font-semibold text-white hover:bg-amber-700"
-        >
-          Review billing <ArrowRight className="h-3.5 w-3.5" />
-        </Link>
+        {status.isOwner ? (
+          <PremiumGate
+            feature="Restore Afyvia Premium"
+            description="Settle the outstanding Premium invoice to restore your paused Premium capacity and tools."
+            label="Reactivate Premium"
+          />
+        ) : (
+          <Link
+            href="/admin/billing"
+            className="inline-flex min-h-9 shrink-0 items-center justify-center gap-1.5 rounded-xl bg-amber-600 px-3 text-xs font-semibold text-white hover:bg-amber-700"
+          >
+            View billing <ArrowRight className="h-3.5 w-3.5" />
+          </Link>
+        )}
       </section>
     );
   }
 
   if (status.premium) {
-    const days = status.subscription.periodEnd ? Math.ceil((new Date(status.subscription.periodEnd).getTime() - Date.now()) / 86400000) : null;
-    return days != null && days <= 7 ? <p role="status" className="mb-4 rounded-xl border border-amber-500/25 p-3 text-sm">{days} days left on Premium. <Link href="/admin/billing" className="underline">Review renewal and your plan-change impact</Link>.</p> : null;
+    const days = status.subscription.periodEnd
+      ? Math.ceil(
+          (new Date(status.subscription.periodEnd).getTime() - Date.now()) /
+            86400000,
+        )
+      : null;
+    if (days == null || days > 7) return null;
+
+    const urgent = days <= 3;
+    return (
+      <section
+        role="status"
+        className={
+          urgent
+            ? "mb-4 rounded-xl border border-amber-500/35 bg-amber-500/[0.08] p-3 text-sm"
+            : "mb-4 rounded-xl border border-[var(--admin-border)] bg-[var(--admin-inset)]/60 p-3 text-sm"
+        }
+      >
+        <strong>{days} day{days === 1 ? "" : "s"} left on Premium.</strong>{" "}
+        {urgent
+          ? "Premium capacity will fall back to Free limits when this paid period ends. "
+          : "Review renewal and what would change if the paid period ended. "}
+        <Link href="/admin/billing" className="font-semibold underline">
+          Review plan impact
+        </Link>
+        .
+      </section>
+    );
   }
-  if (status.planState.billingStatus === "premium_pending_activation") return <p className="mb-4 rounded-xl border p-3 text-sm">Premium paid — finish pharmacy setup to activate Premium features. <Link href="/admin/setup" className="underline">Finish setup</Link></p>;
+
+  if (status.planState.billingStatus === "premium_pending_activation") {
+    return (
+      <p className="mb-4 rounded-xl border p-3 text-sm">
+        Premium paid — finish pharmacy setup to activate Premium features.{" "}
+        <Link href="/admin/setup" className="font-semibold underline">
+          Finish setup
+        </Link>
+      </p>
+    );
+  }
+
+  if (
+    status.planState.billingStatus === "premium_expired" ||
+    status.planState.billingStatus === "cancelled"
+  ) {
+    return (
+      <section className="mb-5 flex flex-col gap-3 rounded-2xl border border-amber-500/25 bg-amber-500/[0.06] p-4 sm:flex-row sm:items-center sm:justify-between">
+        <div className="flex items-start gap-2.5">
+          <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0 text-amber-700 dark:text-amber-300" />
+          <div>
+            <p className="text-sm font-semibold text-[var(--admin-text)]">
+              Premium ended — Afyvia Free is active
+            </p>
+            <p className="mt-1 text-xs leading-5 text-[var(--admin-text-muted)]">
+              Core pharmacy work continues. Premium-only automation and capacity are paused, and Premium-era records are preserved for restoration.
+            </p>
+          </div>
+        </div>
+        {status.isOwner ? (
+          <PremiumGate
+            feature="Reactivate Afyvia Premium"
+            description="Restore paused Premium capacity, automation and advanced tools without recreating your records."
+            label="Reactivate Premium"
+          />
+        ) : (
+          <Link
+            href="/admin/billing"
+            className="inline-flex min-h-9 shrink-0 items-center justify-center gap-1.5 rounded-xl border border-[var(--admin-border)] bg-[var(--admin-card)] px-3 text-xs font-semibold text-[var(--admin-accent-text)]"
+          >
+            View plan details <ArrowRight className="h-3.5 w-3.5" />
+          </Link>
+        )}
+      </section>
+    );
+  }
 
   let key: keyof AdminPlanStatus["usage"] | null = null;
   let noun = "";
