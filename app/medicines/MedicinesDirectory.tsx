@@ -9,9 +9,8 @@ import {
   EmptyShelf,
   MedicineFeature,
   MedicineTile,
-  joinMeta,
-  shelfPrice,
 } from "@/app/components/listing/pieces";
+import { joinMeta, shelfPrice } from "@/app/lib/listing-format";
 import styles from "@/app/components/listing/listing.module.css";
 import CareRadar, { type RadarItem } from "@/app/components/radar/CareRadar";
 import { distanceKm, distanceLabel } from "@/app/lib/proximity";

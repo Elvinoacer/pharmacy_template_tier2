@@ -7,7 +7,8 @@ import { distanceKm, distanceLabel, proximityOrder } from "@/app/lib/proximity";
 import { locationPath, serializeJsonLd } from "@/app/lib/seo";
 import { platform } from "@/app/lib/data";
 import NearbyLocation from "@/app/components/location/NearbyLocation";
-import { Aisle, EmptyShelf, MedicineTile, PageHead, PharmacyPlace, PharmacyStreet, ServiceRow, joinMeta } from "@/app/components/listing/pieces";
+import { Aisle, EmptyShelf, MedicineTile, PageHead, PharmacyPlace, PharmacyStreet, ServiceRow } from "@/app/components/listing/pieces";
+import { joinMeta } from "@/app/lib/listing-format";
 import listStyles from "@/app/components/listing/listing.module.css";
 
 export const dynamic = "force-dynamic";

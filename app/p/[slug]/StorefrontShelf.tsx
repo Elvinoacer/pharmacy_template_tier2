@@ -11,9 +11,8 @@ import {
   MedicineTile,
   ServicePoster,
   ServiceRow,
-  joinMeta,
-  shelfPrice,
 } from "@/app/components/listing/pieces";
+import { joinMeta, shelfPrice } from "@/app/lib/listing-format";
 import styles from "@/app/components/listing/listing.module.css";
 
 export type StoreMedicine = {

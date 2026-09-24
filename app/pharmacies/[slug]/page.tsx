@@ -19,7 +19,8 @@ import {
   Store,
 } from "lucide-react";
 import ContactForm from "@/app/components/ContactForm";
-import { Aisle, EmptyShelf, MedicineTile, ServicePoster, joinMeta, shelfPrice } from "@/app/components/listing/pieces";
+import { Aisle, EmptyShelf, MedicineTile, ServicePoster } from "@/app/components/listing/pieces";
+import { joinMeta, shelfPrice } from "@/app/lib/listing-format";
 import listStyles from "@/app/components/listing/listing.module.css";
 import { resolvePharmacyCover } from "@/app/lib/media-fallbacks";
 import { publicPharmacyProfile } from "@/app/lib/services/public-pharmacy-profile";
