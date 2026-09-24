@@ -385,8 +385,11 @@ export function MedicationCatalog({ rows, deleteAction }: Props) {
               <form action={deleteAction}>
                 <input type="hidden" name="id" value={m.id} />
                 <ConfirmSubmitButton
-                  message={`Delete ${m.name}? This cannot be undone if nothing references it.`}
+                  message={`Delete “${m.name}”? If the medication is referenced elsewhere, the system will block deletion and keep the record safe.`}
                   title="Delete"
+                  dialogTitle="Delete medication"
+                  confirmLabel="Delete medication"
+                  tone="danger"
                   className="inline-flex h-11 w-11 items-center justify-center rounded-xl bg-rose-500/10 text-rose-700 transition hover:bg-rose-500/15 dark:text-rose-300"
                 >
                   <Trash2 className="h-4 w-4" />
@@ -468,7 +471,14 @@ export function MedicationCatalog({ rows, deleteAction }: Props) {
                       </Link>
                       <form action={deleteAction}>
                         <input type="hidden" name="id" value={m.id} />
-                        <ConfirmSubmitButton message={`Delete ${m.name}? This cannot be undone if nothing references it.`} title="Delete" className="inline-flex h-11 w-11 items-center justify-center rounded-lg bg-[var(--admin-inset)] admin-muted transition hover:bg-rose-500/10 hover:text-rose-700 dark:hover:text-rose-300">
+                        <ConfirmSubmitButton
+                          message={`Delete “${m.name}”? If the medication is referenced elsewhere, the system will block deletion and keep the record safe.`}
+                          title="Delete"
+                          dialogTitle="Delete medication"
+                          confirmLabel="Delete medication"
+                          tone="danger"
+                          className="inline-flex h-11 w-11 items-center justify-center rounded-lg bg-[var(--admin-inset)] admin-muted transition hover:bg-rose-500/10 hover:text-rose-700 dark:hover:text-rose-300"
+                        >
                           <Trash2 className="h-3.5 w-3.5" />
                         </ConfirmSubmitButton>
                       </form>

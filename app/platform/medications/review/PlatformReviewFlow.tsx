@@ -24,6 +24,7 @@ import {
   X,
 } from "lucide-react";
 import { toast } from "@/app/components/Toaster";
+import ConfirmDialog from "@/app/components/admin/ConfirmDialog";
 
 export type ReviewItem = {
   id: string;
@@ -76,6 +77,7 @@ export function PlatformReviewFlow({ items, total }: Props) {
   const [isPending, startTransition] = useTransition();
   const [search, setSearch] = useState("");
   const [actionLoading, setActionLoading] = useState<string | null>(null);
+  const [archiveTarget, setArchiveTarget] = useState<{ id: string; name: string } | null>(null);
 
   // Merge modal state
   const [mergeModalOpen, setMergeModalOpen] = useState(false);
@@ -120,7 +122,6 @@ export function PlatformReviewFlow({ items, total }: Props) {
   }
 
   async function handleArchive(id: string, name: string) {
-    if (!confirm(`Are you sure you want to archive "${name}"?`)) return;
     setActionLoading(id);
     try {
       const res = await fetch(`/api/platform/medications/${id}`, {
@@ -365,7 +366,7 @@ export function PlatformReviewFlow({ items, total }: Props) {
                       <button
                         type="button"
                         disabled={isProcessing}
-                        onClick={() => handleArchive(item.id, item.name)}
+                        onClick={() => setArchiveTarget({ id: item.id, name: item.name })}
                         className="inline-flex items-center rounded-xl p-1.5 text-[var(--admin-muted)] transition hover:bg-rose-50 hover:text-rose-600 dark:hover:bg-rose-950/30 dark:hover:text-rose-400 disabled:opacity-50"
                         title="Archive record"
                       >
@@ -437,6 +438,22 @@ export function PlatformReviewFlow({ items, total }: Props) {
           })}
         </div>
       )}
+
+      <ConfirmDialog
+        open={Boolean(archiveTarget)}
+        onClose={() => setArchiveTarget(null)}
+        onConfirm={() => {
+          const target = archiveTarget;
+          if (!target) return;
+          setArchiveTarget(null);
+          void handleArchive(target.id, target.name);
+        }}
+        title="Archive medication"
+        message={archiveTarget ? `Archive “${archiveTarget.name}”? It will leave the active registry but remain available for audit history.` : ""}
+        confirmLabel="Archive medication"
+        busy={Boolean(archiveTarget && actionLoading === archiveTarget.id)}
+        tone="warning"
+      />
 
       {/* Merge Modal */}
       {mergeModalOpen && activeDuplicate && (
