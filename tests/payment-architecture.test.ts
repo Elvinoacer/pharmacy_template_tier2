@@ -1,11 +1,8 @@
+import "./test-env";
 import assert from "node:assert/strict";
 import { randomUUID } from "node:crypto";
-import path from "node:path";
 import { test } from "node:test";
-import { config as loadEnv } from "dotenv";
 
-loadEnv({ path: path.resolve(process.cwd(), ".env") });
-loadEnv({ path: path.resolve(process.cwd(), ".env.local"), override: true });
 import { prismaUnscoped as db } from "../app/lib/db";
 import { peekTenant, withPlatformBypass } from "../app/lib/tenant-context";
 import {
@@ -35,7 +32,7 @@ import { createTransactionFeeStatement } from "../app/actions/transaction-fees";
 import { verifyIntasendWebhookChallenge } from "../app/lib/services/intasend";
 import { decryptSecret } from "../app/lib/platform/secrets";
 
-test("Payment Architecture: Pure Platform Billing vs Pure Tenant Commerce", async (t) => {
+test("Payment Architecture: Pure Platform Billing vs Pure Tenant Commerce", { skip: !process.env.DATABASE_URL }, async (t) => {
   // Architecture tests must not create a real provider checkout, even when a
   // developer has live credentials in .env.local.
   const intasendEnvironment = Object.fromEntries(

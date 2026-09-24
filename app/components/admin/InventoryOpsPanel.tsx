@@ -90,7 +90,7 @@ export function InventoryOpsPanel({
 
   return (
     <div className="mt-8 overflow-hidden rounded-3xl border border-gray-200/60 bg-white/50 shadow-xl shadow-emerald-500/5 ring-1 ring-black/5 backdrop-blur-xl dark:border-white/10 dark:bg-black/20">
-      <div className="border-b border-gray-200/50 p-4 dark:border-white/5 sm:p-5 lg:px-6>
+      <div className="border-b border-gray-200/50 p-4 dark:border-white/5 sm:p-5 lg:px-6">
         <div className="flex flex-wrap items-end justify-between gap-3">
           <div>
             <h3 className="text-lg font-bold text-gray-900 dark:text-white">Inventory operations</h3>
@@ -138,7 +138,7 @@ export function InventoryOpsPanel({
         </div>
       </div>
 
-      <div className="p-4 sm:p-5 lg:p-6>
+      <div className="p-4 sm:p-5 lg:p-6">
         {tab === "receive" && (
           <form action={receiveAction} className="grid gap-4 sm:grid-cols-2">
             <input type="hidden" name="inventoryId" value={inventoryId} />

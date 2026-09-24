@@ -13,6 +13,7 @@ import {
 } from "lucide-react";
 import {
   deferSetupMedicinesAction,
+  deferSetupServicesAction,
   saveSetupHoursAction,
   saveSetupProfileAction,
   saveSetupServiceAction,
@@ -244,12 +245,24 @@ export function PharmacySetupStep({ snapshot, initialStep }: Props) {
 
           <div className="rounded-2xl border border-[var(--line-2)] bg-[var(--card-elev)] p-4">
             <p className="text-sm font-semibold text-[var(--foreground)]">
-              Add one service to get started
+              Add a service now or after launch
             </p>
             <p className="mt-1 text-xs leading-relaxed text-[var(--muted)]">
               Keep it simple: name the service, explain what the patient gets, and choose whether it can be booked online. You can add more details later from the pharmacy workspace.
             </p>
           </div>
+
+          <form action={deferSetupServicesAction}>
+            <input type="hidden" name="pharmacyId" value={pharmacy.id} />
+            <button type="submit" className="btn-ghost text-xs border border-[var(--line-2)] px-4 min-h-10">
+              I’ll add services later
+            </button>
+          </form>
+          {setup && setup.counts.services > 0 ? (
+            <Link href={`/onboard?stage=setup&setupStep=profile&pharmacyId=${pharmacy.id}`} className="btn-primary">
+              Continue with existing services <ArrowRight className="h-4 w-4" />
+            </Link>
+          ) : null}
 
           <form action={saveSetupServiceAction} className="space-y-4">
             <input type="hidden" name="source" value="onboard" />
@@ -411,7 +424,7 @@ export function PharmacySetupStep({ snapshot, initialStep }: Props) {
                 type="submit"
                 className={`btn-primary justify-center ${polish.primaryAction}`}
               >
-                Save & continue to monthly activation <ArrowRight className="h-4 w-4" />
+                Save & review launch <ArrowRight className="h-4 w-4" />
               </button>
             </div>
           </form>

@@ -214,7 +214,7 @@ export default async function AdminMedicationsPage({
   let lastSynced: Date | null = null;
 
   try {
-    await withPharmacy(pharmacyId, async () => {
+    const catalog = await withPharmacy(pharmacyId, async () => {
       const lowRows = await prisma.$queryRaw<Array<{ id: string }>>`
         SELECT id FROM pharmacy_inventory
         WHERE pharmacy_id = ${pharmacyId}
@@ -263,9 +263,7 @@ export default async function AdminMedicationsPage({
       }),
     ]);
 
-    total = count;
-    categoryList = categories;
-    stats = {
+    const loadedStats = {
       total: totalAll,
       active: activeCount,
       lowStock: lowStockIds.length,
@@ -274,9 +272,7 @@ export default async function AdminMedicationsPage({
       rx: rxCount,
       publicListed: publicCount,
     };
-    lastSynced = latestSync?.syncedAt ?? null;
-
-    const pageNum = parsePageParam(sp.page, total, PAGE_SIZE);
+    const pageNum = parsePageParam(sp.page, count, PAGE_SIZE);
     const pageRows = await prisma.pharmacyInventory.findMany({
       where,
       include,
@@ -284,8 +280,13 @@ export default async function AdminMedicationsPage({
       take: PAGE_SIZE,
       skip: (pageNum - 1) * PAGE_SIZE,
     });
-      paged = pageRows.map(toCatalogMed);
+      return { total: count, categoryList: categories, stats: loadedStats, lastSynced: latestSync?.syncedAt ?? null, paged: pageRows.map(toCatalogMed) };
     });
+    total = catalog.total;
+    categoryList = catalog.categoryList;
+    stats = catalog.stats;
+    lastSynced = catalog.lastSynced;
+    paged = catalog.paged;
   } catch (err) {
     console.error("[admin/medications] Failed to load catalog:", err);
     loadError =

@@ -52,7 +52,7 @@ export default function ForPharmaciesPage() {
               <em>Now open online.</em>
             </h1>
             <p className={styles.lead}>
-              Get found nearby. Let chronic patients request refills over WhatsApp. Run your shop with zero monthly fees until you launch.
+              Get found nearby. Let chronic patients request refills over WhatsApp. Launch on the free plan after a one-time KES 100 verification fee.
             </p>
 
             <div className={styles.heroActions}>
@@ -75,7 +75,7 @@ export default function ForPharmaciesPage() {
               </span>
               <span className="flex items-center gap-1.5">
                 <Sparkles size={15} className="text-[var(--brand)]" aria-hidden />
-                KES 0 until you launch
+                Free plan · KES 100 verification
               </span>
             </div>
 
@@ -216,7 +216,7 @@ export default function ForPharmaciesPage() {
               </ul>
             </div>
             <div className="mt-4 rounded-xl bg-[var(--brand-soft)] p-3 text-xs font-semibold text-[var(--brand-deep)]">
-              💡 1 saved refill (avg KES 2,500) covers 5 full months of Afyvia. KES 0 until you go live.
+              Free remains available after launch. Optional Premium costs KES 500/month; verification is KES 100 once.
             </div>
           </div>
         </section>

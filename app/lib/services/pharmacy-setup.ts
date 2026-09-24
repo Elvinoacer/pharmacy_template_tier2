@@ -7,6 +7,8 @@ import { withPharmacy } from "@/app/lib/tenant-context";
 import { loadLatestVerificationProfile } from "@/app/lib/services/pharmacy-verification";
 import { getPharmacyPaymentCapability } from "@/app/lib/platform/integrations";
 
+export const SETUP_SERVICES_DEFERRED_EVENT = "setup_services_deferred";
+
 export const SETUP_MEDICINES_DEFERRED_EVENT = "setup_medicines_deferred";
 
 export type PharmacySetupCheckKey =
@@ -33,7 +35,7 @@ export type PharmacySetupCheck = {
 
 export async function loadPharmacySetup(pharmacyId: string) {
   return withPharmacy(pharmacyId, async () => {
-    const [p, medicines, services, invoice, subscription, verificationProfile, medicineDeferredEvent, bundleInvoice, grant] = await Promise.all([
+    const [p, medicines, services, invoice, subscription, verificationProfile, medicineDeferredEvent, bundleInvoice, grant, serviceDeferredEvent] = await Promise.all([
       db.pharmacy.findUniqueOrThrow({
         where: { id: pharmacyId },
         include: {
@@ -69,6 +71,10 @@ export async function loadPharmacySetup(pharmacyId: string) {
       }),
       db.invoice.findUnique({ where: { number: `BUNDLE-${pharmacyId}` } }),
       db.pharmacyPromotionGrant.findUnique({ where: { pharmacyId } }),
+      db.pharmacyOnboardingEvent.findFirst({
+        where: { pharmacyId, type: SETUP_SERVICES_DEFERRED_EVENT },
+        select: { id: true },
+      }),
     ]);
 
     const settings = p.settings;
@@ -148,10 +154,10 @@ export async function loadPharmacySetup(pharmacyId: string) {
       },
       {
         key: "services",
-        ok: services > 0,
+        ok: services > 0 || Boolean(serviceDeferredEvent),
         required: true,
-        label: "Pharmacy service",
-        hint: services > 0 ? `${services} active service${services === 1 ? "" : "s"}` : "Add at least one service",
+        label: "Service catalogue choice",
+        hint: services > 0 ? `${services} active service${services === 1 ? "" : "s"}` : serviceDeferredEvent ? "Services deferred until after launch" : "Optional — add a service now or choose to add services later",
         href: "/admin/setup?step=services",
       },
       {

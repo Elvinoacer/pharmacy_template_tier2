@@ -1,3 +1,4 @@
+import "./test-env";
 import assert from "node:assert/strict";
 import { randomUUID } from "node:crypto";
 import { test } from "node:test";
@@ -37,7 +38,7 @@ test("pharmacy billing: capped promotions, settlement, isolation and renewals", 
       const originalFetch = globalThis.fetch;
       const keys = ["DARAJA_CONSUMER_KEY", "DARAJA_CONSUMER_SECRET", "DARAJA_SHORTCODE", "DARAJA_PASSKEY", "DARAJA_CALLBACK_URL", "DARAJA_ENV"];
       const oldEnv = keys.map(k => process.env[k]);
-      for (const key of keys) process.env[key] = key === "DARAJA_ENV" ? "sandbox" : "test-placeholder";
+      for (const key of keys) process.env[key] = key === "DARAJA_ENV" ? "sandbox" : key === "DARAJA_CALLBACK_URL" ? "https://example.test/api/payments/daraja/callback" : "test-placeholder";
       let prompts = 0;
       globalThis.fetch = async (input, init) => {
         if (String(input).includes("oauth")) return Response.json({ access_token: "test-token", expires_in: "3599" });

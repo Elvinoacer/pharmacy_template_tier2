@@ -380,7 +380,7 @@ export function WorkspaceThemeToggle({
     <button
       type="button"
       onClick={onCycle}
-      className={`inline-flex h-11 w-11 min-h-11 min-w-11 items-center justify-center rounded-xl border border-[var(--admin-border)] bg-[var(--admin-card)] text-[var(--admin-text-muted)] transition hover:bg-[var(--admin-hover)] hover:text-[var(--admin-text)] lg:h-9 lg:w-9 lg:min-h-9 lg:min-w-9 ${className}`}
+      className={`theme-toggle inline-flex h-11 w-11 min-h-11 min-w-11 items-center justify-center rounded-xl border border-[var(--admin-border)] bg-[var(--admin-card)] text-[var(--admin-text-muted)] transition hover:bg-[var(--admin-hover)] hover:text-[var(--admin-text)] lg:h-9 lg:w-9 lg:min-h-9 lg:min-w-9 ${className}`}
       aria-label={label}
       title={label}
     >

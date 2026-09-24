@@ -55,7 +55,7 @@ export default function JoinValuePanel({
         <em>come back to.</em>
       </h1>
       <p className="mt-1 text-xs text-[var(--muted)] leading-relaxed max-w-xl">
-        Automated WhatsApp refill reminders, direct M-PESA payments, and your own verified online storefront. KES 0 until you launch.
+        Your verified storefront, refill requests and pharmacy workspace. KES 100 once for verification; launch on Free or choose Premium for KES 500/month.
       </p>
 
       {/* Mobile / Tablet Interactive Preview Toggle (< 1024px) */}
@@ -130,7 +130,7 @@ export default function JoinValuePanel({
           }}
         >
           <Sparkles size={12} aria-hidden />
-          <span>1 retained chronic refill (avg KES 2,500) pays for 5 months of service</span>
+          <span>Optional Premium: KES 500/month. Your free plan remains available after launch.</span>
         </p>
       </div>
     </aside>

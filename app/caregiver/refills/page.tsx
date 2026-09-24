@@ -109,7 +109,7 @@ export default async function CaregiverRefillsPage() {
                         <p className="break-words text-sm font-semibold text-[#0c1a14]">{r.medicineName}</p>
                         <p className="mt-1 break-words text-sm text-[#5a6b62]">{r.customer?.fullName ?? "—"}</p>
                       </div>
-                      <span className={\`inline-flex min-h-9 w-fit items-center rounded-full px-3 py-1.5 text-sm font-semibold \${meta.color}\`}>
+                      <span className={`inline-flex min-h-9 w-fit items-center rounded-full px-3 py-1.5 text-sm font-semibold ${meta.color}`}>
                         {meta.label}
                       </span>
                     </div>
@@ -147,7 +147,7 @@ export default async function CaregiverRefillsPage() {
                         <td className="py-3 pr-4 font-medium text-[#0c1a14]">{r.customer?.fullName ?? "—"}</td>
                         <td className="py-3 pr-4 text-[#5a6b62]">{r.medicineName}</td>
                         <td className="py-3 pr-4">
-                          <span className={\`inline-flex min-h-9 items-center rounded-full px-3 py-1.5 text-sm font-semibold \${meta.color}\`}>
+                          <span className={`inline-flex min-h-9 items-center rounded-full px-3 py-1.5 text-sm font-semibold ${meta.color}`}>
                             {meta.label}
                           </span>
                         </td>

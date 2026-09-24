@@ -1,13 +1,10 @@
+import "./test-env";
 import assert from "node:assert/strict";
-import path from "node:path";
 import { randomUUID } from "node:crypto";
 import { it } from "node:test";
-import { config as loadEnv } from "dotenv";
 import { totpCode } from "../app/lib/platform/totp";
 import { withPlatformBypass } from "../app/lib/tenant-context";
 
-loadEnv({ path: path.resolve(process.cwd(), ".env"), quiet: true });
-loadEnv({ path: path.resolve(process.cwd(), ".env.local"), override: true, quiet: true });
 
 it("MFA enrollment, retry, recovery, and network audit work without pharmacy membership", { skip: !process.env.DATABASE_URL }, async () => {
   const { prismaUnscoped: db } = await import("../app/lib/db");

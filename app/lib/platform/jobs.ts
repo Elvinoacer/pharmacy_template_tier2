@@ -43,10 +43,11 @@ export async function recoverStaleJobs() {
   return res.count;
 }
 
-export async function processJobBatch(limit = 25, workerId = `w-${process.pid}`) {
+export async function processJobBatch(limit = 25, workerId = `w-${process.pid}`, jobId?: string) {
   await recoverStaleJobs();
   const due = await prismaUnscoped.job.findMany({
     where: {
+      ...(jobId ? { id: jobId } : {}),
       status: { in: ["queued", "failed"] },
       runAt: { lte: new Date() },
     },
@@ -112,6 +113,19 @@ async function executeJob(
   payload: Record<string, unknown>,
   pharmacyId: string | null,
 ): Promise<Record<string, unknown> | void> {
+  if (type === "pharmacy.application.review") {
+    const { notifyPlatformOfPharmacyApplication } = await import("@/app/lib/services/pharmacy-application-notifications");
+    if (!pharmacyId) throw new Error("application_pharmacy_missing");
+    const result = await notifyPlatformOfPharmacyApplication(
+      pharmacyId,
+      payload.kind === "resubmitted" ? "resubmitted" : "submitted",
+      `pharmacy-review/${jobId}`,
+    );
+    if (result.status !== "sent" && result.status !== "delivered") {
+      throw new Error(result.error || "application_review_delivery_failed");
+    }
+    return { recipient: result.recipient, providerMessageId: result.providerMessageId ?? null };
+  }
   if (type === "webhook.dispatch") {
     const { dispatchTenantWebhooks } = await import("@/app/lib/platform/webhooks");
     if (pharmacyId) await dispatchTenantWebhooks(pharmacyId, String(payload.eventType || "event"), payload);

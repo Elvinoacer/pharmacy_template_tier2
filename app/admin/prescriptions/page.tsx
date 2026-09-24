@@ -537,6 +537,7 @@ export default async function AdminPrescriptionsPage({
             description="No prescriptions match your selected stage, intake channel, or search filter."
           />
         ) : (
+          <>
           <div className="grid gap-3 sm:hidden">
             {paged.map((p) => {
               const chInfo =
@@ -831,6 +832,7 @@ export default async function AdminPrescriptionsPage({
               </tbody>
             </table>
           </div>
+          </>
         )}
       </AdminPanel>
 

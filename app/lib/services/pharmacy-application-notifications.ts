@@ -49,6 +49,7 @@ function documentLine(
 export async function notifyPlatformOfPharmacyApplication(
   pharmacyId: string,
   kind: PharmacyApplicationNotificationKind = "submitted",
+  idempotencyKey?: string,
 ): Promise<PlatformReviewNotificationResult> {
   const [pharmacy, verification, drafts, invoices, grant] = await Promise.all([
     prismaUnscoped.pharmacy.findUnique({
@@ -219,6 +220,7 @@ export async function notifyPlatformOfPharmacyApplication(
     const result = await sendDelivery(
       {
         channel: "email",
+        idempotencyKey,
         purpose: "transactional",
         recipient: { email: recipient },
         subject:

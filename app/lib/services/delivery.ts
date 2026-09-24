@@ -19,6 +19,7 @@ export type DeliveryRecipient = {
 
 export type DeliveryPayload = {
   channel: DeliveryChannel;
+  idempotencyKey?: string;
   recipient: DeliveryRecipient;
   subject?: string | null;
   body: string;
@@ -228,6 +229,7 @@ async function sendEmail(payload: DeliveryPayload, platformOnly = false): Promis
     method: "POST",
     headers: {
       Authorization: `Bearer ${resendKey}`,
+      ...(payload.idempotencyKey ? { "Idempotency-Key": payload.idempotencyKey } : {}),
       "Content-Type": "application/json",
     },
     body: JSON.stringify({

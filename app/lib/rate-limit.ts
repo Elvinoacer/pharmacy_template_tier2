@@ -60,17 +60,17 @@ export async function checkRateLimitAsync(
   key: string,
   options: RateLimitAsyncOptions,
 ): Promise<RateLimitResult> {
-  const newResetAt = new Date(Date.now() + options.windowMs);
+  const windowMs = Math.max(1, Math.floor(options.windowMs));
   try {
-    const rows = await prismaUnscoped.$queryRaw<Array<{ count: number; reset_at: Date }>>`
+    const rows = await prismaUnscoped.$queryRaw<Array<{ count: number; reset_at: Date; server_now: Date }>>`
       INSERT INTO "rate_limit_counters" ("id", "bucket_key", "count", "reset_at", "updated_at")
-      VALUES (gen_random_uuid(), ${key}, 1, ${newResetAt}, NOW())
+      VALUES (gen_random_uuid(), ${key}, 1, (NOW() + ${windowMs} * INTERVAL '1 millisecond'), NOW())
       ON CONFLICT ("bucket_key") DO UPDATE
       SET
         "count" = CASE WHEN "rate_limit_counters"."reset_at" <= NOW() THEN 1 ELSE "rate_limit_counters"."count" + 1 END,
-        "reset_at" = CASE WHEN "rate_limit_counters"."reset_at" <= NOW() THEN ${newResetAt} ELSE "rate_limit_counters"."reset_at" END,
+        "reset_at" = CASE WHEN "rate_limit_counters"."reset_at" <= NOW() THEN (NOW() + ${windowMs} * INTERVAL '1 millisecond') ELSE "rate_limit_counters"."reset_at" END,
         "updated_at" = NOW()
-      RETURNING "count", "reset_at"
+      RETURNING "count", "reset_at", NOW() AS server_now
     `;
     const row = rows[0];
     if (!row) {
@@ -82,7 +82,7 @@ export async function checkRateLimitAsync(
 
     const count = Number(row.count);
     const resetTime = new Date(row.reset_at).getTime();
-    const nowTime = Date.now();
+    const nowTime = new Date(row.server_now).getTime();
 
     if (count > options.limit) {
       const retryAfter = Math.max(1, Math.ceil((resetTime - nowTime) / 1000));

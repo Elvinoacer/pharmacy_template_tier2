@@ -41,12 +41,12 @@ const steps = [
   {
     num: "03",
     title: "GPS Pin & KES 100 Audit",
-    desc: "Pin your shop location on the map so nearby patients can find you. The one-time KES 100 STK test securely links your M-PESA Till or Paybill.",
+    desc: "Pin your shop location on the map so nearby patients can find you. Pay the one-time KES 100 verification fee through IntaSend, then submit your application for review. Connect your pharmacy’s M-Pesa separately to receive customer payments.",
     duration: "1 minute",
     href: "/onboard/billing",
     cta: "See fee details",
     icon: Smartphone,
-    detail: "Paid once. Price of chai & mandazi. KES 0 monthly until you launch.",
+    detail: "Verification is paid once. Launch on Free; Premium is optional at KES 500/month.",
   },
   {
     num: "04",

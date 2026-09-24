@@ -82,12 +82,17 @@ export function VerificationPaymentStep({
       <header className={`${styles.formHead} ${polish.heading}`}>
         <h2>Anti-clone verification fee</h2>
         <p>
-          A one-time KES 100 admin review fee locks your pharmacy name and map
-          pin so copycats cannot impersonate your business.
+          A one-time KES 100 fee covers the review of your pharmacy application.
+          The verification team checks your details before approval.
         </p>
       </header>
 
       {/* Returning from IntaSend waiting state */}
+      <p className="text-sm text-[var(--muted)]">
+        After payment is confirmed, review your details and select Submit for verification.
+        The verification team is notified when you submit. Payment alone does not approve your pharmacy.
+      </p>
+
       {isReturned && !payment.paid ? (
         <div className="mb-5 rounded-2xl border border-[color-mix(in_srgb,var(--foreground)_55%,var(--card-elev))] bg-teal-50/50 dark:bg-teal-950/30 p-4">
           <div className="flex items-center gap-3">

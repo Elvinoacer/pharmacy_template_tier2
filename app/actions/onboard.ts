@@ -18,7 +18,7 @@ import { checkRateLimitAsync } from "@/app/lib/rate-limit";
 import { buildOnboardingRateLimitKeys } from "@/app/lib/onboarding-rate-limit";
 import { emailVerificationBody, sendDelivery } from "@/app/lib/services/delivery";
 import { loadOwnerSubmissionReadiness } from "@/app/lib/services/pharmacy-verification";
-import { notifyPlatformOfPharmacyApplication } from "@/app/lib/services/pharmacy-application-notifications";
+import { submitApplicationForReview } from "@/app/lib/services/pharmacy-application-submission";
 
 export type OnboardState = {
   error?: string;
@@ -365,37 +365,13 @@ export async function submitPharmacyApplicationAction(_prev: OnboardState, formD
       };
     }
 
-    await prismaUnscoped.pharmacy.update({ where: { id: pharmacyId }, data: { status: "submitted", submittedAt: new Date() } });
-    await prismaUnscoped.pharmacyOnboardingEvent.create({
-      data: {
-        pharmacyId,
-        actorId: user.id,
-        type: "submitted",
-        message: "Application submitted for network review",
-        meta: {
-          latitude: pharmacy.latitude,
-          longitude: pharmacy.longitude,
-          locationSource: "browser_geolocation",
-          verificationInformationComplete: true,
-          verificationDossierComplete: true,
-          regulatoryEvidenceMayBeIncomplete: true,
-        },
-      },
-    });
-
-    // Submission is authoritative even if email delivery has a temporary outage.
-    // Await the send so serverless execution cannot terminate before Resend accepts it.
-    const platformNotification = await notifyPlatformOfPharmacyApplication(
+    await submitApplicationForReview({
       pharmacyId,
-      "submitted",
-    );
-    if (platformNotification.status === "failed") {
-      console.error("[onboard] application submitted but reviewer email failed", {
-        pharmacyId,
-        recipient: platformNotification.recipient,
-        error: platformNotification.error,
-      });
-    }
+      actorId: user.id,
+      expectedStatus: pharmacy.status as "draft" | "needs_info",
+      kind: pharmacy.status === "needs_info" ? "resubmitted" : "submitted",
+      meta: { latitude: pharmacy.latitude, longitude: pharmacy.longitude, verificationInformationComplete: true, verificationDossierComplete: true, regulatoryEvidenceMayBeIncomplete: true },
+    });
 
     revalidatePath("/onboard");
     revalidatePath("/onboard/verification");
@@ -504,34 +480,12 @@ export async function resubmitPharmacyApplicationAction(
       };
     }
 
-    await prismaUnscoped.pharmacy.update({
-      where: { id: pharmacyId },
-      data: { status: "submitted", submittedAt: new Date() },
-    });
-
-    await prismaUnscoped.pharmacyOnboardingEvent.create({
-      data: {
-        pharmacyId,
-        actorId: user.id,
-        type: "resubmitted",
-        message: "Application resubmitted after requested information was updated",
-        meta: {
-          resubmittedAt: new Date().toISOString(),
-        },
-      },
-    });
-
-    const platformNotification = await notifyPlatformOfPharmacyApplication(
+    await submitApplicationForReview({
       pharmacyId,
-      "resubmitted",
-    );
-    if (platformNotification.status === "failed") {
-      console.error("[onboard] application resubmitted but reviewer email failed", {
-        pharmacyId,
-        recipient: platformNotification.recipient,
-        error: platformNotification.error,
-      });
-    }
+      actorId: user.id,
+      expectedStatus: "needs_info",
+      kind: "resubmitted",
+    });
 
     revalidatePath("/onboard");
     revalidatePath("/platform");

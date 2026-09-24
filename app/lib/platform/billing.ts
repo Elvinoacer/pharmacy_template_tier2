@@ -720,7 +720,7 @@ async function completeIntasendBillingPaymentInPlatform(opts: {
       where: {
         OR: [
           { number: opts.apiRef },
-          { id: opts.apiRef.startsWith("SUBINV_") ? opts.apiRef.replace("SUBINV_", "") : undefined },
+          ...(opts.apiRef.startsWith("SUBINV_") ? [{ id: opts.apiRef.slice(7) }] : []),
         ],
       },
     });
@@ -730,8 +730,10 @@ async function completeIntasendBillingPaymentInPlatform(opts: {
         where: {
           OR: [
             { checkoutRequestId: opts.apiRef },
-            { checkoutRequestId: opts.intasendInvoiceId },
-            { providerRef: opts.intasendInvoiceId },
+            ...(opts.intasendInvoiceId ? [
+              { checkoutRequestId: opts.intasendInvoiceId },
+              { providerRef: opts.intasendInvoiceId },
+            ] : []),
           ],
         },
       });
@@ -745,8 +747,11 @@ async function completeIntasendBillingPaymentInPlatform(opts: {
       return null;
     }
 
+    // Serialize callbacks before creating payment evidence, not only at settlement.
+    await tx.$queryRaw`SELECT id FROM invoices WHERE id = ${invoice.id}::uuid FOR UPDATE`;
+    invoice = await tx.invoice.findUniqueOrThrow({ where: { id: invoice.id } });
     const expected = Number(invoice.totalKes);
-    if (Math.abs(expected - opts.amount) > 0.05) {
+    if (!Number.isFinite(opts.amount) || opts.amount <= 0 || Math.abs(expected - opts.amount) > 0.05) {
       logIntasend("error", "billing.webhook.amount_mismatch", {
         apiRef: opts.apiRef,
         invoiceId: invoice.id,
@@ -755,6 +760,9 @@ async function completeIntasendBillingPaymentInPlatform(opts: {
       });
       throw new Error("billing_amount_mismatch");
     }
+
+    if (!["open", "paid"].includes(invoice.status)) throw new Error("invoice_not_collectible");
+    if (invoice.status === "paid") return invoice;
 
     const payment = await tx.billingPayment.findFirst({
       where: {

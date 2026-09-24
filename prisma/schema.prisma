@@ -2974,7 +2974,7 @@ model InventoryAllocation {
 model CommerceEvent {
   id          String              @id @default(uuid()) @db.Uuid
   pharmacyId      String    @default("00000000-0000-0000-0000-000000000000") @map("pharmacy_id") @db.Uuid
-  eventType   CommerceEventType
+  eventType   CommerceEventType   @map("event_type")
   entityType  String              @map("entity_type")
   entityId    String              @map("entity_id") @db.Uuid
   orderId     String?             @map("order_id") @db.Uuid

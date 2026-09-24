@@ -1,10 +1,7 @@
+import "./test-env";
 import assert from "node:assert/strict";
-import path from "node:path";
 import { describe, it, before, after } from "node:test";
-import { config as loadEnv } from "dotenv";
 
-loadEnv({ path: path.resolve(process.cwd(), ".env") });
-loadEnv({ path: path.resolve(process.cwd(), ".env.local"), override: true });
 
 try {
   const serverOnlyPath = require.resolve("server-only");

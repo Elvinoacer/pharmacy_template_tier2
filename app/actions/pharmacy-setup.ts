@@ -8,7 +8,7 @@ import { publicErrorMessage } from "@/app/lib/public-error";
 import { withPharmacy } from "@/app/lib/tenant-context";
 import { createService } from "@/app/lib/services/pharmacy-services";
 import { loadLatestVerificationProfile } from "@/app/lib/services/pharmacy-verification";
-import { SETUP_MEDICINES_DEFERRED_EVENT } from "@/app/lib/services/pharmacy-setup";
+import { SETUP_MEDICINES_DEFERRED_EVENT, SETUP_SERVICES_DEFERRED_EVENT } from "@/app/lib/services/pharmacy-setup";
 
 type SetupPharmacy = NonNullable<Awaited<ReturnType<typeof loadSetupPharmacy>>>;
 
@@ -181,6 +181,23 @@ export async function deferSetupMedicinesAction(formData?: FormData) {
     redirect(`/onboard?stage=setup&setupStep=services&pharmacyId=${pharmacy.id}`);
   }
   redirect("/admin/setup?step=services");
+}
+
+export async function deferSetupServicesAction(formData: FormData) {
+  const pharmacy = await loadSetupPharmacy(clean(formData, "pharmacyId"));
+  const user = await getSessionUser();
+  if (!user) redirect("/login?next=/onboard");
+  await prismaUnscoped.pharmacyOnboardingEvent.create({
+    data: {
+      pharmacyId: pharmacy.id,
+      actorId: user.id,
+      type: SETUP_SERVICES_DEFERRED_EVENT,
+      message: "Services deferred until after pharmacy launch.",
+    },
+  });
+  revalidatePath("/onboard");
+  revalidatePath("/admin/setup");
+  redirect(`/onboard?stage=setup&setupStep=profile&pharmacyId=${pharmacy.id}`);
 }
 
 export async function saveSetupServiceAction(formData: FormData) {

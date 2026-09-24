@@ -127,13 +127,13 @@ export default function PharmacyRoiCalculator() {
             <div className="flex items-start gap-2 text-[var(--muted)]">
               <CheckCircle2 size={14} className="text-[var(--brand)] shrink-0 mt-0.5" />
               <span>
-                <strong>KES 0 until you launch:</strong> Set up and test everything for free.
+                <strong>Free plan available:</strong> KES 100 verification fee once. Premium is optional at KES 500/month.
               </span>
             </div>
             <div className="flex items-start gap-2 text-[var(--muted)]">
               <CheckCircle2 size={14} className="text-[var(--brand)] shrink-0 mt-0.5" />
               <span>
-                <strong>Just 1 saved refill (KES 2,500)</strong> pays for 5 full months of Afyvia.
+                <strong>Just 1 saved refill (KES 2,500)</strong> equals 5 months of the optional Premium subscription in gross revenue.
               </span>
             </div>
           </div>

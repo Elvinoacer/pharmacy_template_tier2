@@ -1,11 +1,8 @@
+import "./test-env";
 import assert from "node:assert/strict";
-import path from "node:path";
 import { describe, it } from "node:test";
-import { config as loadEnv } from "dotenv";
 import { withPharmacy, withPlatformBypass } from "@/app/lib/tenant-context";
 
-loadEnv({ path: path.resolve(process.cwd(), ".env") });
-loadEnv({ path: path.resolve(process.cwd(), ".env.local"), override: true });
 
 const hasDb = Boolean(process.env.DATABASE_URL);
 
