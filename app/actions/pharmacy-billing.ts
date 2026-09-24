@@ -31,6 +31,7 @@ import {
 } from "@/app/lib/services/daraja-subscriptions";
 import { loadPharmacySetup } from "@/app/lib/services/pharmacy-setup";
 import { withPharmacy } from "@/app/lib/tenant-context";
+import { roleHasPermission } from "@/app/lib/platform/permissions";
 
 export type BillingState = {
   error?: string;
@@ -117,8 +118,16 @@ export async function pharmacyBillingAction(
     const pharmacy = await db.pharmacy.findUnique({
       where: { id: pharmacyId },
     });
-    if (!pharmacy || pharmacy.ownerUserId !== user.id) {
-      throw new Error("Only the pharmacy owner can manage billing.");
+    const membership = user.memberships.find(
+      (candidate) => candidate.pharmacyId === pharmacyId && candidate.status === "active",
+    );
+    const canManageBilling = Boolean(
+      pharmacy &&
+        (pharmacy.ownerUserId === user.id ||
+          (membership && roleHasPermission(membership.role, "billing.manage"))),
+    );
+    if (!pharmacy || !canManageBilling) {
+      throw new Error("You do not have billing permission for this pharmacy.");
     }
 
     const intent = String(form.get("intent") || "");
@@ -274,14 +283,56 @@ export async function pharmacyBillingAction(
       };
     }
 
-    // 6. ACTIVATE SERVICE
+    // 6. ACTIVATE / REACTIVATE PREMIUM
     if (intent === "activate" || intent === "premium_checkout") {
+      // A mature admin billing session must never be sent back through onboarding.
+      // If Premium is past due, settle the existing monthly invoice first.
+      if (intent === "premium_checkout") {
+        const outstanding = await withPharmacy(pharmacyId, () =>
+          db.invoice.findFirst({
+            where: {
+              pharmacyId,
+              subscriptionId: { not: null },
+              status: "open",
+              totalKes: { gt: 0 },
+            },
+            orderBy: { dueAt: "asc" },
+          }),
+        );
+        if (outstanding) {
+          const checkout = await createIntasendBillingCheckout(
+            pharmacyId,
+            outstanding.id,
+            {
+              actorId: user.id,
+              redirectPath: "/admin/billing?payment=returned",
+            },
+          );
+          if (!checkout.ok)
+            throw new Error(checkout.message || "Could not start payment.");
+          return {
+            success: "Redirecting to IntaSend to restore Premium...",
+            checkoutUrl: checkout.checkoutUrl,
+          };
+        }
+      }
+
       const planState = await getPharmacyPlanState(pharmacyId);
-      if (!planState.pharmacyReady || !(await loadPharmacySetup(pharmacyId)).profileReady) {
+      const matureWorkspace = Boolean(pharmacy.setupCompletedAt);
+      if (
+        intent === "activate" &&
+        (!planState.pharmacyReady || !(await loadPharmacySetup(pharmacyId)).profileReady)
+      ) {
         throw new Error(
-          "Finish verification and storefront setup, then launch on the free plan. Premium can be added afterwards from Admin → Plans & billing.",
+          "Finish pharmacy setup before starting Premium.",
         );
       }
+      if (intent === "premium_checkout" && !matureWorkspace && !planState.pharmacyReady) {
+        throw new Error(
+          "Complete the remaining pharmacy setup from Admin, then retry Premium checkout.",
+        );
+      }
+
       const invoice = await startPharmacyService(pharmacyId);
       if (!invoice.subscriptionId)
         throw new Error(
@@ -299,12 +350,11 @@ export async function pharmacyBillingAction(
           });
           revalidatePath("/onboard");
           revalidatePath("/onboard/billing");
-      revalidatePath("/admin/billing");
+          revalidatePath("/admin/billing");
           revalidatePath("/admin/setup");
         }
         return {
-          success:
-            "Premium restored. Your voucher covered this period.",
+          success: "Premium restored. Your voucher covered this period.",
           settled: true,
           waived: true,
         };
@@ -313,12 +363,20 @@ export async function pharmacyBillingAction(
       const checkout = await createIntasendBillingCheckout(
         pharmacyId,
         invoice.id,
-        { actorId: user.id },
+        {
+          actorId: user.id,
+          ...(intent === "premium_checkout"
+            ? { redirectPath: "/admin/billing?payment=returned" }
+            : {}),
+        },
       );
       if (!checkout.ok)
         throw new Error(checkout.message || "Could not start payment.");
       return {
-        success: "Redirecting to IntaSend for first month renewal...",
+        success:
+          intent === "premium_checkout"
+            ? "Redirecting to IntaSend to restore Premium..."
+            : "Redirecting to IntaSend for first month renewal...",
         checkoutUrl: checkout.checkoutUrl,
       };
     }
