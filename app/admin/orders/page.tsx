@@ -34,7 +34,7 @@ type OrderRow = {
   customer: { id: string; fullName: string; phone?: string | null } | null;
   items: { quantity: number; name: string }[];
   payments: { id: string; amount: number; provider: string; providerRef: string | null; status: string; createdAt: Date }[];
-  refunds: { id: string; amount: number; provider: string; status: string; providerRef: string | null }[];
+  refunds: { id: string; paymentId: string; amount: number; provider: string; status: string; providerRef: string | null }[];
 };
 
 type MedOption = {
@@ -147,7 +147,7 @@ export default async function AdminOrdersPage({
       customer: o.customer,
       items: o.items.map((i) => ({ quantity: i.quantity, name: i.name })),
       payments: o.payments.map((p) => ({ id: p.id, amount: Number(p.amount), provider: p.provider, providerRef: p.providerRef, status: p.status, createdAt: p.createdAt })),
-      refunds: o.refunds.map((r) => ({ id: r.id, amount: Number(r.amount), provider: r.provider, status: r.status, providerRef: r.providerRef })),
+      refunds: o.refunds.map((r) => ({ id: r.id, paymentId: r.paymentId, amount: Number(r.amount), provider: r.provider, status: r.status, providerRef: r.providerRef })),
     }));
     medications = meds.map((m) => ({
       id: m.id,
@@ -225,7 +225,7 @@ export default async function AdminOrdersPage({
         customer: o.customer,
         items: o.items.map((i) => ({ quantity: i.quantity, name: i.name })),
         payments: o.payments.map((p) => ({ id: p.id, amount: Number(p.amount), provider: p.provider, providerRef: p.providerRef, status: p.status, createdAt: p.createdAt })),
-        refunds: o.refunds.map((r) => ({ id: r.id, amount: Number(r.amount), provider: r.provider, status: r.status, providerRef: r.providerRef })),
+        refunds: o.refunds.map((r) => ({ id: r.id, paymentId: r.paymentId, amount: Number(r.amount), provider: r.provider, status: r.status, providerRef: r.providerRef })),
       }));
     } catch (err) {
       console.error("[admin/orders] Failed to load page:", err);
@@ -394,7 +394,7 @@ export default async function AdminOrdersPage({
                             <summary className="cursor-pointer text-sm font-semibold admin-text">Manage refunds</summary>
                             <div className="mt-3 space-y-4">
                               <ManualRefundList orderId={o.id} refunds={o.refunds} />
-                              <RefundOrderForm orderId={o.id} payments={o.payments} />
+                              <RefundOrderForm orderId={o.id} payments={o.payments} refunds={o.refunds} />
                             </div>
                           </details>
                         ) : null}

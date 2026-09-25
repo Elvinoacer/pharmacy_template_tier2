@@ -29,6 +29,7 @@ export type IntasendCheckoutResult =
       ok: false;
       error: string;
       message: string;
+      uncertain?: boolean;
     };
 
 export type IntasendPaymentStatus = {
@@ -415,7 +416,8 @@ export async function createIntasendCheckout(
       return {
         ok: false,
         error: "intasend_checkout_error",
-        message: "Unable to create the payment checkout. Please try again shortly.",
+        message: response.status >= 500 ? "Checkout response is uncertain. Please contact support before trying to pay again." : "Unable to create the payment checkout. Please try again shortly.",
+        uncertain: response.status >= 500,
       };
     }
 
@@ -442,7 +444,8 @@ export async function createIntasendCheckout(
       return {
         ok: false,
         error: "intasend_invalid_response",
-        message: "The payment provider returned an invalid checkout response. Please try again.",
+        message: "The payment provider returned an incomplete checkout response. Please contact support before trying again.",
+        uncertain: true,
       };
     }
 
@@ -463,9 +466,8 @@ export async function createIntasendCheckout(
     return {
       ok: false,
       error: timedOut ? "intasend_timeout" : "intasend_connection_error",
-      message: timedOut
-        ? "The payment provider took too long to respond. Please try again."
-        : "Could not connect to the payment provider. Please try again shortly.",
+      message: "Checkout response is uncertain. Please contact support before trying to pay again.",
+      uncertain: true,
     };
   } finally {
     clearTimeout(timer);

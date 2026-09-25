@@ -74,29 +74,6 @@ export async function nextInvoiceNumber(): Promise<string> {
   return `INV-${y}-${String(n).padStart(8, "0")}`;
 }
 
-async function createInvoiceSafe(data: Parameters<typeof prismaUnscoped.invoice.create>[0]["data"]) {
-  for (let i = 0; i < 3; i++) {
-    try {
-      return await prismaUnscoped.invoice.create({ data: { ...data, number: await nextInvoiceNumber() } });
-    } catch (err) {
-      const code = (err as { code?: string }).code;
-      if (code === "P2002") {
-        const existing = await prismaUnscoped.invoice.findFirst({
-          where: {
-            subscriptionId: (data as { subscriptionId?: string }).subscriptionId ?? undefined,
-            periodStart: (data as { periodStart?: Date }).periodStart,
-            periodEnd: (data as { periodEnd?: Date }).periodEnd,
-          },
-        });
-        if (existing) return existing;
-        continue;
-      }
-      throw err;
-    }
-  }
-  throw new Error("invoice_number_collision");
-}
-
 export async function issueSubscriptionInvoice(subscriptionId: string, period?: { start: Date; end: Date }) {
   return prismaUnscoped.$transaction(async (tx) => {
     await tx.$queryRaw`SELECT id FROM subscriptions WHERE id = ${subscriptionId}::uuid FOR UPDATE`;
@@ -326,33 +303,47 @@ export async function changePlan(subscriptionId: string, planSlug: string, timin
   if (!sub) throw new Error("subscription_not_found");
   const next = await prismaUnscoped.plan.findUnique({ where: { slug: planSlug } });
   if (!next || !next.active) throw new Error("plan_not_found");
+  if (sub.pendingPlanId && sub.pendingPlanId !== next.id) {
+    const outstandingUpgrade = await prismaUnscoped.invoice.findFirst({ where: { subscriptionId, status: "open", items: { some: { description: { startsWith: "Prorated upgrade " } } } } });
+    if (outstandingUpgrade) throw new Error("upgrade_payment_pending_for_another_plan");
+  }
   if (next.id === sub.planId && !sub.pendingPlanId) return sub;
 
   const upgrade = Number(next.priceKes) >= Number(sub.plan.priceKes);
   const applyNow = timing === "immediate" || upgrade;
   if (applyNow) {
     if (upgrade && Number(next.priceKes) > Number(sub.plan.priceKes)) {
-      const fullDelta = Number(next.priceKes) - Number(sub.plan.priceKes);
-      const totalMs = Math.max(1, sub.currentPeriodEnd.getTime() - sub.currentPeriodStart.getTime());
-      const remainingMs = Math.max(0, sub.currentPeriodEnd.getTime() - Date.now());
-      const fractionRemaining = remainingMs / totalMs;
-      const proratedDelta = Math.max(0, Math.round(fullDelta * fractionRemaining));
-      if (proratedDelta > 0) {
-        await prismaUnscoped.subscription.update({ where: { id: sub.id }, data: { pendingPlanId: next.id } });
-        await createInvoiceSafe({
-          pharmacyId: sub.pharmacyId,
-          subscriptionId: sub.id,
-          number: "pending",
-          periodStart: new Date(),
-          periodEnd: sub.currentPeriodEnd,
-          subtotalKes: proratedDelta,
-          taxKes: 0,
-          totalKes: proratedDelta,
-          status: "open",
-          dueAt: new Date(),
-          items: { create: [{ description: `Prorated upgrade ${sub.plan.name} → ${next.name} (${Math.round(fractionRemaining * 100)}% cycle remaining)`, quantity: 1, unitKes: proratedDelta, totalKes: proratedDelta }] },
-        });
+      const pendingUpgrade = await prismaUnscoped.$transaction(async (tx) => {
+        await tx.$queryRaw`SELECT id FROM subscriptions WHERE id = ${sub.id}::uuid FOR UPDATE`;
+        const current = await tx.subscription.findUniqueOrThrow({ where: { id: sub.id }, include: { plan: true } });
+        const existing = await tx.invoice.findFirst({ where: { subscriptionId: sub.id, status: "open", items: { some: { description: { startsWith: "Prorated upgrade " } } } } });
+        if (existing) {
+          if (current.pendingPlanId !== next.id) throw new Error("upgrade_payment_pending_for_another_plan");
+          return { pending: true, created: false };
+        }
+        if (current.planId === next.id) return { pending: false, created: false };
+        const fullDelta = Number(next.priceKes) - Number(current.plan.priceKes);
+        const totalMs = Math.max(1, current.currentPeriodEnd.getTime() - current.currentPeriodStart.getTime());
+        const fractionRemaining = Math.max(0, current.currentPeriodEnd.getTime() - Date.now()) / totalMs;
+        const proratedDelta = Math.max(0, Math.round(fullDelta * fractionRemaining));
+        if (proratedDelta <= 0) return { pending: false, created: false };
+        const now = new Date();
+        const sequence = await tx.$queryRaw<Array<{ n: bigint }>>`SELECT nextval('invoice_number_seq') AS n`;
+        const number = `INV-${now.getUTCFullYear()}-${String(sequence[0].n).padStart(8, "0")}`;
+        await tx.invoice.create({ data: {
+          pharmacyId: sub.pharmacyId, subscriptionId: sub.id, number,
+          periodStart: now, periodEnd: current.currentPeriodEnd,
+          subtotalKes: proratedDelta, taxKes: 0, totalKes: proratedDelta,
+          status: "open", dueAt: now,
+          items: { create: [{ description: `Prorated upgrade ${current.plan.name} → ${next.name} (${Math.round(fractionRemaining * 100)}% cycle remaining)`, quantity: 1, unitKes: proratedDelta, totalKes: proratedDelta }] },
+        } });
+        await tx.subscription.update({ where: { id: sub.id }, data: { pendingPlanId: next.id } });
+        return { pending: true, created: true };
+      });
+      if (pendingUpgrade.pending) {
+        if (pendingUpgrade.created) {
         await recordLifecycle(sub.pharmacyId, "plan_changed", { fromStatus: sub.plan.slug, toStatus: planSlug, actorId: actorId ?? undefined, meta: { timing: "pending_payment" } });
+        }
         return prismaUnscoped.subscription.findUnique({ where: { id: sub.id } });
       }
     }
@@ -632,12 +623,12 @@ async function createIntasendBillingCheckoutInPharmacy(
     redirectUrl,
     comment: `Invoice ${invoice.number} for ${invoice.pharmacy.name}`,
   }).catch(async (error: unknown) => {
-    await withPlatformTx(tx => tx.billingPayment.updateMany({ where: { id: claimId, status: "processing" }, data: { status: "failed", failureReason: "Checkout could not be prepared. Retry." } }));
+    await withPlatformTx(tx => tx.billingPayment.updateMany({ where: { id: claimId, status: "processing" }, data: { failureReason: "Checkout response unknown; check provider before retrying." } }));
     throw error;
   });
 
   if (!checkoutRes.ok) {
-    await withPlatformTx(tx => tx.billingPayment.updateMany({ where: { id: claimId, status: "processing" }, data: { status: "failed", failureReason: "Checkout provider unavailable. Retry." } }));
+    await withPlatformTx(tx => tx.billingPayment.updateMany({ where: { id: claimId, status: "processing" }, data: checkoutRes.uncertain ? { failureReason: "Checkout response unknown; check provider before retrying." } : { status: "failed", failureReason: "Checkout provider unavailable. Retry." } }));
     logIntasend("error", "billing.checkout.failed", {
       invoiceId,
       pharmacyId: invoice.pharmacyId,

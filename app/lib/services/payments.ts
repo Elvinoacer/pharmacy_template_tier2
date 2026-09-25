@@ -196,6 +196,9 @@ async function initiateStkPaymentInPharmacy(
       statusCode: 400,
     };
   }
+  if (!Number.isInteger(amount)) {
+    return { ok: false, error: "fractional_mpesa_amount", message: "M-Pesa requires a whole KES order total. Ask the pharmacy to adjust the order before paying.", statusCode: 400 };
+  }
 
   const rawPhone = opts.phone?.trim() || order.guestPhone || order.customer?.phone || "";
   const phone = formatMpesaPhone(rawPhone);
@@ -327,6 +330,10 @@ async function initiateStkPaymentInPharmacy(
   });
 
   if (!push.ok) {
+    if (push.uncertain) {
+      await prisma.payment.updateMany({ where: { id: payment.id, status: "pending" }, data: { reconciliationNotes: "STK request outcome unknown; check merchant records before retrying." } });
+      return { ok: false, error: "stk_outcome_unknown", message: "M-Pesa has not confirmed whether the prompt was sent. Do not retry or pay again until the pharmacy checks the merchant records.", paymentId: payment.id, statusCode: 202 };
+    }
     await prisma.payment.update({
       where: { id: payment.id },
       data: {
@@ -608,8 +615,7 @@ async function completeDarajaPaymentInPharmacy(
     }
   }
 
-  try {
-    if (overpayment) throw new Error("additional_payment_review_required");
+  if (!overpayment) try {
     const {
       confirmServiceBookingPayment,
       notifyBookingCustomer,
@@ -633,7 +639,7 @@ async function completeDarajaPaymentInPharmacy(
       }
     }
   } catch (err) {
-    if (!overpayment) console.error("[completeDarajaPayment] service booking hook:", err);
+    console.error("[completeDarajaPayment] service booking hook:", err);
   }
 
   return {

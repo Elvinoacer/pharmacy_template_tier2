@@ -17,11 +17,16 @@ type PaymentOption = {
 export function RefundOrderForm({
   orderId,
   payments,
+  refunds,
 }: {
   orderId: string;
   payments: PaymentOption[];
+  refunds: { paymentId: string; amount: number; status: string }[];
 }) {
-  const completed = payments.filter((p) => p.status === "completed");
+  const completed = payments.map((payment) => ({
+    ...payment,
+    remaining: Math.max(0, payment.amount - refunds.filter((refund) => refund.paymentId === payment.id && ["pending", "approved", "completed"].includes(refund.status)).reduce((sum, refund) => sum + refund.amount, 0)),
+  })).filter((payment) => payment.status === "completed" && payment.remaining > 0);
 
   const [state, formAction, pending] = useActionState(
     adminRefundOrderAction,
@@ -36,7 +41,7 @@ export function RefundOrderForm({
   if (completed.length === 0) {
     return (
       <p className="text-xs admin-muted">
-        No completed payments to refund. Use Cancel + auto-refund for unpaid orders.
+        No refundable balance remains on a completed payment.
       </p>
     );
   }
@@ -53,7 +58,7 @@ export function RefundOrderForm({
         >
           {completed.map((p) => (
             <option key={p.id} value={p.id}>
-              {p.provider.toUpperCase()} · KES {Number(p.amount).toFixed(0)}
+              {p.provider.toUpperCase()} · KES {p.remaining.toFixed(2)} available
               {p.providerRef ? ` · ${p.providerRef}` : ""} ·{" "}
               {new Date(p.createdAt).toLocaleDateString()}
             </option>

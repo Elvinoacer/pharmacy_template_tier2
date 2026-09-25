@@ -145,12 +145,15 @@ export async function approveRefund(refundId: string, approverId: string): Promi
 /** Mark a provider-confirmed refund as completed. Idempotent. */
 export async function completeRefund(refundId: string, opts?: { providerRef?: string | null; approvedById?: string | null }): Promise<boolean> {
   return prisma.$transaction(async (tx) => {
+    const target = await tx.refund.findUnique({ where: { id: refundId }, select: { paymentId: true } });
+    if (!target) return false;
+    await tx.$queryRaw`SELECT id FROM payments WHERE id = ${target.paymentId}::uuid FOR UPDATE`;
     await tx.$queryRaw`SELECT id FROM refunds WHERE id = ${refundId}::uuid FOR UPDATE`;
     const refund = await tx.refund.findUnique({
       where: { id: refundId },
       select: { id: true, orderId: true, paymentId: true, amount: true, status: true },
     });
-    if (!refund || refund.status === "completed") return false;
+    if (!refund || refund.paymentId !== target.paymentId || !["pending", "approved"].includes(refund.status)) return false;
     await tx.refund.update({
       where: { id: refundId },
       data: { status: "completed", processedAt: new Date(), providerRef: opts?.providerRef ?? undefined, approvedById: opts?.approvedById ?? undefined },

@@ -4,7 +4,7 @@ import { randomUUID } from "node:crypto";
 import { test } from "node:test";
 
 import { prismaUnscoped as db } from "../app/lib/db";
-import { peekTenant, withPlatformBypass } from "../app/lib/tenant-context";
+import { peekTenant, withPharmacy, withPlatformBypass } from "../app/lib/tenant-context";
 import {
   ensureVerificationInvoice,
   startPharmacyService,
