@@ -31,6 +31,7 @@ export function VerificationPaymentStep({
   const searchParams = useSearchParams();
   const isReturned =
     searchParams?.get("status") === "returned" ||
+    (searchParams?.get("payment") || "").startsWith("return_") ||
     searchParams?.get("payment") === "returned";
 
   const pharmacy = snapshot.pharmacy;
@@ -107,7 +108,7 @@ export function VerificationPaymentStep({
               </p>
             </div>
           </div>
-          <PaymentStatusRefresh pending={true} />
+          <PaymentStatusRefresh pending={true} pharmacyId={pharmacy?.id} />
         </div>
       ) : null}
 

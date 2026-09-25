@@ -68,6 +68,7 @@ export async function GET(req: Request) {
         pending: view.pending,
         settled: view.settled,
         dispatched: view.dispatched,
+        providerReportedSuccess: view.providerReportedSuccess,
       });
     },
   );

@@ -166,7 +166,15 @@ export async function queryTransactionStatus(transactionId: string) {
   }, credentials);
 }
 
-export async function requestReversal(input: { transactionId: string; amountKes: number; remarks?: string }) {
+export async function requestReversal(input: { transactionId: string; amountKes: number; remarks?: string; pharmacyId?: string }) {
+  // Tenant STK payments settle to the pharmacy shortcode. The platform command
+  // initiator cannot reverse a receipt belonging to that merchant.
+  if (input.pharmacyId) {
+    return { ok: false, status: 503, data: {}, error: "Tenant M-Pesa reversal requires merchant-specific command credentials. Process this refund manually." } satisfies DarajaOperationResult;
+  }
+  if (!Number.isInteger(input.amountKes) || input.amountKes <= 0) {
+    return { ok: false, status: 400, data: {}, error: "Reversal amount must be a whole KES value." } satisfies DarajaOperationResult;
+  }
   const credentials = await resolveDarajaCredentials(null);
   const command = commandConfig();
   if (!credentials || !command) return { ok: false, status: 503, data: {}, error: "Daraja reversal is not configured." } satisfies DarajaOperationResult;

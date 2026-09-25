@@ -4,7 +4,7 @@ import { randomUUID } from "node:crypto";
 import { test } from "node:test";
 
 import { prismaUnscoped as db } from "../app/lib/db";
-import { peekTenant, withPlatformBypass } from "../app/lib/tenant-context";
+import { peekTenant, withPharmacy, withPlatformBypass } from "../app/lib/tenant-context";
 import {
   ensureVerificationInvoice,
   startPharmacyService,
@@ -31,6 +31,7 @@ import { isPharmacyCommissionEnabled } from "../app/lib/transaction-fee";
 import { createTransactionFeeStatement } from "../app/actions/transaction-fees";
 import { verifyIntasendWebhookChallenge } from "../app/lib/services/intasend";
 import { decryptSecret } from "../app/lib/platform/secrets";
+import { createRefund } from "../app/lib/services/commerce/refunds";
 
 test("Payment Architecture: Pure Platform Billing vs Pure Tenant Commerce", { skip: !process.env.DATABASE_URL }, async (t) => {
   // Architecture tests must not create a real provider checkout, even when a
@@ -139,12 +140,17 @@ test("Payment Architecture: Pure Platform Billing vs Pure Tenant Commerce", { sk
 
       // 2. Settlement of verification invoice
       const invoice = await ensureVerificationInvoice(pharmacyA.id);
-      const fakeIntasendId = `IS_INV_${randomUUID().slice(0, 8)}`;
+      const checkoutAttempt = await withPlatformBypass(() => db.billingPayment.findFirstOrThrow({
+        where: { invoiceId: invoice.id, provider: "intasend", status: "pending" },
+      }));
+      const apiRef = checkoutAttempt.attemptRef!;
+      const fakeIntasendId = checkoutAttempt.providerRef!;
+      assert.ok(apiRef.startsWith("BILL-"));
 
       // Mismatch amount is rejected
       await assert.rejects(
         completeIntasendBillingPayment({
-          apiRef: invoice.number,
+          apiRef,
           intasendInvoiceId: fakeIntasendId,
           amount: 50, // wrong amount
         }),
@@ -153,7 +159,7 @@ test("Payment Architecture: Pure Platform Billing vs Pure Tenant Commerce", { sk
 
       // Correct amount settles invoice
       const settled = await completeIntasendBillingPayment({
-        apiRef: invoice.number,
+        apiRef,
         intasendInvoiceId: fakeIntasendId,
         amount: 100,
         provider: "INTASEND",
@@ -170,7 +176,7 @@ test("Payment Architecture: Pure Platform Billing vs Pure Tenant Commerce", { sk
 
       // 3. Idempotent webhook processing
       const duplicateSettled = await completeIntasendBillingPayment({
-        apiRef: invoice.number,
+        apiRef,
         intasendInvoiceId: fakeIntasendId,
         amount: 100,
         provider: "INTASEND",
@@ -415,6 +421,11 @@ test("Payment Architecture: Pure Platform Billing vs Pure Tenant Commerce", { sk
         assert.equal(payment.status, "pending");
         assert.equal(Number(payment.expectedAmount), 850);
         assert.equal(payment.expectedShortcode, "174380");
+        const retries = await Promise.all([
+          initiatePharmacyDarajaPayment({ orderId: orderA.id, phone: "0712345678", forceRetry: true }),
+          initiatePharmacyDarajaPayment({ orderId: orderA.id, phone: "0712345678", forceRetry: true }),
+        ]);
+        assert.ok(retries.every((retry) => !retry.ok && retry.error === "pending_payment_exists"));
       } finally {
         globalThis.fetch = originalFetch;
       }
@@ -469,6 +480,46 @@ test("Payment Architecture: Pure Platform Billing vs Pure Tenant Commerce", { sk
         mpesaReceipt: "QA12345678",
       });
       assert.equal(duplicate.alreadyDone, true);
+    });
+
+    await st.test("unknown STK transport outcome does not permit a second charge", async () => {
+      const order = await withPlatformBypass(() => db.order.create({ data: {
+        pharmacyId: pharmacyA.id, total: 850, status: "pending", currency: "KES", guestPhone: "0712345678",
+      } }));
+      const originalFetch = globalThis.fetch;
+      globalThis.fetch = async (input) => {
+        if (String(input).includes("oauth")) return Response.json({ access_token: "test_oauth_token", expires_in: "3599" });
+        throw new Error("connection interrupted after request");
+      };
+      try {
+        const result = await initiateStkPayment({ orderId: order.id, phone: "0712345678" });
+        assert.equal(result.ok, false);
+        assert.equal(result.error, "stk_outcome_unknown");
+        const retry = await initiateStkPayment({ orderId: order.id, phone: "0712345678", forceRetry: true });
+        assert.equal(retry.ok, false);
+        assert.equal(retry.error, "pending_payment_exists");
+        const attempts = await withPlatformBypass(() => db.payment.findMany({ where: { orderId: order.id, provider: "daraja" } }));
+        assert.equal(attempts.length, 1);
+        assert.equal(attempts[0].status, "pending");
+      } finally {
+        globalThis.fetch = originalFetch;
+      }
+    });
+
+    await st.test("parallel partial refunds cannot reserve more than collected", async () => {
+      const payment = await withPlatformBypass(() => db.payment.findFirstOrThrow({
+        where: { orderId: orderA.id, provider: "daraja", status: "completed" },
+      }));
+      const requests = await withPharmacy(pharmacyA.id, () => Promise.all([
+        createRefund({ paymentId: payment.id, amount: 500, provider: "other", reason: "parallel-check" }),
+        createRefund({ paymentId: payment.id, amount: 500, provider: "other", reason: "parallel-check" }),
+      ]));
+      assert.equal(requests.filter((result) => result.ok).length, 1);
+      const reserved = await withPharmacy(pharmacyA.id, () => db.refund.aggregate({
+        where: { paymentId: payment.id, status: { in: ["pending", "approved", "completed"] } },
+        _sum: { amount: true },
+      }));
+      assert.equal(Number(reserved._sum.amount), 500);
     });
   });
 

@@ -28,7 +28,7 @@ import {
 import { getSessionUser } from "@/app/lib/auth";
 import { prisma, prismaUnscoped, withPlatformTx } from "@/app/lib/db";
 import { getPharmacyPlanState } from "@/app/lib/platform/plan-state";
-import { PremiumGate, PremiumPaymentReturn } from "@/app/components/admin/PremiumGate";
+import { InvoiceCheckoutButton, PremiumGate, PremiumPaymentReturn } from "@/app/components/admin/PremiumGate";
 import {
   FREE_MEDICINE_LIMIT,
   FREE_SERVICE_LIMIT,
@@ -315,7 +315,7 @@ export default async function AdminBillingPage() {
 
   const [tenantData, grant, prescriptionReferralUsage] = await Promise.all([
     withPharmacy(pharmacy.id, async () => {
-      const [publicMedicines, activeServices, campaignLaunches, subscription, invoices] =
+      const [publicMedicines, activeServices, campaignLaunches, subscription, invoices, outstandingInvoices] =
         await Promise.all([
           prisma.pharmacyInventory.count({
             where: { active: true, publicListing: true },
@@ -341,11 +341,12 @@ export default async function AdminBillingPage() {
               currentPeriodEnd: true,
               trialEndsAt: true,
               cancelAt: true,
+              externalSubscriptionId: true,
             },
           }),
           prisma.invoice.findMany({
             orderBy: { createdAt: "desc" },
-            take: 5,
+            take: 30,
             select: {
               id: true,
               number: true,
@@ -355,8 +356,15 @@ export default async function AdminBillingPage() {
               createdAt: true,
             },
           }),
+          prisma.invoice.findMany({
+            where: { status: "open", totalKes: { gt: 0 } },
+            orderBy: { createdAt: "desc" },
+            select: { id: true, number: true, status: true, totalKes: true, dueAt: true, createdAt: true },
+          }),
         ]);
-      return { publicMedicines, activeServices, campaignLaunches, subscription, invoices };
+      const allInvoices = [...new Map([...invoices, ...outstandingInvoices].map((invoice) => [invoice.id, invoice])).values()]
+        .sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
+      return { publicMedicines, activeServices, campaignLaunches, subscription, invoices: allInvoices };
     }),
     withPlatformTx((tx) =>
       tx.pharmacyPromotionGrant.findUnique({
@@ -447,7 +455,7 @@ export default async function AdminBillingPage() {
                   {periodEnd ? <p>Current paid period ends {periodEnd}.</p> : null}
                   {tenantData.subscription?.cancelAt ? (
                     <p className="text-amber-700 dark:text-amber-300">
-                      Auto-renewal is set to stop at period end.
+                      Premium is set to end at the close of this paid period.
                     </p>
                   ) : null}
                   {canManageBilling && !tenantData.subscription?.cancelAt ? (
@@ -457,9 +465,11 @@ export default async function AdminBillingPage() {
                       </summary>
                       <div className="border-t border-[var(--admin-border)] p-3">
                         <p className="text-sm leading-5 text-[var(--admin-text-soft)]">
-                          Cancelling stops automatic renewal. Premium remains available through the current paid period.
+                          {tenantData.subscription?.externalSubscriptionId?.startsWith("daraja_ratiba:")
+                            ? "Stopping automatic M-Pesa renewal keeps Premium available through the paid period."
+                            : "Premium ends at the close of the paid period. A new checkout is required to renew."}
                         </p>
-                        <CancelServiceForm pharmacyId={pharmacy.id} />
+                        <CancelServiceForm pharmacyId={pharmacy.id} recurring={Boolean(tenantData.subscription?.externalSubscriptionId?.startsWith("daraja_ratiba:"))} />
                       </div>
                     </details>
                   ) : null}
@@ -753,13 +763,16 @@ export default async function AdminBillingPage() {
                       {invoice.dueAt ? ` · due ${formatDate(invoice.dueAt)}` : ""}
                     </p>
                   </div>
-                  <div className="flex items-center gap-3">
+                  <div className="flex flex-wrap items-center gap-3">
                     <span className="font-semibold text-[var(--admin-text)]">
                       KES {Number(invoice.totalKes).toLocaleString("en-KE")}
                     </span>
                     <span className="rounded-full bg-[var(--admin-inset)] px-2 py-1 font-semibold capitalize text-[var(--admin-text-muted)]">
                       {invoice.status}
                     </span>
+                    {canManageBilling && invoice.status === "open" && Number(invoice.totalKes) > 0 ? (
+                      <InvoiceCheckoutButton pharmacyId={pharmacy.id} invoiceId={invoice.id} amount={Number(invoice.totalKes)} />
+                    ) : null}
                   </div>
                 </div>
               ))}

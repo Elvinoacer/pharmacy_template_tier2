@@ -196,6 +196,9 @@ async function initiateStkPaymentInPharmacy(
       statusCode: 400,
     };
   }
+  if (!Number.isInteger(amount)) {
+    return { ok: false, error: "fractional_mpesa_amount", message: "M-Pesa requires a whole KES order total. Ask the pharmacy to adjust the order before paying.", statusCode: 400 };
+  }
 
   const rawPhone = opts.phone?.trim() || order.guestPhone || order.customer?.phone || "";
   const phone = formatMpesaPhone(rawPhone);
@@ -206,70 +209,6 @@ async function initiateStkPaymentInPharmacy(
       message: "Enter a valid M-Pesa number (e.g. 07XX XXX XXX).",
       statusCode: 400,
     };
-  }
-
-  const since = new Date(Date.now() - 60 * 60 * 1000);
-  const recentAttempts = await prisma.payment.count({
-    where: {
-      orderId: order.id,
-      provider: "daraja",
-      createdAt: { gte: since },
-    },
-  });
-  if (recentAttempts >= STK_MAX_ATTEMPTS_PER_HOUR) {
-    return {
-      ok: false,
-      error: "too_many_attempts",
-      message: "Too many M-Pesa attempts for this order. Wait a bit or pay at the counter.",
-      statusCode: 429,
-    };
-  }
-
-  const existingPending = await prisma.payment.findFirst({
-    where: {
-      orderId: order.id,
-      provider: "daraja",
-      status: "pending",
-      createdAt: { gte: new Date(Date.now() - 5 * 60 * 1000) },
-    },
-    orderBy: { createdAt: "desc" },
-  });
-
-  if (existingPending) {
-    const age = Date.now() - existingPending.createdAt.getTime();
-    if (!opts.forceRetry && age < STK_PENDING_WINDOW_MS && existingPending.checkoutRequestId) {
-      return {
-        ok: true,
-        paymentId: existingPending.id,
-        checkoutRequestId: existingPending.checkoutRequestId,
-        message:
-          "A payment request is already on your phone. Enter your M-Pesa PIN, or wait a moment and retry.",
-        phone: existingPending.phone || phone,
-        attemptCount: existingPending.attemptCount,
-      };
-    }
-    if (opts.forceRetry || age >= STK_PENDING_WINDOW_MS) {
-      await prisma.payment
-        .update({
-          where: { id: existingPending.id },
-          data: {
-            status: "failed",
-            failureReason: opts.forceRetry
-              ? "Superseded by retry STK"
-              : "Timed out waiting for customer PIN / callback",
-          },
-        })
-        .catch(() => {});
-    } else {
-      return {
-        ok: false,
-        error: "pending_payment_exists",
-        message:
-          "A payment request is already in progress. Check the phone or wait ~90s to retry.",
-        paymentId: existingPending.id,
-        statusCode: 409,
-      };
-    }
   }
 
   const pharmacyId = order.pharmacyId;
@@ -304,7 +243,7 @@ async function initiateStkPaymentInPharmacy(
         provider: "daraja",
         status: "failed",
         phone,
-        attemptCount: recentAttempts + 1,
+        attemptCount: 1,
         lastAttemptAt: new Date(),
         initiatedById: opts.initiatedById ?? null,
         failureReason: "Daraja not configured for this pharmacy",
@@ -322,24 +261,56 @@ async function initiateStkPaymentInPharmacy(
     };
   }
 
-  const payment = await prisma.payment.create({
-    data: {
-      pharmacyId,
-      orderId: order.id,
-      customerId: order.customerId,
-      amount,
-      provider: "daraja",
-      status: "pending",
-      phone,
-      attemptCount: recentAttempts + 1,
-      lastAttemptAt: new Date(),
-      initiatedById: opts.initiatedById ?? null,
-      expectedAmount: amount,
-      expectedShortcode: creds.shortcode,
-      payerPhone: phone,
-      currency: "KES",
-    },
+  // Serialize the intent reservation by order. A pending provider outcome must
+  // never be replaced because a browser timed out or the customer clicked twice.
+  const claim = await prisma.$transaction(async (tx) => {
+    await tx.$queryRaw`SELECT id FROM orders WHERE id = ${order.id}::uuid FOR UPDATE`;
+    const current = await tx.order.findUnique({ where: { id: order.id }, select: { status: true } });
+    if (!current || ["paid", "fulfilled", "waived", "cancelled"].includes(current.status)) {
+      return { ok: false as const, error: "order_already_settled", message: "This order can no longer be paid.", statusCode: 409 };
+    }
+    const pending = await tx.payment.findFirst({
+      where: { orderId: order.id, provider: "daraja", status: "pending" },
+      orderBy: { createdAt: "desc" },
+    });
+    if (pending) {
+      if (pending.checkoutRequestId && !opts.forceRetry) {
+        return { ok: true as const, payment: pending, existing: true as const };
+      }
+      return {
+        ok: false as const,
+        error: "pending_payment_exists",
+        message: "The earlier M-Pesa payment is still being verified. Do not pay again; check its status or contact support.",
+        paymentId: pending.id,
+        statusCode: 409,
+      };
+    }
+    const recentAttempts = await tx.payment.count({
+      where: { orderId: order.id, provider: "daraja", createdAt: { gte: new Date(Date.now() - 60 * 60 * 1000) } },
+    });
+    if (recentAttempts >= STK_MAX_ATTEMPTS_PER_HOUR) {
+      return { ok: false as const, error: "too_many_attempts", message: "Too many M-Pesa attempts for this order. Wait a bit or pay at the counter.", statusCode: 429 };
+    }
+    const payment = await tx.payment.create({
+      data: {
+        pharmacyId, orderId: order.id, customerId: order.customerId, amount,
+        provider: "daraja", status: "pending", phone,
+        attemptCount: recentAttempts + 1, lastAttemptAt: new Date(),
+        initiatedById: opts.initiatedById ?? null, expectedAmount: amount,
+        expectedShortcode: creds.shortcode, payerPhone: phone, currency: "KES",
+      },
+    });
+    return { ok: true as const, payment, existing: false as const };
   });
+  if (!claim.ok) return claim;
+  const payment = claim.payment;
+  if (claim.existing) {
+    return {
+      ok: true, paymentId: payment.id, checkoutRequestId: payment.checkoutRequestId!,
+      phone: payment.phone || phone, attemptCount: payment.attemptCount,
+      message: "An M-Pesa prompt is already active. Check your phone; do not pay twice.",
+    };
+  }
 
   if (!order.guestPhone) {
     await prisma.order
@@ -359,6 +330,10 @@ async function initiateStkPaymentInPharmacy(
   });
 
   if (!push.ok) {
+    if (push.uncertain) {
+      await prisma.payment.updateMany({ where: { id: payment.id, status: "pending" }, data: { reconciliationNotes: "STK request outcome unknown; check merchant records before retrying." } });
+      return { ok: false, error: "stk_outcome_unknown", message: "M-Pesa has not confirmed whether the prompt was sent. Do not retry or pay again until the pharmacy checks the merchant records.", paymentId: payment.id, statusCode: 202 };
+    }
     await prisma.payment.update({
       where: { id: payment.id },
       data: {
@@ -531,8 +506,20 @@ async function completeDarajaPaymentInPharmacy(
   const order = payment.order;
   const shouldAutoDispatch = order.fulfillment === "immediate" && !order.dispatchedAt;
   const { markOrderPaid, markOrderFulfilled } = await import("@/app/lib/services/commerce/orders");
+  let alreadyDone = false;
+  let overpayment = false;
+  let finalOrderStatus = order.status;
 
   await prisma.$transaction(async (tx) => {
+    await tx.$queryRaw`SELECT id FROM orders WHERE id = ${payment.orderId}::uuid FOR UPDATE`;
+    await tx.$queryRaw`SELECT 1 FROM (SELECT pg_advisory_xact_lock(hashtextextended(${receipt}, 0))) lock`;
+    const currentPayment = await tx.payment.findUniqueOrThrow({ where: { id: payment.id } });
+    const currentOrder = await tx.order.findUniqueOrThrow({ where: { id: payment.orderId } });
+    finalOrderStatus = currentOrder.status;
+    if (currentPayment.status === "completed") { alreadyDone = true; return; }
+    const usedReceipt = await tx.payment.findFirst({ where: { pharmacyId: payment.pharmacyId, provider: "daraja", providerRef: receipt, id: { not: payment.id } } });
+    if (usedReceipt) throw new Error("mpesa_receipt_already_recorded");
+    overpayment = ["paid", "fulfilled", "waived", "cancelled"].includes(currentOrder.status);
     await tx.payment.update({
       where: { id: payment.id },
       data: {
@@ -541,7 +528,7 @@ async function completeDarajaPaymentInPharmacy(
         failureReason: null,
         paidAt: new Date(),
         reconciledAt: new Date(),
-        reconciliationNotes: opts.resultDesc ?? "Verified with Daraja",
+        reconciliationNotes: overpayment ? "Additional confirmed payment on a settled order; review refund." : opts.resultDesc ?? "Verified with Daraja",
       },
     });
 
@@ -581,14 +568,24 @@ async function completeDarajaPaymentInPharmacy(
       });
     }
 
-    await markOrderPaid(tx, {
-      orderId: payment.orderId,
-      actorId: payment.initiatedById ?? null,
-      amount: providerAmount,
-      currency: payment.currency || "KES",
-    });
+    if (overpayment) {
+      const { recordCommerceEvent } = await import("@/app/lib/services/commerce/events");
+      await recordCommerceEvent(tx, {
+        pharmacyId: order.pharmacyId, eventType: "payment_completed", entityType: "payment", entityId: payment.id,
+        orderId: payment.orderId, customerId: payment.customerId ?? null,
+        actorId: payment.initiatedById ?? null, amount: providerAmount,
+        currency: payment.currency || "KES", metadata: { additionalCollection: true, receipt },
+      });
+    } else {
+      await markOrderPaid(tx, {
+        orderId: payment.orderId,
+        actorId: payment.initiatedById ?? null,
+        amount: providerAmount,
+        currency: payment.currency || "KES",
+      });
+    }
 
-    if (shouldAutoDispatch) {
+    if (shouldAutoDispatch && !overpayment) {
       await markOrderFulfilled(tx, {
         orderId: payment.orderId,
         actorId: payment.initiatedById ?? null,
@@ -597,7 +594,9 @@ async function completeDarajaPaymentInPharmacy(
     }
   }, { timeout: 30000, maxWait: 15000 });
 
-  if (!shouldAutoDispatch) {
+  if (alreadyDone) return { orderId: payment.orderId, status: finalOrderStatus, alreadyDone: true };
+
+  if (!shouldAutoDispatch || overpayment) {
     try {
       const { recordAdminNotification } = await import(
         "@/app/lib/services/admin-notifications"
@@ -605,9 +604,9 @@ async function completeDarajaPaymentInPharmacy(
       await recordAdminNotification({
         pharmacyId: order.pharmacyId,
         type: "enquiry_new",
-        title: "M-Pesa payment received",
-        body: `Order ${payment.orderId.slice(0, 8).toUpperCase()} paid — ready to dispatch / prepare.`,
-        severity: "info",
+        title: overpayment ? "Additional M-Pesa collection needs review" : "M-Pesa payment received",
+        body: overpayment ? `Order ${payment.orderId.slice(0, 8).toUpperCase()} was already settled. Review the additional receipt and refund.` : `Order ${payment.orderId.slice(0, 8).toUpperCase()} paid — ready to dispatch / prepare.`,
+        severity: overpayment ? "warning" : "info",
         relatedType: "order",
         relatedId: payment.orderId,
       });
@@ -616,7 +615,7 @@ async function completeDarajaPaymentInPharmacy(
     }
   }
 
-  try {
+  if (!overpayment) try {
     const {
       confirmServiceBookingPayment,
       notifyBookingCustomer,
@@ -645,7 +644,7 @@ async function completeDarajaPaymentInPharmacy(
 
   return {
     orderId: payment.orderId,
-    status: shouldAutoDispatch ? "fulfilled" : "paid",
+    status: overpayment ? finalOrderStatus : shouldAutoDispatch ? "fulfilled" : "paid",
     alreadyDone: false,
   };
 }
@@ -656,8 +655,8 @@ export async function failDarajaPayment(opts: {
 }): Promise<void> {
   const payment = await prisma.payment.findUnique({ where: { id: opts.paymentId } });
   if (!payment || payment.status !== "pending") return;
-  await prisma.payment.update({
-    where: { id: opts.paymentId },
+  await prisma.payment.updateMany({
+    where: { id: opts.paymentId, status: "pending" },
     data: {
       status: "failed",
       failureReason: opts.reason.slice(0, 500),
@@ -677,6 +676,7 @@ export type PaymentStatusView = {
   pending: boolean;
   settled: boolean;
   dispatched: boolean;
+  providerReportedSuccess: boolean;
 };
 
 /**
@@ -762,6 +762,8 @@ export async function resolvePaymentStatus(opts: {
     pending: payment.status === "pending",
     settled,
     dispatched: Boolean(payment.order.dispatchedAt) || orderStatus === "fulfilled",
+    providerReportedSuccess: payment.status === "pending" &&
+      Boolean(payment.reconciliationNotes?.startsWith("provider_reports_success:")),
   };
 }
 

@@ -28,6 +28,7 @@ function text(value: unknown) {
 
 function isBillingReference(apiRef: string) {
   return (
+    apiRef.startsWith("BILL-") ||
     apiRef.startsWith("SUBINV_") ||
     apiRef.startsWith("KYP-") ||
     apiRef.startsWith("INV-") ||

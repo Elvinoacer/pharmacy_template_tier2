@@ -22,10 +22,18 @@ export async function withAuthorizedPayment<T>(
           )?.orderId
         : null);
     if (!orderId) return null;
-    return prismaUnscoped.order.findUnique({
+    const order = await prismaUnscoped.order.findUnique({
       where: { id: orderId },
       select: { id: true, pharmacyId: true, customerId: true, guestPhone: true },
     });
+    if (input.paymentId && order) {
+      const payment = await prismaUnscoped.payment.findUnique({
+        where: { id: input.paymentId },
+        select: { orderId: true, pharmacyId: true },
+      });
+      if (!payment || payment.orderId !== order.id || payment.pharmacyId !== order.pharmacyId) return null;
+    }
+    return order;
   });
   if (!order) return null;
   const staff =
@@ -40,4 +48,3 @@ export async function withAuthorizedPayment<T>(
   if (!owner && !staff && !token) return null;
   return withPharmacy(order.pharmacyId, run);
 }
-

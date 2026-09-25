@@ -112,7 +112,11 @@ export async function entitlementLimit(pharmacyId: string, key: string): Promise
     include: { plan: { include: { features: true } } },
     orderBy: { createdAt: "desc" },
   });
-  return sub?.plan.features.find((f) => f.key === key)?.limitInt ?? null;
+  const planLimit = sub?.plan.features.find((f) => f.key === key)?.limitInt;
+  // A missing or expired subscription must not turn metered messaging into
+  // unlimited billable delivery. Use the configured starter ceiling until a
+  // distinct Free allowance is defined.
+  return planLimit ?? (key === "messages" ? DEFAULT_PLAN_FEATURES.starter.messages.limitInt : null);
 }
 
 export async function assertWithinLimit(pharmacyId: string, key: string, current: number): Promise<void> {

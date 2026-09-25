@@ -225,6 +225,7 @@ export type StkPushResult =
       ok: false;
       error: string;
       detail?: unknown;
+      uncertain?: boolean;
     };
 
 export async function stkPush(input: StkPushInput): Promise<StkPushResult> {
@@ -287,7 +288,7 @@ export async function stkPush(input: StkPushInput): Promise<StkPushResult> {
   } catch (error) {
     const message = error instanceof Error ? `daraja_unreachable:${error.message}` : "daraja_unreachable";
     console.error("[daraja][stk] request failed", { environment: creds.env, error: message });
-    return { ok: false, error: message };
+    return { ok: false, error: message, uncertain: true };
   }
 
   const raw = await res.text().catch(() => "");
@@ -330,7 +331,7 @@ export async function stkPush(input: StkPushInput): Promise<StkPushResult> {
       })(),
       detail: safeProviderDetail(j),
     });
-    return { ok: false, error, detail: safeProviderDetail(j) };
+    return { ok: false, error, detail: safeProviderDetail(j), uncertain: res.ok || res.status >= 500 };
   }
 
   console.info("[daraja][stk] accepted", {

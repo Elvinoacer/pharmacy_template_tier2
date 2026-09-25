@@ -81,41 +81,51 @@ export type CancelInput = {
  * Cancel an order: release reservations, mark cancelled, optionally auto-refund.
  * Idempotent: no-op if already cancelled.
  */
-export async function cancelOrder(opts: CancelInput): Promise<{ ok: true; refundId?: string } | { ok: false; error: string }> {
-  const order = await prisma.order.findUnique({
-    where: { id: opts.orderId },
-    include: { payments: { where: { status: "completed" } } },
-  });
-  if (!order) return { ok: false, error: "Order not found." };
-  if (order.status === "cancelled") return { ok: true };
-
-  let refundId: string | undefined;
-
-  await prisma.$transaction(async (tx) => {
-    await markOrderCancelled(tx, {
-      orderId: opts.orderId,
-      actorId: opts.actorId,
-      reason: opts.reason,
+export async function cancelOrder(opts: CancelInput): Promise<{ ok: true; refundIds: string[] } | { ok: false; error: string }> {
+  return prisma.$transaction(async (tx) => {
+    await tx.$queryRaw`SELECT id FROM orders WHERE id = ${opts.orderId}::uuid FOR UPDATE`;
+    const order = await tx.order.findUnique({
+      where: { id: opts.orderId },
+      include: { payments: { where: { status: "completed" }, include: { refunds: { where: { status: { in: ["pending", "approved", "completed"] } } } } } },
     });
+    if (!order) return { ok: false as const, error: "Order not found." };
+    if (order.status === "cancelled") return { ok: true as const, refundIds: [] };
 
-    if (opts.autoRefund && order.payments.length > 0) {
-      // Import lazily to avoid circular dependency at module-load.
-      const { createRefund } = await import("@/app/lib/services/commerce/refunds");
-      // Refund the first completed payment in full (covers single-payment case).
-      const first = order.payments[0];
-      const result = await createRefund({
-        paymentId: first.id,
-        amount: Number(first.amount),
-        reason: opts.refundReason ?? opts.reason ?? "order_cancelled",
-        provider: first.provider === "daraja" ? "daraja" : first.provider === "card" ? "card" : "cash",
-        createdById: opts.actorId,
-        markCompleted: first.provider !== "daraja", // cash/card can complete immediately; daraja needs B2C
-      });
-      if (result.ok) refundId = result.refundId;
+    await markOrderCancelled(tx, { orderId: opts.orderId, actorId: opts.actorId, reason: opts.reason });
+    const refundIds: string[] = [];
+    if (opts.autoRefund) {
+      // Persist every remaining refund intent with the cancellation. Provider
+      // work is deliberately outside this transaction; these remain pending
+      // until the merchant has actually returned the money.
+      for (const payment of order.payments) {
+        await tx.$queryRaw`SELECT id FROM payments WHERE id = ${payment.id}::uuid FOR UPDATE`;
+        const prior = await tx.refund.aggregate({
+          where: { paymentId: payment.id, status: { in: ["pending", "approved", "completed"] } },
+          _sum: { amount: true },
+        });
+        const reserved = Number(prior._sum.amount ?? 0);
+        const available = Number(payment.amount) - reserved;
+        if (available <= 0.001) continue;
+        const refund = await tx.refund.create({
+          data: {
+            pharmacyId: order.pharmacyId, paymentId: payment.id, orderId: order.id, amount: available,
+            provider: payment.provider, status: "pending",
+            providerRef: payment.provider === "daraja" ? "manual_reversal_required" : null,
+            reason: opts.refundReason ?? opts.reason ?? "order_cancelled",
+            createdById: opts.actorId,
+          },
+        });
+        await recordCommerceEvent(tx, {
+          eventType: "refund_created", entityType: "payment", entityId: payment.id,
+          orderId: order.id, customerId: order.customerId ?? null,
+          actorId: opts.actorId, amount: available,
+          metadata: { refundId: refund.id, reason: opts.refundReason ?? opts.reason ?? "order_cancelled", provider: payment.provider },
+        });
+        refundIds.push(refund.id);
+      }
     }
+    return { ok: true as const, refundIds };
   });
-
-  return { ok: true, refundId };
 }
 
 /**

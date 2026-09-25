@@ -1,7 +1,8 @@
 import "server-only";
 
 import { prismaUnscoped } from "@/app/lib/db";
-import { completeBillingPayment, markInvoicePaid, completeIntasendBillingPayment, failIntasendBillingPayment } from "@/app/lib/platform/billing";
+import { completeBillingPayment, completeIntasendBillingPayment, failIntasendBillingPayment } from "@/app/lib/platform/billing";
+import { verifyDarajaCallback } from "@/app/lib/services/daraja-callback-verification";
 import { resolveDarajaCredentials } from "@/app/lib/platform/integrations";
 import { stkQuery } from "@/app/lib/services/daraja";
 import { queryIntasendPaymentStatus } from "@/app/lib/services/intasend";
@@ -45,37 +46,36 @@ export async function reconcilePharmacyBillingStk(pharmacyId: string) {
   checked += intasendRows.length;
 
   for (const row of intasendRows) {
-    if (row.invoice.status === "paid") {
-      await withPlatformBypass(async () =>
-        prismaUnscoped.billingPayment.update({
-          where: { id: row.id },
-          data: { status: "succeeded", paidAt: new Date() },
-        }),
-      );
-      reconciled++;
-      continue;
-    }
-
-    const queryRef = row.checkoutRequestId || row.providerRef;
+    const queryRef = row.providerRef || row.checkoutRequestId;
     if (queryRef && !queryRef.startsWith("is_mock_") && !queryRef.startsWith("is_fallback_")) {
       const status = await queryIntasendPaymentStatus(queryRef).catch(() => null);
       if (status) {
+        if (status.invoiceId !== queryRef || status.apiRef !== (row.attemptRef || row.invoice.number) || status.currency !== "KES") {
+          console.error("[reconcile][intasend] payment identity mismatch", { paymentId: row.id });
+          stillPending++;
+          continue;
+        }
         if (status.state === "COMPLETE") {
-          await completeIntasendBillingPayment({
-            apiRef: row.invoice.number,
-            intasendInvoiceId: status.invoiceId,
-            amount: Number(status.value || row.invoice.totalKes),
-            provider: status.provider || "INTASEND",
-          }).catch((err) => console.error("[reconcile][intasend] complete error:", err));
-          reconciled++;
-          continue;
+          try {
+            await completeIntasendBillingPayment({
+              apiRef: status.apiRef, intasendInvoiceId: status.invoiceId,
+              amount: status.value, provider: status.provider || "INTASEND",
+            });
+            reconciled++;
+            continue;
+          } catch (error) {
+            console.error("[reconcile][intasend] complete error:", error);
+          }
         } else if (status.state === "FAILED") {
-          await failIntasendBillingPayment({
-            apiRef: row.invoice.number,
-            reason: status.failedReason || "Payment marked failed by IntaSend",
-          }).catch((err) => console.error("[reconcile][intasend] fail error:", err));
-          reconciled++;
-          continue;
+          try {
+            await failIntasendBillingPayment({
+              apiRef: status.apiRef, reason: status.failedReason || "Payment marked failed by IntaSend",
+            });
+            reconciled++;
+            continue;
+          } catch (error) {
+            console.error("[reconcile][intasend] fail error:", error);
+          }
         }
       }
     }
@@ -147,30 +147,32 @@ export async function reconcilePharmacyBillingStk(pharmacyId: string) {
     }
 
     if (provider.resultCode === "0") {
-      const claimed = await withPlatformBypass(async () =>
-        prismaUnscoped.billingPayment.updateMany({
-          where: { id: row.id, status: { in: ["pending", "processing"] } },
-          data: {
-            status: "succeeded",
-            paidAt: new Date(),
-            failureReason: null,
-            providerRef: row.providerRef || `daraja-query:${checkoutRequestId}`,
-          },
-        }),
-      );
-
-      if (claimed.count) {
-        await withPlatformBypass(async () => {
-          await markInvoicePaid(row.invoiceId);
+      const event = await withPlatformBypass(() => prismaUnscoped.webhookEvent.findFirst({
+        where: { pharmacyId: row.pharmacyId, provider: "daraja", providerEventId: checkoutRequestId },
+      }));
+      const payload = event?.payload as { Body?: { stkCallback?: { MerchantRequestID?: string; ResultCode?: number; CallbackMetadata?: { Item?: Array<{ Name?: string; Value?: string | number }> } } } } | null;
+      const cb = payload?.Body?.stkCallback;
+      if (cb?.ResultCode === 0) {
+        const verified = await verifyDarajaCallback({
+          pharmacyId: null, expectedAmount: Number(row.amountKes),
+          expectedCheckoutRequestId: checkoutRequestId,
+          expectedMerchantRequestId: row.merchantRequestId,
+          callback: { checkoutRequestId, merchantRequestId: cb.MerchantRequestID, resultCode: 0, items: cb.CallbackMetadata?.Item },
         });
-        reconciled++;
-        console.info("[billing][daraja-status] payment confirmed by STK query", {
-          paymentId: row.id,
-          invoiceId: row.invoiceId,
-          checkoutRequestId,
-          environment: credentials.env,
-        });
+        if (verified.ok) {
+          await withPlatformBypass(() => completeBillingPayment({
+            checkoutRequestId, merchantRequestId: row.merchantRequestId,
+            resultCode: 0, amount: verified.evidence.amount, mpesaReceipt: verified.evidence.receipt,
+          }));
+          reconciled++;
+          continue;
+        }
       }
+      await withPlatformBypass(() => prismaUnscoped.billingPayment.updateMany({
+        where: { id: row.id, status: { in: ["pending", "processing"] } },
+        data: { failureReason: "Provider reports success; awaiting verified receipt and amount. Do not collect again." },
+      }));
+      stillPending++;
       continue;
     }
 
@@ -208,7 +210,7 @@ export async function reconcilePharmacyBillingStk(pharmacyId: string) {
     }),
   );
 
-  return { ok: true as const, reconciled, pending, checked: rows.length, stillPending };
+  return { ok: true as const, reconciled, pending, checked, stillPending };
 }
 
 export { reconcilePharmacyBillingStk as reconcilePharmacyBilling };

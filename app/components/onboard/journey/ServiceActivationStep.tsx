@@ -25,7 +25,7 @@ export function ServiceActivationStep({
 }) {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const isReturned = searchParams?.get("status") === "returned" || searchParams?.get("payment") === "returned";
+  const isReturned = searchParams?.get("status") === "returned" || searchParams?.get("payment") === "returned" || (searchParams?.get("payment") || "").startsWith("return_");
 
   const pharmacy = snapshot.pharmacy;
   const payment = snapshot.verificationPayment;
@@ -100,7 +100,7 @@ export function ServiceActivationStep({
               </p>
             </div>
           </div>
-          <PaymentStatusRefresh pending={true} />
+          <PaymentStatusRefresh pending={true} pharmacyId={pharmacy?.id} />
         </div>
       ) : null}
 

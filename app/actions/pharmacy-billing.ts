@@ -56,6 +56,7 @@ async function resolveOwnedBillingInvoice(pharmacyId: string, form: FormData) {
       )
     : null;
   if (exact) return exact;
+  if (identifiers.length) return null;
 
   const bundle = await withPharmacy(pharmacyId, () =>
     db.invoice.findFirst({
@@ -217,7 +218,7 @@ export async function pharmacyBillingAction(
       const checkout = await createIntasendBillingCheckout(
         pharmacyId,
         invoice.id,
-        { actorId: user.id },
+        { actorId: user.id, ...(form.get("returnTo") === "admin" ? { redirectPath: "/admin/billing?payment=returned" } : {}) },
       );
       if (!checkout.ok)
         throw new Error(
@@ -247,7 +248,7 @@ export async function pharmacyBillingAction(
       const checkout = await createIntasendBillingCheckout(
         pharmacyId,
         invoice.id,
-        { actorId: user.id },
+        { actorId: user.id, ...(form.get("returnTo") === "admin" ? { redirectPath: "/admin/billing?payment=returned" } : {}) },
       );
       revalidatePath("/onboard/billing");
       revalidatePath("/admin/billing");
@@ -278,8 +279,9 @@ export async function pharmacyBillingAction(
       revalidatePath("/admin/billing");
       revalidatePath("/admin/setup");
       return {
-        success:
-          "Auto-renewal cancellation requested. Your current paid period remains available until its end date.",
+        success: subscription.externalSubscriptionId?.startsWith("daraja_ratiba:")
+          ? "Automatic M-Pesa renewal was cancelled. Premium remains available through the paid period."
+          : "Premium is set to end after the current paid period. No automatic checkout was scheduled.",
       };
     }
 

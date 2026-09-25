@@ -568,14 +568,14 @@ export function WaiverDecisionForm({ requestId }: { requestId: string }) {
   );
 }
 
-export function CancelServiceForm({ pharmacyId }: { pharmacyId: string }) {
+export function CancelServiceForm({ pharmacyId, recurring = false }: { pharmacyId: string; recurring?: boolean }) {
   const [state, action, pending] = useActionState(pharmacyBillingAction, {});
   return (
     <form action={action} className="mt-4 space-y-3">
       <input type="hidden" name="pharmacyId" value={pharmacyId} />
       <input type="hidden" name="intent" value="cancel" />
       <button className="btn-ghost min-h-11" disabled={pending}>
-        {pending ? "Stopping auto-renewal…" : "Cancel auto-renewal"}
+        {pending ? "Updating Premium…" : recurring ? "Stop automatic M-Pesa renewal" : "End Premium at period end"}
       </button>
       <p
         role={state.error ? "alert" : "status"}
