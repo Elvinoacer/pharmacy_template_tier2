@@ -482,6 +482,30 @@ test("Payment Architecture: Pure Platform Billing vs Pure Tenant Commerce", { sk
       assert.equal(duplicate.alreadyDone, true);
     });
 
+    await st.test("unknown STK transport outcome does not permit a second charge", async () => {
+      const order = await withPlatformBypass(() => db.order.create({ data: {
+        pharmacyId: pharmacyA.id, total: 850, status: "pending", currency: "KES", guestPhone: "0712345678",
+      } }));
+      const originalFetch = globalThis.fetch;
+      globalThis.fetch = async (input) => {
+        if (String(input).includes("oauth")) return Response.json({ access_token: "test_oauth_token", expires_in: "3599" });
+        throw new Error("connection interrupted after request");
+      };
+      try {
+        const result = await initiateStkPayment({ orderId: order.id, phone: "0712345678" });
+        assert.equal(result.ok, false);
+        assert.equal(result.error, "stk_outcome_unknown");
+        const retry = await initiateStkPayment({ orderId: order.id, phone: "0712345678", forceRetry: true });
+        assert.equal(retry.ok, false);
+        assert.equal(retry.error, "pending_payment_exists");
+        const attempts = await withPlatformBypass(() => db.payment.findMany({ where: { orderId: order.id, provider: "daraja" } }));
+        assert.equal(attempts.length, 1);
+        assert.equal(attempts[0].status, "pending");
+      } finally {
+        globalThis.fetch = originalFetch;
+      }
+    });
+
     await st.test("parallel partial refunds cannot reserve more than collected", async () => {
       const payment = await withPlatformBypass(() => db.payment.findFirstOrThrow({
         where: { orderId: orderA.id, provider: "daraja", status: "completed" },
