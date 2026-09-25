@@ -5,9 +5,10 @@ import { toast } from "@/app/components/Toaster";
 import { publicApiErrorMessage, publicErrorMessage } from "@/app/lib/public-error";
 import { Check, Loader2, RotateCcw, Smartphone, X } from "lucide-react";
 
-type Phase = "idle" | "sending" | "waiting" | "success" | "failed";
+type Phase = "idle" | "sending" | "waiting" | "uncertain" | "success" | "failed";
 
 type StatusPayload = {
+  providerReportedSuccess?: boolean;
   ok?: boolean;
   pending?: boolean;
   settled?: boolean;
@@ -59,6 +60,7 @@ export function MpesaStkPanel({
   const [message, setMessage] = useState<string>("");
   const [receipt, setReceipt] = useState<string | null>(null);
   const [notConfigured, setNotConfigured] = useState<boolean>(false);
+  const [paidByMpesa, setPaidByMpesa] = useState(false);
   const pollRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const attemptsRef = useRef(0);
   const startedRef = useRef(false);
@@ -86,11 +88,15 @@ export function MpesaStkPanel({
           headers: accessToken ? { "x-order-access-token": accessToken } : undefined,
         });
         const payload = (await response.json()) as StatusPayload;
-        if (!response.ok) return;
+        if (!response.ok) {
+          setMessage("Payment status is temporarily unavailable. Do not pay again until this attempt is confirmed or declined.");
+          return;
+        }
 
-        if (payload.settled || payload.paymentStatus === "completed") {
+        if (payload.paymentStatus === "completed") {
           stopPoll();
           setPhase("success");
+          setPaidByMpesa(true);
           setReceipt(payload.mpesaReceipt ?? null);
           setMessage(
             payload.dispatched
@@ -104,6 +110,18 @@ export function MpesaStkPanel({
           });
           toast.success("M-Pesa payment confirmed");
           return;
+        }
+
+        if (payload.settled) {
+          stopPoll();
+          setPhase("success");
+          setPaidByMpesa(false);
+          setMessage("This order was settled by another method. This M-Pesa attempt has not been confirmed.");
+          return;
+        }
+
+        if (payload.providerReportedSuccess) {
+          setMessage("M-Pesa reports success, but receipt confirmation is pending. Do not pay again. Check status shortly or contact support with this payment reference.");
         }
 
         if (payload.paymentStatus === "failed") {
@@ -134,9 +152,9 @@ export function MpesaStkPanel({
         ticks += 1;
         if (ticks > 50) {
           stopPoll();
-          setPhase("failed");
+          setPhase("uncertain");
           setMessage(
-            "Waiting for confirmation timed out. You can retry the payment request or check again in a moment.",
+            "Confirmation is taking longer than expected. Do not pay again until this attempt is confirmed or declined. Check its status or contact support.",
           );
           return;
         }
@@ -151,6 +169,7 @@ export function MpesaStkPanel({
       setPhase("sending");
       setMessage("");
       setReceipt(null);
+      setPaidByMpesa(false);
       setNotConfigured(false);
       try {
         const response = await fetch("/api/payments/mobile/stk", {
@@ -176,6 +195,13 @@ export function MpesaStkPanel({
             return;
           }
 
+          if (payload.error === "pending_payment_exists") {
+            if (payload.paymentId) setPaymentId(payload.paymentId);
+            setPhase("uncertain");
+            setMessage(payload.message || "An M-Pesa attempt is still being verified. Do not pay again.");
+            return;
+          }
+
           const safeMessage = publicApiErrorMessage(
             payload,
             "Could not initiate M-Pesa prompt. Please check your phone number and try again.",
@@ -197,8 +223,8 @@ export function MpesaStkPanel({
           startPoll(payload.paymentId, phone.trim());
         }
       } catch {
-        setPhase("failed");
-        setMessage("Could not connect to the payment service. Check your connection and try again.");
+        setPhase("uncertain");
+        setMessage("Could not confirm whether the payment request was sent. Check your phone and the order status before trying again.");
         toast.error("Could not start payment.");
       }
     },
@@ -231,7 +257,7 @@ export function MpesaStkPanel({
             <Check className="h-4 w-4" />
           </span>
           <div className="min-w-0 flex-1">
-            <p className="text-sm font-semibold text-emerald-900">Payment confirmed</p>
+            <p className="text-sm font-semibold text-emerald-900">{paidByMpesa ? "M-Pesa payment confirmed" : "Order settled"}</p>
             <p className="mt-0.5 text-xs text-emerald-800">{message}</p>
             {receipt && (
               <p className="mt-1 font-mono text-[10px] text-emerald-700">Receipt: {receipt}</p>
@@ -302,6 +328,7 @@ export function MpesaStkPanel({
           className={`text-[11px] leading-relaxed ${
             phase === "failed" ? "text-rose-700" : "text-[#5a6b62]"
           }`}
+          role="status"
         >
           {message}
         </p>
@@ -339,11 +366,11 @@ export function MpesaStkPanel({
           </div>
         )}
 
-        {phase === "waiting" && (
+        {(phase === "waiting" || phase === "uncertain") && (
           <div className="flex w-full items-center justify-between gap-2 rounded-lg bg-[#f0faf6] px-2.5 py-1.5 text-[11px] text-[#0d6e5a]">
             <span className="flex items-center gap-1.5 font-medium">
-              <Loader2 className="h-3 w-3 animate-spin text-[#0d6e5a]" />
-              Check phone for M-Pesa PIN prompt…
+              {phase === "waiting" ? <Loader2 className="h-3 w-3 animate-spin text-[#0d6e5a]" /> : null}
+              {phase === "waiting" ? "Check phone for M-Pesa PIN prompt…" : "Payment outcome awaiting confirmation"}
             </span>
             {paymentId && (
               <button

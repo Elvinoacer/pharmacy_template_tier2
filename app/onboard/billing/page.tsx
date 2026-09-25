@@ -88,7 +88,7 @@ export default async function PharmacyBillingPage(props: PageProps) {
     orderBy: { createdAt: "desc" },
   });
   if (!pharmacy) redirect("/onboard");
-  if (pharmacy.setupCompletedAt) redirect(searchParams.payment === "returned" ? "/admin/billing?payment=returned" : "/admin/billing");
+  if (pharmacy.setupCompletedAt) redirect(searchParams.payment?.startsWith("return_") || searchParams.payment === "returned" ? `/admin/billing?payment=${encodeURIComponent(searchParams.payment)}` : "/admin/billing");
 
   // If the pharmacy is still in onboarding and not yet published live,
   // keep them in the canonical onboarding journey rather than mature accounting.
@@ -460,7 +460,7 @@ export default async function PharmacyBillingPage(props: PageProps) {
         </section>
       ) : null}
 
-      <PaymentStatusRefresh pending={paymentPending} />
+      <PaymentStatusRefresh pending={paymentPending} pharmacyId={pharmacy.id} />
 
       {sub ? (
         <Link href="/admin/setup" className="btn-primary mt-5 inline-flex justify-center">

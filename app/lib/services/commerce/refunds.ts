@@ -31,41 +31,40 @@ export type RefundInput = {
 export async function createRefund(
   input: RefundInput,
 ): Promise<
-  | { ok: true; refundId: string }
+  | { ok: true; refundId: string; manual?: boolean }
   | { ok: false; error: string }
 > {
-  if (!(input.amount > 0)) return { ok: false, error: "Refund amount must be greater than zero." };
+  if (!Number.isFinite(input.amount) || !(input.amount > 0)) return { ok: false, error: "Refund amount must be greater than zero." };
 
-  const payment = await prisma.payment.findUnique({
-    where: { id: input.paymentId },
-    include: {
-      order: { select: { id: true, customerId: true } },
-      refunds: { where: { status: { in: ["pending", "approved", "completed"] } } },
-    },
-  });
-  if (!payment) return { ok: false, error: "Payment not found." };
-  if (payment.status !== "completed") {
-    return { ok: false, error: "Only completed payments can be refunded." };
-  }
-
-  const provider = input.provider ?? (payment.provider === "intasend" ? "intasend" : payment.provider === "daraja" ? "daraja" : "cash");
-  if (provider === "daraja" && payment.provider !== "daraja") {
-    return { ok: false, error: "Only a verified Daraja payment can be reversed through M-PESA." };
-  }
-
-  const alreadyRefunded = payment.refunds.reduce((s, r) => s + Number(r.amount || 0), 0);
-  const maxRefundable = Number(payment.amount) - alreadyRefunded;
-  if (input.amount > maxRefundable + 0.001) {
-    return {
-      ok: false,
-      error: `Refund exceeds available amount. Max refundable: KES ${maxRefundable.toFixed(2)}.`,
-    };
-  }
-
-  const markCompleted = Boolean(input.markCompleted && provider !== "daraja");
-  const refund = await prisma.$transaction(async (tx) => {
+  // The payment lock covers both the available-balance check and the refund
+  // insert. Two simultaneous partial refunds cannot each spend the same balance.
+  const outcome = await prisma.$transaction(async (tx) => {
+    await tx.$queryRaw`SELECT id FROM payments WHERE id = ${input.paymentId}::uuid FOR UPDATE`;
+    const payment = await tx.payment.findUnique({
+      where: { id: input.paymentId },
+      include: {
+        order: { select: { id: true, customerId: true } },
+        refunds: { where: { status: { in: ["pending", "approved", "completed"] } } },
+      },
+    });
+    if (!payment) return { ok: false as const, error: "Payment not found." };
+    if (payment.status !== "completed") return { ok: false as const, error: "Only completed payments can be refunded." };
+    const provider = input.provider ?? payment.provider;
+    if (provider === "daraja" && payment.provider !== "daraja") {
+      return { ok: false as const, error: "Only a verified Daraja payment can be reversed through M-Pesa." };
+    }
+    if (provider === "daraja" && !Number.isInteger(input.amount)) {
+      return { ok: false as const, error: "M-Pesa reversals require a whole KES amount." };
+    }
+    const alreadyRefunded = payment.refunds.reduce((s, r) => s + Number(r.amount || 0), 0);
+    const maxRefundable = Number(payment.amount) - alreadyRefunded;
+    if (input.amount > maxRefundable + 0.001) {
+      return { ok: false as const, error: `Refund exceeds available amount. Max refundable: KES ${maxRefundable.toFixed(2)}.` };
+    }
+    const markCompleted = Boolean(input.markCompleted && provider === "cash");
     const r = await tx.refund.create({
       data: {
+        pharmacyId: payment.pharmacyId,
         paymentId: payment.id,
         orderId: payment.order.id,
         amount: input.amount,
@@ -120,16 +119,16 @@ export async function createRefund(
         await tx.order.update({ where: { id: payment.order.id }, data: { paymentStage: "partially_refunded" } });
       }
     }
-    return r;
+    return { ok: true as const, refund: r, provider };
   });
+  if (!outcome.ok) return outcome;
+  const { refund, provider } = outcome;
 
   if (provider === "daraja") {
     const { initiateDarajaRefund } = await import("@/app/lib/services/daraja-refunds");
     const reversal = await initiateDarajaRefund(refund.id);
-    if (!reversal.ok) {
-      await prisma.refund.update({ where: { id: refund.id }, data: { status: "failed" } }).catch(() => undefined);
-      return { ok: false, error: reversal.error };
-    }
+    if (!reversal.ok) return { ok: true, refundId: refund.id, manual: true };
+    if ("manual" in reversal && reversal.manual) return { ok: true, refundId: refund.id, manual: true };
   }
 
   return { ok: true, refundId: refund.id };
@@ -144,17 +143,17 @@ export async function approveRefund(refundId: string, approverId: string): Promi
 }
 
 /** Mark a provider-confirmed refund as completed. Idempotent. */
-export async function completeRefund(refundId: string, opts?: { providerRef?: string | null }): Promise<void> {
-  const refund = await prisma.refund.findUnique({
-    where: { id: refundId },
-    select: { id: true, orderId: true, paymentId: true, amount: true, status: true },
-  });
-  if (!refund || refund.status === "completed") return;
-
-  await prisma.$transaction(async (tx) => {
+export async function completeRefund(refundId: string, opts?: { providerRef?: string | null; approvedById?: string | null }): Promise<boolean> {
+  return prisma.$transaction(async (tx) => {
+    await tx.$queryRaw`SELECT id FROM refunds WHERE id = ${refundId}::uuid FOR UPDATE`;
+    const refund = await tx.refund.findUnique({
+      where: { id: refundId },
+      select: { id: true, orderId: true, paymentId: true, amount: true, status: true },
+    });
+    if (!refund || refund.status === "completed") return false;
     await tx.refund.update({
       where: { id: refundId },
-      data: { status: "completed", processedAt: new Date(), providerRef: opts?.providerRef ?? undefined },
+      data: { status: "completed", processedAt: new Date(), providerRef: opts?.providerRef ?? undefined, approvedById: opts?.approvedById ?? undefined },
     });
     await recordCommerceEvent(tx, {
       eventType: "refund_completed",
@@ -169,7 +168,7 @@ export async function completeRefund(refundId: string, opts?: { providerRef?: st
     await recomputeOrderFinancials(tx, refund.orderId);
 
     const payment = await tx.payment.findUnique({ where: { id: refund.paymentId }, select: { amount: true } });
-    if (!payment) return;
+    if (!payment) return true;
     const completed = await tx.refund.aggregate({
       where: { paymentId: refund.paymentId, status: "completed" },
       _sum: { amount: true },
@@ -182,6 +181,7 @@ export async function completeRefund(refundId: string, opts?: { providerRef?: st
       await tx.payment.update({ where: { id: refund.paymentId }, data: { status: "completed" } });
       await tx.order.update({ where: { id: refund.orderId }, data: { paymentStage: "partially_refunded" } });
     }
+    return true;
   });
 }
 

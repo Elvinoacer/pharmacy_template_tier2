@@ -4210,6 +4210,7 @@ model BillingPayment {
   pharmacyId        String               @map("pharmacy_id") @db.Uuid
   invoiceId         String               @map("invoice_id") @db.Uuid
   provider          String
+  attemptRef        String?              @unique @map("attempt_ref")
   status            BillingPaymentStatus @default(pending)
   amountKes         Decimal              @map("amount_kes") @db.Decimal(12, 2)
   phone             String?

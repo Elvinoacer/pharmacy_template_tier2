@@ -20,6 +20,7 @@ import {
   assertPublicMedicineSlot,
 } from "@/app/lib/platform/plan-enforcement";
 import { getTenant } from "@/app/lib/tenant";
+import { roleHasPermission } from "@/app/lib/platform/permissions";
 import { requireMedicationWriteContext } from "@/app/lib/services/medication-access";
 import { withPharmacy } from "@/app/lib/tenant-context";
 import {
@@ -2531,6 +2532,25 @@ export async function adminRefundOrderAction(
     const provider = String(formData.get("provider") || "cash") as "cash" | "daraja" | "intasend" | "card" | "other";
 
     if (!orderId || !paymentId) return { error: "Order and payment are required." };
+    const pharmacyId = await activePharmacyId(user);
+    const membership = user.memberships.find((m) => m.pharmacyId === pharmacyId && m.status === "active");
+    if (!membership || !roleHasPermission(membership.role, "orders.refund")) {
+      return { error: "You do not have permission to refund orders." };
+    }
+    const payment = await prisma.payment.findFirst({
+      where: { id: paymentId, orderId, pharmacyId: pharmacyId! },
+      select: { id: true, provider: true },
+    });
+    if (!payment) return { error: "Payment does not belong to this order." };
+    if (!(["cash", "daraja", "intasend", "card", "other"] as string[]).includes(provider)) {
+      return { error: "Choose a valid refund method." };
+    }
+    if (provider === "daraja" && payment.provider !== "daraja") {
+      return { error: "Only an M-Pesa payment can be reversed through M-Pesa." };
+    }
+    if (provider === "cash" && formData.get("cashReturned") !== "on") {
+      return { error: "Confirm that the cash was handed back before marking this refund complete." };
+    }
     const amount = Number(amountStr);
     if (!Number.isFinite(amount) || amount <= 0) return { error: "Refund amount must be greater than zero." };
 
@@ -2542,7 +2562,7 @@ export async function adminRefundOrderAction(
       provider,
       createdById: user.id,
       approvedById: user.id,
-      markCompleted: provider !== "daraja",
+      markCompleted: provider === "cash",
     });
 
     if (!result.ok) return { error: result.error };
@@ -2556,10 +2576,43 @@ export async function adminRefundOrderAction(
     });
     revalidatePath("/admin/orders");
     revalidatePath(`/admin/orders?orderId=${orderId}`);
-    return { success: `Refund of KES ${amount.toFixed(0)} recorded.` };
+    return { success: provider === "cash" ? `Cash refund of KES ${amount.toFixed(2)} recorded as handed back.` : result.manual ? `M-Pesa refund request recorded. A merchant-side manual reversal is required; no money has been returned yet.` : `Refund request of KES ${amount.toFixed(2)} recorded. Confirm its provider outcome before telling the customer it is complete.` };
   } catch (e) {
     console.error("[adminRefundOrder]", e);
     return { error: e instanceof Error ? e.message : "Failed to process refund." };
+  }
+}
+
+/** Record actual manual payout evidence for an existing refund intent. */
+export async function adminConfirmManualRefundAction(
+  _prev: ActionState,
+  formData: FormData,
+): Promise<ActionState> {
+  try {
+    const user = await staff();
+    const pharmacyId = await activePharmacyId(user);
+    const member = user.memberships.find((m) => m.pharmacyId === pharmacyId && m.status === "active");
+    if (!member || !roleHasPermission(member.role, "orders.refund")) return { error: "You do not have permission to complete refunds." };
+    const orderId = String(formData.get("orderId") || "");
+    const refundId = String(formData.get("refundId") || "");
+    const evidence = String(formData.get("evidenceRef") || "").trim();
+    if (formData.get("payoutConfirmed") !== "on" || evidence.length < 5) {
+      return { error: "Confirm the money was returned and enter its receipt or payout reference (at least 5 characters)." };
+    }
+    const refund = await prisma.refund.findFirst({
+      where: { id: refundId, orderId, pharmacyId: pharmacyId!, status: { in: ["pending", "approved"] } },
+    });
+    if (!refund) return { error: "This refund is no longer pending for this order." };
+    const { completeRefund } = await import("@/app/lib/services/commerce/refunds");
+    const completed = await completeRefund(refund.id, { providerRef: evidence.slice(0, 100), approvedById: user.id });
+    if (!completed) return { error: "This refund was already completed. Refresh the order to see its current status." };
+    await writeAuditLog(user.id, "refund_manual_payout_confirmed", "refund", refund.id, {
+      orderId, amount: Number(refund.amount), provider: refund.provider, evidenceRef: evidence.slice(0, 100),
+    });
+    revalidatePath("/admin/orders");
+    return { success: `Refund of KES ${Number(refund.amount).toFixed(2)} recorded as returned. Reference: ${evidence.slice(0, 100)}.` };
+  } catch (error) {
+    return { error: error instanceof Error ? error.message : "Could not confirm refund." };
   }
 }
 
@@ -2578,6 +2631,13 @@ export async function adminCancelOrderAction(
     const reason = String(formData.get("reason") || "cancelled_by_staff") || "cancelled_by_staff";
     const autoRefund = formData.get("autoRefund") === "on";
     if (!orderId) return { error: "Order id required." };
+    if (autoRefund) {
+      const pharmacyId = await activePharmacyId(user);
+      const membership = user.memberships.find((m) => m.pharmacyId === pharmacyId && m.status === "active");
+      if (!membership || !roleHasPermission(membership.role, "orders.refund")) {
+        return { error: "You do not have permission to refund orders." };
+      }
+    }
 
     const { cancelOrder } = await import("@/app/lib/services/commerce/fulfillment");
     const result = await cancelOrder({
@@ -2593,11 +2653,11 @@ export async function adminCancelOrderAction(
     await writeAuditLog(user.id, "order_cancelled", "order", orderId, {
       reason,
       autoRefund,
-      refundId: result.refundId ?? null,
+      refundIds: result.refundIds,
     });
     revalidatePath("/admin/orders");
     revalidatePath(`/admin/orders?orderId=${orderId}`);
-    return { success: `Order cancelled.${autoRefund && result.refundId ? " Refund initiated." : ""}` };
+    return { success: `Order cancelled.${autoRefund ? result.refundIds.length ? ` ${result.refundIds.length} refund request(s) recorded for manual/provider confirmation; money has not yet been returned.` : " No refundable balance remained." : ""}` };
   } catch (e) {
     console.error("[adminCancelOrder]", e);
     return { error: e instanceof Error ? e.message : "Failed to cancel order." };
@@ -3042,4 +3102,3 @@ export async function adminInterveneMissedRefillAction(
     return { error: e instanceof Error ? e.message : "Failed to record clinical intervention." };
   }
 }
-

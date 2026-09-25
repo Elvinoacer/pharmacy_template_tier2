@@ -31,6 +31,7 @@ import { isPharmacyCommissionEnabled } from "../app/lib/transaction-fee";
 import { createTransactionFeeStatement } from "../app/actions/transaction-fees";
 import { verifyIntasendWebhookChallenge } from "../app/lib/services/intasend";
 import { decryptSecret } from "../app/lib/platform/secrets";
+import { createRefund } from "../app/lib/services/commerce/refunds";
 
 test("Payment Architecture: Pure Platform Billing vs Pure Tenant Commerce", { skip: !process.env.DATABASE_URL }, async (t) => {
   // Architecture tests must not create a real provider checkout, even when a
@@ -139,12 +140,17 @@ test("Payment Architecture: Pure Platform Billing vs Pure Tenant Commerce", { sk
 
       // 2. Settlement of verification invoice
       const invoice = await ensureVerificationInvoice(pharmacyA.id);
-      const fakeIntasendId = `IS_INV_${randomUUID().slice(0, 8)}`;
+      const checkoutAttempt = await withPlatformBypass(() => db.billingPayment.findFirstOrThrow({
+        where: { invoiceId: invoice.id, provider: "intasend", status: "pending" },
+      }));
+      const apiRef = checkoutAttempt.attemptRef!;
+      const fakeIntasendId = checkoutAttempt.providerRef!;
+      assert.ok(apiRef.startsWith("BILL-"));
 
       // Mismatch amount is rejected
       await assert.rejects(
         completeIntasendBillingPayment({
-          apiRef: invoice.number,
+          apiRef,
           intasendInvoiceId: fakeIntasendId,
           amount: 50, // wrong amount
         }),
@@ -153,7 +159,7 @@ test("Payment Architecture: Pure Platform Billing vs Pure Tenant Commerce", { sk
 
       // Correct amount settles invoice
       const settled = await completeIntasendBillingPayment({
-        apiRef: invoice.number,
+        apiRef,
         intasendInvoiceId: fakeIntasendId,
         amount: 100,
         provider: "INTASEND",
@@ -170,7 +176,7 @@ test("Payment Architecture: Pure Platform Billing vs Pure Tenant Commerce", { sk
 
       // 3. Idempotent webhook processing
       const duplicateSettled = await completeIntasendBillingPayment({
-        apiRef: invoice.number,
+        apiRef,
         intasendInvoiceId: fakeIntasendId,
         amount: 100,
         provider: "INTASEND",
@@ -415,6 +421,11 @@ test("Payment Architecture: Pure Platform Billing vs Pure Tenant Commerce", { sk
         assert.equal(payment.status, "pending");
         assert.equal(Number(payment.expectedAmount), 850);
         assert.equal(payment.expectedShortcode, "174380");
+        const retries = await Promise.all([
+          initiatePharmacyDarajaPayment({ orderId: orderA.id, phone: "0712345678", forceRetry: true }),
+          initiatePharmacyDarajaPayment({ orderId: orderA.id, phone: "0712345678", forceRetry: true }),
+        ]);
+        assert.ok(retries.every((retry) => !retry.ok && retry.error === "pending_payment_exists"));
       } finally {
         globalThis.fetch = originalFetch;
       }
@@ -469,6 +480,22 @@ test("Payment Architecture: Pure Platform Billing vs Pure Tenant Commerce", { sk
         mpesaReceipt: "QA12345678",
       });
       assert.equal(duplicate.alreadyDone, true);
+    });
+
+    await st.test("parallel partial refunds cannot reserve more than collected", async () => {
+      const payment = await withPlatformBypass(() => db.payment.findFirstOrThrow({
+        where: { orderId: orderA.id, provider: "daraja", status: "completed" },
+      }));
+      const requests = await withPharmacy(pharmacyA.id, () => Promise.all([
+        createRefund({ paymentId: payment.id, amount: 500, provider: "other", reason: "parallel-check" }),
+        createRefund({ paymentId: payment.id, amount: 500, provider: "other", reason: "parallel-check" }),
+      ]));
+      assert.equal(requests.filter((result) => result.ok).length, 1);
+      const reserved = await withPharmacy(pharmacyA.id, () => db.refund.aggregate({
+        where: { paymentId: payment.id, status: { in: ["pending", "approved", "completed"] } },
+        _sum: { amount: true },
+      }));
+      assert.equal(Number(reserved._sum.amount), 500);
     });
   });
 

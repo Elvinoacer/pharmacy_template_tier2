@@ -56,6 +56,9 @@ export async function initiateDarajaRefund(refundId: string) {
   if (refund.providerRef?.startsWith(PENDING_PREFIX)) {
     return { ok: true as const, pending: true, providerRef: refund.providerRef };
   }
+  if (refund.providerRef === "manual_reversal_required") {
+    return { ok: true as const, pending: true, manual: true as const };
+  }
 
   const transactionId = String(refund.payment.providerRef || "").trim();
   if (!transactionId || transactionId.startsWith("ws_CO_")) {
@@ -63,12 +66,19 @@ export async function initiateDarajaRefund(refundId: string) {
   }
 
   const result = await requestReversal({
+    pharmacyId: refund.payment.pharmacyId,
     transactionId,
     amountKes: Number(refund.amount),
     remarks: refund.reason || `Afyvia refund ${refund.id.slice(0, 8)}`,
   });
   if (!result.ok) {
-    return { ok: false as const, error: result.error || "Safaricom did not accept the reversal request." };
+    // Preserve the refund intent and make manual processing explicit. No
+    // platform reversal is sent for tenant-held funds.
+    await prisma.refund.update({
+      where: { id: refund.id },
+      data: { status: "pending", providerRef: "manual_reversal_required" },
+    });
+    return { ok: true as const, pending: true, manual: true as const };
   }
 
   const originatorConversationId = nestedText(result.data, ["OriginatorConversationID", "originatorConversationId"]);

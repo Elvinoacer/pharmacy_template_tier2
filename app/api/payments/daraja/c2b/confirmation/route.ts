@@ -2,7 +2,8 @@ import { timingSafeEqual } from "node:crypto";
 import { NextResponse } from "next/server";
 
 import { prismaUnscoped as db } from "@/app/lib/db";
-import { markInvoicePaid } from "@/app/lib/platform/billing";
+import { settleInvoice } from "@/app/lib/platform/billing";
+import { resolveDarajaCredentials } from "@/app/lib/platform/integrations";
 import { recordAuditRequired } from "@/app/lib/platform/audit";
 import { markWebhookProcessed, recordInboundWebhook } from "@/app/lib/platform/webhooks";
 import { withPlatformBypass } from "@/app/lib/tenant-context";
@@ -43,6 +44,8 @@ export async function POST(request: Request) {
   const reference = String(body?.BillRefNumber || "").trim();
   const amount = Number(body?.TransAmount);
   if (!transId || !reference || !Number.isFinite(amount) || amount <= 0) return response(1, "Invalid payment evidence");
+  const merchant = await resolveDarajaCredentials(null);
+  if (!merchant || String(body?.BusinessShortCode || "") !== merchant.shortcode) return response(1, "Merchant mismatch");
 
   try {
     return await withPlatformBypass(async () => {
@@ -59,10 +62,7 @@ export async function POST(request: Request) {
       if (invoice) {
         if (Math.abs(Number(invoice.totalKes) - amount) > 0.01) return response(1, "Invoice mismatch");
 
-        const existingReceipt = await db.billingPayment.findFirst({ where: { providerRef: transId, provider: "daraja_c2b" } });
-        if (existingReceipt) return response(0, "Accepted");
-        if (invoice.status === "paid") return response(0, "Accepted");
-        if (invoice.status !== "open") return response(1, "Invoice not collectible");
+        if (invoice.status !== "open" && invoice.status !== "paid") return response(1, "Invoice not collectible");
 
         const inbound = await recordInboundWebhook({
           pharmacyId: invoice.pharmacyId,
@@ -71,21 +71,27 @@ export async function POST(request: Request) {
           eventType: "c2b.confirmation",
           payload: body,
         });
-        if (inbound.duplicate && inbound.event.status === "delivered") return response(0, "Accepted");
-
-        const payment = await db.billingPayment.create({
-          data: {
-            pharmacyId: invoice.pharmacyId,
-            invoiceId: invoice.id,
-            provider: "daraja_c2b",
-            status: "succeeded",
-            amountKes: amount,
-            providerRef: transId,
-            paidAt: new Date(),
-            phone: body?.MSISDN ? String(body.MSISDN) : null,
-          },
+        const payment = await db.$transaction(async (tx) => {
+          await tx.$queryRaw`SELECT 1 FROM (SELECT pg_advisory_xact_lock(hashtextextended(${transId}, 0))) lock`;
+          await tx.$queryRaw`SELECT id FROM invoices WHERE id = ${invoice.id}::uuid FOR UPDATE`;
+          const current = await tx.invoice.findUniqueOrThrow({ where: { id: invoice.id } });
+          const existingReceipt = await tx.billingPayment.findFirst({ where: { providerRef: transId, provider: "daraja_c2b" } });
+          if (existingReceipt && existingReceipt.invoiceId !== invoice.id) throw new Error("receipt_invoice_mismatch");
+          const evidence = existingReceipt || await tx.billingPayment.create({
+            data: {
+              pharmacyId: invoice.pharmacyId, invoiceId: invoice.id,
+              provider: "daraja_c2b", status: "succeeded", amountKes: amount,
+              providerRef: transId, paidAt: new Date(),
+              phone: body?.MSISDN ? String(body.MSISDN) : null,
+              failureReason: current.status === "paid" ? "Additional collection on an already-paid invoice; review refund." : null,
+            },
+          });
+          if (current.status === "open") await settleInvoice(tx, invoice.id);
+          if (current.status === "paid" && !existingReceipt) {
+            await tx.auditLog.create({ data: { pharmacyId: invoice.pharmacyId, action: "billing.payment.additional_collection", entityType: "billing_payment", entityId: evidence.id } });
+          }
+          return evidence;
         });
-        await markInvoicePaid(invoice.id);
         await recordAuditRequired({
           action: "billing.invoice.daraja_c2b.paid",
           resource: "invoice",
@@ -97,74 +103,8 @@ export async function POST(request: Request) {
         return response(0, "Accepted");
       }
 
-      // Order lookup
-      const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(reference);
-      const cleanHex = reference.replace(/^AE-?/i, "").replace(/-/g, "").trim().toLowerCase();
-      let order: Awaited<ReturnType<typeof db.order.findUnique>> = null;
-      if (isUuid) {
-        order = await db.order.findUnique({ where: { id: reference } });
-      } else if (/^[0-9a-f]{6,32}$/i.test(cleanHex)) {
-        const matched = await db.$queryRaw<Array<{ id: string }>>`
-          SELECT id FROM "Order" WHERE replace(id::text, '-', '') ILIKE ${cleanHex + '%'} LIMIT 1
-        `;
-        if (matched.length > 0 && matched[0]?.id) {
-          order = await db.order.findUnique({ where: { id: matched[0].id } });
-        }
-      }
-      if (!order) {
-        order = await db.order.findFirst({
-          where: { notes: { contains: reference } },
-        });
-      }
-
-      if (order) {
-        const existingPayment = await db.payment.findFirst({
-          where: { providerRef: transId, provider: "daraja" },
-        });
-        if (existingPayment || order.status === "paid" || order.status === "fulfilled") {
-          return response(0, "Accepted");
-        }
-        if (Math.abs(Number(order.total) - amount) > 0.01) {
-          return response(1, "Order amount mismatch");
-        }
-
-        const inbound = await recordInboundWebhook({
-          pharmacyId: order.pharmacyId,
-          provider: "daraja",
-          providerEventId: transId,
-          eventType: "c2b.order.confirmation",
-          payload: body,
-        });
-        if (inbound.duplicate && inbound.event.status === "delivered") return response(0, "Accepted");
-
-        await db.$transaction(async (tx) => {
-          await tx.payment.create({
-            data: {
-              pharmacyId: order.pharmacyId,
-              orderId: order.id,
-              customerId: order.customerId,
-              amount,
-              expectedAmount: amount,
-              provider: "daraja",
-              status: "completed",
-              providerRef: transId,
-              paidAt: new Date(),
-              phone: body?.MSISDN ? String(body.MSISDN) : null,
-              payerPhone: body?.MSISDN ? String(body.MSISDN) : null,
-            },
-          });
-          const { markOrderPaid } = await import("@/app/lib/services/commerce/orders");
-          await markOrderPaid(tx, {
-            orderId: order.id,
-            amount,
-            currency: "KES",
-          });
-        });
-        await markWebhookProcessed(inbound.event.id);
-        return response(0, "Accepted");
-      }
-
-      return response(1, "Invoice or order mismatch");
+      // Tenant orders are paid to their pharmacy merchant, not the platform C2B shortcode.
+      return response(1, "Invoice mismatch");
     });
   } catch (error) {
     console.error("[daraja c2b confirmation]", error);

@@ -5,6 +5,7 @@ import { completeIntasendOrderPayment } from "@/app/lib/services/payments";
 export const dynamic = "force-dynamic";
 
 export async function GET(req: Request) {
+  if (process.env.NODE_ENV === "production") return NextResponse.json({ error: "Not found" }, { status: 404 });
   const { searchParams } = new URL(req.url);
   const apiRef = searchParams.get("api_ref") || "";
   const amount = searchParams.get("amount") || "0";
@@ -157,6 +158,7 @@ export async function GET(req: Request) {
 }
 
 export async function POST(req: Request) {
+  if (process.env.NODE_ENV === "production") return NextResponse.json({ error: "Not found" }, { status: 404 });
   const formData = await req.formData();
   const apiRef = String(formData.get("api_ref") || "");
   const amount = Number(formData.get("amount") || 0);
@@ -164,7 +166,7 @@ export async function POST(req: Request) {
   const invoiceId = String(formData.get("invoice_id") || `mock_${Date.now()}`);
 
   try {
-    if (apiRef.startsWith("SUBINV_") || apiRef.startsWith("KYP-") || apiRef.startsWith("INV-")) {
+    if (apiRef.startsWith("BILL-") || apiRef.startsWith("SUBINV_") || apiRef.startsWith("KYP-") || apiRef.startsWith("INV-") || apiRef.startsWith("BUNDLE-")) {
       await completeIntasendBillingPayment({
         apiRef,
         amount,
@@ -184,7 +186,7 @@ export async function POST(req: Request) {
   }
 
   const finalRedirect = new URL(redirectUrl, req.url);
-  finalRedirect.searchParams.set("payment", "success");
+  if (!finalRedirect.searchParams.get("payment")?.startsWith("return_")) finalRedirect.searchParams.set("payment", "success");
   finalRedirect.searchParams.set("invoice_id", invoiceId);
 
   return NextResponse.redirect(finalRedirect.toString(), 303);

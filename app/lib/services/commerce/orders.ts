@@ -51,6 +51,7 @@ export async function markOrderPaid(
     select: { id: true, pharmacyId: true, status: true, fulfillmentStage: true, paymentStage: true, customerId: true, paymentInitiatedAt: true, lifecycleStatus: true },
   });
   if (!order) return;
+  if (order.paymentStage === "paid" || ["paid", "fulfilled", "waived"].includes(order.status)) return;
 
   await tx.order.update({
     where: { id: opts.orderId },

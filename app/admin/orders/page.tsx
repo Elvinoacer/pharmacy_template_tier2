@@ -11,6 +11,8 @@ import { BarChart3, DollarSign, TrendingUp, ShoppingCart, AlertTriangle } from "
 import OrderForm from "@/app/components/admin/OrderForm";
 import PeriodSelect from "@/app/components/admin/PeriodSelect";
 import { OrderSettleActions } from "@/app/components/admin/WaiveOrderForm";
+import { ManualRefundList, RefundOrderForm } from "@/app/components/admin/RefundOrderForm";
+import { roleHasPermission } from "@/app/lib/platform/permissions";
 
 export const metadata = { title: "Orders & Revenue" };
 
@@ -31,7 +33,8 @@ type OrderRow = {
   hasRxItem: boolean;
   customer: { id: string; fullName: string; phone?: string | null } | null;
   items: { quantity: number; name: string }[];
-  payments: { providerRef: string | null; status: string }[];
+  payments: { id: string; amount: number; provider: string; providerRef: string | null; status: string; createdAt: Date }[];
+  refunds: { id: string; amount: number; provider: string; status: string; providerRef: string | null }[];
 };
 
 type MedOption = {
@@ -57,6 +60,8 @@ export default async function AdminOrdersPage({
 }) {
   const user = await getSessionUser();
   if (!user) redirect("/login");
+  const billingMember = user.memberships.find((membership) => membership.pharmacyId === user.activePharmacyId && membership.status === "active");
+  const canRefund = Boolean(billingMember && roleHasPermission(billingMember.role, "orders.refund"));
   const sp = await searchParams;
   const status = sp.status || undefined;
   const period = sp.period || "30d";
@@ -98,7 +103,8 @@ export default async function AdminOrdersPage({
               },
             },
           },
-          payments: { orderBy: { createdAt: "desc" }, take: 1 },
+          payments: { orderBy: { createdAt: "desc" } },
+          refunds: { orderBy: { createdAt: "desc" } },
         },
         orderBy: { createdAt: "desc" },
         take: PAGE_SIZE,
@@ -140,7 +146,8 @@ export default async function AdminOrdersPage({
       ),
       customer: o.customer,
       items: o.items.map((i) => ({ quantity: i.quantity, name: i.name })),
-      payments: o.payments.map((p) => ({ providerRef: p.providerRef, status: p.status })),
+      payments: o.payments.map((p) => ({ id: p.id, amount: Number(p.amount), provider: p.provider, providerRef: p.providerRef, status: p.status, createdAt: p.createdAt })),
+      refunds: o.refunds.map((r) => ({ id: r.id, amount: Number(r.amount), provider: r.provider, status: r.status, providerRef: r.providerRef })),
     }));
     medications = meds.map((m) => ({
       id: m.id,
@@ -191,7 +198,8 @@ export default async function AdminOrdersPage({
               },
             },
           },
-          payments: { orderBy: { createdAt: "desc" }, take: 1 },
+          payments: { orderBy: { createdAt: "desc" } },
+          refunds: { orderBy: { createdAt: "desc" } },
         },
         orderBy: { createdAt: "desc" },
         take: PAGE_SIZE,
@@ -216,7 +224,8 @@ export default async function AdminOrdersPage({
         ),
         customer: o.customer,
         items: o.items.map((i) => ({ quantity: i.quantity, name: i.name })),
-        payments: o.payments.map((p) => ({ providerRef: p.providerRef, status: p.status })),
+        payments: o.payments.map((p) => ({ id: p.id, amount: Number(p.amount), provider: p.provider, providerRef: p.providerRef, status: p.status, createdAt: p.createdAt })),
+        refunds: o.refunds.map((r) => ({ id: r.id, amount: Number(r.amount), provider: r.provider, status: r.status, providerRef: r.providerRef })),
       }));
     } catch (err) {
       console.error("[admin/orders] Failed to load page:", err);
@@ -377,6 +386,18 @@ export default async function AdminOrdersPage({
                             <> · Ref: {o.payments[0].providerRef}</>
                           )}
                         </p>
+                        {o.refunds.some((refund) => refund.status === "pending" || refund.status === "approved") ? (
+                          <p role="status" className="mt-2 text-sm font-semibold text-amber-700">Refund awaiting confirmed payout</p>
+                        ) : null}
+                        {canRefund && (o.payments.some((payment) => payment.status === "completed") || o.refunds.some((refund) => refund.status === "pending" || refund.status === "approved")) ? (
+                          <details className="mt-3 rounded-xl border border-[var(--admin-border)] p-3">
+                            <summary className="cursor-pointer text-sm font-semibold admin-text">Manage refunds</summary>
+                            <div className="mt-3 space-y-4">
+                              <ManualRefundList orderId={o.id} refunds={o.refunds} />
+                              <RefundOrderForm orderId={o.id} payments={o.payments} />
+                            </div>
+                          </details>
+                        ) : null}
                       </div>
                       <div className="w-full text-left lg:w-auto lg:min-w-[12rem] lg:text-right">
                         <p className="font-bold admin-text">KES {o.total.toLocaleString()}</p>

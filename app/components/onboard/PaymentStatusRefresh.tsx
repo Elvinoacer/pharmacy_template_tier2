@@ -1,12 +1,15 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState, useTransition } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { RefreshCw } from "lucide-react";
 import styles from "./OnboardSurface.module.css";
 
-export default function PaymentStatusRefresh({ pending }: { pending: boolean }) {
+export default function PaymentStatusRefresh({ pending, pharmacyId }: { pending: boolean; pharmacyId?: string }) {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const paymentReturn = searchParams?.get("payment") || "";
+  const invoiceId = paymentReturn.startsWith("return_") ? paymentReturn.slice(7) : undefined;
   const [refreshing, startTransition] = useTransition();
   const [checking, setChecking] = useState(false);
   const [providerPending, setProviderPending] = useState(pending);
@@ -21,13 +24,14 @@ export default function PaymentStatusRefresh({ pending }: { pending: boolean }) 
     try {
       const response = await fetch("/api/payments/billing/status", {
         method: "POST",
-        headers: { Accept: "application/json" },
+        headers: { Accept: "application/json", "Content-Type": "application/json" },
+        body: JSON.stringify({ pharmacyId, invoiceId }),
         cache: "no-store",
       });
-      const data = (await response.json().catch(() => null)) as { pending?: number } | null;
+      const data = (await response.json().catch(() => null)) as { pending?: number; state?: string; message?: string } | null;
       if (response.ok && typeof data?.pending === "number") {
-        setProviderPending(data.pending > 0);
-        setCheckError(null);
+        setProviderPending(invoiceId ? data.state === "pending" : data.pending > 0);
+        setCheckError(data.state === "failed" ? "This checkout failed. Review the invoice and start a new checkout only after its status is confirmed." : data.message?.includes("awaiting verified") ? "The provider reports success; receipt verification is still underway. Please do not pay again." : null);
       } else if (!response.ok) {
         setCheckError(
           "We couldn't confirm payment status right now. You can retry in a moment.",
@@ -40,7 +44,7 @@ export default function PaymentStatusRefresh({ pending }: { pending: boolean }) 
       setChecking(false);
       checkingRef.current = false;
     }
-  }, [router]);
+  }, [router, pharmacyId, invoiceId]);
 
   useEffect(() => {
     void check();

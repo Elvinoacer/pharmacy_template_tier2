@@ -657,7 +657,7 @@ export function AdminPlanContextNotice() {
 
   if (!status) return null;
 
-  if (status.subscription.paymentAttention) {
+  if (status.subscription.paymentAttention && pathname !== "/admin/billing") {
     return (
       <section className="mb-5 flex flex-col gap-3 rounded-2xl border border-amber-500/25 bg-amber-500/[0.08] p-4 sm:flex-row sm:items-center sm:justify-between">
         <div className="flex items-start gap-2.5">
