@@ -87,9 +87,9 @@ export default async function VaccinationsPage() {
       <CtaBanner
         title="Ready for your vaccine?"
         description="Walk in during open hours or book online. Screening, vaccine information, and consent are completed before every dose."
-        primaryHref="/vaccinations/book"
-        primaryLabel="Book a vaccine"
-        secondaryHref="/preventive"
+        primaryHref={pharmacy ? `/p/${pharmacy.slug}/vaccinations/book` : "/pharmacies"}
+        primaryLabel={pharmacy ? "Book a vaccine" : "Choose a pharmacy"}
+        secondaryHref={pharmacy ? `/p/${pharmacy.slug}/preventive` : "/preventive"}
         secondaryLabel="Preventive counselling"
       />
     </div>
