@@ -1,9 +1,9 @@
 import type { MetadataRoute } from "next";
 import { articles, platform } from "./lib/data";
 import { listDiscoveryLocations } from "./lib/services/local-discovery";
-import { locationPath } from "./lib/seo";
+import { locationPath, uniqueSitemapEntries } from "./lib/seo";
+import { VACCINE_CATALOG } from "./lib/vaccination-catalog";
 import { listPublicCategories } from "./lib/medication-categories";
-import { prismaUnscoped } from "./lib/db";
 import { withPlatformBypass } from "./lib/tenant-context";
 
 export const dynamic = "force-dynamic";
@@ -42,18 +42,21 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
           : 0.7,
   }));
 
-  const [cities, categories, vaccines] = await Promise.all([
+  const [cities, categories] = await Promise.all([
     listDiscoveryLocations(),
     withPlatformBypass(() => listPublicCategories()),
-    withPlatformBypass(() => prismaUnscoped.vaccineProduct.findMany({ where: { active: true }, select: { slug: true } })),
   ]);
   const locationRoutes = cities.map(city => ({ url: `${base}${locationPath(city)}` }));
 
-  const categoryRoutes = categories.map((c) => ({
-    url: `${base}/medicines/${c.slug}`,
-    changeFrequency: "monthly" as const,
-    priority: 0.6,
-  }));
+  // Only advertise category pages that have real public inventory. Tenant-scoped
+  // category rows can share the same slug, so final output is deduplicated below.
+  const categoryRoutes = categories
+    .filter((c) => c.publicMedCount > 0)
+    .map((c) => ({
+      url: `${base}/medicines/${c.slug}`,
+      changeFrequency: "monthly" as const,
+      priority: 0.6,
+    }));
 
   const articleRoutes = articles.map((a) => ({
     url: `${base}/health/${a.slug}`,
@@ -62,12 +65,22 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     priority: 0.6,
   }));
 
-  const vaccineRoutes = vaccines.map((v) => ({
+  // Vaccine information pages are global editorial resources. Their canonical
+  // slugs come from the shared catalogue, not tenant VaccineProduct rows.
+  const vaccineRoutes = VACCINE_CATALOG.map((v) => ({
     url: `${base}/vaccinations/${v.slug}`,
     changeFrequency: "monthly" as const,
     priority: 0.8,
   }));
 
   // Large catalogues are paginated independently via /sitemap-index.xml.
-  return [...staticRoutes, ...locationRoutes, ...categoryRoutes, ...articleRoutes, ...vaccineRoutes];
+  // The final dedupe is deliberate: tenant-scoped records may share canonical
+  // platform URLs and must never appear repeatedly in the XML.
+  return uniqueSitemapEntries([
+    ...staticRoutes,
+    ...locationRoutes,
+    ...categoryRoutes,
+    ...articleRoutes,
+    ...vaccineRoutes,
+  ]);
 }

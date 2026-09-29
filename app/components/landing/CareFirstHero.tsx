@@ -26,7 +26,7 @@ export default function CareFirstHero() {
       </div>
       <div className={styles.scene}>
         <div className={styles.copy}>
-          <p className={styles.eyebrow}>YOUR HEALTH. YOUR NEXT STEP.</p>
+          <p className={styles.eyebrow}>AFYVIA · KENYA&apos;S CONNECTED PHARMACY NETWORK</p>
           <h1>
             Find what you need.
             <br />

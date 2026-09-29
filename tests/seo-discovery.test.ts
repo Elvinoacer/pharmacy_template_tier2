@@ -1,6 +1,7 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 import { serializeJsonLd, locationPath, uniqueSitemapEntries } from "../app/lib/seo";
+import { VACCINE_CATALOG } from "../app/lib/vaccination-catalog";
 
 test("pharmacy-controlled structured data cannot terminate the script element", () => {
   const data = { name: '</script><script>alert("x")</script>', city: "A&B" };
@@ -18,4 +19,26 @@ test("duplicate sitemap URLs retain the latest real modification date regardless
   const other = { url: "/pharmacy" };
   assert.deepEqual(uniqueSitemapEntries([old, recent, other]), [recent, other]);
   assert.deepEqual(uniqueSitemapEntries([recent, old]), [recent]);
+});
+
+
+test("global vaccine canonical slugs are unique", () => {
+  const slugs = VACCINE_CATALOG.map((v) => v.slug);
+  assert.equal(new Set(slugs).size, slugs.length);
+  assert.ok(slugs.includes("influenza"));
+  assert.ok(slugs.includes("hepatitis-b"));
+});
+
+test("sitemap dedupe collapses repeated tenant-backed canonical URLs", () => {
+  const duplicateTenantRows = Array.from({ length: 24 }, (_, index) => ({
+    url: "https://afyvia.gtss.software/vaccinations/influenza",
+    lastModified: new Date(`2026-09-${String(index + 1).padStart(2, "0")}`),
+  }));
+
+  const deduped = uniqueSitemapEntries(duplicateTenantRows);
+  assert.equal(deduped.length, 1);
+  assert.equal(
+    deduped[0].lastModified?.toISOString(),
+    new Date("2026-09-24").toISOString(),
+  );
 });

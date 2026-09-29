@@ -4,7 +4,7 @@ import { ArrowRight } from "lucide-react";
 import { platform } from "@/app/lib/data";
 import CareFirstHero from "./components/landing/CareFirstHero";
 export const metadata = {
-  title: `${platform.name} — Your care, connected`,
+  title: `${platform.name} — Kenya's Connected Pharmacy Network`,
   description: platform.description,
   alternates: { canonical: "/" },
 };
