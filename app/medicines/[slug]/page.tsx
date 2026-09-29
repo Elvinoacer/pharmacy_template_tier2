@@ -36,6 +36,7 @@ import { getPublicCategoryBySlug } from "../../lib/medication-categories";
 import { getOtcCategoryGuidance } from "../../lib/otc-guidance";
 import { getMedicationCounsellingBySlug } from "../../lib/services/medication-counselling-db";
 import { getResolvedPharmacyOrNull } from "../../lib/services/pharmacy-settings";
+import { withPlatformBypass } from "../../lib/tenant-context";
 import {
   listNetworkListingsForSlug,
   listNetworkMedicineListings,
@@ -123,7 +124,10 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   }
 
   // Fallback to Category if no medicine listing matched
-  const cat = await getPublicCategoryBySlug(slug).catch(() => null);
+  const cat = await (pharmacy
+    ? getPublicCategoryBySlug(slug)
+    : withPlatformBypass(() => getPublicCategoryBySlug(slug))
+  ).catch(() => null);
   if (cat) {
     return {
       title: `${cat.name} — Products, Safety & Pharmacist Guidance`,
@@ -186,7 +190,10 @@ export default async function CategoryOrMedicinePage({ params }: Props) {
 
   // 3. If no medicine matched, check if this slug is a Category
   if (!med) {
-    const cat = await getPublicCategoryBySlug(slug).catch(() => null);
+    const cat = await (pharmacy
+      ? getPublicCategoryBySlug(slug)
+      : withPlatformBypass(() => getPublicCategoryBySlug(slug))
+    ).catch(() => null);
     if (!cat) notFound();
 
     const otcGuidance = getOtcCategoryGuidance(cat.slug);
