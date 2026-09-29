@@ -192,7 +192,7 @@ export async function createRefillRequest(data: {
  *
  * Idempotent via stock_movements relatedType=refill_request.
  */
-async function fulfillRefillInventory(
+export async function fulfillRefillInventory(
   refillId: string,
   actorId?: string,
 ): Promise<void> {
@@ -240,24 +240,11 @@ async function fulfillRefillInventory(
     return;
   }
 
-  // Also skip stock if prescription was already dispatched (stock taken on dispatch).
-  const priorDispatch = rx?.id
-    ? await prisma.stockMovement.findFirst({
-        where: {
-          relatedType: "prescription",
-          relatedId: rx.id,
-          reason: { in: ["dispatch", "refill"] },
-          quantityDelta: { lt: 0 },
-        },
-        select: { id: true },
-      })
-    : null;
-
   try {
     const stockResult = await prisma.$transaction(async (tx) => {
       let result = null as Awaited<ReturnType<typeof applyStockChange>> | null;
 
-      if (medicationId && !priorDispatch && !rx?.dispatchedAt) {
+      if (medicationId) {
         result = await applyStockChange(tx, {
           inventoryId: medicationId,
           quantityDelta: -qty,
@@ -267,25 +254,10 @@ async function fulfillRefillInventory(
           relatedId: refillId,
           actorId: actorId ?? null,
         });
-      } else if (medicationId && (priorDispatch || rx?.dispatchedAt)) {
-        // Record a zero-delta audit so we know this refill was linked to prior dispatch.
-        await tx.stockMovement.create({
-          data: {
-            pharmacyInventoryId: medicationId,
-            reason: "refill",
-            quantityDelta: 0,
-            balanceAfter: rx?.medication?.currentStock ?? 0,
-            notes: `Refill linked to prior dispatch (no double-count): ${medName}`,
-            relatedType: "refill_request",
-            relatedId: refillId,
-            actorId: actorId ?? null,
-          },
-        });
       }
 
       if (rx) {
-        const shouldDecrementRefills =
-          !rx.dispatchedAt && (rx.refillsRemaining ?? 0) > 0 && !priorDispatch;
+        const shouldDecrementRefills = (rx.refillsRemaining ?? 0) > 0;
         await tx.prescription.update({
           where: { id: rx.id },
           data: {
@@ -294,7 +266,6 @@ async function fulfillRefillInventory(
               : {
                   dispatchedAt: new Date(),
                   dispatchedById: actorId ?? null,
-                  lastFilledAt: new Date(),
                 }),
             ...(shouldDecrementRefills ? { refillsRemaining: { decrement: 1 } } : {}),
             lastFilledAt: new Date(),
@@ -349,6 +320,8 @@ async function fulfillRefillInventory(
     throw e;
   }
 }
+
+export const fulfillRefillRequest = fulfillRefillInventory;
 
 async function ensureRefillOrder(
   refill: {

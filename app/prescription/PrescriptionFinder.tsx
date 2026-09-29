@@ -402,7 +402,7 @@ export default function PrescriptionFinder({
           <p className={styles.help}>
             Review your contact details and preferred collection date. The
             pharmacy confirms stock and reviews your original prescription
-            before dispensing. The search photo is not attached.
+            before dispensing.{uploadedPhoto ? " Your prescription photo will be securely attached to this request." : ""}
           </p>
           <RefillForm
             key={request.pharmacy.id}
@@ -410,6 +410,7 @@ export default function PrescriptionFinder({
             pharmacySlug={request.pharmacy.slug}
             inventoryIds={[...new Set(request.lines.map((l) => l.match.id))]}
             initialMedicine={request.lines.map((l) => l.match.name).join("\n")}
+            uploadedPhoto={uploadedPhoto}
           />
         </section>
       ) : (

@@ -534,9 +534,15 @@ function mediaSignature(payload: string): string {
   return createHmac("sha256", mediaTokenSecret()).update(payload).digest("base64url");
 }
 
+const ALLOWED_PRIVATE_KEY_PREFIXES = ["symptom-uploads/", "prescriptions/", "health-media/"];
+
+function isAllowedPrivateKey(key: string): boolean {
+  return ALLOWED_PRIVATE_KEY_PREFIXES.some((prefix) => key.startsWith(prefix));
+}
+
 export function createPrivateMediaToken(reference: string, ttlSeconds = MEDIA_TOKEN_TTL_SECONDS): string {
   const key = privateR2Key(reference);
-  if (!key || !key.startsWith("symptom-uploads/")) throw new Error("invalid_private_media_reference");
+  if (!key || !isAllowedPrivateKey(key)) throw new Error("invalid_private_media_reference");
   const exp = Math.floor(Date.now() / 1000) + Math.min(15 * 60, Math.max(30, ttlSeconds));
   const payload = Buffer.from(JSON.stringify({ v: 1, key, exp }), "utf8").toString("base64url");
   return `${payload}.${mediaSignature(payload)}`;
@@ -556,12 +562,45 @@ export function verifyPrivateMediaToken(token: string): { key: string } | null {
   if (a.length !== b.length || !timingSafeEqual(a, b)) return null;
   try {
     const parsed = JSON.parse(Buffer.from(payload, "base64url").toString("utf8")) as { v?: number; key?: string; exp?: number };
-    if (parsed.v !== 1 || !parsed.key?.startsWith("symptom-uploads/") || !parsed.exp || parsed.exp < Math.floor(Date.now() / 1000)) {
+    if (parsed.v !== 1 || !parsed.key || !isAllowedPrivateKey(parsed.key) || !parsed.exp || parsed.exp < Math.floor(Date.now() / 1000)) {
       return null;
     }
     return { key: parsed.key };
   } catch {
     return null;
+  }
+}
+
+export async function storePrescriptionAttachment(dataUrlOrUrl: string): Promise<string> {
+  if (!dataUrlOrUrl || !dataUrlOrUrl.startsWith("data:")) {
+    return dataUrlOrUrl;
+  }
+  if (!isPrivateR2Configured()) {
+    return dataUrlOrUrl;
+  }
+  try {
+    const commaIndex = dataUrlOrUrl.indexOf(",");
+    if (commaIndex === -1) return dataUrlOrUrl;
+    const header = dataUrlOrUrl.slice(0, commaIndex);
+    const base64Data = dataUrlOrUrl.slice(commaIndex + 1);
+    const mimeMatch = header.match(/^data:([^;]+)/);
+    const contentType = mimeMatch ? mimeMatch[1].toLowerCase() : "application/octet-stream";
+    const buffer = Buffer.from(base64Data, "base64");
+    const blob = new Blob([buffer], { type: contentType });
+    const result = await uploadPrivateImageToR2(blob, { folder: "prescriptions" });
+    return result.reference;
+  } catch (error) {
+    console.error("[storePrescriptionAttachment] Failed to upload to private R2, falling back to data URL:", error);
+    return dataUrlOrUrl;
+  }
+}
+
+export function getPrescriptionMediaViewUrl(reference: string): string {
+  if (!isPrivateR2Reference(reference)) return reference;
+  try {
+    return `/api/prescriptions/media?token=${encodeURIComponent(createPrivateMediaToken(reference))}`;
+  } catch {
+    return reference;
   }
 }
 

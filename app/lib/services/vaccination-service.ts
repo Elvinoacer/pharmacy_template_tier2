@@ -1,5 +1,6 @@
 import "server-only";
 
+import { withPlatformBypass } from "@/app/lib/tenant-context";
 import { prisma } from "@/app/lib/db";
 import { addTimelineEvent, writeAuditLog } from "@/app/lib/auth";
 import { formatMpesaPhone } from "@/app/lib/services/daraja";
@@ -656,26 +657,28 @@ export async function updateCounsellingSession(
 }
 
 export async function listCustomerVaccinationPortal(customerId: string) {
-  const [appointments, records, counselling] = await Promise.all([
-    prisma.immunizationAppointment.findMany({
-      where: { customerId },
-      orderBy: { createdAt: "desc" },
-      take: 40,
-      include: { vaccine: true, screening: true, record: true },
-    }),
-    prisma.immunizationRecord.findMany({
-      where: { customerId, status: "administered" },
-      orderBy: { administeredAt: "desc" },
-      include: { vaccine: true, aefiReports: true },
-    }),
-    prisma.preventiveCounsellingSession.findMany({
-      where: { customerId },
-      orderBy: { createdAt: "desc" },
-      take: 30,
-      include: { counsellor: { select: { email: true, role: true } } },
-    }),
-  ]);
-  return { appointments, records, counselling };
+  return withPlatformBypass(async () => {
+    const [appointments, records, counselling] = await Promise.all([
+      prisma.immunizationAppointment.findMany({
+        where: { customerId },
+        orderBy: { createdAt: "desc" },
+        take: 40,
+        include: { vaccine: true, screening: true, record: true },
+      }),
+      prisma.immunizationRecord.findMany({
+        where: { customerId, status: "administered" },
+        orderBy: { administeredAt: "desc" },
+        include: { vaccine: true, aefiReports: true },
+      }),
+      prisma.preventiveCounsellingSession.findMany({
+        where: { customerId },
+        orderBy: { createdAt: "desc" },
+        take: 30,
+        include: { counsellor: { select: { email: true, role: true } } },
+      }),
+    ]);
+    return { appointments, records, counselling };
+  });
 }
 
 export async function listImmunizerCredentials() {

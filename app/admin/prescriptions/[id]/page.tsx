@@ -47,6 +47,7 @@ import {
   type MedicationCounsellingProfile,
 } from "@/app/lib/medication-counselling";
 import { getMedicationCounsellingBySlug } from "@/app/lib/services/medication-counselling-db";
+import { getPrescriptionMediaViewUrl } from "@/app/lib/r2";
 
 export const metadata = { title: "Prescription Analytics & Detail" };
 
@@ -381,54 +382,62 @@ export default async function PrescriptionDetailPage({
       </div>
 
       {/* Uploaded Prescription Scans & Documents */}
-      {prescription.attachmentUrls.length > 0 && (
-        <div className="mb-5 rounded-2xl border border-emerald-500/25 bg-emerald-500/5 p-4 shadow-sm">
-          <div className="flex items-center justify-between mb-3">
-            <div className="flex items-center gap-2">
-              <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-emerald-500/20 text-emerald-700 dark:text-emerald-400">
-                <FileText className="h-4 w-4" />
-              </div>
-              <div>
-                <h3 className="text-sm font-bold admin-text">Prescription Document &amp; Scans ({prescription.attachmentUrls.length})</h3>
-                <p className="text-sm admin-soft">Original script uploaded by patient or referring clinic</p>
+      {prescription.attachmentUrls.length > 0 && (() => {
+        const resolvedAttachmentUrls = prescription.attachmentUrls.map(getPrescriptionMediaViewUrl);
+        return (
+          <div className="mb-5 rounded-2xl border border-emerald-500/25 bg-emerald-500/5 p-4 shadow-sm">
+            <div className="flex items-center justify-between mb-3">
+              <div className="flex items-center gap-2">
+                <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-emerald-500/20 text-emerald-700 dark:text-emerald-400">
+                  <FileText className="h-4 w-4" />
+                </div>
+                <div>
+                  <h3 className="text-sm font-bold admin-text">Prescription Document &amp; Scans ({prescription.attachmentUrls.length})</h3>
+                  <p className="text-sm admin-soft">Original script uploaded by patient or referring clinic</p>
+                </div>
               </div>
             </div>
-          </div>
-          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
-            {prescription.attachmentUrls.map((url, idx) => {
-              const isImg = url.startsWith("data:image/") || /\.(jpe?g|png|webp|gif|svg)($|\?)/i.test(url);
-              return (
-                <div key={idx} className="rounded-xl border border-[var(--admin-border)] bg-[var(--admin-card)] p-3 shadow-xs">
-                  <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
-                    <span className="text-sm font-semibold admin-text">Script #{idx + 1}</span>
-                    <a
-                      href={url}
-                      target="_blank"
-                      rel="noreferrer"
-                      className="inline-flex min-h-11 w-full items-center justify-center gap-1 rounded-lg bg-emerald-500/10 px-3 py-2 text-sm font-bold text-emerald-700 hover:bg-emerald-500/20 dark:text-emerald-300 sm:w-auto"
-                    >
-                      Open Full Document <ExternalLink className="h-3 w-3" />
-                    </a>
-                  </div>
-                  {isImg ? (
-                    <a href={url} target="_blank" rel="noreferrer" className="block overflow-hidden rounded-lg border border-black/5 dark:border-white/5 bg-black/5 hover:opacity-90 transition">
-                      <img src={url} alt={`Prescription scan ${idx + 1}`} className="h-48 w-full object-contain" />
-                    </a>
-                  ) : (
-                    <div className="flex h-32 items-center justify-center rounded-lg bg-[var(--admin-inset)] p-3 text-center">
-                      <p className="break-all font-mono text-sm admin-soft">{url}</p>
+            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
+              {resolvedAttachmentUrls.map((url, idx) => {
+                const isImg = url.startsWith("data:image/") || url.startsWith("/api/prescriptions/media") || /\.(jpe?g|png|webp|gif|svg)($|\?)/i.test(url);
+                return (
+                  <div key={idx} className="rounded-xl border border-[var(--admin-border)] bg-[var(--admin-card)] p-3 shadow-xs">
+                    <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+                      <span className="text-sm font-semibold admin-text">Script #{idx + 1}</span>
+                      <a
+                        href={url}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="inline-flex min-h-11 w-full items-center justify-center gap-1 rounded-lg bg-emerald-500/10 px-3 py-2 text-sm font-bold text-emerald-700 hover:bg-emerald-500/20 dark:text-emerald-300 sm:w-auto"
+                      >
+                        Open Full Document <ExternalLink className="h-3 w-3" />
+                      </a>
                     </div>
-                  )}
-                </div>
-              );
-            })}
+                    {isImg ? (
+                      <a href={url} target="_blank" rel="noreferrer" className="block overflow-hidden rounded-lg border border-black/5 dark:border-white/5 bg-black/5 hover:opacity-90 transition">
+                        <img src={url} alt={`Prescription scan ${idx + 1}`} className="h-48 w-full object-contain" />
+                      </a>
+                    ) : (
+                      <div className="flex h-32 items-center justify-center rounded-lg bg-[var(--admin-inset)] p-3 text-center">
+                        <p className="break-all font-mono text-sm admin-soft">{url}</p>
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
           </div>
-        </div>
-      )}
+        );
+      })()}
 
       {/* Prescription Lifecycle & Verification Cockpit */}
       <div className="mb-6">
-        <PrescriptionReviewCockpit rx={prescription as any} />
+        <PrescriptionReviewCockpit
+          rx={{
+            ...prescription,
+            attachmentUrls: prescription.attachmentUrls.map(getPrescriptionMediaViewUrl),
+          } as any}
+        />
       </div>
 
       {/* Priority 1: KPI strip */}

@@ -252,6 +252,9 @@ export function requireStaff(user: SessionUser | null): SessionUser {
     throw new AuthError("Staff access required", 403);
   }
   if (user.platformAdmin) return requirePlatformAdmin(user);
+  if (user.twoFactorEnabled && !user.mfaVerifiedAt) {
+    throw new AuthError("MFA_REQUIRED", 401);
+  }
 
   const membership = user.activePharmacyId
     ? user.memberships.find(
@@ -268,12 +271,17 @@ export function requireStaff(user: SessionUser | null): SessionUser {
 }
 
 export async function assertCanMutateTenant(): Promise<void> {
-  const { activeSupportSession, supportIsReadOnly } = await import(
-    "@/app/lib/platform/support-session"
-  );
-  const session = await activeSupportSession();
-  if (supportIsReadOnly(session)) {
-    throw new AuthError("This support session is read-only", 403);
+  try {
+    const { activeSupportSession, supportIsReadOnly } = await import(
+      "@/app/lib/platform/support-session"
+    );
+    const session = await activeSupportSession();
+    if (supportIsReadOnly(session)) {
+      throw new AuthError("This support session is read-only", 403);
+    }
+  } catch (err) {
+    if (err instanceof AuthError) throw err;
+    // Outside request context (e.g. tests or CLI scripts)
   }
 }
 
@@ -285,8 +293,11 @@ export async function assertCanMutateTenant(): Promise<void> {
  */
 export async function requireManager(user: SessionUser | null): Promise<SessionUser> {
   if (!user) throw new AuthError("Manager access required", 403);
-  await assertCanMutateTenant();
   if (user.platformAdmin) return requirePlatformAdmin(user);
+  if (user.twoFactorEnabled && !user.mfaVerifiedAt) {
+    throw new AuthError("MFA_REQUIRED", 401);
+  }
+  await assertCanMutateTenant();
 
   const qualifies = (role: string) => role === "owner" || role === "manager";
   let tenantId: string | null = null;

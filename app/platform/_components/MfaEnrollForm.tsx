@@ -10,10 +10,14 @@ export default function MfaEnrollForm({
   startAction,
   enabled = false,
   verified = false,
+  continueHref = "/platform",
+  continueLabel = "Continue to platform overview",
 }: {
   startAction: () => Promise<MfaState>;
   enabled?: boolean;
   verified?: boolean;
+  continueHref?: string;
+  continueLabel?: string;
 }) {
   const router = useRouter();
   const [state, setState] = useState<MfaState>({});
@@ -181,10 +185,10 @@ export default function MfaEnrollForm({
         >
           <p>{state.success}</p>
           <Link
-            href="/platform"
+            href={continueHref}
             className="inline-flex min-h-11 w-full items-center justify-center rounded-xl bg-teal-700 px-4 font-semibold text-white dark:bg-teal-300 dark:text-teal-950 sm:w-auto"
           >
-            Continue to platform overview
+            {continueLabel}
           </Link>
         </div>
       ) : null}

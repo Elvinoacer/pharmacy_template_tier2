@@ -1,4 +1,5 @@
 import { redirect } from "next/navigation";
+import { withPlatformBypass } from "@/app/lib/tenant-context";
 import { requireOnboarded } from "@/app/lib/require-onboarded";
 import { getSessionUser } from "@/app/lib/auth";
 import { prisma } from "@/app/lib/db";
@@ -15,6 +16,7 @@ export default async function PortalFeedbackPage() {
   if (!user?.customerId) redirect("/login");
   await requireOnboarded();
 
+  return withPlatformBypass(async () => {
   const past = await prisma.feedback.findMany({
     where: { customerId: user.customerId },
     orderBy: { createdAt: "desc" },
@@ -134,4 +136,5 @@ export default async function PortalFeedbackPage() {
       </div>
     </PortalShell>
   );
+  });
 }

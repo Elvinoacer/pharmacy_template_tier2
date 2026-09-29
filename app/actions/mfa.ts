@@ -39,6 +39,7 @@ export async function confirmMfaAction(_prev: MfaState, formData: FormData): Pro
   });
   await markSessionMfaVerified(user.id);
   revalidatePath("/platform", "layout");
+  revalidatePath("/admin", "layout");
   return { success: "Two-step verification is enabled. Your admin account is ready." };
 }
 
@@ -51,6 +52,7 @@ export async function verifyStepUpAction(_prev: MfaState, formData: FormData): P
   if (!ok) return { error: "Invalid code." };
   await markSessionMfaVerified(user.id);
   revalidatePath("/platform", "layout");
+  revalidatePath("/admin", "layout");
   return { success: "Verified. You can continue to your workspace." };
 }
 

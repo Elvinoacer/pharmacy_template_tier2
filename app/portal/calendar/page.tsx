@@ -1,4 +1,5 @@
 import { redirect } from "next/navigation";
+import { withPlatformBypass } from "@/app/lib/tenant-context";
 import { getSessionUser } from "@/app/lib/auth";
 import { requireOnboarded } from "@/app/lib/require-onboarded";
 import { PortalShell } from "@/app/components/portal/PortalShell";
@@ -12,9 +13,11 @@ export const metadata = { title: "Medication Calendar & Dosing Schedule" };
 export default async function PortalMedicationCalendarPage() {
   const user = await getSessionUser();
   if (!user?.customerId) redirect("/login");
+  const customerId = user.customerId;
   await requireOnboarded();
 
-  const calendarData = await getMedicationCalendarData(user.customerId);
+  return withPlatformBypass(async () => {
+  const calendarData = await getMedicationCalendarData(customerId);
   if (!calendarData) {
     // No active medication plan in context (e.g. no pharmacy chosen yet).
     // Explain instead of silently bouncing the user to another page.
@@ -65,4 +68,5 @@ export default async function PortalMedicationCalendarPage() {
       </div>
     </PortalShell>
   );
+  });
 }

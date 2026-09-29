@@ -842,24 +842,33 @@ export function PrescriptionReviewCockpit({
             <p className="text-sm admin-soft">Physical script scans, WhatsApp photos, or electronic referral PDFs</p>
           </div>
           <div className="grid gap-4 sm:grid-cols-2">
-            {rx.attachmentUrls.map((url, i) => (
-              <div key={i} className="rounded-2xl border border-[var(--admin-border)] bg-[var(--admin-card)] p-5 text-sm space-y-3 shadow-sm">
-                <div className="flex items-center justify-between">
-                  <span className="font-bold admin-text">Source Document #{i + 1}</span>
-                  <a
-                    href={url}
-                    target="_blank"
-                    rel="noreferrer"
-                    className="inline-flex items-center gap-1 rounded-xl bg-emerald-500/10 px-3 py-1 text-sm font-bold text-emerald-700 dark:text-emerald-300 hover:bg-emerald-500/20"
-                  >
-                    Open Document <ExternalLink className="h-3 w-3" />
-                  </a>
+            {rx.attachmentUrls.map((url, i) => {
+              const isImg = url.startsWith("data:image/") || url.startsWith("/api/prescriptions/media") || /\.(jpe?g|png|webp|gif|svg)($|\?)/i.test(url);
+              return (
+                <div key={i} className="rounded-2xl border border-[var(--admin-border)] bg-[var(--admin-card)] p-5 text-sm space-y-3 shadow-sm">
+                  <div className="flex items-center justify-between">
+                    <span className="font-bold admin-text">Source Document #{i + 1}</span>
+                    <a
+                      href={url}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="inline-flex items-center gap-1 rounded-xl bg-emerald-500/10 px-3 py-1 text-sm font-bold text-emerald-700 dark:text-emerald-300 hover:bg-emerald-500/20"
+                    >
+                      Open Document <ExternalLink className="h-3 w-3" />
+                    </a>
+                  </div>
+                  {isImg && (
+                    <a href={url} target="_blank" rel="noreferrer" className="block overflow-hidden rounded-lg border border-black/5 dark:border-white/5 bg-black/5 hover:opacity-90 transition">
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img src={url} alt={`Prescription scan ${i + 1}`} className="h-40 w-full object-contain" />
+                    </a>
+                  )}
+                  <p className="truncate font-mono text-sm admin-soft bg-[var(--admin-inset)] p-2.5 rounded-xl border border-[var(--admin-border)]">
+                    {url}
+                  </p>
                 </div>
-                <p className="truncate font-mono text-sm admin-soft bg-[var(--admin-inset)] p-2.5 rounded-xl border border-[var(--admin-border)]">
-                  {url}
-                </p>
-              </div>
-            ))}
+              );
+            })}
           </div>
         </div>
       )}

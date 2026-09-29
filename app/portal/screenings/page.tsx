@@ -1,4 +1,5 @@
 import { redirect } from "next/navigation";
+import { withPlatformBypass } from "@/app/lib/tenant-context";
 import { getSessionUser } from "@/app/lib/auth";
 import { requireOnboarded } from "@/app/lib/require-onboarded";
 import { PortalShell } from "@/app/components/portal/PortalShell";
@@ -18,12 +19,14 @@ export const dynamic = "force-dynamic";
 export default async function PortalScreeningsPage() {
   const user = await getSessionUser();
   if (!user?.customerId) redirect("/login");
+  const customerId = user.customerId;
   await requireOnboarded();
   const tenant = await getTenant().catch(() => ({ slug: null as string | null }));
   const shopBase = tenant.slug ? `/p/${tenant.slug}` : null;
 
-  const screenings = await listCustomerScreenings(user.customerId).catch(() => []);
-  const referrals = await listCustomerReferrals(user.customerId).catch(() => []);
+  return withPlatformBypass(async () => {
+  const screenings = await listCustomerScreenings(customerId).catch(() => []);
+  const referrals = await listCustomerReferrals(customerId).catch(() => []);
 
   const formattedScreenings = screenings.map((s) => ({
     id: s.id,
@@ -109,4 +112,5 @@ export default async function PortalScreeningsPage() {
       </div>
     </PortalShell>
   );
+  });
 }

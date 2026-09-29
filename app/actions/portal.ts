@@ -13,6 +13,7 @@ import { prisma, prismaUnscoped } from "@/app/lib/db";
 import { createRefillRequest, createFeedback, updateRefillStatus } from "@/app/lib/services/crm";
 import { ageSegmentFromDob, isFuture, parseLocalDateInput } from "@/app/lib/time";
 import { PUBLIC_PHARMACY_COOKIE } from "@/app/lib/tenant-context";
+import { storePrescriptionAttachment } from "@/app/lib/r2";
 
 export type ActionState = { error?: string; success?: string; code?: string };
 
@@ -359,15 +360,17 @@ export async function portalFeedbackAction(
   const body = String(formData.get("body") || "").trim();
   if (!body) return { error: "Please share your feedback." };
 
-  await createFeedback({
-    customerId: user.customerId!,
-    name: user.fullName || undefined,
-    email: user.email,
-    rating: Number(formData.get("rating") || 0) || undefined,
-    type: (String(formData.get("type") || "review") as "review" | "suggestion" | "complaint" | "satisfaction"),
-    title: String(formData.get("title") || "") || undefined,
-    body,
-  });
+  await withPlatformBypass(() =>
+    createFeedback({
+      customerId: user.customerId!,
+      name: user.fullName || undefined,
+      email: user.email,
+      rating: Number(formData.get("rating") || 0) || undefined,
+      type: (String(formData.get("type") || "review") as "review" | "suggestion" | "complaint" | "satisfaction"),
+      title: String(formData.get("title") || "") || undefined,
+      body,
+    })
+  );
 
   revalidatePath("/portal/feedback");
   return { success: "Thank you — your feedback was submitted." };
@@ -383,7 +386,8 @@ export async function redeemCouponAction(
   const couponId = String(formData.get("couponId") || "");
   if (!couponId) return { error: "Coupon is required." };
 
-  const result = await prisma.$transaction(async (tx) => {
+  const result = await withPlatformBypass(() =>
+    prisma.$transaction(async (tx) => {
     const [account, coupon] = await Promise.all([
       tx.loyaltyAccount.findFirst({ where: { customerId: user.customerId! } }),
       tx.coupon.findFirst({ where: { id: couponId } }),
@@ -446,7 +450,8 @@ export async function redeemCouponAction(
       },
     });
     return { ok: true, accountId: account.id, couponCode: coupon.code, pointsCost: coupon.pointsCost };
-  });
+  })
+  );
 
   if (result.ok) {
     await writeAuditLog(user.id, "coupon_redeemed", "loyalty_account", result.accountId, {
@@ -903,14 +908,14 @@ export async function portalUploadPrescriptionAction(
     const notes = String(formData.get("notes") || "").trim() || null;
     const pharmacyIdRaw = String(formData.get("pharmacyId") || "").trim();
     const rawUrls = String(formData.get("attachmentUrls") || "").trim();
-    const attachmentUrls = rawUrls
+    const rawAttachmentUrls = rawUrls
       ? rawUrls
           .split(/[\n,]+/)
           .map((s) => s.trim())
           .filter(Boolean)
       : [];
 
-    if (!medicineNameRaw && attachmentUrls.length === 0) {
+    if (!medicineNameRaw && rawAttachmentUrls.length === 0) {
       return {
         error: "Add a medicine name or attach the prescription photo.",
         code: "validation",
@@ -918,6 +923,10 @@ export async function portalUploadPrescriptionAction(
     }
     const medicineName =
       medicineNameRaw || "Prescription photo — pharmacist to confirm names";
+
+    const attachmentUrls = await Promise.all(
+      rawAttachmentUrls.map((url) => storePrescriptionAttachment(url))
+    );
 
     let targetPharmacyId =
       pharmacyIdRaw && z.string().uuid().safeParse(pharmacyIdRaw).success

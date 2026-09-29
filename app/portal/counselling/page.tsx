@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
+import { withPlatformBypass } from "@/app/lib/tenant-context";
 import { requireOnboarded } from "@/app/lib/require-onboarded";
 import { getSessionUser } from "@/app/lib/auth";
 import { prisma } from "@/app/lib/db";
@@ -34,14 +35,16 @@ export const metadata = { title: "Medication Counselling & Patient Guides | Port
 export default async function PortalCounsellingPage() {
   const user = await getSessionUser();
   if (!user?.customerId) redirect("/login");
+  const customerId = user.customerId;
   await requireOnboarded();
   const tenant = await getTenant().catch(() => ({ slug: null as string | null }));
   const shopBase = tenant.slug ? `/p/${tenant.slug}` : null;
 
+  return withPlatformBypass(async () => {
   // Fetch active customer prescriptions and orders
   const [prescriptions, otcOrders] = await Promise.all([
     prisma.prescription.findMany({
-      where: { customerId: user.customerId, status: "active" },
+      where: { customerId, status: "active" },
       include: {
         medication: {
           include: {
@@ -57,7 +60,7 @@ export default async function PortalCounsellingPage() {
       orderBy: { createdAt: "desc" },
     }),
     prisma.order.findMany({
-      where: { customerId: user.customerId, status: { in: ["paid", "fulfilled"] } },
+      where: { customerId, status: { in: ["paid", "fulfilled"] } },
       include: { items: true },
       orderBy: { createdAt: "desc" },
       take: 5,
@@ -196,4 +199,5 @@ export default async function PortalCounsellingPage() {
       </div>
     </PortalShell>
   );
+  });
 }

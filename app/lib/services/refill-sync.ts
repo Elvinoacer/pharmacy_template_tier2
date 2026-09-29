@@ -1,5 +1,6 @@
 import "server-only";
 
+import { withPlatformBypass } from "@/app/lib/tenant-context";
 import { prisma } from "@/app/lib/db";
 import { addTimelineEvent } from "@/app/lib/auth";
 import { parseDosageFormula } from "@/app/lib/services/medication-schedule";
@@ -78,6 +79,7 @@ export async function calculateRefillSyncPlan(
   customerId: string,
   targetAnchorDay = 1,
 ): Promise<PatientSyncPlan | null> {
+  return withPlatformBypass(async () => {
   const customer = await prisma.customerProfile.findUnique({
     where: { id: customerId },
     include: {
@@ -152,6 +154,7 @@ export async function calculateRefillSyncPlan(
     isEnrolled: Boolean(customer.syncEnrollment && customer.syncEnrollment.status === "active"),
     enrollmentStatus: customer.syncEnrollment?.status,
   };
+  });
 }
 
 /**
@@ -165,6 +168,7 @@ export async function enrollCustomerInRefillSync(input: {
   notes?: string;
   staffId?: string;
 }) {
+  return withPlatformBypass(async () => {
   const safeAnchor = Math.max(1, Math.min(28, input.anchorDay));
   const nextSyncDate = calculateNextAnchorDate(safeAnchor);
 
@@ -239,6 +243,7 @@ export async function enrollCustomerInRefillSync(input: {
   }
 
   return enrollment;
+  });
 }
 
 /**

@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
+import { withPlatformBypass } from "@/app/lib/tenant-context";
 import { getSessionUser } from "@/app/lib/auth";
 import { calculateRefillSyncPlan, enrollCustomerInRefillSync } from "@/app/lib/services/refill-sync";
 
@@ -20,12 +21,13 @@ export async function GET(req: Request) {
       { status: 403 },
     );
   }
+  const customerId = user.customerId;
 
   const { searchParams } = new URL(req.url);
   const anchorDayParam = searchParams.get("anchorDay");
   const anchorDay = anchorDayParam ? parseInt(anchorDayParam, 10) : 1;
 
-  const plan = await calculateRefillSyncPlan(user.customerId, anchorDay);
+  const plan = await withPlatformBypass(() => calculateRefillSyncPlan(customerId, anchorDay));
   if (!plan) {
     return NextResponse.json(
       { error: "not_found", message: "No eligible refill sync plan is available yet." },
@@ -44,6 +46,7 @@ export async function POST(req: Request) {
       { status: 403 },
     );
   }
+  const customerId = user.customerId;
 
   let body: z.infer<typeof EnrollSchema>;
   try {
@@ -63,13 +66,15 @@ export async function POST(req: Request) {
   }
 
   try {
-    const result = await enrollCustomerInRefillSync({
-      customerId: user.customerId,
-      anchorDay: body.anchorDay,
-      prescriptionIds: body.prescriptionIds,
-      preferredPickup: body.preferredPickup,
-      notes: body.notes,
-    });
+    const result = await withPlatformBypass(() =>
+      enrollCustomerInRefillSync({
+        customerId,
+        anchorDay: body.anchorDay,
+        prescriptionIds: body.prescriptionIds,
+        preferredPickup: body.preferredPickup,
+        notes: body.notes,
+      })
+    );
 
     return NextResponse.json({ ok: true, enrollment: result });
   } catch (err) {

@@ -1,4 +1,5 @@
 import { redirect } from "next/navigation";
+import { withPlatformBypass } from "@/app/lib/tenant-context";
 import Link from "next/link";
 import { getSessionUser } from "@/app/lib/auth";
 import { requireOnboarded } from "@/app/lib/require-onboarded";
@@ -14,10 +15,13 @@ export const dynamic = "force-dynamic";
 export default async function PortalPreventivePage() {
   const user = await getSessionUser();
   if (!user?.customerId) redirect("/login");
+  const customerId = user.customerId;
   await requireOnboarded();
   const tenant = await getTenant().catch(() => ({ slug: null as string | null }));
   const shopBase = tenant.slug ? `/p/${tenant.slug}` : null;
-  const data = await listCustomerVaccinationPortal(user.customerId).catch(() => ({
+
+  return withPlatformBypass(async () => {
+  const data = await listCustomerVaccinationPortal(customerId).catch(() => ({
     counselling: [] as Awaited<ReturnType<typeof listCustomerVaccinationPortal>>["counselling"],
     appointments: [],
     records: [],
@@ -71,4 +75,5 @@ export default async function PortalPreventivePage() {
       )}
     </PortalShell>
   );
+  });
 }

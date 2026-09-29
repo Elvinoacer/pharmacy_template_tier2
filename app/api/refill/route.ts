@@ -16,6 +16,7 @@ import { createRefillRequest } from "@/app/lib/services/crm";
 import { checkRateLimitAsync } from "@/app/lib/rate-limit";
 import { formatMpesaPhone } from "@/app/lib/services/daraja";
 import { createRefillTrackingToken } from "@/app/lib/refill-tracking";
+import { storePrescriptionAttachment } from "@/app/lib/r2";
 
 const RefillSchema = z.object({
   fullName: z.string().trim().min(2).max(120),
@@ -325,13 +326,14 @@ async function submitRefill(raw: Record<string, unknown>) {
     const { PrescriptionIntakeChannel, PrescriptionLifecycleStatus } = await import(
       "@/app/generated/prisma/enums"
     );
+    const storedPhotoUrl = await storePrescriptionAttachment(parsed.data.prescriptionPhoto);
     const createdRx = await prisma.prescription.create({
       data: {
         pharmacyId: tenant.pharmacyId,
         customerId: targetCustomerId,
         medicineName: parsed.data.medicine,
         rxReference: parsed.data.rxReference || `RX-${Date.now().toString(36).toUpperCase()}`,
-        attachmentUrls: [parsed.data.prescriptionPhoto],
+        attachmentUrls: [storedPhotoUrl],
         intakeChannel: PrescriptionIntakeChannel.patient_upload,
         lifecycleStatus: PrescriptionLifecycleStatus.received,
         notes: parsed.data.notes || null,

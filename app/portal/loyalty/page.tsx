@@ -1,4 +1,5 @@
 import { redirect } from "next/navigation";
+import { withPlatformBypass } from "@/app/lib/tenant-context";
 import { requireOnboarded } from "@/app/lib/require-onboarded";
 import { getSessionUser } from "@/app/lib/auth";
 import { prisma } from "@/app/lib/db";
@@ -30,12 +31,14 @@ const TIER_META: Record<string, { color: string; bg: string; ring: string; next?
 export default async function PortalLoyaltyPage() {
   const user = await getSessionUser();
   if (!user?.customerId) redirect("/login");
+  const customerId = user.customerId;
   await requireOnboarded();
   const tenant = await getTenant().catch(() => ({ slug: null as string | null }));
 
+  return withPlatformBypass(async () => {
   const [account, coupons] = await Promise.all([
     prisma.loyaltyAccount.findFirst({
-      where: { customerId: user.customerId },
+      where: { customerId },
       include: { transactions: { orderBy: { createdAt: "desc" }, take: 20 } },
     }),
     prisma.coupon.findMany({ where: { active: true }, orderBy: { createdAt: "desc" } }),
@@ -244,4 +247,5 @@ export default async function PortalLoyaltyPage() {
       </div>
     </PortalShell>
   );
+  });
 }

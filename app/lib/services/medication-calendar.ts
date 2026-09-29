@@ -1,5 +1,6 @@
 import "server-only";
 
+import { withPlatformBypass } from "@/app/lib/tenant-context";
 import { prisma } from "@/app/lib/db";
 import { PROJECT_TIMEZONE, toLocalDateInputValue, formatTime } from "@/app/lib/time";
 import { parseDosageFormula } from "@/app/lib/services/medication-schedule";
@@ -61,6 +62,7 @@ export async function getMedicationCalendarData(
   year?: number,
   month?: number, // 1-12
 ): Promise<MedicationCalendarMonthView | null> {
+  return withPlatformBypass(async () => {
   const customer = await prisma.customerProfile.findUnique({
     where: { id: customerId },
     select: { id: true, fullName: true },
@@ -276,6 +278,7 @@ export async function getMedicationCalendarData(
     totalTakenMonth,
     totalMissedMonth,
   };
+  });
 }
 
 /**

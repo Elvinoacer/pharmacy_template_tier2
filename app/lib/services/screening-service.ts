@@ -1,5 +1,6 @@
 import "server-only";
 
+import { withPlatformBypass } from "@/app/lib/tenant-context";
 import { Prisma } from "@/app/generated/prisma/client";
 import { prisma } from "@/app/lib/db";
 import { addTimelineEvent } from "@/app/lib/auth";
@@ -183,25 +184,29 @@ export async function createClinicalReferral(input: CreateReferralInput) {
 }
 
 export async function listCustomerScreenings(customerId: string) {
-  return prisma.healthScreeningRecord.findMany({
-    where: { customerId },
-    orderBy: { createdAt: "desc" },
-    include: {
-      conductedBy: { select: { id: true, email: true, role: true } },
-      referrals: true,
-    },
-  });
+  return withPlatformBypass(async () =>
+    prisma.healthScreeningRecord.findMany({
+      where: { customerId },
+      orderBy: { createdAt: "desc" },
+      include: {
+        conductedBy: { select: { id: true, email: true, role: true } },
+        referrals: true,
+      },
+    }),
+  );
 }
 
 export async function listCustomerReferrals(customerId: string) {
-  return prisma.clinicalReferral.findMany({
-    where: { customerId },
-    orderBy: { issuedAt: "desc" },
-    include: {
-      referredBy: { select: { id: true, email: true, role: true } },
-      screening: true,
-    },
-  });
+  return withPlatformBypass(async () =>
+    prisma.clinicalReferral.findMany({
+      where: { customerId },
+      orderBy: { issuedAt: "desc" },
+      include: {
+        referredBy: { select: { id: true, email: true, role: true } },
+        screening: true,
+      },
+    }),
+  );
 }
 
 export async function listAdminScreenings(opts?: {

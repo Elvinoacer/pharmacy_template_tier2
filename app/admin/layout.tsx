@@ -12,6 +12,8 @@ import { canAccessAdminPath } from "@/app/lib/platform/admin-access";
 import { getPharmacyWorkspaceAccess } from "@/app/lib/platform/tenant-access";
 import { AlertTriangle } from "lucide-react";
 import { AdminRouteUxBoundary } from "./AdminRouteUxBoundary";
+import MfaEnrollForm from "@/app/platform/_components/MfaEnrollForm";
+import { startMfaEnrollmentAction } from "@/app/actions/mfa";
 
 export const dynamic = "force-dynamic";
 
@@ -32,6 +34,31 @@ export default async function AdminLayout({ children }: { children: React.ReactN
   }
   if (!user) redirect("/login?next=/admin");
   if (user.platformAdmin && (!user.twoFactorEnabled || !user.mfaVerifiedAt)) redirect("/platform/security?mfa=required");
+
+  if (user.twoFactorEnabled && !user.mfaVerifiedAt) {
+    return (
+      <div className="min-h-screen flex items-center justify-center p-4 bg-slate-50 dark:bg-zinc-950">
+        <div className="w-full max-w-md rounded-3xl border border-teal-200/60 bg-white p-6 shadow-xl dark:border-teal-500/20 dark:bg-zinc-900">
+          <div className="mb-4">
+            <span className="inline-flex rounded-full bg-teal-100 dark:bg-teal-900/40 px-3 py-1 text-xs font-semibold uppercase tracking-wider text-teal-800 dark:text-teal-200">
+              Two-Factor Authentication
+            </span>
+            <h1 className="mt-2 text-xl font-bold text-gray-900 dark:text-white">Verify Your Sign-In</h1>
+            <p className="mt-1 text-sm text-gray-600 dark:text-gray-300">
+              Staff access to this pharmacy workspace requires two-factor authentication.
+            </p>
+            <p className="mt-1 break-all text-xs font-medium text-teal-700 dark:text-teal-300">{user.email}</p>
+          </div>
+          <MfaEnrollForm
+            startAction={startMfaEnrollmentAction}
+            enabled={true}
+            continueHref="/admin"
+            continueLabel="Continue to admin workspace"
+          />
+        </div>
+      </div>
+    );
+  }
 
   if (user.memberships.length === 0 && !user.platformAdmin) {
     if (user.role === "caregiver") redirect("/caregiver");

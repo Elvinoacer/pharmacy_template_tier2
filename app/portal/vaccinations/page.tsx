@@ -1,4 +1,5 @@
 import { redirect } from "next/navigation";
+import { withPlatformBypass } from "@/app/lib/tenant-context";
 import { getSessionUser } from "@/app/lib/auth";
 import { requireOnboarded } from "@/app/lib/require-onboarded";
 import { PortalShell } from "@/app/components/portal/PortalShell";
@@ -14,11 +15,13 @@ export const dynamic = "force-dynamic";
 export default async function PortalVaccinationsPage() {
   const user = await getSessionUser();
   if (!user?.customerId) redirect("/login");
+  const customerId = user.customerId;
   await requireOnboarded();
   const tenant = await getTenant().catch(() => ({ slug: null as string | null }));
   const shopBase = tenant.slug ? `/p/${tenant.slug}` : null;
 
-  const data = await listCustomerVaccinationPortal(user.customerId).catch(() => ({
+  return withPlatformBypass(async () => {
+  const data = await listCustomerVaccinationPortal(customerId).catch(() => ({
     appointments: [],
     records: [],
     counselling: [],
@@ -75,4 +78,5 @@ export default async function PortalVaccinationsPage() {
       </div>
     </PortalShell>
   );
+  });
 }

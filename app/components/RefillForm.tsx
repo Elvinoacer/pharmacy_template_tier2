@@ -13,7 +13,19 @@ type RefillResult = {
   duplicate: boolean;
 };
 
-export default function RefillForm({ pharmacyName, pharmacySlug, initialMedicine = "", inventoryIds }: { pharmacyName: string; pharmacySlug?: string; initialMedicine?: string; inventoryIds?: string[] }) {
+export default function RefillForm({
+  pharmacyName,
+  pharmacySlug,
+  initialMedicine = "",
+  inventoryIds,
+  uploadedPhoto,
+}: {
+  pharmacyName: string;
+  pharmacySlug?: string;
+  initialMedicine?: string;
+  inventoryIds?: string[];
+  uploadedPhoto?: string | null;
+}) {
   const [status, setStatus] = useState<"idle" | "submitting" | "success" | "error">("idle");
   const [result, setResult] = useState<RefillResult | null>(null);
   const [errorMessage, setErrorMessage] = useState<string>("");
@@ -27,10 +39,15 @@ export default function RefillForm({ pharmacyName, pharmacySlug, initialMedicine
     const data = Object.fromEntries(new FormData(form).entries());
 
     try {
+      const payload: Record<string, unknown> = {
+        ...data,
+        ...(inventoryIds?.length ? { inventoryIds } : pharmacySlug ? { pharmacySlug } : {}),
+        ...(uploadedPhoto ? { prescriptionPhoto: uploadedPhoto } : {}),
+      };
       const res = await fetch("/api/refill", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ ...data, ...(inventoryIds?.length ? { inventoryIds } : pharmacySlug ? { pharmacySlug } : {}) }),
+        body: JSON.stringify(payload),
       });
       const body = (await res.json().catch(() => ({}))) as {
         error?: string;
@@ -119,14 +136,30 @@ export default function RefillForm({ pharmacyName, pharmacySlug, initialMedicine
       </section>
 
       <section className="border-t border-[color-mix(in_srgb,var(--foreground)_60%,var(--card))] pt-6">
-        <div className="mb-4 flex items-center gap-3">
-          <div className="flex h-8 w-8 items-center justify-center rounded-full border border-[color-mix(in_srgb,var(--foreground)_60%,var(--card))] bg-[var(--brand-soft)] text-[var(--brand-deep)]"><FileText className="h-4 w-4" aria-hidden="true" /></div>
-          <div><h3 className="text-sm font-bold text-[var(--foreground)]">Medication</h3><p className="text-xs text-[var(--muted)]">Review the medicines you need.</p></div>
+        <div className="mb-4 flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <div className="flex h-8 w-8 items-center justify-center rounded-full border border-[color-mix(in_srgb,var(--foreground)_60%,var(--card))] bg-[var(--brand-soft)] text-[var(--brand-deep)]"><FileText className="h-4 w-4" aria-hidden="true" /></div>
+            <div><h3 className="text-sm font-bold text-[var(--foreground)]">Medication</h3><p className="text-xs text-[var(--muted)]">Review the medicines you need.</p></div>
+          </div>
+          {uploadedPhoto && (
+            <span className="inline-flex items-center gap-1.5 rounded-full border border-emerald-700/40 bg-emerald-50 px-2.5 py-1 text-xs font-semibold text-emerald-800 dark:border-emerald-300/40 dark:bg-emerald-950/40 dark:text-emerald-200">
+              <CheckCircle2 className="h-3 w-3" aria-hidden="true" /> Prescription photo attached
+            </span>
+          )}
         </div>
         <div className="grid gap-4 sm:grid-cols-2">
           <TextArea label="Medicine name(s)" id="medicine" required maxLength={1500} defaultValue={initialMedicine} readOnly={Boolean(inventoryIds?.length)} rows={3} placeholder="One medicine and strength per line" />
           <TextInput label="Prescription number" id="rxNumber" placeholder="Optional" />
         </div>
+        {uploadedPhoto && (
+          <div className="mt-3 flex items-center gap-3 rounded-xl border border-emerald-600/30 bg-emerald-50/50 p-2.5 dark:bg-emerald-950/20">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src={uploadedPhoto} alt="Prescription preview" className="h-12 w-12 rounded-lg object-cover border border-emerald-200" />
+            <p className="text-xs text-[var(--muted)]">
+              Your prescription photo will be sent to the pharmacist for verification.
+            </p>
+          </div>
+        )}
       </section>
 
       <section className="border-t border-[color-mix(in_srgb,var(--foreground)_60%,var(--card))] pt-6">

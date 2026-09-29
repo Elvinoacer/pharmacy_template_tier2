@@ -12,6 +12,7 @@ import {
   createEmailVerification,
   createPasswordReset,
   destroySession,
+  isStaff,
   loginWithPassword,
   registerCustomer,
   resetPasswordWithToken,
@@ -138,10 +139,27 @@ export async function loginAction(
   try {
     const user = await loginWithPassword(email, password);
     await recordAudit({ actorId: user.id, action: "login", resource: "user", resourceId: user.id });
-    postLoginPath = resolvePostLoginPath(
-      { role: user.role, customerId: user.customerId, platformAdmin: user.platformAdmin },
-      next || null,
-    );
+    if (user.twoFactorEnabled && !user.mfaVerifiedAt) {
+      if (user.platformAdmin) {
+        postLoginPath = "/platform/security?mfa=required";
+      } else if (isStaff(user.role)) {
+        const candidate = resolvePostLoginPath(
+          { role: user.role, customerId: user.customerId, platformAdmin: user.platformAdmin },
+          next || null,
+        );
+        postLoginPath = candidate.startsWith("/admin") ? candidate : "/admin";
+      } else {
+        postLoginPath = resolvePostLoginPath(
+          { role: user.role, customerId: user.customerId, platformAdmin: user.platformAdmin },
+          next || null,
+        );
+      }
+    } else {
+      postLoginPath = resolvePostLoginPath(
+        { role: user.role, customerId: user.customerId, platformAdmin: user.platformAdmin },
+        next || null,
+      );
+    }
   } catch (e) {
     if (isRedirectError(e)) throw e;
     if (e instanceof AuthError) {
