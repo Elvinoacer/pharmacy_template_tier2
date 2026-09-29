@@ -4,9 +4,12 @@ import { notFound } from "next/navigation";
 import PageHero from "../../components/PageHero";
 import CtaBanner from "../../components/CtaBanner";
 import { getPublicVaccineBySlug } from "../../lib/services/vaccination-service";
-import ChoosePharmacy from "../../components/ChoosePharmacy";
 import { getResolvedPharmacyOrNull } from "../../lib/services/pharmacy-settings";
-import { VACCINE_CATEGORY_LABELS, type VaccineCategory } from "../../lib/vaccination-catalog";
+import {
+  VACCINE_CATALOG,
+  VACCINE_CATEGORY_LABELS,
+  type VaccineCategory,
+} from "../../lib/vaccination-catalog";
 
 export const dynamic = "force-dynamic";
 
@@ -14,26 +17,44 @@ type Props = { params: Promise<{ slug: string }> };
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
-  const v = await getPublicVaccineBySlug(slug).catch(() => null);
-  if (!v) return { title: "Vaccine information" };
+  const vaccine = VACCINE_CATALOG.find((item) => item.slug === slug);
+  if (!vaccine) {
+    return {
+      title: "Vaccine information not found",
+      robots: { index: false, follow: false },
+    };
+  }
+
+  const title = `${vaccine.name} — Vaccine information in Kenya`;
   return {
-    title: v.name,
-    description: v.visSummary,
-    alternates: { canonical: `/vaccinations/${v.slug}` },
+    title,
+    description: vaccine.visSummary,
+    alternates: { canonical: `/vaccinations/${vaccine.slug}` },
+    openGraph: {
+      title,
+      description: vaccine.visSummary,
+      url: `/vaccinations/${vaccine.slug}`,
+    },
   };
 }
 
 export default async function VaccineInfoPage({ params }: Props) {
   const { slug } = await params;
-  // Deep links without a pharmacy in context get a chooser, not a 404.
-  const pharmacy = await getResolvedPharmacyOrNull().catch(() => null);
-  if (!pharmacy) {
-    return <ChoosePharmacy next={`/vaccinations/${slug}`} />;
-  }
-  const base = `/p/${pharmacy.slug}`;
-  const v = await getPublicVaccineBySlug(slug);
-  if (!v) notFound();
+  const catalogVaccine = VACCINE_CATALOG.find((item) => item.slug === slug);
+  if (!catalogVaccine) notFound();
 
+  // Global vaccine information is backed by the shared catalogue so the URL
+  // remains useful and indexable without a selected pharmacy. Storefront routes
+  // can still overlay pharmacy-specific availability, price and bookability.
+  const pharmacy = await getResolvedPharmacyOrNull().catch(() => null);
+  const tenantVaccine = pharmacy
+    ? await getPublicVaccineBySlug(slug).catch(() => null)
+    : null;
+  const v = tenantVaccine ?? catalogVaccine;
+  const base = pharmacy ? `/p/${pharmacy.slug}` : "";
+  const bookable = tenantVaccine
+    ? tenantVaccine.bookable
+    : catalogVaccine.pharmacyAdministered;
   const price = v.priceKes != null ? Number(v.priceKes) : null;
 
   return (
@@ -43,7 +64,7 @@ export default async function VaccineInfoPage({ params }: Props) {
         title={v.name}
         description={v.visSummary}
         crumbs={[
-          { label: "Vaccinations", href: "/vaccinations" },
+          { label: "Vaccinations", href: pharmacy ? `${base}/vaccinations` : "/vaccinations" },
           { label: v.name },
         ]}
       />
@@ -79,19 +100,41 @@ export default async function VaccineInfoPage({ params }: Props) {
               <Row k="Route" val={v.route} />
               <Row k="Series" val={`${v.seriesDoses} dose${v.seriesDoses === 1 ? "" : "s"}`} />
               <Row k="Storage" val={v.storageRequirements} />
-              {price != null && price > 0 && <Row k="Indicative price" val={`KES ${price.toLocaleString()}`} />}
+              {pharmacy && price != null && price > 0 && (
+                <Row k="Pharmacy price" val={`KES ${price.toLocaleString()}`} />
+              )}
               <Row k="VIS version" val={v.visVersion || "—"} />
             </dl>
-            {v.bookable && v.pharmacyAdministered ? (
-              <Link href={`/vaccinations/book?vaccine=${v.slug}`} className="btn-primary mt-2 inline-flex min-h-11 w-full justify-center text-sm">
-                Book this vaccine
-              </Link>
+
+            {pharmacy ? (
+              bookable && v.pharmacyAdministered ? (
+                <Link
+                  href={`${base}/vaccinations/book?vaccine=${v.slug}`}
+                  className="btn-primary mt-2 inline-flex min-h-11 w-full justify-center text-sm"
+                >
+                  Book this vaccine
+                </Link>
+              ) : (
+                <Link
+                  href={`${base}/preventive`}
+                  className="btn-primary mt-2 inline-flex min-h-11 w-full justify-center text-sm"
+                >
+                  Request counselling / referral
+                </Link>
+              )
             ) : (
-              <Link href={`${base}/preventive`} className="btn-primary mt-2 inline-flex min-h-11 w-full justify-center text-sm">
-                Request counselling / referral
+              <Link
+                href="/pharmacies"
+                className="btn-primary mt-2 inline-flex min-h-11 w-full justify-center text-sm"
+              >
+                Choose a pharmacy
               </Link>
             )}
-            <Link href={`${base}/vaccinations`} className="flex min-h-11 items-center justify-center text-center text-sm font-semibold text-[var(--brand)]">
+
+            <Link
+              href={pharmacy ? `${base}/vaccinations` : "/vaccinations"}
+              className="flex min-h-11 items-center justify-center text-center text-sm font-semibold text-[var(--brand)]"
+            >
               All vaccines
             </Link>
           </aside>
@@ -99,11 +142,11 @@ export default async function VaccineInfoPage({ params }: Props) {
       </section>
       <CtaBanner
         title="Questions about this vaccine?"
-        description="Our pharmacists can walk through eligibility, timing, and how it fits with your other medicines."
-        primaryHref="/contact"
-        primaryLabel="Ask a pharmacist"
-        secondaryHref="/vaccinations/book"
-        secondaryLabel="Book"
+        description="Review eligibility and timing with a pharmacy before vaccination. Screening and consent are completed before any dose."
+        primaryHref={pharmacy ? `${base}/vaccinations/book` : "/pharmacies"}
+        primaryLabel={pharmacy ? "Book" : "Choose a pharmacy"}
+        secondaryHref="/vaccinations"
+        secondaryLabel="All vaccines"
       />
     </div>
   );
@@ -131,7 +174,3 @@ function Row({ k, val }: { k: string; val: string }) {
     </div>
   );
 }
-
-// generateStaticParams intentionally removed: the page is force-dynamic and
-// tenant-scoped (vaccine catalogues differ per pharmacy), so prerendering
-// against a build-time tenant would bake the wrong catalogue.
