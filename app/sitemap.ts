@@ -4,7 +4,6 @@ import { listDiscoveryLocations } from "./lib/services/local-discovery";
 import { locationPath, uniqueSitemapEntries } from "./lib/seo";
 import { VACCINE_CATALOG } from "./lib/vaccination-catalog";
 import { listPublicCategories } from "./lib/medication-categories";
-import { prismaUnscoped } from "./lib/db";
 import { withPlatformBypass } from "./lib/tenant-context";
 
 export const dynamic = "force-dynamic";
