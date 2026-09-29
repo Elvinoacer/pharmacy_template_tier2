@@ -41,12 +41,13 @@ export default async function VaccinationsPage() {
     category: v.category,
     description: v.description,
     diseasesPrevented: v.diseasesPrevented,
-    priceKes: v.priceKes != null ? Number(v.priceKes) : null,
+    priceKes: pharmacy && v.priceKes != null ? Number(v.priceKes) : null,
     pharmacyAdministered: v.pharmacyAdministered,
-    bookable:
-      "bookable" in v && typeof v.bookable === "boolean"
+    bookable: pharmacy
+      ? "bookable" in v && typeof v.bookable === "boolean"
         ? v.bookable
-        : v.pharmacyAdministered,
+        : v.pharmacyAdministered
+      : false,
     travelRelated: v.travelRelated,
     seasonLabel: v.seasonLabel,
     seriesDoses: v.seriesDoses,
