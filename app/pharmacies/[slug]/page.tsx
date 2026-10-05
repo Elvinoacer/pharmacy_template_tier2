@@ -43,8 +43,8 @@ export async function generateMetadata({
   if (!data) return { title: "Pharmacy" };
   const p = data.profile;
   const locationStr = [p.address.city, p.address.state, "Kenya"].filter(Boolean).join(", ");
-  const title = `${p.name} — Pharmacy, Medicines & Care Services in ${locationStr}`;
-  const description = `${p.name}: Licensed local pharmacy in ${locationStr}. Browse in-stock medicines, clinical services, prescription refills, and home delivery.`;
+  const title = `${p.name} — Pharmacy, Medicines & Care Services in ${locationStr} · Afyvia`;
+  const description = `${p.name}: Licensed local pharmacy in ${locationStr} on the Afyvia Network. Browse in-stock medicines, clinical services, prescription refills, and home delivery.`;
   const coordinates = p.latitude != null && p.longitude != null ? `${p.latitude};${p.longitude}` : undefined;
 
   return {

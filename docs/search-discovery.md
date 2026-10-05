@@ -32,25 +32,27 @@ Distances displayed by Google, Maps or another platform are controlled by that p
 4. **Missing Knowledge Graph Entity Signals**: Structured data lacked explicit brand alternate names, sameAs social links, and parent organization identifiers.
 
 ### Codebase remediations applied
-- **`app/robots.ts`**: Blocked search engine crawlers from wasting quota on `/admin`, `/portal`, `/caregiver`, `/platform`, `/select-pharmacy`, `/onboard/location-handoff`, and `/reset-password`.
+- **`app/robots.ts`**: Blocked search engine crawlers from wasting quota on `/admin`, `/portal`, `/caregiver`, `/platform`, `/onboard`, `/select-pharmacy`, `/forgot-password`, and `/reset-password`.
 - **`app/lib/services/discovery-sitemap.ts`**: Deduplicated pharmacy sitemaps to emit only the canonical `/pharmacies/[slug]` profiles.
 - **`app/p/[slug]/[[...path]]/page.tsx`**: Pointed storefront home canonical tags to `/pharmacies/[slug]`.
-- **`app/components/JsonLd.tsx`**: Expanded structured data to emit `Organization` and `MedicalOrganization` entities with `@id`, `alternateName` array (`Afyvia Kenya`, `Afyvia Pharmacy Network`), logo, official contact point, and `sameAs` social profile URLs.
-- **`app/lib/data.ts` & `app/layout.tsx`**: Added brand search keywords and environment-configurable social channels.
+- **`app/components/landing/CareFirstHero.tsx`**: Added brand anchor `<span className="sr-only">Afyvia Pharmacy Network: </span>` to the primary homepage `<h1>`.
+- **`app/pharmacies/[slug]/page.tsx`**: Added `· Afyvia` brand attribution and network affiliation to individual pharmacy metadata titles and descriptions.
+- **`app/components/JsonLd.tsx`**: Expanded structured data to emit `Organization` and `MedicalOrganization` entities with `@id`, `alternateName` array (`Afyvia Kenya`, `Afyvia Pharmacy Network`), logo, official contact point, `sameAs` social profile URLs, and upgraded `SearchAction` to Google's recommended `EntryPoint` format.
+- **`app/lib/data.ts` & `app/layout.tsx`**: Strengthened platform description with brand name, added Google Search Console verification support via `NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION`, added `googleBot` crawler directives, and set production domain fallback to `https://afyvia.gtss.software`.
 
 ### Immediate operational checklist for operators
 1. **Google Search Console Domain Verification**:
-   - Add property via DNS TXT record or HTML tag in GSC for `https://afyvia.health` (or your active production domain).
-   - In GSC Sitemaps, submit `https://<domain>/sitemap-index.xml`.
+   - Set environment variable `NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION=<your-gsc-token>` in Vercel (or add DNS TXT record in Cloudflare) for `https://afyvia.gtss.software`.
+   - In GSC Sitemaps, submit `https://afyvia.gtss.software/sitemap-index.xml`.
 2. **Kickstart Googlebot Crawl via URL Inspection**:
-   - Inspect `https://<domain>/`, `https://<domain>/pharmacies`, and `https://<domain>/medicines`.
+   - In Google Search Console, inspect `https://afyvia.gtss.software/`, `https://afyvia.gtss.software/pharmacies`, and `https://afyvia.gtss.software/medicines`.
    - Click **"Request Indexing"** to trigger immediate live crawler discovery.
 3. **Claim Social Profiles & Knowledge Graph Entities**:
    - Create and verify official accounts on X (`@afyvia`), LinkedIn (`company/afyvia`), Facebook (`afyvia`), and Instagram (`@afyvia`).
-   - Link these profiles back to `https://<domain>`.
+   - Link these profiles back to `https://afyvia.gtss.software`.
    - Configure environment variables: `NEXT_PUBLIC_SOCIAL_FACEBOOK`, `NEXT_PUBLIC_SOCIAL_INSTAGRAM`, `NEXT_PUBLIC_SOCIAL_LINKEDIN`, `NEXT_PUBLIC_SOCIAL_TWITTER`.
-4. **Member Pharmacy Google Business Profiles**:
-   - Ask participating pharmacies in Nairobi/Kenya to list their Afyvia storefront URL (`https://<domain>/pharmacies/<slug>`) as their appointment/website link on their Google Business Profile.
+4. **Member Pharmacy Google Business Profiles & Local Citations**:
+   - Ask participating pharmacies in Nairobi/Kenya to list their Afyvia storefront URL (`https://afyvia.gtss.software/pharmacies/<slug>`) as their appointment/website link on their Google Business Profile.
    - This provides immediate local NAP (Name, Address, Phone) citations and resolves the spellcheck ambiguity.
 
 ## Production rollout

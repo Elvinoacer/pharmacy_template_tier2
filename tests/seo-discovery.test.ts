@@ -54,8 +54,13 @@ test("robots configuration disallows private redirected routes and advertises si
   assert.ok(disallowed.includes("/portal") || disallowed.includes("/portal/"));
   assert.ok(disallowed.includes("/caregiver") || disallowed.includes("/caregiver/"));
   assert.ok(disallowed.includes("/platform") || disallowed.includes("/platform/"));
+  assert.ok(disallowed.includes("/onboard") || disallowed.includes("/onboard/"));
+  assert.ok(disallowed.includes("/forgot-password"));
   assert.ok(disallowed.includes("/reset-password"));
   assert.ok(config.sitemap);
+  const sitemaps = Array.isArray(config.sitemap) ? config.sitemap : [config.sitemap];
+  assert.ok(sitemaps.some(s => s.includes("/sitemap-index.xml")));
+  assert.ok(sitemaps.some(s => s.includes("/sitemap.xml")));
 });
 
 test("platform entity JSON-LD emits logo, sameAs socials, and Knowledge Graph identifiers", async () => {
@@ -73,14 +78,40 @@ test("platform entity JSON-LD emits logo, sameAs socials, and Knowledge Graph id
   assert.ok(Array.isArray(org.sameAs) && org.sameAs.length > 0, "Organization sameAs must include socials");
   assert.ok(Array.isArray(org.alternateName), "Alternate names must be present");
   assert.ok(org.alternateName.includes("Afyvia Kenya"), "Must include Afyvia Kenya brand variant");
+
+  const website = parsed.find((item: { "@type": string | string[] }) => item["@type"] === "WebSite");
+  assert.ok(website, "WebSite schema must be present");
+  assert.ok(website["@id"], "WebSite @id must be present");
+  assert.ok(website.potentialAction, "WebSite SearchAction must be present");
+  assert.equal(website.potentialAction["@type"], "SearchAction");
+  assert.ok(website.potentialAction.target?.urlTemplate?.includes("/medicines?q={search_term_string}"));
 });
 
-test("pharmacy sitemap paths strictly omit non-canonical /p/ storefront URLs", () => {
-  const sampleSlugs = ["goodlife-plaza", "hub-westlands", "city-chemist"];
-  const paths = sampleSlugs.map(slug => `/pharmacies/${slug}`);
-  for (const path of paths) {
-    assert.match(path, /^\/pharmacies\/[a-z0-9-]+$/);
-    assert.equal(path.startsWith("/p/"), false);
-  }
+test("root layout metadata includes brand keywords, googleBot config, and omits hallucinated domains", async () => {
+  const fs = await import("node:fs");
+  const path = await import("node:path");
+  const layoutContent = fs.readFileSync(path.resolve(__dirname, "../app/layout.tsx"), "utf8");
+  assert.ok(layoutContent.includes('"Afyvia"'), "Must include brand keyword Afyvia");
+  assert.ok(layoutContent.includes('"Afyvia Kenya"'), "Must include brand keyword Afyvia Kenya");
+  assert.ok(layoutContent.includes('"Afyvia Pharmacy Network"'), "Must include brand keyword Afyvia Pharmacy Network");
+  assert.ok(layoutContent.includes('"afyvia.gtss.software"'), "Must include live domain in keywords");
+  assert.equal(layoutContent.includes('"afyvia.health"'), false, "Hallucinated non-existent domain must not be in keywords");
+  assert.ok(layoutContent.includes("NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION"), "GSC verification env var must be supported");
+  assert.ok(layoutContent.includes("googleBot:"), "googleBot crawler config must be declared");
+  assert.ok(layoutContent.includes('"max-image-preview": "large"'), "max-image-preview large must be configured");
+
+  const heroContent = fs.readFileSync(path.resolve(__dirname, "../app/components/landing/CareFirstHero.tsx"), "utf8");
+  assert.ok(heroContent.includes("Afyvia Pharmacy Network:"), "Homepage H1 must include sr-only Afyvia brand anchor");
+
+  const pharmacyProfileContent = fs.readFileSync(path.resolve(__dirname, "../app/pharmacies/[slug]/page.tsx"), "utf8");
+  assert.ok(pharmacyProfileContent.includes("· Afyvia"), "Pharmacy profile titles must include · Afyvia");
+  assert.ok(pharmacyProfileContent.includes("on the Afyvia Network"), "Pharmacy profile descriptions must include on the Afyvia Network");
+});
+
+test("platform branding and canonical base URL defaults to live domain", async () => {
+  const { platform } = await import("../app/lib/data");
+  assert.ok(platform.name === "Afyvia");
+  assert.ok(platform.description.includes("Afyvia"), "Platform description must contain brand name");
+  assert.ok(platform.siteUrl.includes("afyvia.gtss.software"), "Fallback siteUrl must point to live domain");
 });
 

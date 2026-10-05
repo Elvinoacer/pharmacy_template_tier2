@@ -77,7 +77,10 @@ export default function JsonLd({ pharmacy = null }: { pharmacy?: ResolvedPharmac
     },
     potentialAction: {
       "@type": "SearchAction",
-      target: `${platform.siteUrl}/medicines?q={search_term_string}`,
+      target: {
+        "@type": "EntryPoint",
+        urlTemplate: `${platform.siteUrl}/medicines?q={search_term_string}`,
+      },
       "query-input": "required name=search_term_string",
     },
   };

@@ -28,6 +28,7 @@ export default function CareFirstHero() {
         <div className={styles.copy}>
           <p className={styles.eyebrow}>AFYVIA · KENYA&apos;S CONNECTED PHARMACY NETWORK</p>
           <h1>
+            <span className="sr-only">Afyvia Pharmacy Network: </span>
             Find what you need.
             <br />
             <em>Feel cared for.</em>

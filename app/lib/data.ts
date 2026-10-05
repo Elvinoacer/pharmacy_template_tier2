@@ -13,7 +13,7 @@ export const platform = {
   tagline: "The pharmacy network for Kenya",
   promise: "We promise life, and we promise caring.",
   description:
-    "One patient account. Every neighbourhood pharmacy. Prescriptions, refills, vaccinations, and a pharmacist who still knows your name — from a licensed shop close to home.",
+    "Afyvia connects you to licensed neighbourhood pharmacies across Kenya. One patient account for prescriptions, refills, vaccinations, and trusted pharmacist care close to home.",
   email: "support@gtss.software",
   phone: "+254790670542",
   phoneHref: "tel:+254790670542",
@@ -22,7 +22,7 @@ export const platform = {
   siteUrl:
     process.env.NEXT_PUBLIC_APP_URL ||
     process.env.NEXT_PUBLIC_SITE_URL ||
-    "https://pharmacy-template-tier2.vercel.app",
+    "https://afyvia.gtss.software",
   country: "Kenya",
   regulator: "Pharmacy and Poisons Board",
   emergency: "999",
@@ -89,7 +89,7 @@ export const pharmacy = {
   siteUrl:
     process.env.NEXT_PUBLIC_APP_URL ||
     process.env.NEXT_PUBLIC_SITE_URL ||
-    "https://pharmacy-template-tier2.vercel.app",
+    "https://afyvia.gtss.software",
 };
 
 export const team = [

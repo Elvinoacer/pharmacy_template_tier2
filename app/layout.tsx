@@ -69,7 +69,8 @@ export const metadata: Metadata = {
     "Afyvia",
     "Afyvia Kenya",
     "Afyvia Pharmacy Network",
-    "afyvia.health",
+    "Afyvia Health",
+    "afyvia.gtss.software",
     "pharmacy Kenya",
     "prescription refill Kenya",
     "vaccinations Kenya",
@@ -78,6 +79,9 @@ export const metadata: Metadata = {
     "medication counselling",
     "pharmacy delivery Kenya",
   ],
+  verification: {
+    google: process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION || undefined,
+  },
   openGraph: {
     type: "website",
     // A canonical URL keeps Meta/WhatsApp from treating each share variant as
@@ -104,7 +108,17 @@ export const metadata: Metadata = {
     description: platform.description,
     images: ["/opengraph-image.png"],
   },
-  robots: { index: true, follow: true },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      "max-video-preview": -1,
+      "max-image-preview": "large",
+      "max-snippet": -1,
+    },
+  },
   // Nested indexable pages own their canonical URL. A root canonical would be
   // inherited by routes that forget to override it.
 };
