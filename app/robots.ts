@@ -6,8 +6,24 @@ export default function robots(): MetadataRoute.Robots {
     rules: {
       userAgent: "*",
       allow: "/",
-      disallow: ["/api/"],
+      disallow: [
+        "/api/",
+        "/admin",
+        "/admin/",
+        "/portal",
+        "/portal/",
+        "/caregiver",
+        "/caregiver/",
+        "/platform",
+        "/platform/",
+        "/select-pharmacy",
+        "/onboard/location-handoff",
+        "/reset-password",
+      ],
     },
-    sitemap: `${platform.siteUrl}/sitemap-index.xml`,
+    sitemap: [
+      `${platform.siteUrl}/sitemap-index.xml`,
+      `${platform.siteUrl}/sitemap.xml`,
+    ],
   };
 }

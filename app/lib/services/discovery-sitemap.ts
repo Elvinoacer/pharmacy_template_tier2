@@ -25,7 +25,7 @@ export async function discoverySitemapPage(kind: string, page: number): Promise<
     const entry = (path: string, updatedAt: Date) => ({ url: `${platform.siteUrl}${path}`, lastModified: updatedAt });
     if (kind === "pharmacies") {
       const rows = await prismaUnscoped.pharmacy.findMany({ ...paging, where: QUALIFYING_PHARMACY_WHERE, select: { slug: true, updatedAt: true } });
-      return rows.flatMap(p => [entry(`/pharmacies/${p.slug}`, p.updatedAt), entry(`/p/${p.slug}`, p.updatedAt)]);
+      return uniqueSitemapEntries(rows.map(p => entry(`/pharmacies/${p.slug}`, p.updatedAt)));
     }
     if (kind === "medicines") {
       const rows = await prismaUnscoped.pharmacyInventory.findMany({ ...paging, where: buildPublicInventoryWhere(), select: { slug: true, updatedAt: true, pharmacy: { select: { slug: true } }, medicationMaster: { select: { slug: true } } } });

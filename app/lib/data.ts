@@ -28,9 +28,10 @@ export const platform = {
   emergency: "999",
   emergencyAlt: "112",
   social: {
-    facebook: null as string | null,
-    instagram: null as string | null,
-    linkedin: null as string | null,
+    facebook: process.env.NEXT_PUBLIC_SOCIAL_FACEBOOK || "https://facebook.com/afyvia",
+    instagram: process.env.NEXT_PUBLIC_SOCIAL_INSTAGRAM || "https://instagram.com/afyvia",
+    linkedin: process.env.NEXT_PUBLIC_SOCIAL_LINKEDIN || "https://linkedin.com/company/afyvia",
+    twitter: process.env.NEXT_PUBLIC_SOCIAL_TWITTER || "https://x.com/afyvia",
   },
 };
 

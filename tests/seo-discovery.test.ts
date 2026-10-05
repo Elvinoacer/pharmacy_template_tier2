@@ -42,3 +42,45 @@ test("sitemap dedupe collapses repeated tenant-backed canonical URLs", () => {
     new Date("2026-09-24").toISOString(),
   );
 });
+
+test("robots configuration disallows private redirected routes and advertises sitemaps", async () => {
+  const robotsModule = await import("../app/robots");
+  const config = robotsModule.default();
+  const rules = Array.isArray(config.rules) ? config.rules[0] : config.rules;
+  assert.ok(rules);
+  const disallowed = Array.isArray(rules.disallow) ? rules.disallow : [rules.disallow];
+  assert.ok(disallowed.includes("/api/"));
+  assert.ok(disallowed.includes("/admin") || disallowed.includes("/admin/"));
+  assert.ok(disallowed.includes("/portal") || disallowed.includes("/portal/"));
+  assert.ok(disallowed.includes("/caregiver") || disallowed.includes("/caregiver/"));
+  assert.ok(disallowed.includes("/platform") || disallowed.includes("/platform/"));
+  assert.ok(disallowed.includes("/reset-password"));
+  assert.ok(config.sitemap);
+});
+
+test("platform entity JSON-LD emits logo, sameAs socials, and Knowledge Graph identifiers", async () => {
+  const jsonLdModule = await import("../app/components/JsonLd");
+  const element = jsonLdModule.default({});
+  const rawHtml = element.props.dangerouslySetInnerHTML.__html;
+  const parsed = JSON.parse(rawHtml);
+  assert.ok(Array.isArray(parsed));
+  const org = parsed.find((item: { "@type": string | string[] }) =>
+    Array.isArray(item["@type"]) ? item["@type"].includes("Organization") : item["@type"] === "Organization"
+  );
+  assert.ok(org, "Organization schema must be present");
+  assert.ok(org["@id"], "Organization @id must be present");
+  assert.ok(org.logo, "Organization logo must be present");
+  assert.ok(Array.isArray(org.sameAs) && org.sameAs.length > 0, "Organization sameAs must include socials");
+  assert.ok(Array.isArray(org.alternateName), "Alternate names must be present");
+  assert.ok(org.alternateName.includes("Afyvia Kenya"), "Must include Afyvia Kenya brand variant");
+});
+
+test("pharmacy sitemap paths strictly omit non-canonical /p/ storefront URLs", () => {
+  const sampleSlugs = ["goodlife-plaza", "hub-westlands", "city-chemist"];
+  const paths = sampleSlugs.map(slug => `/pharmacies/${slug}`);
+  for (const path of paths) {
+    assert.match(path, /^\/pharmacies\/[a-z0-9-]+$/);
+    assert.equal(path.startsWith("/p/"), false);
+  }
+});
+

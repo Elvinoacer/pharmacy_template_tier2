@@ -98,7 +98,17 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const title = `${sectionTitle} · ${p.name}`;
   const description = p.description || `Explore medicines, services and visiting information published by ${p.name}.`;
   const images = p.coverImageUrl ? [p.coverImageUrl] : [];
-  return { title: { absolute: title }, description, alternates: { canonical: `/p/${p.slug}${path?.length ? `/${path.map(encodeURIComponent).join("/")}` : ""}` }, openGraph: { title, description, images }, twitter: { title, description, images } };
+  const canonical =
+    route.section === "home"
+      ? `/pharmacies/${p.slug}`
+      : `/p/${p.slug}${path?.length ? `/${path.map(encodeURIComponent).join("/")}` : ""}`;
+  return {
+    title: { absolute: title },
+    description,
+    alternates: { canonical },
+    openGraph: { title, description, images },
+    twitter: { title, description, images },
+  };
 }
 
 export default async function PublicStorefrontPage({ params, searchParams }: Props) {

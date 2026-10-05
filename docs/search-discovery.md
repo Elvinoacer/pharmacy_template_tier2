@@ -23,6 +23,36 @@ Existing medicine/service comparisons and the pharmacy directory already support
 
 Distances displayed by Google, Maps or another platform are controlled by that platform. Our browser location cannot personalize a crawler's copy of the page. Keep each pharmacy's real map pin and street address accurate. Town pages currently group the database's city field; separate neighbourhood coverage requires meaningful, normalized neighbourhood data rather than invented area pages.
 
+## Brand Ranking Investigation & Resolution ("Afyvia" vs "Afya")
+
+### Root causes identified
+1. **Zero Initial Search Indexation & Spell Autocorrection**: Google has not yet built an entity node for the newly registered brand "Afyvia". When users search "afyvia", Google's spellchecker automatically assumes a typo for "afya" (the ubiquitous Swahili term for health in Kenya) and shows results for the national health portal (`afyayangu.go.ke`) with the banner: *"These are results for afya. Search instead for afyvia"*.
+2. **Crawl Budget Wastage on Private Redirects**: Bots attempting to crawl internal links or standard administration paths (`/admin`, `/portal`, `/caregiver`, `/platform`, `/select-pharmacy`, `/reset-password`) hit 307 temporary redirects to `/login`. This consumed search engine crawl budget on non-indexable private routes.
+3. **Canonical Duplication**: Dynamic catalogue discovery sitemaps previously outputted both `/pharmacies/[slug]` and `/p/[slug]` for every active pharmacy, splitting indexation weight across duplicate routes.
+4. **Missing Knowledge Graph Entity Signals**: Structured data lacked explicit brand alternate names, sameAs social links, and parent organization identifiers.
+
+### Codebase remediations applied
+- **`app/robots.ts`**: Blocked search engine crawlers from wasting quota on `/admin`, `/portal`, `/caregiver`, `/platform`, `/select-pharmacy`, `/onboard/location-handoff`, and `/reset-password`.
+- **`app/lib/services/discovery-sitemap.ts`**: Deduplicated pharmacy sitemaps to emit only the canonical `/pharmacies/[slug]` profiles.
+- **`app/p/[slug]/[[...path]]/page.tsx`**: Pointed storefront home canonical tags to `/pharmacies/[slug]`.
+- **`app/components/JsonLd.tsx`**: Expanded structured data to emit `Organization` and `MedicalOrganization` entities with `@id`, `alternateName` array (`Afyvia Kenya`, `Afyvia Pharmacy Network`), logo, official contact point, and `sameAs` social profile URLs.
+- **`app/lib/data.ts` & `app/layout.tsx`**: Added brand search keywords and environment-configurable social channels.
+
+### Immediate operational checklist for operators
+1. **Google Search Console Domain Verification**:
+   - Add property via DNS TXT record or HTML tag in GSC for `https://afyvia.health` (or your active production domain).
+   - In GSC Sitemaps, submit `https://<domain>/sitemap-index.xml`.
+2. **Kickstart Googlebot Crawl via URL Inspection**:
+   - Inspect `https://<domain>/`, `https://<domain>/pharmacies`, and `https://<domain>/medicines`.
+   - Click **"Request Indexing"** to trigger immediate live crawler discovery.
+3. **Claim Social Profiles & Knowledge Graph Entities**:
+   - Create and verify official accounts on X (`@afyvia`), LinkedIn (`company/afyvia`), Facebook (`afyvia`), and Instagram (`@afyvia`).
+   - Link these profiles back to `https://<domain>`.
+   - Configure environment variables: `NEXT_PUBLIC_SOCIAL_FACEBOOK`, `NEXT_PUBLIC_SOCIAL_INSTAGRAM`, `NEXT_PUBLIC_SOCIAL_LINKEDIN`, `NEXT_PUBLIC_SOCIAL_TWITTER`.
+4. **Member Pharmacy Google Business Profiles**:
+   - Ask participating pharmacies in Nairobi/Kenya to list their Afyvia storefront URL (`https://<domain>/pharmacies/<slug>`) as their appointment/website link on their Google Business Profile.
+   - This provides immediate local NAP (Name, Address, Phone) citations and resolves the spellcheck ambiguity.
+
 ## Production rollout
 
 1. Set `NEXT_PUBLIC_APP_URL` to the final HTTPS domain and redirect alternate domains to it. Deploy the code and verify the sitemap index and representative public pages return successfully.
